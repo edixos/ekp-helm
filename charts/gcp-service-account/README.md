@@ -39,7 +39,7 @@ To install the chart with the release name `my-release`:
 
 ```bash
 helm repo add ekp-helm https://edixos.github.io/ekp-helm
-helm install dcp-infra-charts/gcp-service-account
+helm install ekp-helm/gcp-service-account
 ```
 
 ### With ArgoCD
@@ -87,7 +87,7 @@ docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 h
 ### Run linter
 
 ```bash
-docker run --rm -it -w /charts -v $(pwd)/../gcp-service-account:/charts quay.io/helmpack/chart-testing:v3.0.0 ct lint --charts . --config /charts/ct.yaml
+docker run --rm -it -w /charts -v $(pwd)/../gcp-service-account:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts . --config /charts/ct.yaml
 ```
 
 ### Run pluto
