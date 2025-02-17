@@ -1,0 +1,10 @@
+global:
+  gcpProjectId: ekp-dev
+
+name: ekp-writer
+displayName: "ekp Binary Uploader"
+description: "Allows github actions to upload the ekp binary to the bucket"
+
+key:
+  create: true
+  importAsSecret: true

@@ -1,0 +1,3 @@
+The service account {{ .Values.name }} was created in the gcp project {{ .Values.global.gcpProjectId }}.
+
+Its email address: {{ .Values.name }}@{{ .Values.global.gcpProjectId }}.iam.gserviceaccount.com
