@@ -1,0 +1,20 @@
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeNetwork
+metadata:
+  labels:
+{{- include "gcp-vpc-network.labels" . | nindent 4 }}
+  name: {{ .Values.name }}
+  annotations:
+    cnrm.cloud.google.com/project-id: "{{ .Values.global.gcpProjectId }}"
+    {{- if .Values.global.abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+    {{- end }}
+    {{- with .Values.annotations }}
+{{- . | toYaml | nindent 4 }}
+    {{- end }}
+  namespace: {{ include "gcp-vpc-network.namespace" . }}
+spec:
+  autoCreateSubnetworks: {{ .Values.autoCreateSubnetworks }}
+  deleteDefaultRoutesOnCreate: {{ .Values.deleteDefaultRoutesOnCreate }}
+  mtu: {{ .Values.mtu }}
+  routingMode: {{ .Values.routingMode | quote }}
