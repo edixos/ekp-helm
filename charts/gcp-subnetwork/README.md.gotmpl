@@ -79,7 +79,7 @@ docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 h
 ### Run linter
 
 ```bash
-docker run --rm -it -w /charts -v $(pwd)/../../{{ .Name }}:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts /charts/charts/{{ .Name }} --config /charts/charts/{{ .Name }}/ct.yaml
+docker run --rm -it -w /charts -v $(pwd)/../../:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts /charts/charts/{{ .Name }} --config /charts/charts/{{ .Name }}/ct.yaml
 ```
 
 ### Run pluto
@@ -87,8 +87,8 @@ docker run --rm -it -w /charts -v $(pwd)/../../{{ .Name }}:/charts quay.io/helmp
 In order to check if the api-version used in this chart are not deprecated, or worse, removed, we use pluto to check it:
 
 ```
-docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:v3.17 template {{ .Name }} . -f tests/pluto/values.yaml --output-dir /pluto
-docker run --rm -it -v pluto:/pluto us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /pluto -o yaml --ignore-deprecations -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0" -o wide
+docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:3.17 template {{ .Name }} . -f tests/pluto/values.yaml --output-dir /pluto
+docker run --rm -it -v pluto:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /data -o yaml --ignore-deprecations -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0" -o wide
 docker volume rm pluto
 ```
 

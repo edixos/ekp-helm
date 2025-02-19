@@ -1,0 +1,55 @@
+piVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeSubnetwork
+metadata:
+  annotations:
+{{- if .Values.global.abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+{{- end }}
+    cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId | quote }}
+{{- if .Values.global.skipUnspecifiedFields }}
+    cnrm.cloud.google.com/state-into-spec: absent
+{{- end }}
+  labels:
+{{- include "compute-subnetwork.labels" . | nindent 4 }}
+  name: {{ include "compute-subnetwork.fullname" . }}
+  namespace: {{ include "compute-subnetwork.namespace" . }}
+spec:
+{{- if .Values.global.description }}
+  description: {{ .Values.global.description }}
+{{- end }}
+  ipCidrRange: {{ .Values.ipCidrRange }}
+{{- if .Values.ipv6AccessType }}
+  ipv6AccessType: {{ .Values.ipv6AccessType }}
+{{- end }}
+{{- with .Values.logConfig }}
+  logConfig:
+{{- . | toYaml | nindent 4 }}
+{{- end }}
+{{- with .Values.networkRef }}
+  networkRef:
+{{- . | toYaml | nindent 4 }}
+{{- end }}
+{{- if .Values.privateIpGoogleAccess }}
+  privateIpGoogleAccess: {{ .Values.privateIpGoogleAccess }}
+{{- end }}
+{{- if .Values.privateIpv6GoogleAccess }}
+  privateIpv6GoogleAccess: {{ .Values.privateIpv6GoogleAccess }}
+{{- end }}
+{{- if .Values.purpose }}
+  purpose: {{ .Values.purpose }}
+{{- end }}
+  region: {{ .Values.region }}
+{{- if .Values.resourceID }}
+  resourceID: {{ .Values.resourceID }}
+{{- end }}
+{{- if .Values.role }}
+  role: {{ .Values.role }}
+{{- end }}
+{{- range .Values.secondaryIpRange }}
+  secondaryIpRange:
+  - {{ .ipCidrRange }}
+    {{ .rangeName }}
+{{- end }}
+{{- if .Values.stackType }}
+  stackType: {{ .Values.stackType }}
+{{- end }}
