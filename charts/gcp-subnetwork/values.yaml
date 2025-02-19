@@ -1,0 +1,47 @@
+---
+
+global:
+  # global.cnrmNamespace -- Allows to deploy in another namespace than the release one
+  # @default -- `nil`
+  cnrmNamespace: ""
+  # global.abandon -- Abandon resource if the manifests are deleted. Allow deleting a resource from config connector without deleting it from GCP
+  abandon: true
+  # global.skipUnspecifiedFields --  This skips populating unspecified fields into the Kubernetes resource spec.
+  skipUnspecifiedFields: false
+  # global.gcpProjectId -- Project ID where to deploy the cluster
+  gcpProjectId: "myprojectid"
+  # global.description -- subNework description (use helm tpl)
+  description: ""
+
+# ipCidrRange -- The range of internal addresses that are owned by this subnetwork. Only IPv4 is supported.
+ipCidrRange: "10.3.192.0/23"
+# ipv6AccessType -- The access type of IPv6 address this subnet holds. Possible values: ["EXTERNAL", "INTERNAL"].
+ipv6AccessType: ""
+# -- This field denotes the VPC flow logging options for this subnetwork. Flow logging isn't supported if the subnet 'purpose' field is set to subnetwork is 'REGIONAL_MANAGED_PROXY' or 'GLOBAL_MANAGED_PROXY'.
+# logConfig:
+#   aggregationInterval: INTERVAL_10_MIN
+#   flowSampling: 0.5
+#   metadata: INCLUDE_ALL_METADATA
+# networkRef -- The network this subnet belongs to. Only networks that are in the distributed mode can have subnetworks.
+networkRef: {}
+  # external: ren-app-dev-gcp-cnz-app-lab
+  # name: ""
+  # namespace: ""
+# privateIpGoogleAccess -- When enabled, VMs in this subnetwork without external IP addresses can access Google APIs and services by using Private Google Access.
+privateIpGoogleAccess: ""
+# privateIpv6GoogleAccess -- The private IPv6 google access type for the VMs in this subnet.
+privateIpv6GoogleAccess:
+# purpose --  The purpose of the resource.  This field can be either 'PRIVATE_RFC_1918', 'REGIONAL_MANAGED_PROXY', 'GLOBAL_MANAGED_PROXY', or 'PRIVATE_SERVICE_CONNECT'.
+purpose: REGIONAL_MANAGED_PROXY
+# region --  The GCP region for this subnetwork.
+region: europe-west1
+# resourceID -- The name of the resource. Used for creation and acquisition. When unset, the value of `metadata.name` is used as the default.
+resourceID:
+# role - The role of subnetwork. Currently, this field is only used when 'purpose' is 'REGIONAL_MANAGED_PROXY'. Possible values: ["ACTIVE", "BACKUP"].
+role: ACTIVE
+# secondaryIpRange -- The secondary range of the subnetwork.
+secondaryIpRange: []
+  # - ipCidrRange: 10.0.0.1/22
+  #   rangeName: test
+# stackType -- The stack type for this subnet to identify whether the IPv6 feature is enabled or not. Possible values: ["IPV4_ONLY", "IPV4_IPV6"].
+stackType: ""

@@ -1,8 +1,9 @@
 apiVersion: v2
-name: gcp-service-account
-description: A Helm chart that Creates a Google Service Account and it's Key through Config Connector
+name: gcp-subnetwork
+description: Chart for compute-subnetwork resource with config connector
 type: application
-version: 0.1.1
+version: 0.1.0
+home: https://github.com/edixos/ekp-helm
 appVersion: "0.1.0"
 maintainers:
   - name: smileisak
