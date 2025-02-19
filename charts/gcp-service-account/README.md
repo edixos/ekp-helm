@@ -87,7 +87,7 @@ docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 h
 ### Run linter
 
 ```bash
-docker run --rm -it -w /charts -v $(pwd)/../gcp-service-account:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts . --config /charts/ct.yaml
+docker run --rm -it -w /charts -v $(pwd)/../../gcp-service-account:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts /charts/charts/gcp-service-account --config /charts/charts/gcp-service-account/ct.yaml
 ```
 
 ### Run pluto
