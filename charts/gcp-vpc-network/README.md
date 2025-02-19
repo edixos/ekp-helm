@@ -27,12 +27,16 @@ A Helm chart that Creates a Google VPC Network through Config Connector
 | deleteDefaultRoutesOnCreate | bool | `false` | Keep the default routes on creation by default. If true, the VPC Network will delete the default routes. |
 | description | string | `"EKP VPC Network for infrastructure."` | A text description of the VPC Network. Must be less than or equal to 256 UTF-8 bytes. |
 | displayName | string | `"EKP VPC"` | The display name for the VPC Network. Can be updated without creating a new resource. |
+| enableUlaInternalIpv6 | bool | `false` | Enable ULA internal ipv6 on this network. |
 | global.abandon | bool | `false` | Keep the VPC even after the kcc resource deletion. |
 | global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
 | global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
+| internalIpv6Range | string | `""` | Internal IPv6 range for ULA internal ipv6. |
 | mtu | int | `1460` | Maximum Transmission Unit in bytes. |
 | name | string | `"ekp-vpc"` | Name of the VPC Network. |
+| networkFirewallPolicyEnforcementOrder | string | `"AFTER_CLASSIC_FIREWALL"` | The order that Firewall Rules and Firewall Policies are evaluated. Default value: "AFTER_CLASSIC_FIREWALL" Possible values: ["BEFORE_CLASSIC_FIREWALL", "AFTER_CLASSIC_FIREWALL"]. |
 | region | string | `"europe-west1"` | Additional values for documentation (not used in ComputeNetwork spec) or dependent charts (e.g. for creating subnets) |
+| resourceID | string | `""` | Optional resource ID. |
 | routingMode | string | `"REGIONAL"` | Routing mode for the VPC Network. |
 
 ## Installing the Chart
@@ -67,7 +71,7 @@ spec:
     helm:
 
       values: |
-        name: vpc-network
+        name: mysa
 
   destination:
     server: https://kubernetes.default.svc
@@ -91,7 +95,7 @@ docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 h
 ### Run linter
 
 ```bash
-docker run --rm -it -w /charts -v $(pwd)/../gcp-vpc-network:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts . --config /charts/ct.yaml
+docker run --rm -it -w /charts -v $(pwd)/../../:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts /charts/charts/gcp-vpc-network --config /charts/charts/gcp-vpc-network/ct.yaml
 ```
 
 ### Run pluto
@@ -99,8 +103,7 @@ docker run --rm -it -w /charts -v $(pwd)/../gcp-vpc-network:/charts quay.io/helm
 In order to check if the api-version used in this chart are not deprecated, or worse, removed, we use pluto to check it:
 
 ```
-docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:3.17 template gcp-vpc-network . -f tests/pluto/values.yaml --output-dir /pluto
+docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:v3.17 template gcp-vpc-network . -f tests/pluto/values.yaml --output-dir /pluto
 docker run --rm -it -v pluto:/pluto us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /pluto -o yaml --ignore-deprecations -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0" -o wide
 docker volume rm pluto
 ```
-

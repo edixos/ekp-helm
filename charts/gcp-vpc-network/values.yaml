@@ -22,6 +22,14 @@ deleteDefaultRoutesOnCreate: false
 mtu: 1460
 # -- Routing mode for the VPC Network.
 routingMode: "REGIONAL"
+# -- Enable ULA internal ipv6 on this network.
+enableUlaInternalIpv6: false
+# -- Internal IPv6 range for ULA internal ipv6.
+internalIpv6Range: ""
+# -- The order that Firewall Rules and Firewall Policies are evaluated. Default value: "AFTER_CLASSIC_FIREWALL" Possible values: ["BEFORE_CLASSIC_FIREWALL", "AFTER_CLASSIC_FIREWALL"].
+networkFirewallPolicyEnforcementOrder: "AFTER_CLASSIC_FIREWALL"
+# -- Optional resource ID.
+resourceID: ""
 
 # -- Additional values for documentation (not used in ComputeNetwork spec) or dependent charts (e.g. for creating subnets)
 region: "europe-west1"

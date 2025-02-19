@@ -18,3 +18,7 @@ spec:
   deleteDefaultRoutesOnCreate: {{ .Values.deleteDefaultRoutesOnCreate }}
   mtu: {{ .Values.mtu }}
   routingMode: {{ .Values.routingMode | quote }}
+  enableUlaInternalIpv6: {{ .Values.enableUlaInternalIpv6 }}
+  internalIpv6Range: {{ .Values.internalIpv6Range | quote }}
+  networkFirewallPolicyEnforcementOrder: {{ .Values.networkFirewallPolicyEnforcementOrder | quote }}
+  resourceID: {{ .Values.resourceID | quote }}
