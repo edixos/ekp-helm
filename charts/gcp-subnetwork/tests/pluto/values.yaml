@@ -1,0 +1,16 @@
+---
+
+global:
+  cnrmNamespace: "default"
+  abandon: true
+  skipUnspecifiedFields: false
+  # -- Project ID where to deploy the cluster
+  gcpProjectId: "myprojectid"
+  description: "subnetwork for test"
+
+ipCidrRange: "10.3.192.0/23"
+networkRef:
+  external: myvpc
+purpose: REGIONAL_MANAGED_PROXY
+region: europe-west1
+role: ACTIVE
