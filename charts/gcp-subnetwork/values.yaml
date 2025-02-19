@@ -45,4 +45,3 @@ secondaryIpRange: []
   #   rangeName: test
 # stackType -- The stack type for this subnet to identify whether the IPv6 feature is enabled or not. Possible values: ["IPV4_ONLY", "IPV4_IPV6"].
 stackType: ""
-
