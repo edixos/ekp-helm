@@ -1,0 +1,35 @@
+global:
+  # -- Allows to deploy in another namespace than the release one
+  # @default -- `nil`
+  cnrmNamespace: ""
+  # -- Google Project ID
+  gcpProjectId: myprojectid
+  # -- Keep the VPC even after the kcc resource deletion.
+  abandon: false
+
+# -- Name of the VPC Network.
+name: "ekp-vpc"
+# -- The display name for the VPC Network. Can be updated without creating a new resource.
+displayName: "EKP VPC"
+# -- A text description of the VPC Network. Must be less than or equal to 256 UTF-8 bytes.
+description: "EKP VPC Network for infrastructure."
+
+# -- Enable custom subnet creation. If false, the VPC Network will not create subnets.
+autoCreateSubnetworks: false
+# -- Keep the default routes on creation by default. If true, the VPC Network will delete the default routes.
+deleteDefaultRoutesOnCreate: false
+# -- Maximum Transmission Unit in bytes.
+mtu: 1460
+# -- Routing mode for the VPC Network.
+routingMode: "REGIONAL"
+# -- Enable ULA internal ipv6 on this network.
+enableUlaInternalIpv6: false
+# -- Internal IPv6 range for ULA internal ipv6.
+internalIpv6Range: ""
+# -- The order that Firewall Rules and Firewall Policies are evaluated. Default value: "AFTER_CLASSIC_FIREWALL" Possible values: ["BEFORE_CLASSIC_FIREWALL", "AFTER_CLASSIC_FIREWALL"].
+networkFirewallPolicyEnforcementOrder: "AFTER_CLASSIC_FIREWALL"
+# -- Optional resource ID.
+resourceID: ""
+
+# -- Add annotations to the VPC Network.
+annotations: {}

@@ -1,0 +1,9 @@
+global:
+  gcpProjectId: ekp-dev
+
+name: ekp-vpc
+description: "VPC Network for EKP infrastructure"
+
+routingMode: "GLOBAL"
+autoCreateSubnetworks: true
+deleteDefaultRoutesOnCreate: true

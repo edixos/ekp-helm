@@ -1,0 +1,21 @@
+Your VPC has been provisioned via Config Connector.
+
+Resource details:
+------------------------------------------------
+ComputeNetwork (VPC):
+  - Project: {{ .Values.global.gcpProjectId }}
+  - Name: {{ .Values.name }}
+  - Auto-create Subnetworks: {{ .Values.autoCreateSubnetworks | quote }}
+  - Routing Mode: {{ .Values.routingMode | quote }}
+------------------------------------------------
+
+To verify that your VPC has been created, run:
+  kubectl get computenetwork {{ .Values.name }} -n {{ include "gcp-vpc-network.namespace" . }}
+
+For more details, you can describe the resource:
+  kubectl describe computenetwork {{ .Values.name }} -n {{ include "gcp-vpc-network.namespace" . }}
+
+To upgrade or modify your VPC configuration later, update your values file and execute:
+  helm upgrade {{ .Release.Name }} <chart-path> -f <your-values-file.yaml>
+
+For further documentation and usage examples, please refer to the README.md provided with this chart.
