@@ -31,10 +31,5 @@ networkFirewallPolicyEnforcementOrder: "AFTER_CLASSIC_FIREWALL"
 # -- Optional resource ID.
 resourceID: ""
 
-# -- Additional values for documentation (not used in ComputeNetwork spec) or dependent charts (e.g. for creating subnets)
-region: "europe-west1"
-# -- Additional values for documentation (not used in ComputeNetwork spec) or dependent charts (e.g. for creating subnets)
-cidr: "10.0.0.0/8"
-
 # -- Add annotations to the VPC Network.
 annotations: {}

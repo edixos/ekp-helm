@@ -23,7 +23,6 @@ A Helm chart that Creates a Google VPC Network through Config Connector
 |-----|------|---------|-------------|
 | annotations | object | `{}` | Add annotations to the VPC Network. |
 | autoCreateSubnetworks | bool | `false` | Enable custom subnet creation. If false, the VPC Network will not create subnets. |
-| cidr | string | `"10.0.0.0/8"` | Additional values for documentation (not used in ComputeNetwork spec) or dependent charts (e.g. for creating subnets) |
 | deleteDefaultRoutesOnCreate | bool | `false` | Keep the default routes on creation by default. If true, the VPC Network will delete the default routes. |
 | description | string | `"EKP VPC Network for infrastructure."` | A text description of the VPC Network. Must be less than or equal to 256 UTF-8 bytes. |
 | displayName | string | `"EKP VPC"` | The display name for the VPC Network. Can be updated without creating a new resource. |
@@ -35,7 +34,6 @@ A Helm chart that Creates a Google VPC Network through Config Connector
 | mtu | int | `1460` | Maximum Transmission Unit in bytes. |
 | name | string | `"ekp-vpc"` | Name of the VPC Network. |
 | networkFirewallPolicyEnforcementOrder | string | `"AFTER_CLASSIC_FIREWALL"` | The order that Firewall Rules and Firewall Policies are evaluated. Default value: "AFTER_CLASSIC_FIREWALL" Possible values: ["BEFORE_CLASSIC_FIREWALL", "AFTER_CLASSIC_FIREWALL"]. |
-| region | string | `"europe-west1"` | Additional values for documentation (not used in ComputeNetwork spec) or dependent charts (e.g. for creating subnets) |
 | resourceID | string | `""` | Optional resource ID. |
 | routingMode | string | `"REGIONAL"` | Routing mode for the VPC Network. |
 
@@ -107,3 +105,4 @@ docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:3.17 template gc
 docker run --rm -it -v pluto:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /data -o yaml --ignore-deprecations -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0" -o wide
 docker volume rm pluto
 ```
+
