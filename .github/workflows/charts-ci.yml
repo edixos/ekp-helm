@@ -1,0 +1,48 @@
+name: Helm Charts CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - feat/ci-cd-helm-charts-validation
+  workflow_dispatch: {}
+
+jobs:
+  lint:
+    name: Lint Charts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: azure/setup-helm@v4.3.0
+      - name: Linting Chart
+        run: helm lint ./charts
+      - name: Setup Chart Linting
+        id: lint
+        uses: helm/chart-testing-action@v2.7.0
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --config ./.github/configs/ct.yaml)
+          if [[ -n "$changed" ]]; then
+            echo "changed=true" >> $GITHUB_ENV
+          else
+            echo "changed=false" >> $GITHUB_ENV
+          fi
+      - name: Run chart-testing (lint)
+        if: env.changed == 'true'
+        run: ct lint --debug --config ./.github/configs/ct.yaml --lint-conf ./.github/configs/lintconf.yaml  
+      - name: Generate Helm documentation
+        uses: losisin/helm-docs-github-action@v1
+      - name: Run docs-testing (check for docs changes)
+        run: |
+          if [[ $(git status --porcelain) ]]; then
+            echo -e '\033[0;31mDocumentation outdated! (Generate docs using helm-docs locally and commit)\033[0m ❌'
+            git diff --color
+            exit 1
+          else
+            echo -e '\033[0;32mDocumentation up to date\033[0m ✔'
+          fi
