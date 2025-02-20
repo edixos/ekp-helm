@@ -35,7 +35,6 @@ jobs:
   docs:
     name: Test Documentation
     runs-on: ubuntu-latest
-    needs: lint
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,7 +54,6 @@ jobs:
   deprecation-check:
     name: Check for Deprecated APIs
     runs-on: ubuntu-latest
-    needs: lint
     steps:
       - uses: actions/checkout@v4
         with:
