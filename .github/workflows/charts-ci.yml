@@ -43,3 +43,13 @@ jobs:
           else
             echo -e '\033[0;32mDocumentation up to date\033[0m ✔'
           fi
+      - name: Render Helm Charts
+        run: |
+          mkdir -p rendered-manifests
+          for chart in charts/*; do
+            helm template "$chart" -f "$chart/tests/pluto/values.yaml" --output-dir rendered-manifests
+          done
+      - name: Download Pluto
+        uses: FairwindsOps/pluto/github-action@master
+      - name: Use pluto
+        run: pluto detect-files -d rendered-manifests -o yaml -t -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0"
