@@ -2,7 +2,7 @@ apiVersion: v2
 name: gcp-service-account
 description: A Helm chart that Creates a Google Service Account and it's Key through Config Connector
 type: application
-version: 0.1.2
+version: 0.1.3
 appVersion: "0.1.2"
 maintainers:
   - name: smileisak
