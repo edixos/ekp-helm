@@ -54,7 +54,6 @@ jobs:
         with:
           config: "./.github/configs/cr.yaml"
           packages_with_index: true
-          skip_upload: false
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - name: Login to GitHub Container Registry (GHCR)
