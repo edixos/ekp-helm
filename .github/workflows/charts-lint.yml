@@ -4,10 +4,6 @@ on:
   pull_request:
     branches:
       - main
-  push:
-    branches:
-      - feat/ci-cd-helm-charts-validation
-  workflow_dispatch: {}
 
 jobs:
   lint:
