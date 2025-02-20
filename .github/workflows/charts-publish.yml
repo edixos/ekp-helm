@@ -53,6 +53,8 @@ jobs:
         uses: helm/chart-releaser-action@v1.7.0
         with:
           config: "./.github/configs/cr.yaml"
+          packages_with_index: true
+          skip_upload: false
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - name: Login to GitHub Container Registry (GHCR)
