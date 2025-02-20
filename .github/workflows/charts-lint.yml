@@ -1,0 +1,67 @@
+name: Helm Charts CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: Lint Charts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Chart Linting
+        uses: helm/chart-testing-action@v2.7.0
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --config ./.github/configs/ct.yaml)
+          if [[ -n "$changed" ]]; then
+            echo "changed=true" >> $GITHUB_ENV
+          else
+            echo "changed=false" >> $GITHUB_ENV
+          fi
+      - name: Run chart-testing (lint)
+        if: env.changed == 'true'
+        run: ct lint --debug --config ./.github/configs/ct.yaml --lint-conf ./.github/configs/lintconf.yaml
+
+  docs:
+    name: Test Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Generate Helm documentation
+        uses: losisin/helm-docs-github-action@v1
+      - name: Run docs-testing (check for docs changes)
+        run: |
+          if [[ $(git status --porcelain) ]]; then
+            echo -e '\033[0;31mDocumentation outdated! (Generate docs using helm-docs locally and commit)\033[0m ❌'
+            git diff --color
+            exit 1
+          else
+            echo -e '\033[0;32mDocumentation up to date\033[0m ✔'
+          fi
+
+  deprecation-check:
+    name: Check for Deprecated APIs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: azure/setup-helm@v4.3.0
+      - name: Render Helm Charts
+        run: |
+          mkdir -p rendered-manifests
+          for chart in charts/*; do
+            helm template "$chart" -f "$chart/tests/pluto/values.yaml" --output-dir rendered-manifests
+          done
+      - name: Download Pluto
+        uses: FairwindsOps/pluto/github-action@master
+      - name: Use pluto
+        run: pluto detect-files -d rendered-manifests -o yaml -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0"

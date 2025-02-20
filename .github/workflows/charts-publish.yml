@@ -1,0 +1,69 @@
+name: Chart Publish
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish Modified Helm Charts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # for helm/chart-releaser-action to push chart release and create a release
+      packages: write  # to push OCI chart package to GitHub Registry
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.3.0
+      - name: Add dependency chart repos
+        run: |
+          for chart in charts/*; do
+            if [[ -f "$chart/Chart.yaml" ]]; then
+              helm dependency update "$chart"
+            fi
+          done
+      - name: Configure Git
+        run: | # $GITHUB_ACTOR: last user who trigger the action
+          git config user.name "$GITHUB_ACTOR" 
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      - name: Fetch current Chart Index from gh-pages
+        run: |
+          git checkout origin/gh-pages index.yaml || echo "No index.yaml found; skipping."
+      # - name: Prepare PGP Key
+      #   run: |
+      #     echo "$PGP_PRIVATE_KEY" | gpg --dearmor > $HOME/secring.gpg
+      #     echo "$PGP_PASSPHRASE" > $HOME/passphrase.txt
+      #     echo "CR_KEYRING=$HOME/secring.gpg" >> "$GITHUB_ENV"
+      #     echo "CR_PASSPHRASE_FILE=$HOME/passphrase.txt" >> "$GITHUB_ENV"
+      #   env:
+      #     PGP_PRIVATE_KEY: "${{ secrets.PGP_PRIVATE_KEY }}"
+      #     PGP_PASSPHRASE: "${{ secrets.PGP_PASSPHRASE }}"
+      - name: Run Chart Releaser
+        uses: helm/chart-releaser-action@v1.7.0
+        with:
+          config: "./.github/configs/cr.yaml"
+          packages_with_index: true
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Login to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push OCI Helm Chart Packages to GHCR
+        run: |
+          shopt -s nullglob
+          for pkg in .cr-release-packages/*.tgz; do
+            echo "Pushing package ${pkg} to GHCR..."
+            helm push "${pkg}" oci://ghcr.io/${{ github.repository }}
+          done
