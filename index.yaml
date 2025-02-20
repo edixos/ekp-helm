@@ -1,0 +1,50 @@
+apiVersion: v1
+entries:
+  gcp-service-account:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-02-20T14:31:52.643737976Z"
+    description: A Helm chart that Creates a Google Service Account and it's Key through
+      Config Connector
+    digest: 636b49cb829a9b0d98a6308cff07b4eb63d38fdf1d0ed94e476a6b389a6b0b50
+    maintainers:
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: gcp-service-account
+    type: application
+    urls:
+    - https://github.com/edixos/ekp-helm/releases/download/gcp-service-account-0.1.1/gcp-service-account-0.1.1.tgz
+    version: 0.1.1
+  gcp-subnetwork:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-02-20T14:31:52.750501128Z"
+    description: Chart for compute-subnetwork resource with config connector
+    digest: 270ed8a3e306cd64669015562ae61f319eea10672a91e647d5708e5064bd483a
+    home: https://github.com/edixos/ekp-helm
+    maintainers:
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: gcp-subnetwork
+    type: application
+    urls:
+    - https://github.com/edixos/ekp-helm/releases/download/gcp-subnetwork-0.1.0/gcp-subnetwork-0.1.0.tgz
+    version: 0.1.0
+  gcp-vpc-network:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-02-20T14:31:52.854850296Z"
+    description: A Helm chart that Creates a Google VPC Network through Config Connector
+    digest: 87c2b9a9926cba70ef8856c90112f514d688db339d7304a6c5818a07cce75b6e
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: gcp-vpc-network
+    type: application
+    urls:
+    - https://github.com/edixos/ekp-helm/releases/download/gcp-vpc-network-0.1.0/gcp-vpc-network-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-02-20T14:31:52.854855565Z"
