@@ -40,15 +40,15 @@ jobs:
       - name: Fetch current Chart Index from gh-pages
         run: |
           git checkout origin/gh-pages index.yaml || echo "No index.yaml found; skipping."
-      - name: Prepare PGP Key
-        run: |
-          echo "$PGP_PRIVATE_KEY" | gpg --dearmor > $HOME/secring.gpg
-          echo "$PGP_PASSPHRASE" > $HOME/passphrase.txt
-          echo "CR_KEYRING=$HOME/secring.gpg" >> "$GITHUB_ENV"
-          echo "CR_PASSPHRASE_FILE=$HOME/passphrase.txt" >> "$GITHUB_ENV"
-        env:
-          PGP_PRIVATE_KEY: "${{ secrets.PGP_PRIVATE_KEY }}"
-          PGP_PASSPHRASE: "${{ secrets.PGP_PASSPHRASE }}"
+      # - name: Prepare PGP Key
+      #   run: |
+      #     echo "$PGP_PRIVATE_KEY" | gpg --dearmor > $HOME/secring.gpg
+      #     echo "$PGP_PASSPHRASE" > $HOME/passphrase.txt
+      #     echo "CR_KEYRING=$HOME/secring.gpg" >> "$GITHUB_ENV"
+      #     echo "CR_PASSPHRASE_FILE=$HOME/passphrase.txt" >> "$GITHUB_ENV"
+      #   env:
+      #     PGP_PRIVATE_KEY: "${{ secrets.PGP_PRIVATE_KEY }}"
+      #     PGP_PASSPHRASE: "${{ secrets.PGP_PASSPHRASE }}"
       - name: Run Chart Releaser
         uses: helm/chart-releaser-action@v1.7.0
         with:
