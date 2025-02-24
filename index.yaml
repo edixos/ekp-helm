@@ -18,6 +18,21 @@ entries:
     version: 0.1.3
   gcp-subnetwork:
   - apiVersion: v2
+    appVersion: 0.1.3
+    created: "2025-02-24T16:56:57.276079506Z"
+    description: Chart for compute-subnetwork resource with config connector
+    digest: e9f8ec4993bb94ea51adfc6c497c8fc96014186906a4f42882c92e1ee22afca6
+    home: https://github.com/edixos/ekp-helm
+    maintainers:
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: gcp-subnetwork
+    type: application
+    urls:
+    - gcp-subnetwork-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
     appVersion: 0.1.2
     created: "2025-02-24T15:09:55.223371385Z"
     description: Chart for compute-subnetwork resource with config connector
@@ -49,6 +64,20 @@ entries:
     version: 0.1.1
   gcp-vpc-network:
   - apiVersion: v2
+    appVersion: 0.1.2
+    created: "2025-02-24T16:56:57.39244727Z"
+    description: A Helm chart that Creates a Google VPC Network through Config Connector
+    digest: 6371ea2746f3b19ec884187e621199738bf56554af5f9a24732686bfedb253a0
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: gcp-vpc-network
+    type: application
+    urls:
+    - gcp-vpc-network-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
     appVersion: 0.1.1
     created: "2025-02-20T16:00:15.203266783Z"
     description: A Helm chart that Creates a Google VPC Network through Config Connector
@@ -62,4 +91,4 @@ entries:
     urls:
     - gcp-vpc-network-0.1.1.tgz
     version: 0.1.1
-generated: "2025-02-24T15:09:55.438985155Z"
+generated: "2025-02-24T16:56:57.392464272Z"
