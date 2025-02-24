@@ -1,6 +1,6 @@
 # gcp-subnetwork
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.2](https://img.shields.io/badge/AppVersion-0.1.2-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.3](https://img.shields.io/badge/AppVersion-0.1.3-informational?style=flat-square)
 
 **Homepage:** <https://github.com/edixos/ekp-helm>
 
@@ -30,6 +30,7 @@ Chart for compute-subnetwork resource with config connector
 | global.skipUnspecifiedFields | bool | `false` | This skips populating unspecified fields into the Kubernetes resource spec. |
 | ipCidrRange | string | `"10.3.192.0/23"` | The range of internal addresses that are owned by this subnetwork. Only IPv4 is supported. |
 | ipv6AccessType | string | `""` | The access type of IPv6 address this subnet holds. Possible values: ["EXTERNAL", "INTERNAL"]. |
+| name | string | `"test-subnetwork"` | The name of the resource. |
 | networkRef | object | `{}` | The network this subnet belongs to. Only networks that are in the distributed mode can have subnetworks. |
 | privateIpGoogleAccess | string | `""` | When enabled, VMs in this subnetwork without external IP addresses can access Google APIs and services by using Private Google Access. |
 | privateIpv6GoogleAccess | string | `nil` | The private IPv6 google access type for the VMs in this subnet. |
@@ -65,7 +66,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: gcp-subnetwork
     path: ''
 
