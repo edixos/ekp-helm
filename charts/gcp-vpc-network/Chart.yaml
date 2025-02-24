@@ -2,8 +2,8 @@ apiVersion: v2
 name: gcp-vpc-network
 description: A Helm chart that Creates a Google VPC Network through Config Connector
 type: application
-version: 0.1.2
-appVersion: "0.1.2"
+version: 0.1.3
+appVersion: "0.1.3"
 maintainers:
   - name: ilyasabdellaoui
     email: ilyas.abdellaoui21@gmail.com
