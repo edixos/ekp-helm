@@ -13,6 +13,8 @@ global:
   # global.description -- subNework description (use helm tpl)
   description: ""
 
+# -- The name of the resource.
+name: "test-subnetwork"
 # ipCidrRange -- The range of internal addresses that are owned by this subnetwork. Only IPv4 is supported.
 ipCidrRange: "10.3.192.0/23"
 # ipv6AccessType -- The access type of IPv6 address this subnet holds. Possible values: ["EXTERNAL", "INTERNAL"].
