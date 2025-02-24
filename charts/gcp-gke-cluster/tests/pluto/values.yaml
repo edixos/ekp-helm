@@ -1,0 +1,33 @@
+global:
+  cnrmNamespace: "default"
+  abandon: true
+  skipUnspecifiedFields: false
+  # -- Project ID where to deploy the cluster
+  gcpProjectId: "myprojectid"
+  description: "gke cluster for test"
+
+name: "test-gke-cluster"
+location: "europe-west1-a"
+initialNodeCount: 1
+addonsConfig:
+  httpLoadBalancing:
+    disabled: false
+  horizontalPodAutoscaling:
+    disabled: false
+enableShieldedNodes: true
+networkingMode: "VPC_NATIVE"
+networkRef:
+  name: "default"
+subnetworkRef:
+  name: "default"
+loggingService: "logging.googleapis.com/kubernetes"
+monitoringService: "monitoring.googleapis.com/kubernetes"
+masterAuthorizedNetworksConfig:
+  cidrBlocks:
+    - cidrBlock: "0.0.0.0/0"
+      displayName: "all"
+privateClusterConfig:
+  enablePrivateNodes: false
+  enablePrivateEndpoint: false
+clusterAutoscaling:
+  enabled: false

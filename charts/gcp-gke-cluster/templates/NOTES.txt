@@ -1,0 +1,8 @@
+Your GKE Cluster has been provisioned via Config Connector.
+
+Resource details:
+------------------------------------------------
+GKE Cluster:
+  - Project: {{ .Values.global.gcpProjectId }}
+  - Name: {{ .Values.name }}
+  - Networking Mode: {{ .Values.networkingMode }}
