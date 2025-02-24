@@ -1,17 +1,17 @@
 apiVersion: compute.cnrm.cloud.google.com/v1beta1
 kind: ComputeNetwork
 metadata:
+  annotations:
+{{- if .Values.global.abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+{{- end }}
+    cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId | quote }}
+{{- if .Values.global.skipUnspecifiedFields }}
+    cnrm.cloud.google.com/state-into-spec: absent
+{{- end }}
   labels:
 {{- include "gcp-vpc-network.labels" . | nindent 4 }}
-  name: {{ .Values.name }}
-  annotations:
-    cnrm.cloud.google.com/project-id: "{{ .Values.global.gcpProjectId }}"
-    {{- if .Values.global.abandon }}
-    cnrm.cloud.google.com/deletion-policy: abandon
-    {{- end }}
-    {{- with .Values.annotations }}
-{{- . | toYaml | nindent 4 }}
-    {{- end }}
+  name: {{ include "gcp-vpc-network.fullname" . }}
   namespace: {{ include "gcp-vpc-network.namespace" . }}
 spec:
   autoCreateSubnetworks: {{ .Values.autoCreateSubnetworks }}
