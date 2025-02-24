@@ -64,6 +64,20 @@ entries:
     version: 0.1.1
   gcp-vpc-network:
   - apiVersion: v2
+    appVersion: 0.1.3
+    created: "2025-02-24T17:19:03.110414369Z"
+    description: A Helm chart that Creates a Google VPC Network through Config Connector
+    digest: 2cead464c9df5aa901a491dbe6bb68644893a04ddf1e0d8305741eb37f37b2cc
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: gcp-vpc-network
+    type: application
+    urls:
+    - gcp-vpc-network-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
     appVersion: 0.1.2
     created: "2025-02-24T16:56:57.39244727Z"
     description: A Helm chart that Creates a Google VPC Network through Config Connector
@@ -91,4 +105,4 @@ entries:
     urls:
     - gcp-vpc-network-0.1.1.tgz
     version: 0.1.1
-generated: "2025-02-24T16:56:57.392464272Z"
+generated: "2025-02-24T17:19:03.110438254Z"
