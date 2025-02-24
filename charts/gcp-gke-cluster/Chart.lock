@@ -1,0 +1,9 @@
+dependencies:
+- name: gcp-subnetwork
+  repository: https://edixos.github.io/ekp-helm
+  version: 0.1.3
+- name: gcp-vpc-network
+  repository: https://edixos.github.io/ekp-helm
+  version: 0.1.2
+digest: sha256:194d558116d53a5155be794cd48339a75705333321d799776566ab4389284fd7
+generated: "2025-02-24T18:01:26.040706+01:00"

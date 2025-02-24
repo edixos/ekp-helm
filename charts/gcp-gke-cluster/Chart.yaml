@@ -8,3 +8,16 @@ maintainers:
   - name: ilyasabdellaoui
     email: ilyas.abdellaoui21@gmail.com
     url: https://github.com/ilyasabdellaoui
+dependencies:
+- name: gcp-subnetwork
+  version: "0.1.3"
+  repository: "https://edixos.github.io/ekp-helm"
+  alias: gcpSubnetwork
+  tags:
+    - networking
+- name: gcp-vpc-network
+  version: "0.1.2"
+  repository: "https://edixos.github.io/ekp-helm"
+  alias: gcpVpcNetwork
+  tags:
+    - networking

@@ -6,7 +6,13 @@ global:
   # -- Google Project ID
   gcpProjectId: myprojectid
   # -- If true, Keep the GKE Cluster even after the kcc resource deletion.
-  abandon: false
+  abandon: true
+
+
+tags:
+  # -- Whether we want to create networking features like VPC, Subnetwork, etc.
+  networking: false
+
 
 # -- Name of the GKE Cluster.
 name: "ekp-gke-cluster"

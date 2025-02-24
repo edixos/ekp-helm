@@ -7,9 +7,13 @@ metadata:
 {{- end }}
     cnrm.cloud.google.com/remove-default-node-pool: {{ .Values.removeDefaultNodePool | quote  }}
     cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId | quote }}
+{{- if .Values.global.skipUnspecifiedFields }}
+    cnrm.cloud.google.com/state-into-spec: absent
+{{- end }}
   labels:
-{{- include "gke-cluster.labels" . | nindent 4 }}
-  name: {{ .Values.name }}
+{{- include "gcp-gke-cluster.labels" . | nindent 4 }}
+  name: {{ include "gcp-gke-cluster.fullname" . }}
+  namespace: {{ include "gcp-gke-cluster.namespace" . }}
 spec:
   description: {{ .Values.description }}
   location: {{ .Values.location }}
@@ -725,18 +729,6 @@ spec:
   {{- if .Values.serviceExternalIpsConfig }}
   serviceExternalIpsConfig:
     enabled: {{ .Values.serviceExternalIpsConfig.enabled }}
-  {{- end }}
-  {{- if .Values.subnetworkRef }}
-  subnetworkRef:
-    {{- if .Values.subnetworkRef.external }}
-    external: {{ .Values.subnetworkRef.external }}
-    {{- end }}
-    {{- if .Values.subnetworkRef.name }}
-    name: {{ .Values.subnetworkRef.name }}
-    {{- end }}
-    {{- if .Values.subnetworkRef.namespace }}
-    namespace: {{ .Values.subnetworkRef.namespace }}
-    {{- end }}
   {{- end }}
   {{- if .Values.verticalPodAutoscaling }}
   verticalPodAutoscaling:

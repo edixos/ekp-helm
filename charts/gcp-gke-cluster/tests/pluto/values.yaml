@@ -3,8 +3,31 @@ global:
   abandon: true
   skipUnspecifiedFields: false
   # -- Project ID where to deploy the cluster
-  gcpProjectId: "myprojectid"
+  gcpProjectId: "ekp-dev"
   description: "gke cluster for test"
+
+tags:
+  networking: true
+
+gcpVpcNetwork:
+  name: "ekp-vpc-network"
+  description: "EKP VPC Network"
+
+gcpSubnetwork:
+  name: "ekp-subnetwork"
+  description: "EKP Subnetwork"
+  region: "europe-west1"
+  ipCidrRange: "10.0.0.0/24"
+
+  networkRef:
+    name: "ekp-vpc-network"
+
+  secondaryIpRange:
+  - ipCidrRange: "10.0.32.0/19"
+    rangeName: "pods"
+  - ipCidrRange: "10.0.16.0/20"
+    rangeName: "services"
+
 
 name: "test-gke-cluster"
 location: "europe-west1-a"
@@ -17,9 +40,9 @@ addonsConfig:
 enableShieldedNodes: true
 networkingMode: "VPC_NATIVE"
 networkRef:
-  name: "default"
+  name: "ekp-vpc-network"
 subnetworkRef:
-  name: "default"
+  name: "ekp-subnetwork"
 loggingService: "logging.googleapis.com/kubernetes"
 monitoringService: "monitoring.googleapis.com/kubernetes"
 masterAuthorizedNetworksConfig:
