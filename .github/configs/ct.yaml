@@ -4,6 +4,8 @@ chart-dirs:
   - charts
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
+chart-repos:
+ - dex=https://charts.dexidp.io
 validate-maintainers: false
 validate-yaml: true
 exclude-deprecated: true
