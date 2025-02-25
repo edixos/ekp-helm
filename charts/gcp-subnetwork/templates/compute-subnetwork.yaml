@@ -45,10 +45,10 @@ spec:
 {{- if .Values.role }}
   role: {{ .Values.role }}
 {{- end }}
+secondaryIpRange:
 {{- range .Values.secondaryIpRange }}
-  secondaryIpRange:
-  - {{ .ipCidrRange }}
-    {{ .rangeName }}
+  - ipCidrRange: {{ .ipCidrRange }}
+    rangeName: {{ .rangeName }}
 {{- end }}
 {{- if .Values.stackType }}
   stackType: {{ .Values.stackType }}
