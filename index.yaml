@@ -18,6 +18,21 @@ entries:
     version: 0.1.3
   gcp-subnetwork:
   - apiVersion: v2
+    appVersion: 0.1.5
+    created: "2025-02-25T14:19:24.394055473Z"
+    description: Chart for compute-subnetwork resource with config connector
+    digest: 53001d9f96824cf276d918d0df4a95ffe1f6dc012d1cbb491015fabd78644287
+    home: https://github.com/edixos/ekp-helm
+    maintainers:
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: gcp-subnetwork
+    type: application
+    urls:
+    - gcp-subnetwork-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
     appVersion: 0.1.4
     created: "2025-02-25T14:01:54.234173578Z"
     description: Chart for compute-subnetwork resource with config connector
@@ -120,4 +135,4 @@ entries:
     urls:
     - gcp-vpc-network-0.1.1.tgz
     version: 0.1.1
-generated: "2025-02-25T14:01:54.234193415Z"
+generated: "2025-02-25T14:19:24.394081081Z"
