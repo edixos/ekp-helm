@@ -45,7 +45,7 @@ spec:
 {{- if .Values.role }}
   role: {{ .Values.role }}
 {{- end }}
-secondaryIpRange:
+  secondaryIpRange:
 {{- range .Values.secondaryIpRange }}
   - ipCidrRange: {{ .ipCidrRange }}
     rangeName: {{ .rangeName }}
