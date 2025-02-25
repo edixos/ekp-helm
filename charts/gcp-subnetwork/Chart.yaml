@@ -2,9 +2,9 @@ apiVersion: v2
 name: gcp-subnetwork
 description: Chart for compute-subnetwork resource with config connector
 type: application
-version: 0.1.3
+version: 0.1.4
 home: https://github.com/edixos/ekp-helm
-appVersion: "0.1.3"
+appVersion: "0.1.4"
 maintainers:
   - name: smileisak
     email: ikaboubi@gmail.com
