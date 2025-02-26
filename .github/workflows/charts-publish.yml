@@ -1,15 +1,11 @@
 name: Chart Publish
 
 on:
-  push:
-    branches:
-      - fix/ci
   pull_request:
     branches:
       - main
     types:
       - closed
-  workflow_dispatch:  # Optional: Allows manual triggering from the Actions tab
 
 permissions:
   contents: read
