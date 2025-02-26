@@ -1,5 +1,28 @@
 apiVersion: v1
 entries:
+  dex:
+  - apiVersion: v2
+    appVersion: 2.42.0
+    created: "2025-02-26T14:31:34.18643778Z"
+    dependencies:
+    - name: dex
+      repository: https://charts.dexidp.io
+      version: 0.22.0
+    description: A Helm chart for Dex - OpenID Connect Identity (OIDC) and OAuth 2.0
+      Provider with Pluggable Connectors
+    digest: c368d4678eceafc2a702834c4e80dc96821bbef8f66e73ddb633e6ad085eaf83
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: dex
+    type: application
+    urls:
+    - dex-0.1.0.tgz
+    version: 0.1.0
   gcp-service-account:
   - apiVersion: v2
     appVersion: 0.1.2
@@ -135,4 +158,4 @@ entries:
     urls:
     - gcp-vpc-network-0.1.1.tgz
     version: 0.1.1
-generated: "2025-02-25T14:19:24.394081081Z"
+generated: "2025-02-26T14:31:34.186457367Z"
