@@ -6,6 +6,7 @@ target-branch: main
 chart-dirs:
   - charts
 chart-repos:
+ - dex=https://charts.dexidp.io
   # - dandydeveloper=https://dandydeveloper.github.io/charts/
 validate-chart-schema: false
 validate-maintainers: true
