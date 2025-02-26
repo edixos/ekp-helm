@@ -2,16 +2,16 @@ apiVersion: container.cnrm.cloud.google.com/v1beta1
 kind: ContainerCluster
 metadata:
   annotations:
-{{- if .Values.global.abandon }}
+    {{- if .Values.global.abandon }}
     cnrm.cloud.google.com/deletion-policy: abandon
-{{- end }}
+    {{- end }}
     cnrm.cloud.google.com/remove-default-node-pool: {{ .Values.removeDefaultNodePool | quote  }}
     cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId | quote }}
-{{- if .Values.global.skipUnspecifiedFields }}
+    {{- if .Values.global.skipUnspecifiedFields }}
     cnrm.cloud.google.com/state-into-spec: absent
-{{- end }}
+    {{- end }}
   labels:
-{{- include "gcp-gke-cluster.labels" . | nindent 4 }}
+    {{- include "gcp-gke-cluster.labels" . | nindent 4 }}
   name: {{ include "gcp-gke-cluster.fullname" . }}
   namespace: {{ include "gcp-gke-cluster.namespace" . }}
 spec:
@@ -43,10 +43,10 @@ spec:
     {{- end }}
   {{- end }}
   networkingMode: {{ .Values.networkingMode }}
-  {{- if .Values.clusterIpv4Cidr }}
+  {{- if and (.Values.clusterIpv4Cidr) (eq .Values.networkingMode "ROUTES") (not .Values.ipAllocationPolicy) }}
   clusterIpv4Cidr: {{ .Values.clusterIpv4Cidr }}
   {{- end }}
-  {{- if .Values.defaultMaxPodsPerNode }}
+  {{- if and .Values.defaultMaxPodsPerNode (eq .Values.networkingMode "ROUTES") (not .Values.ipAllocationPolicy) }}
   defaultMaxPodsPerNode: {{ .Values.defaultMaxPodsPerNode }}
   {{- end }}
   enableKubernetesAlpha: {{ .Values.enableKubernetesAlpha }}
@@ -55,14 +55,21 @@ spec:
   enableTpu: {{ .Values.enableTpu }}
   enableIntranodeVisibility: {{ .Values.enableIntranodeVisibility }}
   enableL4IlbSubsetting: {{ .Values.enableL4IlbSubsetting }}
+  {{- if .Values.enableFqdnNetworkPolicy}}
   enableFqdnNetworkPolicy: {{ .Values.enableFqdnNetworkPolicy }}
+  {{- end }}
   enableBinaryAuthorization: {{ .Values.enableBinaryAuthorization }}
+  {{- if .Values.enableAutopilot }}
   enableAutopilot: {{ .Values.enableAutopilot }}
+  {{- end }}
   enableMultiNetworking: {{ .Values.enableMultiNetworking }}
   {{- if .Values.enableK8sBetaApis }}
-  enableK8sBetaApis:
     {{- if .Values.enableK8sBetaApis.enabledApis }}
-    enabledApis: {{ toYaml .Values.enableK8sBetaApis.enabledApis | nindent 6 }}
+  enableK8sBetaApis:
+    enabledApis:
+      {{- range .Values.enableK8sBetaApis.enabledApis }}
+      - {{ . }}
+      {{- end }}
     {{- end }}
   {{- end }}
   {{- if .Values.addonsConfig }}
@@ -115,9 +122,11 @@ spec:
     kalmConfig:
       enabled: {{ .Values.addonsConfig.kalmConfig.enabled }}
     {{- end }}
+    {{- if not .Values.datapathProvider }}
     {{- if .Values.addonsConfig.networkPolicyConfig }}
     networkPolicyConfig:
       disabled: {{ .Values.addonsConfig.networkPolicyConfig.disabled }}
+    {{- end }}
     {{- end }}
   {{- end }}
   {{- if .Values.authenticatorGroupsConfig }}
@@ -133,7 +142,7 @@ spec:
     evaluationMode: {{ .Values.binaryAuthorization.evaluationMode }}
     {{- end }}
   {{- end }}
-  {{- if .Values.clusterAutoscaling }}
+  {{- if or .Values.enableAutopilot .Values.clusterAutoscaling.enabled }}
   clusterAutoscaling:
     {{- if .Values.clusterAutoscaling.autoProvisioningDefaults }}
     autoProvisioningDefaults:
@@ -159,21 +168,22 @@ spec:
         autoUpgrade: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.management.autoUpgrade }}
         {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.management.upgradeOptions }}
         upgradeOptions:
-          {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.management.upgradeOptions.autoUpgradeStartTime }}
-          autoUpgradeStartTime: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.management.upgradeOptions.autoUpgradeStartTime }}
-          {{- end }}
-          {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.management.upgradeOptions.description }}
-          description: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.management.upgradeOptions.description }}
+          {{- range $.Values.clusterAutoscaling.autoProvisioningDefaults.management.upgradeOptions }}        
+          - autoUpgradeStartTime: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.management.upgradeOptions.autoUpgradeStartTime }}
+            description: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.management.upgradeOptions.description }}
           {{- end }}
         {{- end }}
       {{- end }}
       {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.minCpuPlatform }}
-      minCpuPlatform: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.minCpuPlatform }}
+      minCpuPlatform: {{ $.Values.clusterAutoscaling.autoProvisioningDefaults.minCpuPlatform }}
       {{- end }}
       {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.oauthScopes }}
-      oauthScopes: {{ toYaml .Values.clusterAutoscaling.autoProvisioningDefaults.oauthScopes | nindent 8 }}
+      oauthScopes: 
+        {{- range $.Values.clusterAutoscaling.autoProvisioningDefaults.oauthScopes }}
+        - {{ . }}
+        {{- end }}
       {{- end }}
-      {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.serviceAccountRef }}
+      {{- if $.Values.clusterAutoscaling.autoProvisioningDefaults.serviceAccountRef }}
       serviceAccountRef:
         {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.serviceAccountRef.external }}
         external: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.serviceAccountRef.external }}
@@ -221,17 +231,28 @@ spec:
         {{- end }}
       {{- end }}
     {{- end }}
-    autoscalingProfile: {{ .Values.clusterAutoscaling.autoscalingProfile }}
-    enabled: {{ .Values.clusterAutoscaling.enabled }}
-    {{- if .Values.clusterAutoscaling.resourceLimits }}
-    resourceLimits: {{ toYaml .Values.clusterAutoscaling.resourceLimits | nindent 6 }}
+    {{- if $.Values.clusterAutoscaling.autoscalingProfile }}
+    autoscalingProfile: {{ $.Values.clusterAutoscaling.autoscalingProfile }}
+    {{- end }}
+    {{- if $.Values.enableAutopilot }}
+    enabled: true
+    {{- else }}
+    enabled: {{ $.Values.clusterAutoscaling.enabled }}
+    {{- end }}
+    {{- if $.Values.clusterAutoscaling.resourceLimits }}
+    resourceLimits:
+    {{- range $.Values.clusterAutoscaling.resourceLimits }}
+    - maximum: {{ .maximum }}
+      minimum: {{ .minimum }}
+      resourceType: {{ .resourceType }}
+    {{- end }}
     {{- end }}
   {{- end }}
   {{- if .Values.clusterTelemetry }}
+  {{- if .Values.clusterTelemetry.type }}
   clusterTelemetry:
-    {{- if .Values.clusterTelemetry.type }}
     type: {{ .Values.clusterTelemetry.type }}
-    {{- end }}
+  {{- end }}
   {{- end }}
   {{- if .Values.confidentialNodes }}
   confidentialNodes:
@@ -242,12 +263,11 @@ spec:
     enabled: {{ .Values.costManagementConfig.enabled }}
   {{- end }}
   {{- if .Values.databaseEncryption }}
+    {{- $databaseEncryption := .Values.databaseEncryption }}
+    {{- if $databaseEncryption.state }}
   databaseEncryption:
-    {{- if .Values.databaseEncryption.keyName }}
-    keyName: {{ .Values.databaseEncryption.keyName }}
-    {{- end }}
-    {{- if .Values.databaseEncryption.state }}
-    state: {{ .Values.databaseEncryption.state }}
+    keyName: {{ $databaseEncryption.keyName }}
+    state: {{ $databaseEncryption.state }}
     {{- end }}
   {{- end }}
   {{- if .Values.datapathProvider }}
@@ -280,111 +300,120 @@ spec:
     enabled: {{ .Values.identityServiceConfig.enabled }}
   {{- end }}
   {{- if .Values.ipAllocationPolicy }}
+    {{- $ipAllocationPolicy := .Values.ipAllocationPolicy }}
+    {{- if or $ipAllocationPolicy.clusterIpv4CidrBlock $ipAllocationPolicy.clusterSecondaryRangeName $ipAllocationPolicy.servicesIpv4CidrBlock $ipAllocationPolicy.servicesSecondaryRangeName $ipAllocationPolicy.additionalPodRangesConfig $ipAllocationPolicy.podCidrOverprovisionConfig $ipAllocationPolicy.stackType }}
   ipAllocationPolicy:
-    {{- if .Values.ipAllocationPolicy.additionalPodRangesConfig }}
-    additionalPodRangesConfig:
-      {{- if .Values.ipAllocationPolicy.additionalPodRangesConfig.podRangeNames }}
-      podRangeNames: {{ toYaml .Values.ipAllocationPolicy.additionalPodRangesConfig.podRangeNames | nindent 8 }}
+      {{- if $ipAllocationPolicy.clusterIpv4CidrBlock }}
+    clusterIpv4CidrBlock: {{ $ipAllocationPolicy.clusterIpv4CidrBlock }}
       {{- end }}
-    {{- end }}
-    {{- if .Values.ipAllocationPolicy.clusterIpv4CidrBlock }}
-    clusterIpv4CidrBlock: {{ .Values.ipAllocationPolicy.clusterIpv4CidrBlock }}
-    {{- end }}
-    {{- if .Values.ipAllocationPolicy.clusterSecondaryRangeName }}
-    clusterSecondaryRangeName: {{ .Values.ipAllocationPolicy.clusterSecondaryRangeName }}
-    {{- end }}
-    {{- if .Values.ipAllocationPolicy.podCidrOverprovisionConfig }}
+      {{- if $ipAllocationPolicy.clusterSecondaryRangeName }}
+    clusterSecondaryRangeName: {{ $ipAllocationPolicy.clusterSecondaryRangeName }}
+      {{- end }}
+      {{- if $ipAllocationPolicy.servicesIpv4CidrBlock }}
+    servicesIpv4CidrBlock: {{ $ipAllocationPolicy.servicesIpv4CidrBlock }}
+      {{- end }}
+      {{- if $ipAllocationPolicy.servicesSecondaryRangeName }}
+    servicesSecondaryRangeName: {{ $ipAllocationPolicy.servicesSecondaryRangeName }}
+      {{- end }}
+      {{- if and $ipAllocationPolicy.additionalPodRangesConfig $ipAllocationPolicy.additionalPodRangesConfig.podRangeNames }}
+    additionalPodRangesConfig:
+      podRangeNames:
+          {{- range $ipAllocationPolicy.additionalPodRangesConfig.podRangeNames }}
+        - {{ . }}
+          {{- end }}
+      {{- end }}
+      {{- if and $ipAllocationPolicy.podCidrOverprovisionConfig (hasKey $ipAllocationPolicy.podCidrOverprovisionConfig "disabled") }}
     podCidrOverprovisionConfig:
-      disabled: {{ .Values.ipAllocationPolicy.podCidrOverprovisionConfig.disabled }}
-    {{- end }}
-    {{- if .Values.ipAllocationPolicy.servicesIpv4CidrBlock }}
-    servicesIpv4CidrBlock: {{ .Values.ipAllocationPolicy.servicesIpv4CidrBlock }}
-    {{- end }}
-    {{- if .Values.ipAllocationPolicy.servicesSecondaryRangeName }}
-    servicesSecondaryRangeName: {{ .Values.ipAllocationPolicy.servicesSecondaryRangeName }}
-    {{- end }}
-    {{- if .Values.ipAllocationPolicy.stackType }}
-    stackType: {{ .Values.ipAllocationPolicy.stackType }}
+      disabled: {{ $ipAllocationPolicy.podCidrOverprovisionConfig.disabled }}
+      {{- end }}
+      {{- if $ipAllocationPolicy.stackType }}
+    stackType: {{ $ipAllocationPolicy.stackType }}
+      {{- end }}
+    {{- else }}
     {{- end }}
   {{- end }}
   {{- if .Values.loggingConfig }}
-  loggingConfig:
     {{- if .Values.loggingConfig.enableComponents }}
-    enableComponents: {{ toYaml .Values.loggingConfig.enableComponents | nindent 6 }}
+  loggingConfig:
+    enableComponents:
+      {{- range .Values.loggingConfig.enableComponents }}
+      - {{ . }}
+      {{- end }}
     {{- end }}
   {{- end }}
   loggingService: {{ .Values.loggingService }}
   {{- if .Values.maintenancePolicy }}
+    {{- $maintenancePolicy := .Values.maintenancePolicy }}
   maintenancePolicy:
-    {{- if .Values.maintenancePolicy.dailyMaintenanceWindow }}
+    {{- if and $maintenancePolicy.dailyMaintenanceWindow $maintenancePolicy.dailyMaintenanceWindow.startTime }}
     dailyMaintenanceWindow:
-      {{- if .Values.maintenancePolicy.dailyMaintenanceWindow.duration }}
-      duration: {{ .Values.maintenancePolicy.dailyMaintenanceWindow.duration }}
+      {{- if $maintenancePolicy.dailyMaintenanceWindow.duration }}
+      duration: {{ $maintenancePolicy.dailyMaintenanceWindow.duration }}
       {{- end }}
-      {{- if .Values.maintenancePolicy.dailyMaintenanceWindow.startTime }}
-      startTime: {{ .Values.maintenancePolicy.dailyMaintenanceWindow.startTime }}
+      startTime: {{ $maintenancePolicy.dailyMaintenanceWindow.startTime }}
+    {{- end }}
+    {{- if $maintenancePolicy.maintenanceExclusion }}
+      {{- $validExclusions := list }}
+      {{- range $maintenancePolicy.maintenanceExclusion }}
+        {{- if and .endTime .exclusionName .startTime }}
+          {{- $validExclusions = append $validExclusions . }}
+        {{- end }}
       {{- end }}
-    {{- end }}
-    {{- if .Values.maintenancePolicy.maintenanceExclusion }}
-    maintenanceExclusion: {{ toYaml .Values.maintenancePolicy.maintenanceExclusion | nindent 6 }}
-    {{- end }}
-    {{- if .Values.maintenancePolicy.recurringWindow }}
-    recurringWindow:
-      {{- if .Values.maintenancePolicy.recurringWindow.endTime }}
-      endTime: {{ .Values.maintenancePolicy.recurringWindow.endTime }}
-      {{- end }}
-      {{- if .Values.maintenancePolicy.recurringWindow.recurrence }}
-      recurrence: {{ .Values.maintenancePolicy.recurringWindow.recurrence }}
-      {{- end }}
-      {{- if .Values.maintenancePolicy.recurringWindow.startTime }}
-      startTime: {{ .Values.maintenancePolicy.recurringWindow.startTime }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
-  {{- if .Values.masterAuth }}
-  masterAuth:
-    {{- if .Values.masterAuth.clientCertificate }}
-    clientCertificate: {{ .Values.masterAuth.clientCertificate }}
-    {{- end }}
-    {{- if .Values.masterAuth.clientCertificateConfig }}
-    clientCertificateConfig:
-      issueClientCertificate: {{ .Values.masterAuth.clientCertificateConfig.issueClientCertificate }}
-    {{- end }}
-    {{- if .Values.masterAuth.clientKey }}
-    clientKey: {{ .Values.masterAuth.clientKey }}
-    {{- end }}
-    {{- if .Values.masterAuth.clusterCaCertificate }}
-    clusterCaCertificate: {{ .Values.masterAuth.clusterCaCertificate }}
-    {{- end }}
-    {{- if .Values.masterAuth.password }}
-    password:
-      {{- if .Values.masterAuth.password.value }}
-      value: {{ .Values.masterAuth.password.value }}
-      {{- end }}
-      {{- if .Values.masterAuth.password.valueFrom }}
-      valueFrom:
-        {{- if .Values.masterAuth.password.valueFrom.secretKeyRef }}
-        secretKeyRef:
-          {{- if .Values.masterAuth.password.valueFrom.secretKeyRef.key }}
-          key: {{ .Values.masterAuth.password.valueFrom.secretKeyRef.key }}
-          {{- end }}
-          {{- if .Values.masterAuth.password.valueFrom.secretKeyRef.name }}
-          name: {{ .Values.masterAuth.password.valueFrom.secretKeyRef.name }}
-          {{- end }}
+      {{- if $validExclusions }}
+    maintenanceExclusion:
+        {{- range $validExclusions }}
+      - endTime: {{ .endTime }}
+        exclusionName: {{ .exclusionName }}
+        {{- if .exclusionOptions }}
+        exclusionOptions:
+          scope: {{ .exclusionOptions.scope }}
+        {{- end }}
+        startTime: {{ .startTime }}
         {{- end }}
       {{- end }}
     {{- end }}
-    {{- if .Values.masterAuth.username }}
-    username: {{ .Values.masterAuth.username }}
+    {{- if and $maintenancePolicy.recurringWindow $maintenancePolicy.recurringWindow.endTime $maintenancePolicy.recurringWindow.recurrence $maintenancePolicy.recurringWindow.startTime }}
+    recurringWindow:
+      endTime: {{ $maintenancePolicy.recurringWindow.endTime }}
+      recurrence: {{ $maintenancePolicy.recurringWindow.recurrence }}
+      startTime: {{ $maintenancePolicy.recurringWindow.startTime }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.masterAuth }}
+    {{- $masterAuth := .Values.masterAuth }}
+    {{- if and $masterAuth.clientCertificateConfig $masterAuth.clientCertificateConfig.issueClientCertificate }}
+      {{- if or (not $masterAuth.password) (and $masterAuth.password.valueFrom $masterAuth.password.valueFrom.secretKeyRef $masterAuth.password.valueFrom.secretKeyRef.key $masterAuth.password.valueFrom.secretKeyRef.name) }}
+  masterAuth:
+        {{- if $masterAuth.clientCertificateConfig }}
+    clientCertificateConfig:
+      issueClientCertificate: {{ $masterAuth.clientCertificateConfig.issueClientCertificate }}
+        {{- end }}
+        {{- if $masterAuth.password }}
+    password:
+      valueFrom:
+        secretKeyRef:
+          key: {{ $masterAuth.password.valueFrom.secretKeyRef.key }}
+          name: {{ $masterAuth.password.valueFrom.secretKeyRef.name }}
+        {{- end }}
+      {{- end }}
     {{- end }}
   {{- end }}
   {{- if .Values.masterAuthorizedNetworksConfig }}
   masterAuthorizedNetworksConfig:
     {{- if .Values.masterAuthorizedNetworksConfig.cidrBlocks }}
-    cidrBlocks: {{ toYaml .Values.masterAuthorizedNetworksConfig.cidrBlocks | nindent 6 }}
+    cidrBlocks:
+      {{- range .Values.masterAuthorizedNetworksConfig.cidrBlocks }}
+      - cidrBlock: {{ .cidrBlock }}
+        {{- if .displayName }}
+        displayName: {{ .displayName }}
+        {{- end }}
+      {{- end }}
     {{- end }}
+    {{- if .Values.masterAuthorizedNetworksConfig.gcpPublicCidrsAccessEnabled }}
     gcpPublicCidrsAccessEnabled: {{ .Values.masterAuthorizedNetworksConfig.gcpPublicCidrsAccessEnabled }}
+    {{- end }}
   {{- end }}
+  {{- if .Values.masterVersion }}
   {{- if .Values.meshCertificates }}
   meshCertificates:
     enableCertificates: {{ .Values.meshCertificates.enableCertificates }}
@@ -395,10 +424,19 @@ spec:
   {{- if .Values.monitoringConfig }}
   monitoringConfig:
     {{- if .Values.monitoringConfig.advancedDatapathObservabilityConfig }}
-    advancedDatapathObservabilityConfig: {{ toYaml .Values.monitoringConfig.advancedDatapathObservabilityConfig | nindent 6 }}
+    advancedDatapathObservabilityConfig:
+      {{- range .Values.monitoringConfig.advancedDatapathObservabilityConfig }}
+      - enableMetrics: {{ .enableMetrics }}
+        {{- if .relayMode }}
+        relayMode: {{ .relayMode }}
+        {{- end }}
+      {{- end }}
     {{- end }}
     {{- if .Values.monitoringConfig.enableComponents }}
-    enableComponents: {{ toYaml .Values.monitoringConfig.enableComponents | nindent 6 }}
+    enableComponents:
+      {{- range .Values.monitoringConfig.enableComponents }}
+      - {{ . }}
+      {{- end }}
     {{- end }}
     {{- if .Values.monitoringConfig.managedPrometheus }}
     managedPrometheus:
@@ -406,18 +444,23 @@ spec:
     {{- end }}
   {{- end }}
   monitoringService: {{ .Values.monitoringService }}
-  {{- if .Values.networkPolicy }}
+  {{- if not .Values.datapathProvider }}
   networkPolicy:
     enabled: {{ .Values.networkPolicy.enabled }}
-    {{- if .Values.networkPolicy.provider }}
     provider: {{ .Values.networkPolicy.provider }}
-    {{- end }}
   {{- end }}
+
+
+
+
+
+
   {{- if .Values.nodeConfig }}
   nodeConfig:
-    {{- if .Values.nodeConfig.advancedMachineFeatures }}
+    {{- if .Values.nodeConfig.advancedMachineFeatures.threadsPerCore }}
     advancedMachineFeatures:
       threadsPerCore: {{ .Values.nodeConfig.advancedMachineFeatures.threadsPerCore }}
+    {{- else }}
     {{- end }}
     {{- if .Values.nodeConfig.bootDiskKMSCryptoKeyRef }}
     bootDiskKMSCryptoKeyRef:
@@ -431,72 +474,96 @@ spec:
       namespace: {{ .Values.nodeConfig.bootDiskKMSCryptoKeyRef.namespace }}
       {{- end }}
     {{- end }}
-    {{- if .Values.nodeConfig.confidentialNodes }}
+    {{- if .Values.nodeConfig.confidentialNodes.enabled }}
     confidentialNodes:
       enabled: {{ .Values.nodeConfig.confidentialNodes.enabled }}
     {{- end }}
+    {{- if .Values.nodeConfig.diskSizeGb }}
     diskSizeGb: {{ .Values.nodeConfig.diskSizeGb }}
+    {{- end }}
     {{- if .Values.nodeConfig.diskType }}
     diskType: {{ .Values.nodeConfig.diskType }}
     {{- end }}
-    {{- if .Values.nodeConfig.ephemeralStorageConfig }}
+    {{- if .Values.nodeConfig.ephemeralStorageConfig.localSsdCount }}
     ephemeralStorageConfig:
       localSsdCount: {{ .Values.nodeConfig.ephemeralStorageConfig.localSsdCount }}
+    {{- else }}
     {{- end }}
-    {{- if .Values.nodeConfig.ephemeralStorageLocalSsdConfig }}
+    {{- if .Values.nodeConfig.ephemeralStorageLocalSsdConfig.localSsdCount }}
     ephemeralStorageLocalSsdConfig:
       localSsdCount: {{ .Values.nodeConfig.ephemeralStorageLocalSsdConfig.localSsdCount }}
+    {{- else }}
     {{- end }}
-    {{- if .Values.nodeConfig.fastSocket }}
+    {{- if .Values.nodeConfig.fastSocket.enabled }}
     fastSocket:
       enabled: {{ .Values.nodeConfig.fastSocket.enabled }}
+    {{- else}}
     {{- end }}
-    {{- if .Values.nodeConfig.gcfsConfig }}
+    {{- if .Values.nodeConfig.gcfsConfig.enabled }}
     gcfsConfig:
       enabled: {{ .Values.nodeConfig.gcfsConfig.enabled }}
+    {{- else }}
     {{- end }}
-    {{- if .Values.nodeConfig.guestAccelerator }}
-    guestAccelerator: {{ toYaml .Values.nodeConfig.guestAccelerator | nindent 6 }}
+    {{- if and .Values.nodeConfig.guestAccelerator.count .Values.nodeConfig.guestAccelerator.type }}
+    guestAccelerator:
+      {{- range .Values.nodeConfig.guestAccelerator }}
+      - count: {{ .count }}
+        type: {{ .type }}
+        {{- if .gpuDriverInstallationConfig.gpuDriverVersion }}
+        gpuDriverInstallationConfig:
+          gpuDriverVersion: {{ .gpuDriverInstallationConfig.gpuDriverVersion }}
+        {{- end }}
+        {{- if .gpuPartitionSize }}
+        gpuPartitionSize: {{ .gpuPartitionSize }}
+        {{- end }}
+        {{- if and .gpuSharingConfig.gpuSharingStrategy .gpuSharingConfig.maxSharedClientsPerGpu }}
+        gpuSharingConfig:
+          gpuSharingStrategy: {{ .gpuSharingConfig.gpuSharingStrategy }}
+          maxSharedClientsPerGpu: {{ .gpuSharingConfig.maxSharedClientsPerGpu }}
+        {{- end }}
+      {{- end }}
     {{- end }}
-    {{- if .Values.nodeConfig.gvnic }}
+    {{- if .Values.nodeConfig.gvnic.enabled }}
     gvnic:
       enabled: {{ .Values.nodeConfig.gvnic.enabled }}
     {{- end }}
-    {{- if .Values.nodeConfig.hostMaintenancePolicy }}
+    {{- if .Values.nodeConfig.hostMaintenancePolicy.maintenanceInterval }}
     hostMaintenancePolicy:
       maintenanceInterval: {{ .Values.nodeConfig.hostMaintenancePolicy.maintenanceInterval }}
     {{- end }}
     {{- if .Values.nodeConfig.imageType }}
     imageType: {{ .Values.nodeConfig.imageType }}
     {{- end }}
-    {{- if .Values.nodeConfig.kubeletConfig }}
+    {{- if .Values.nodeConfig.kubeletConfig.cpuManagerPolicy }}
     kubeletConfig:
       cpuCfsQuota: {{ .Values.nodeConfig.kubeletConfig.cpuCfsQuota }}
-      {{- if .Values.nodeConfig.kubeletConfig.cpuCfsQuotaPeriod }}
       cpuCfsQuotaPeriod: {{ .Values.nodeConfig.kubeletConfig.cpuCfsQuotaPeriod }}
-      {{- end }}
-      {{- if .Values.nodeConfig.kubeletConfig.cpuManagerPolicy }}
       cpuManagerPolicy: {{ .Values.nodeConfig.kubeletConfig.cpuManagerPolicy }}
-      {{- end }}
-      {{- if .Values.nodeConfig.kubeletConfig.podPidsLimit }}
       podPidsLimit: {{ .Values.nodeConfig.kubeletConfig.podPidsLimit }}
-      {{- end }}
     {{- end }}
     {{- if .Values.nodeConfig.labels }}
-    labels: {{ toYaml .Values.nodeConfig.labels | nindent 6 }}
+    labels:
+      {{- range $key, $value := .Values.nodeConfig.labels }}
+      {{ $key }}: {{ $value | quote }}
+      {{- end }}
     {{- end }}
     {{- if .Values.nodeConfig.linuxNodeConfig }}
     linuxNodeConfig:
-      {{- if .Values.nodeConfig.linuxNodeConfig.cgroupMode }}
-      cgroupMode: {{ .Values.nodeConfig.linuxNodeConfig.cgroupMode }}
+      {{- with .Values.nodeConfig.linuxNodeConfig.cgroupMode }}
+      cgroupMode: {{ . | quote }}
       {{- end }}
       {{- if .Values.nodeConfig.linuxNodeConfig.sysctls }}
-      sysctls: {{ toYaml .Values.nodeConfig.linuxNodeConfig.sysctls | nindent 8 }}
+      sysctls:
+        {{- range $key, $value := .Values.nodeConfig.linuxNodeConfig.sysctls }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
       {{- end }}
     {{- end }}
-    {{- if .Values.nodeConfig.localNvmeSsdBlockConfig }}
+    {{- with .Values.nodeConfig.localNvmeSsdBlockConfig }}
+      {{- if and (not (empty .localSsdCount)) (kindIs "int" .localSsdCount) }}
     localNvmeSsdBlockConfig:
-      localSsdCount: {{ .Values.nodeConfig.localNvmeSsdBlockConfig.localSsdCount }}
+      localSsdCount: {{ .localSsdCount }}
+      {{- end }}
     {{- end }}
     {{- if .Values.nodeConfig.localSsdCount }}
     localSsdCount: {{ .Values.nodeConfig.localSsdCount }}
@@ -508,7 +575,10 @@ spec:
     machineType: {{ .Values.nodeConfig.machineType }}
     {{- end }}
     {{- if .Values.nodeConfig.metadata }}
-    metadata: {{ toYaml .Values.nodeConfig.metadata | nindent 6 }}
+    metadata:
+      {{- range $key, $value := .Values.nodeConfig.metadata }}
+      {{ $key }}: {{ $value | quote }}
+      {{- end }}
     {{- end }}
     {{- if .Values.nodeConfig.minCpuPlatform }}
     minCpuPlatform: {{ .Values.nodeConfig.minCpuPlatform }}
@@ -531,22 +601,28 @@ spec:
     {{- if .Values.nodeConfig.preemptible }}
     preemptible: {{ .Values.nodeConfig.preemptible }}
     {{- end }}
-    {{- if .Values.nodeConfig.reservationAffinity }}
+    {{- with .Values.nodeConfig.reservationAffinity }}
+    {{- if .consumeReservationType }}
     reservationAffinity:
-      {{- if .Values.nodeConfig.reservationAffinity.consumeReservationType }}
-      consumeReservationType: {{ .Values.nodeConfig.reservationAffinity.consumeReservationType }}
+      consumeReservationType: {{ .consumeReservationType }}
+      {{- if .key }}
+      key: {{ .key }}
       {{- end }}
-      {{- if .Values.nodeConfig.reservationAffinity.key }}
-      key: {{ .Values.nodeConfig.reservationAffinity.key }}
+      {{- if .values }}
+      values:
+        {{- range .values }}
+        - {{ . }}
+        {{- end }}
       {{- end }}
-      {{- if .Values.nodeConfig.reservationAffinity.values }}
-      values: {{ toYaml .Values.nodeConfig.reservationAffinity.values | nindent 8 }}
-      {{- end }}
+    {{- end }}
     {{- end }}
     {{- if .Values.nodeConfig.resourceLabels }}
-    resourceLabels: {{ toYaml .Values.nodeConfig.resourceLabels | nindent 6 }}
+    resourceLabels:
+      {{- range $key, $value := .Values.nodeConfig.resourceLabels }}
+      {{ $key }}: {{ $value }}
+      {{- end }}
     {{- end }}
-    {{- if .Values.nodeConfig.sandboxConfig }}
+    {{- if .Values.nodeConfig.sandboxConfig.sandboxType }}
     sandboxConfig:
       sandboxType: {{ .Values.nodeConfig.sandboxConfig.sandboxType }}
     {{- end }}
@@ -567,20 +643,34 @@ spec:
       enableIntegrityMonitoring: {{ .Values.nodeConfig.shieldedInstanceConfig.enableIntegrityMonitoring }}
       enableSecureBoot: {{ .Values.nodeConfig.shieldedInstanceConfig.enableSecureBoot }}
     {{- end }}
-    {{- if .Values.nodeConfig.soleTenantConfig }}
+    {{- if .Values.nodeConfig.soleTenantConfig.nodeAffinity }}
     soleTenantConfig:
-      {{- if .Values.nodeConfig.soleTenantConfig.nodeAffinity }}
-      nodeAffinity: {{ toYaml .Values.nodeConfig.soleTenantConfig.nodeAffinity | nindent 6 }}
-      {{- end }}
+      nodeAffinity:
+        {{- range .Values.nodeConfig.soleTenantConfig.nodeAffinity }}
+        - key: {{ .key }}
+          operator: {{ .operator }}
+          values:
+            {{- range .values }}
+            - {{ . }}
+            {{- end }}
+        {{- end }}
     {{- end }}
     {{- if .Values.nodeConfig.spot }}
     spot: {{ .Values.nodeConfig.spot }}
     {{- end }}
     {{- if .Values.nodeConfig.tags }}
-    tags: {{ toYaml .Values.nodeConfig.tags | nindent 6 }}
+    tags:
+      {{- range .Values.nodeConfig.tags }}
+      - {{ . }}
+      {{- end }}
     {{- end }}
     {{- if .Values.nodeConfig.taint }}
-    taint: {{ toYaml .Values.nodeConfig.taint | nindent 6 }}
+    taint:
+      {{- range .Values.nodeConfig.taint }}
+      - effect: {{ .effect }}
+        key: {{ .key }}
+        value: {{ .value }}
+      {{- end }}
     {{- end }}
     {{- if .Values.nodeConfig.workloadMetadataConfig }}
     workloadMetadataConfig:
@@ -592,15 +682,27 @@ spec:
       {{- end }}
     {{- end }}
   {{- end }}
+
+
+
+
+
+
   {{- if .Values.nodeLocations }}
-  nodeLocations: {{ toYaml .Values.nodeLocations | nindent 4 }}
+  nodeLocations: 
+    {{- range .Values.nodeLocations }}
+    - {{ . }}
+    {{- end }}
   {{- end }}
   {{- if .Values.nodePoolAutoConfig }}
   nodePoolAutoConfig:
     {{- if .Values.nodePoolAutoConfig.networkTags }}
     networkTags:
       {{- if .Values.nodePoolAutoConfig.networkTags.tags }}
-      tags: {{ toYaml .Values.nodePoolAutoConfig.networkTags.tags | nindent 6 }}
+      tags:
+      {{- range .Values.nodePoolAutoConfig.networkTags.tags }}
+      - {{ . }}
+      {{- end }}
       {{- end }}
     {{- end }}
   {{- end }}
@@ -608,7 +710,7 @@ spec:
   nodePoolDefaults:
     {{- if .Values.nodePoolDefaults.nodeConfigDefaults }}
     nodeConfigDefaults:
-      {{- if .Values.nodePoolDefaults.nodeConfigDefaults.gcfsConfig }}
+      {{- if .Values.nodePoolDefaults.nodeConfigDefaults.gcfsConfig.enabled }}
       gcfsConfig:
         enabled: {{ .Values.nodePoolDefaults.nodeConfigDefaults.gcfsConfig.enabled }}
       {{- end }}
@@ -620,83 +722,65 @@ spec:
   {{- if .Values.nodeVersion }}
   nodeVersion: {{ .Values.nodeVersion }}
   {{- end }}
-  {{- if .Values.notificationConfig }}
+  {{- if .Values.notificationConfig.pubsub.enabled }}
   notificationConfig:
-    {{- if .Values.notificationConfig.pubsub }}
     pubsub:
       enabled: {{ .Values.notificationConfig.pubsub.enabled }}
-      {{- if .Values.notificationConfig.pubsub.filter }}
+      {{- if .Values.notificationConfig.pubsub.filter.eventType }}
       filter:
-        {{- if .Values.notificationConfig.pubsub.filter.eventType }}
-        eventType: {{ toYaml .Values.notificationConfig.pubsub.filter.eventType | nindent 8 }}
-        {{- end }}
+        eventType:
+          {{- range .Values.notificationConfig.pubsub.filter.eventType }}
+            - {{ . }}
+          {{- end }}
       {{- end }}
       {{- if .Values.notificationConfig.pubsub.topicRef }}
       topicRef:
         {{- if .Values.notificationConfig.pubsub.topicRef.external }}
-        external: {{ .Values.notificationConfig.pubsub.topicRef.external }}
+          external: {{ .Values.notificationConfig.pubsub.topicRef.external }}
         {{- end }}
         {{- if .Values.notificationConfig.pubsub.topicRef.name }}
-        name: {{ .Values.notificationConfig.pubsub.topicRef.name }}
+          name: {{ .Values.notificationConfig.pubsub.topicRef.name }}
         {{- end }}
         {{- if .Values.notificationConfig.pubsub.topicRef.namespace }}
-        namespace: {{ .Values.notificationConfig.pubsub.topicRef.namespace }}
+          namespace: {{ .Values.notificationConfig.pubsub.topicRef.namespace }}
         {{- end }}
       {{- end }}
-    {{- end }}
+  {{- else }}
   {{- end }}
   {{- if .Values.podSecurityPolicyConfig }}
   podSecurityPolicyConfig:
     enabled: {{ .Values.podSecurityPolicyConfig.enabled }}
   {{- end }}
-  {{- if .Values.privateClusterConfig }}
+  {{- if .Values.privateClusterConfig.enablePrivateNodes }}
   privateClusterConfig:
-    enablePrivateEndpoint: {{ .Values.privateClusterConfig.enablePrivateEndpoint }}
+    enablePrivateEndpoint: {{ .Values.privateClusterConfig.enablePrivateEndpoint | default false }}
     enablePrivateNodes: {{ .Values.privateClusterConfig.enablePrivateNodes }}
-    {{- if .Values.privateClusterConfig.masterGlobalAccessConfig }}
     masterGlobalAccessConfig:
-      enabled: {{ .Values.privateClusterConfig.masterGlobalAccessConfig.enabled }}
-    {{- end }}
-    {{- if .Values.privateClusterConfig.masterIpv4CidrBlock }}
-    masterIpv4CidrBlock: {{ .Values.privateClusterConfig.masterIpv4CidrBlock }}
-    {{- end }}
-    {{- if .Values.privateClusterConfig.peeringName }}
-    peeringName: {{ .Values.privateClusterConfig.peeringName }}
-    {{- end }}
-    {{- if .Values.privateClusterConfig.privateEndpoint }}
-    privateEndpoint: {{ .Values.privateClusterConfig.privateEndpoint }}
-    {{- end }}
-    {{- if .Values.privateClusterConfig.privateEndpointSubnetworkRef }}
+      enabled: {{ .Values.privateClusterConfig.masterGlobalAccessConfig.enabled | default false }}
+    masterIpv4CidrBlock: {{ .Values.privateClusterConfig.masterIpv4CidrBlock | default "" }}
+    peeringName: {{ .Values.privateClusterConfig.peeringName | default "" }}
+    privateEndpoint: {{ .Values.privateClusterConfig.privateEndpoint | default "" }}
     privateEndpointSubnetworkRef:
-      {{- if .Values.privateClusterConfig.privateEndpointSubnetworkRef.external }}
-      external: {{ .Values.privateClusterConfig.privateEndpointSubnetworkRef.external }}
-      {{- end }}
-      {{- if .Values.privateClusterConfig.privateEndpointSubnetworkRef.name }}
-      name: {{ .Values.privateClusterConfig.privateEndpointSubnetworkRef.name }}
-      {{- end }}
-      {{- if .Values.privateClusterConfig.privateEndpointSubnetworkRef.namespace }}
-      namespace: {{ .Values.privateClusterConfig.privateEndpointSubnetworkRef.namespace }}
-      {{- end }}
-    {{- end }}
-    {{- if .Values.privateClusterConfig.publicEndpoint }}
-    publicEndpoint: {{ .Values.privateClusterConfig.publicEndpoint }}
-    {{- end }}
+      external: {{ .Values.privateClusterConfig.privateEndpointSubnetworkRef.external | default "" }}
+      name: {{ .Values.privateClusterConfig.privateEndpointSubnetworkRef.name | default "" }}
+      namespace: {{ .Values.privateClusterConfig.privateEndpointSubnetworkRef.namespace | default "" }}
+    publicEndpoint: {{ .Values.privateClusterConfig.publicEndpoint | default "" }}
+  {{- else }}
   {{- end }}
   {{- if .Values.privateIpv6GoogleAccess }}
   privateIpv6GoogleAccess: {{ .Values.privateIpv6GoogleAccess }}
   {{- end }}
   {{- if .Values.protectConfig }}
   protectConfig:
-    {{- if .Values.protectConfig.workloadConfig }}
+    {{- if .Values.protectConfig.workloadConfig.auditMode }}
     workloadConfig:
-      {{- if .Values.protectConfig.workloadConfig.auditMode }}
       auditMode: {{ .Values.protectConfig.workloadConfig.auditMode }}
-      {{- end }}
     {{- end }}
     {{- if .Values.protectConfig.workloadVulnerabilityMode }}
     workloadVulnerabilityMode: {{ .Values.protectConfig.workloadVulnerabilityMode }}
     {{- end }}
   {{- end }}
+
   {{- if .Values.releaseChannel }}
   releaseChannel:
     {{- if .Values.releaseChannel.channel }}
@@ -706,16 +790,12 @@ spec:
   {{- if .Values.resourceID }}
   resourceID: {{ .Values.resourceID }}
   {{- end }}
-  {{- if .Values.resourceUsageExportConfig }}
+  {{- if .Values.resourceUsageExportConfig.bigqueryDestination.datasetId }}
   resourceUsageExportConfig:
-    {{- if .Values.resourceUsageExportConfig.bigqueryDestination }}
     bigqueryDestination:
-      {{- if .Values.resourceUsageExportConfig.bigqueryDestination.datasetId }}
       datasetId: {{ .Values.resourceUsageExportConfig.bigqueryDestination.datasetId }}
-      {{- end }}
-    {{- end }}
-    enableNetworkEgressMetering: {{ .Values.resourceUsageExportConfig.enableNetworkEgressMetering }}
-    enableResourceConsumptionMetering: {{ .Values.resourceUsageExportConfig.enableResourceConsumptionMetering }}
+    enableNetworkEgressMetering: {{ .Values.resourceUsageExportConfig.enableNetworkEgressMetering | default false }}
+    enableResourceConsumptionMetering: {{ .Values.resourceUsageExportConfig.enableResourceConsumptionMetering | default true }}
   {{- end }}
   {{- if .Values.securityPostureConfig }}
   securityPostureConfig:
@@ -742,4 +822,5 @@ spec:
     {{- if .Values.workloadIdentityConfig.workloadPool }}
     workloadPool: {{ .Values.workloadIdentityConfig.workloadPool }}
     {{- end }}
+  {{- end }}
   {{- end }}

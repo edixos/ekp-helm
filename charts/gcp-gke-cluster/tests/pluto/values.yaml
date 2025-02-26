@@ -2,7 +2,6 @@ global:
   cnrmNamespace: "default"
   abandon: true
   skipUnspecifiedFields: false
-  # -- Project ID where to deploy the cluster
   gcpProjectId: "ekp-dev"
   description: "gke cluster for test"
 
@@ -12,25 +11,26 @@ tags:
 gcpVpcNetwork:
   name: "ekp-vpc-network"
   description: "EKP VPC Network"
+  resourceID: "ekp-vpc-network"
+  routingMode: REGIONAL
+  autoCreateSubnetworks: false
 
 gcpSubnetwork:
   name: "ekp-subnetwork"
   description: "EKP Subnetwork"
   region: "europe-west1"
   ipCidrRange: "10.0.0.0/24"
-
   networkRef:
     name: "ekp-vpc-network"
-
+  purpose: ""
   secondaryIpRange:
   - ipCidrRange: "10.0.32.0/19"
-    rangeName: "pods"
+    rangeName: "clusterrange"
   - ipCidrRange: "10.0.16.0/20"
-    rangeName: "services"
-
+    rangeName: "servicesrange"
 
 name: "test-gke-cluster"
-location: "europe-west1-a"
+location: "europe-west1-b"
 initialNodeCount: 1
 addonsConfig:
   httpLoadBalancing:
@@ -54,3 +54,8 @@ privateClusterConfig:
   enablePrivateEndpoint: false
 clusterAutoscaling:
   enabled: false
+resourceID: "test-gke-cluster"
+ipAllocationPolicy:
+  enabled: true
+  servicesSecondaryRangeName: servicesrange
+  clusterSecondaryRangeName: clusterrange
