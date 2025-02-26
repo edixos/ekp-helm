@@ -18,12 +18,23 @@ jobs:
       contents: write  # for helm/chart-releaser-action to push chart release and create a release
       packages: write  # to push OCI chart package to GitHub Registry
     steps:
+      # Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      # Set up Helm
       - name: Set up Helm
         uses: azure/setup-helm@v4.3.0
+
+      # Install yq
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/bin/yq https://github.com/mikefarah/yq/releases/download/v4.30.2/yq_linux_amd64
+          sudo chmod +x /usr/bin/yq
+      
+      # Add dependency chart repos
       - name: Add dependency chart repos
         run: |
           for chart in charts/*; do
@@ -31,10 +42,20 @@ jobs:
               helm dependency update "$chart"
             fi
           done
+
+      # Configure Git
       - name: Configure Git
         run: | # $GITHUB_ACTOR: last user who trigger the action
           git config user.name "$GITHUB_ACTOR" 
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      # Add Helm Repositories    
+      - name: Add Helm Repositories
+        run: |
+          chmod +x ./scripts/add-repos.sh
+          ./scripts/add-repos.sh
+
+      # Lint the charts
       - name: Fetch current Chart Index from gh-pages
         run: |
           git checkout origin/gh-pages index.yaml || echo "No index.yaml found; skipping."
@@ -47,6 +68,8 @@ jobs:
       #   env:
       #     PGP_PRIVATE_KEY: "${{ secrets.PGP_PRIVATE_KEY }}"
       #     PGP_PASSPHRASE: "${{ secrets.PGP_PASSPHRASE }}"
+
+      # Run Chart Releaser
       - name: Run Chart Releaser
         uses: helm/chart-releaser-action@v1.7.0
         with:
@@ -54,6 +77,8 @@ jobs:
           packages_with_index: true
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      
+      # Push OCI Helm Chart Packages to GHCR
       - name: Login to GitHub Container Registry (GHCR)
         uses: docker/login-action@v3
         with:
