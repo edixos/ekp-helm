@@ -4,5 +4,5 @@ chart-dirs:
   - charts
 helm-extra-args: --timeout=500
 chart-repos:
- - external-secrets=https://charts.external-secrets.io
+  - external-secrets=https://charts.external-secrets.io
 check-version-increment: true
