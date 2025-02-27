@@ -1,7 +1,8 @@
-remote: origin
+# See https://github.com/helm/chart-testing#configuration
+remote: origin 
 chart-dirs:
   - charts
 helm-extra-args: --timeout=500
 chart-repos:
-  - eso=https://charts.external-secrets.io
-check-version-increment: true 
+ - external-secrets=https://charts.external-secrets.io
+check-version-increment: true
