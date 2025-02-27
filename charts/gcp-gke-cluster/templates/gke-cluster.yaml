@@ -751,7 +751,7 @@ spec:
   podSecurityPolicyConfig:
     enabled: {{ .Values.podSecurityPolicyConfig.enabled }}
   {{- end }}
-  {{- if .Values.privateClusterConfig.enablePrivateNodes }}
+  {{- if .Values.privateClusterConfig.enabled }}
   privateClusterConfig:
     enablePrivateEndpoint: {{ .Values.privateClusterConfig.enablePrivateEndpoint | default false }}
     enablePrivateNodes: {{ .Values.privateClusterConfig.enablePrivateNodes }}

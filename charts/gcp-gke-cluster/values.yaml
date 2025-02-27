@@ -8,6 +8,8 @@ global:
   # -- If true, Keep the GKE Cluster even after the kcc resource deletion.
   abandon: true
 
+# -- Add annotations to the GKE Cluster.
+annotations: {}
 
 tags:
   # -- Whether we want to create networking features like VPC, Subnetwork, etc.
@@ -288,7 +290,7 @@ initialNodeCount: 1
 # -- Immutable. Configuration of cluster IP allocation for VPC-native clusters. Adding this block enables IP aliasing, making the cluster VPC-native instead of routes-based.
 ipAllocationPolicy:
   # -- Enables ipAllocationPolicy, allowing to specify pods and services secondary subnets name and CIDR
-  enabled: true
+  enabled: false
   # -- AdditionalPodRangesConfig is the configuration for additional pod secondary ranges supporting the ClusterUpdate message.
   additionalPodRangesConfig:
     # -- Name for pod secondary ipv4 range which has the actual range defined ahead.
@@ -691,6 +693,8 @@ podSecurityPolicyConfig:
 
 # -- Configuration for private clusters, clusters with private nodes.
 privateClusterConfig:
+  # -- Enables private cluster
+  enabled: true
   # -- When true, the cluster's private endpoint is used as the cluster endpoint and access through the public endpoint is disabled. When false, either endpoint can be used.
   enablePrivateEndpoint: false
   # -- Immutable. Enables the private cluster feature, creating a private endpoint on the cluster. In a private cluster, nodes only have RFC 1918 private addresses and communicate with the master's private endpoint via private networking.
@@ -700,7 +704,7 @@ privateClusterConfig:
     # -- Whether the cluster master is accessible globally or not.
     enabled: false
   # -- Immutable. The IP range in CIDR notation to use for the hosted master network. This range will be used for assigning private IP addresses to the cluster master(s) and the ILB VIP. This range must not overlap with any other ranges in use within the cluster's network, and it must be a /28 subnet. See Private Cluster Limitations for more details. This field only applies to private clusters, when enable_private_nodes is true.
-  masterIpv4CidrBlock:
+  masterIpv4CidrBlock: "172.16.0.0/28"
   # -- The name of the peering between this cluster and the Google owned VPC.
   peeringName:
   # -- The internal IP address of this cluster's master endpoint.
@@ -770,6 +774,93 @@ workloadIdentityConfig:
   identityNamespace:
   # -- The workload pool to attach all Kubernetes service accounts to.
   workloadPool:
-  
-# -- Add annotations to the VPC Network.
-annotations: {}
+
+nodePools:
+    # nodePools[0].name -- Name of the node pool
+  - name: np1
+    autoscaling:
+      # -- Enables nodePool autoscaling
+      enabled: true
+      # -- (int) Minimal node count. Default to 1
+      # @default -- 1
+      minNodeCount:
+      # -- (int) Maximal node count. Default to 3
+      # @default -- 3
+      maxNodeCount:
+    # -- (int) Number of nodes at initialization
+    # @default -- 1
+    initialNodeCount:
+    management:
+      # -- Enables node pool autorepair
+      autoRepair: true
+      # -- Enables node pool auto upgrade
+      autoUpgrade: true
+    # -- (int) Max number of Pods per nodes
+    # @default -- 110
+    maxPodsPerNode:
+    nodeConfig:
+      bootDiskKMSCryptoKey:
+        # -- Enables boot disk attached to each node in the node pool. Must provide a key
+        enabled: false
+        # -- The KMS key was created by kubernetes Config Connector or not
+        kccManaged: false
+        # -- Name of the KMS key config connector resource. Only when kccManaged=true
+        name:
+        # -- Namespace of the KMS key config connector resource. Only when kccManaged=true
+        namespace:
+        # -- The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: https://cloud.google.com/compute/docs/disks/customer-managed-encryption
+        external:
+      # -- (int) Size of the nodes' disk
+      # @default -- 100
+      diskSize:
+      # -- (string) Type of the nodes' disk
+      # @default -- pd-standard
+      diskType: ''
+      # -- A list of hardware accelerators to be attached to each node. See https://cloud.google.com/compute/docs/gpus for more information about support for GPUs.
+      # @default -- See the values.yaml file for an example.
+      guestAccelerator: []
+        #   # -- The number of the accelerator cards exposed to an instance.
+        # - count: 4
+        #   # -- The accelerator type resource name. List of supported accelerators [here](https://cloud.google.com/compute/docs/gpus?hl=en)
+        #   type: nvidia-tesla-t4
+
+      # -- Type of Image used for the node pool instances
+      imageType: COS_CONTAINERD
+      # -- (intq) The number of local SSD disks to be attached to the node.
+      # The limit for this value is dependent upon the maximum number of disks available on a machine per zone. See: https://cloud.google.com/compute/docs/disks/local-ssd for more information.
+      localSsdCount:
+      # -- (string) Type of the machine used for nodes
+      # @default -- n1-standard-1
+      machineType: ''
+      # -- Map of metadata to apply to the nodes (key: string, value: string)
+      metadata: {}
+      # -- The set of Google API scopes to be made available on all of the node VMs under the "default" service account.
+      oauthScopes:
+        - "https://www.googleapis.com/auth/devstorage.read_only"
+        - "https://www.googleapis.com/auth/logging.write"
+        - "https://www.googleapis.com/auth/monitoring"
+        - "https://www.googleapis.com/auth/service.management.readonly"
+        - "https://www.googleapis.com/auth/servicecontrol"
+        - "https://www.googleapis.com/auth/trace.append"
+      # -- Network tags to apply to the node pool.
+      tags: []
+        # - gke-node-pool
+        # - standard-pool
+      serviceAccount:
+        # -- Display name of the service Account used for the runner. If create=false, use the email of the Service Account
+        name: np1
+        # -- Create the serviceAccount and IamPolicyMembers associated through Config Connector
+        create: true
+      # -- Map of kubernetes labels to apply to nodes in the nodePool
+      labels: {}
+      # -- List of taints to apply to the node pool. Must contains the following : [{"effect": "<effect>", "key": "<key>", "value": "<value>"}]
+      # @default -- See the values.yaml file for an example.
+      taints: []
+        # - key: cloud.google.com/gke-preemptible
+        #   value: "true"
+        #   effect: NO_SCHEDULE
+      # -- Configure the node pool with preemptible instances
+      preemptible: false
+    # -- (int) The number of nodes per instance group. This field can be used to update the number of nodes per instance group but should not be used alongside autoscaling.
+    # @default -- 1
+    nodeCount:
