@@ -28,44 +28,198 @@ A Helm chart ESO for Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| affinity | object | `{}` |  |
-| autoscaling.enabled | bool | `false` |  |
-| autoscaling.maxReplicas | int | `100` |  |
-| autoscaling.minReplicas | int | `1` |  |
-| autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"nginx"` |  |
-| image.tag | string | `""` |  |
-| imagePullSecrets | list | `[]` |  |
-| ingress.annotations | object | `{}` |  |
-| ingress.className | string | `""` |  |
-| ingress.enabled | bool | `false` |  |
-| ingress.hosts[0].host | string | `"chart-example.local"` |  |
-| ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| ingress.tls | list | `[]` |  |
-| livenessProbe.httpGet.path | string | `"/"` |  |
-| livenessProbe.httpGet.port | string | `"http"` |  |
-| nameOverride | string | `""` |  |
-| nodeSelector | object | `{}` |  |
-| podAnnotations | object | `{}` |  |
-| podLabels | object | `{}` |  |
-| podSecurityContext | object | `{}` |  |
-| readinessProbe.httpGet.path | string | `"/"` |  |
-| readinessProbe.httpGet.port | string | `"http"` |  |
-| replicaCount | int | `1` |  |
-| resources | object | `{}` |  |
-| securityContext | object | `{}` |  |
-| service.port | int | `80` |  |
-| service.type | string | `"ClusterIP"` |  |
-| serviceAccount.annotations | object | `{}` |  |
-| serviceAccount.automount | bool | `true` |  |
-| serviceAccount.create | bool | `true` |  |
-| serviceAccount.name | string | `""` |  |
-| tolerations | list | `[]` |  |
-| volumeMounts | list | `[]` |  |
-| volumes | list | `[]` |  |
+| eso.affinity | object | `{}` |  |
+| eso.bitwarden-sdk-server.enabled | bool | `false` |  |
+| eso.certController.affinity | object | `{}` |  |
+| eso.certController.create | bool | `true` | Specifies whether a certificate controller deployment be created. |
+| eso.certController.deploymentAnnotations | object | `{}` | Annotations to add to Deployment |
+| eso.certController.extraArgs | object | `{}` |  |
+| eso.certController.extraEnv | list | `[]` |  |
+| eso.certController.extraVolumeMounts | list | `[]` |  |
+| eso.certController.extraVolumes | list | `[]` |  |
+| eso.certController.fullnameOverride | string | `""` |  |
+| eso.certController.hostNetwork | bool | `false` | Run the certController on the host network |
+| eso.certController.image.flavour | string | `""` |  |
+| eso.certController.image.pullPolicy | string | `"IfNotPresent"` |  |
+| eso.certController.image.repository | string | `"oci.external-secrets.io/external-secrets/external-secrets"` |  |
+| eso.certController.image.tag | string | `""` |  |
+| eso.certController.imagePullSecrets | list | `[]` |  |
+| eso.certController.log | object | `{"level":"info","timeEncoding":"epoch"}` | Specifices Log Params to the Certificate Controller |
+| eso.certController.metrics.listen.port | int | `8080` |  |
+| eso.certController.metrics.service.annotations | object | `{}` | Additional service annotations |
+| eso.certController.metrics.service.enabled | bool | `false` | Enable if you use another monitoring tool than Prometheus to scrape the metrics |
+| eso.certController.metrics.service.port | int | `8080` | Metrics service port to scrape |
+| eso.certController.nameOverride | string | `""` |  |
+| eso.certController.nodeSelector | object | `{}` |  |
+| eso.certController.podAnnotations | object | `{}` | Annotations to add to Pod |
+| eso.certController.podDisruptionBudget | object | `{"enabled":false,"minAvailable":1}` | Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/ |
+| eso.certController.podLabels | object | `{}` |  |
+| eso.certController.podSecurityContext.enabled | bool | `true` |  |
+| eso.certController.priorityClassName | string | `""` | Pod priority class name. |
+| eso.certController.rbac.create | bool | `true` | Specifies whether role and rolebinding resources should be created. |
+| eso.certController.readinessProbe.address | string | `""` | Address for readiness probe |
+| eso.certController.readinessProbe.port | int | `8081` | ReadinessProbe port for kubelet |
+| eso.certController.replicaCount | int | `1` |  |
+| eso.certController.requeueInterval | string | `"5m"` |  |
+| eso.certController.resources | object | `{}` |  |
+| eso.certController.revisionHistoryLimit | int | `10` | Specifies the amount of historic ReplicaSets k8s should keep (see https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy) |
+| eso.certController.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| eso.certController.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| eso.certController.securityContext.enabled | bool | `true` |  |
+| eso.certController.securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| eso.certController.securityContext.runAsNonRoot | bool | `true` |  |
+| eso.certController.securityContext.runAsUser | int | `1000` |  |
+| eso.certController.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| eso.certController.serviceAccount.annotations | object | `{}` | Annotations to add to the service account. |
+| eso.certController.serviceAccount.automount | bool | `true` | Automounts the service account token in all containers of the pod |
+| eso.certController.serviceAccount.create | bool | `true` | Specifies whether a service account should be created. |
+| eso.certController.serviceAccount.extraLabels | object | `{}` | Extra Labels to add to the service account. |
+| eso.certController.serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template. |
+| eso.certController.tolerations | list | `[]` |  |
+| eso.certController.topologySpreadConstraints | list | `[]` |  |
+| eso.commonLabels | object | `{}` | Additional labels added to all helm chart resources. |
+| eso.concurrent | int | `1` | Specifies the number of concurrent ExternalSecret Reconciles external-secret executes at a time. |
+| eso.controllerClass | string | `""` | If set external secrets will filter matching Secret Stores with the appropriate controller values. |
+| eso.crds.annotations | object | `{}` |  |
+| eso.crds.conversion.enabled | bool | `true` | If webhook is set to false this also needs to be set to false otherwise the kubeapi will be hammered because the conversion is looking for a webhook endpoint. |
+| eso.crds.createClusterExternalSecret | bool | `true` | If true, create CRDs for Cluster External Secret. |
+| eso.crds.createClusterGenerator | bool | `true` | If true, create CRDs for Cluster Generator. |
+| eso.crds.createClusterSecretStore | bool | `true` | If true, create CRDs for Cluster Secret Store. |
+| eso.crds.createPushSecret | bool | `true` | If true, create CRDs for Push Secret. |
+| eso.createOperator | bool | `true` | Specifies whether an external secret operator deployment be created. |
+| eso.deploymentAnnotations | object | `{}` | Annotations to add to Deployment |
+| eso.dnsConfig | object | `{}` | Specifies `dnsOptions` to deployment |
+| eso.dnsPolicy | string | `"ClusterFirst"` | Specifies `dnsPolicy` to deployment |
+| eso.extendedMetricLabels | bool | `false` | If true external secrets will use recommended kubernetes annotations as prometheus metric labels. |
+| eso.extraArgs | object | `{}` |  |
+| eso.extraContainers | list | `[]` |  |
+| eso.extraEnv | list | `[]` |  |
+| eso.extraObjects | list | `[]` |  |
+| eso.extraVolumeMounts | list | `[]` |  |
+| eso.extraVolumes | list | `[]` |  |
+| eso.fullnameOverride | string | `""` |  |
+| eso.hostNetwork | bool | `false` | Run the controller on the host network |
+| eso.image.flavour | string | `""` | The flavour of tag you want to use There are different image flavours available, like distroless and ubi. Please see GitHub release notes for image tags for these flavors. By default, the distroless image is used. |
+| eso.image.pullPolicy | string | `"IfNotPresent"` |  |
+| eso.image.repository | string | `"oci.external-secrets.io/external-secrets/external-secrets"` |  |
+| eso.image.tag | string | `""` | The image tag to use. The default is the chart appVersion. |
+| eso.imagePullSecrets | list | `[]` |  |
+| eso.installCRDs | bool | `true` | If set, install and upgrade CRDs through helm chart. |
+| eso.leaderElect | bool | `false` | If true, external-secrets will perform leader election between instances to ensure no more than one instance of external-secrets operates at a time. |
+| eso.log | object | `{"level":"info","timeEncoding":"epoch"}` | Specifices Log Params to the External Secrets Operator |
+| eso.metrics.listen.port | int | `8080` |  |
+| eso.metrics.service.annotations | object | `{}` | Additional service annotations |
+| eso.metrics.service.enabled | bool | `false` | Enable if you use another monitoring tool than Prometheus to scrape the metrics |
+| eso.metrics.service.port | int | `8080` | Metrics service port to scrape |
+| eso.nameOverride | string | `""` |  |
+| eso.namespaceOverride | string | `""` |  |
+| eso.nodeSelector | object | `{}` |  |
+| eso.podAnnotations | object | `{}` | Annotations to add to Pod |
+| eso.podDisruptionBudget | object | `{"enabled":false,"minAvailable":1}` | Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/ |
+| eso.podLabels | object | `{}` |  |
+| eso.podSecurityContext.enabled | bool | `true` |  |
+| eso.podSpecExtra | object | `{}` | Any extra pod spec on the deployment |
+| eso.priorityClassName | string | `""` | Pod priority class name. |
+| eso.processClusterExternalSecret | bool | `true` | if true, the operator will process cluster external secret. Else, it will ignore them. |
+| eso.processClusterStore | bool | `true` | if true, the operator will process cluster store. Else, it will ignore them. |
+| eso.processPushSecret | bool | `true` | if true, the operator will process push secret. Else, it will ignore them. |
+| eso.rbac.create | bool | `true` | Specifies whether role and rolebinding resources should be created. |
+| eso.rbac.servicebindings.create | bool | `true` | Specifies whether a clusterrole to give servicebindings read access should be created. |
+| eso.replicaCount | int | `1` |  |
+| eso.resources | object | `{}` |  |
+| eso.revisionHistoryLimit | int | `10` | Specifies the amount of historic ReplicaSets k8s should keep (see https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy) |
+| eso.scopedNamespace | string | `""` | If set external secrets are only reconciled in the provided namespace |
+| eso.scopedRBAC | bool | `false` | Must be used with scopedNamespace. If true, create scoped RBAC roles under the scoped namespace and implicitly disable cluster stores and cluster external secrets |
+| eso.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| eso.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| eso.securityContext.enabled | bool | `true` |  |
+| eso.securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| eso.securityContext.runAsNonRoot | bool | `true` |  |
+| eso.securityContext.runAsUser | int | `1000` |  |
+| eso.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| eso.service.ipFamilies | list | `[]` | Sets the families that should be supported and the order in which they should be applied to ClusterIP as well. Can be IPv4 and/or IPv6. |
+| eso.service.ipFamilyPolicy | string | `""` | Set the ip family policy to configure dual-stack see [Configure dual-stack](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services) |
+| eso.serviceAccount.annotations | object | `{}` | Annotations to add to the service account. |
+| eso.serviceAccount.automount | bool | `true` | Automounts the service account token in all containers of the pod |
+| eso.serviceAccount.create | bool | `true` | Specifies whether a service account should be created. |
+| eso.serviceAccount.extraLabels | object | `{}` | Extra Labels to add to the service account. |
+| eso.serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template. |
+| eso.serviceMonitor.additionalLabels | object | `{}` | Additional labels |
+| eso.serviceMonitor.enabled | bool | `false` | Specifies whether to create a ServiceMonitor resource for collecting Prometheus metrics |
+| eso.serviceMonitor.honorLabels | bool | `false` | Let prometheus add an exported_ prefix to conflicting labels |
+| eso.serviceMonitor.interval | string | `"30s"` | Interval to scrape metrics |
+| eso.serviceMonitor.metricRelabelings | list | `[]` | Metric relabel configs to apply to samples before ingestion. [Metric Relabeling](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs) |
+| eso.serviceMonitor.namespace | string | `""` | namespace where you want to install ServiceMonitors |
+| eso.serviceMonitor.relabelings | list | `[]` | Relabel configs to apply to samples before ingestion. [Relabeling](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config) |
+| eso.serviceMonitor.scrapeTimeout | string | `"25s"` | Timeout if metrics can't be retrieved in given time interval |
+| eso.tolerations | list | `[]` |  |
+| eso.topologySpreadConstraints | list | `[]` |  |
+| eso.webhook.affinity | object | `{}` |  |
+| eso.webhook.certCheckInterval | string | `"5m"` | Specifices the time to check if the cert is valid |
+| eso.webhook.certDir | string | `"/tmp/certs"` |  |
+| eso.webhook.certManager.addInjectorAnnotations | bool | `true` | Automatically add the cert-manager.io/inject-ca-from annotation to the webhooks and CRDs. As long as you have the cert-manager CA Injector enabled, this will automatically setup your webhook's CA to the one used by cert-manager. See https://cert-manager.io/docs/concepts/ca-injector |
+| eso.webhook.certManager.cert.annotations | object | `{}` | Add extra annotations to the Certificate resource. |
+| eso.webhook.certManager.cert.create | bool | `true` | Create a certificate resource within this chart. See https://cert-manager.io/docs/usage/certificate/ |
+| eso.webhook.certManager.cert.duration | string | `"8760h"` | Set the requested duration (i.e. lifetime) of the Certificate. See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec One year by default. |
+| eso.webhook.certManager.cert.issuerRef | object | `{"group":"cert-manager.io","kind":"Issuer","name":"my-issuer"}` | For the Certificate created by this chart, setup the issuer. See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.IssuerSpec |
+| eso.webhook.certManager.cert.renewBefore | string | `""` | How long before the currently issued certificate’s expiry cert-manager should renew the certificate. See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec Note that renewBefore should be greater than .webhook.lookaheadInterval since the webhook will check this far in advance that the certificate is valid. |
+| eso.webhook.certManager.cert.revisionHistoryLimit | string | `""` | Set the revisionHistoryLimit on the Certificate. See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec Defaults to nil. |
+| eso.webhook.certManager.enabled | bool | `false` | Enabling cert-manager support will disable the built in secret and switch to using cert-manager (installed separately) to automatically issue and renew the webhook certificate. This chart does not install cert-manager for you, See https://cert-manager.io/docs/ |
+| eso.webhook.create | bool | `true` | Specifies whether a webhook deployment be created. |
+| eso.webhook.deploymentAnnotations | object | `{}` | Annotations to add to Deployment |
+| eso.webhook.extraArgs | object | `{}` |  |
+| eso.webhook.extraEnv | list | `[]` |  |
+| eso.webhook.extraVolumeMounts | list | `[]` |  |
+| eso.webhook.extraVolumes | list | `[]` |  |
+| eso.webhook.failurePolicy | string | `"Fail"` | Specifies whether validating webhooks should be created with failurePolicy: Fail or Ignore |
+| eso.webhook.fullnameOverride | string | `""` |  |
+| eso.webhook.hostNetwork | bool | `false` | Specifies if webhook pod should use hostNetwork or not. |
+| eso.webhook.image.flavour | string | `""` | The flavour of tag you want to use |
+| eso.webhook.image.pullPolicy | string | `"IfNotPresent"` |  |
+| eso.webhook.image.repository | string | `"oci.external-secrets.io/external-secrets/external-secrets"` |  |
+| eso.webhook.image.tag | string | `""` | The image tag to use. The default is the chart appVersion. |
+| eso.webhook.imagePullSecrets | list | `[]` |  |
+| eso.webhook.log | object | `{"level":"info","timeEncoding":"epoch"}` | Specifices Log Params to the Webhook |
+| eso.webhook.lookaheadInterval | string | `""` | Specifices the lookaheadInterval for certificate validity |
+| eso.webhook.metrics.listen.port | int | `8080` |  |
+| eso.webhook.metrics.service.annotations | object | `{}` | Additional service annotations |
+| eso.webhook.metrics.service.enabled | bool | `false` | Enable if you use another monitoring tool than Prometheus to scrape the metrics |
+| eso.webhook.metrics.service.port | int | `8080` | Metrics service port to scrape |
+| eso.webhook.nameOverride | string | `""` |  |
+| eso.webhook.nodeSelector | object | `{}` |  |
+| eso.webhook.podAnnotations | object | `{}` | Annotations to add to Pod |
+| eso.webhook.podDisruptionBudget | object | `{"enabled":false,"minAvailable":1}` | Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/ |
+| eso.webhook.podLabels | object | `{}` |  |
+| eso.webhook.podSecurityContext.enabled | bool | `true` |  |
+| eso.webhook.port | int | `10250` | The port the webhook will listen to |
+| eso.webhook.priorityClassName | string | `""` | Pod priority class name. |
+| eso.webhook.rbac.create | bool | `true` | Specifies whether role and rolebinding resources should be created. |
+| eso.webhook.readinessProbe.address | string | `""` | Address for readiness probe |
+| eso.webhook.readinessProbe.port | int | `8081` | ReadinessProbe port for kubelet |
+| eso.webhook.replicaCount | int | `1` |  |
+| eso.webhook.resources | object | `{}` |  |
+| eso.webhook.revisionHistoryLimit | int | `10` | Specifies the amount of historic ReplicaSets k8s should keep (see https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy) |
+| eso.webhook.secretAnnotations | object | `{}` | Annotations to add to Secret |
+| eso.webhook.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| eso.webhook.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| eso.webhook.securityContext.enabled | bool | `true` |  |
+| eso.webhook.securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| eso.webhook.securityContext.runAsNonRoot | bool | `true` |  |
+| eso.webhook.securityContext.runAsUser | int | `1000` |  |
+| eso.webhook.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| eso.webhook.service | object | `{"annotations":{},"enabled":true,"labels":{},"loadBalancerIP":"","type":"ClusterIP"}` | Manage the service through which the webhook is reached. |
+| eso.webhook.service.annotations | object | `{}` | Custom annotations for the webhook service. |
+| eso.webhook.service.enabled | bool | `true` | Whether the service object should be enabled or not (it is expected to exist). |
+| eso.webhook.service.labels | object | `{}` | Custom labels for the webhook service. |
+| eso.webhook.service.loadBalancerIP | string | `""` | If the webhook service type is LoadBalancer, you can assign a specific load balancer IP here. Check the documentation of your load balancer provider to see if/how this should be used. |
+| eso.webhook.service.type | string | `"ClusterIP"` | The service type of the webhook service. |
+| eso.webhook.serviceAccount.annotations | object | `{}` | Annotations to add to the service account. |
+| eso.webhook.serviceAccount.automount | bool | `true` | Automounts the service account token in all containers of the pod |
+| eso.webhook.serviceAccount.create | bool | `true` | Specifies whether a service account should be created. |
+| eso.webhook.serviceAccount.extraLabels | object | `{}` | Extra Labels to add to the service account. |
+| eso.webhook.serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template. |
+| eso.webhook.tolerations | list | `[]` |  |
+| eso.webhook.topologySpreadConstraints | list | `[]` |  |
 
 ## Installing the Chart
 
