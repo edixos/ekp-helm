@@ -10,7 +10,7 @@ metadata:
     cnrm.cloud.google.com/deletion-policy: {{ .Values.bigqueryDataset.deletion_policy }}
     {{- end }}
   labels:
-  {{- include "BigQueryDataset.labels" . | nindent 4 }}
+  {{- include "bigquery-dataset.labels" . | nindent 4 }}
   name: {{ .Values.bigqueryDataset.name }}
   namespace: {{ .Release.Namespace }}
 spec:
