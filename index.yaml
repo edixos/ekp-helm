@@ -23,6 +23,29 @@ entries:
     urls:
     - dex-0.1.0.tgz
     version: 0.1.0
+  eso:
+  - apiVersion: v2
+    appVersion: 0.14.2
+    created: "2025-02-28T08:53:34.306259037Z"
+    dependencies:
+    - alias: eso
+      name: external-secrets
+      repository: https://charts.external-secrets.io
+      version: 0.14.2
+    description: A Helm chart ESO for Kubernetes
+    digest: fa48db7e92c1a82e729018ff15ce474efd662191f573e4b6cceab5d35e99212d
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: eso
+    type: application
+    urls:
+    - eso-0.1.0.tgz
+    version: 0.1.0
   gcp-service-account:
   - apiVersion: v2
     appVersion: 0.1.2
@@ -158,4 +181,4 @@ entries:
     urls:
     - gcp-vpc-network-0.1.1.tgz
     version: 0.1.1
-generated: "2025-02-26T14:31:34.186457367Z"
+generated: "2025-02-28T08:53:34.306279786Z"
