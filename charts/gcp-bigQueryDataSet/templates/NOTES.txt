@@ -1,0 +1,8 @@
+Your BigQueryDataset has been provisioned via Config Connector.
+
+Resource details:
+------------------------------------------------
+BigQueryDataset:
+  - Project: {{ .Values.gcpProjectId }}
+  - Name: {{ .Values.bigqueryDataset.name }}
+  - FriendlyName: {{ .Values.bigqueryDataset.friendlyName }}

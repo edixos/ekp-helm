@@ -1,0 +1,82 @@
+apiVersion: bigquery.cnrm.cloud.google.com/v1beta1
+kind: BigQueryDataset
+metadata:
+  annotations:
+    {{- if .Values.bigqueryDataset.delete_contents_on_destroy }}
+    cnrm.cloud.google.com/delete-contents-on-destroy: {{ .Values.bigqueryDataset.delete_contents_on_destroy | quote }}
+    {{- end }}
+    cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId }}
+    {{- if .Values.bigqueryDataset.deletion_policy }}
+    cnrm.cloud.google.com/deletion-policy: {{ .Values.global.deletion_policy }}
+    {{- end }}
+  labels:
+  {{- include "gcp-bigquery-dataset.labels" . | nindent 4 }}
+  name: {{ .Values.bigqueryDataset.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  access:
+  {{- range .Values.bigqueryDataset.access }}
+  - role: {{ .role }}
+  {{- if .userByEmail}}
+    userByEmail: {{ .userByEmail }}
+  {{- end }}
+  {{- if .specialGroup }}
+    specialGroup: {{ .specialGroup }}
+  {{- end }}
+  {{- if .domain }}
+    domain: {{ .domain }}
+  {{- end}}
+  {{- if .groupByEmail }}
+    groupByEmail: {{ .groupByEmail }}
+  {{- end }}
+  {{- if .dataset }}
+    dataset:
+    {{- toYaml .dataset | nindent 6 }}
+  {{- end }}
+  {{- if .routine }}
+    routine:
+    {{- toYaml .routine | nindent 6 }}
+  {{- end }}
+  {{- if .view }}
+    view:
+    {{- toYaml .view | nindent 6 }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.bigqueryDataset.defaultEncryptionConfiguration }}
+  defaultEncryptionConfiguration:
+  {{- toYaml .Values.bigqueryDataset.defaultEncryptionConfiguration | nindent 4}}
+  {{- end }}
+  {{- if .Values.bigqueryDataset.projectRef }}
+  projectRef:
+  {{- toYaml .Values.bigqueryDataset.projectRef | nindent 4 }}
+  {{- end }}
+  {{- if .Values.bigqueryDataset.resourceID}}
+  resourceID: {{ .Values.bigqueryDataset.resourceID }}
+  {{- end }}
+  {{- if .Values.bigqueryDataset.storageBillingModel }}
+  storageBillingModel: {{ .Values.bigqueryDataset.storageBillingModel }}
+  {{- end }}
+  {{- if .Values.bigqueryDataset.defaultCollation }}
+  defaultCollation: {{ .Values.bigqueryDataset.defaultCollation }}
+  {{- end }}
+  {{- if .Values.bigqueryDataset.defaultPartitionExpirationMs }}
+  defaultPartitionExpirationMs: {{ .Values.bigqueryDataset.defaultPartitionExpirationMs }}
+  {{- end }}
+  {{- if .Values.bigqueryDataset.defaultTableExpirationMs }}
+  defaultTableExpirationMs: {{ .Values.bigqueryDataset.defaultTableExpirationMs }}
+  {{- end }}
+  {{- if .Values.bigqueryDataset.description }}
+  description: {{ .Values.bigqueryDataset.description }}
+  {{- end }}
+  {{- if .Values.bigqueryDataset.friendlyName }}
+  friendlyName: {{ .Values.bigqueryDataset.friendlyName }}
+  {{- end }}
+  {{- if .Values.bigqueryDataset.isCaseInsensitive }}
+  isCaseInsensitive: {{ .Values.bigqueryDataset.isCaseInsensitive }}
+  {{- end }}
+  {{- if .Values.bigqueryDataset.location }}
+  location: {{ .Values.bigqueryDataset.location }}
+  {{- end }}
+  {{- if .Values.bigqueryDataset.maxTimeTravelHours }}
+  maxTimeTravelHours: {{ .Values.bigqueryDataset.maxTimeTravelHours }}
+  {{- end }}
