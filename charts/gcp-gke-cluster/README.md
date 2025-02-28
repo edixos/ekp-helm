@@ -71,7 +71,7 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | addonsConfig.networkPolicyConfig | object | `{"disabled":true}` | Configuration for the Network Policy addon for the master. This must be enabled in order to enable network policy for the nodes. To enable this, you must also define a network_policy block, otherwise nothing will happen. It can only be disabled if the nodes already do not have network policies enabled. |
 | addonsConfig.networkPolicyConfig.disabled | bool | `true` | Whether the Network Policy addon is disabled. |
 | allowNetAdmin | bool | `false` | Enable NET_ADMIN for this cluster. |
-| annotations | object | `{}` | Add annotations to the VPC Network. |
+| annotations | object | `{}` | Add annotations to the GKE Cluster. |
 | authenticatorGroupsConfig | object | `{"securityGroup":null}` | Configuration for the Google Groups for GKE feature. |
 | authenticatorGroupsConfig.securityGroup | string | `nil` | The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com. |
 | binaryAuthorization | object | `{"enabled":false,"evaluationMode":"EVALUATION_MODE_UNSPECIFIED"}` | Configuration for the Binary Authorization feature. |
@@ -150,12 +150,12 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | identityServiceConfig | object | `{"enabled":false}` | Configuration for Identity Service which allows customers to use external identity providers with the K8S API. |
 | identityServiceConfig.enabled | bool | `false` | Whether to enable the Identity Service component. |
 | initialNodeCount | int | `1` | Initial number of nodes in the default node pool. Must be set if no custom node pools are defined. |
-| ipAllocationPolicy | object | `{"additionalPodRangesConfig":{"podRangeNames":[]},"clusterIpv4CidrBlock":null,"clusterSecondaryRangeName":null,"enabled":true,"podCidrOverprovisionConfig":{"disabled":false},"servicesIpv4CidrBlock":null,"servicesSecondaryRangeName":null,"stackType":null}` | Immutable. Configuration of cluster IP allocation for VPC-native clusters. Adding this block enables IP aliasing, making the cluster VPC-native instead of routes-based. |
+| ipAllocationPolicy | object | `{"additionalPodRangesConfig":{"podRangeNames":[]},"clusterIpv4CidrBlock":null,"clusterSecondaryRangeName":null,"enabled":false,"podCidrOverprovisionConfig":{"disabled":false},"servicesIpv4CidrBlock":null,"servicesSecondaryRangeName":null,"stackType":null}` | Immutable. Configuration of cluster IP allocation for VPC-native clusters. Adding this block enables IP aliasing, making the cluster VPC-native instead of routes-based. |
 | ipAllocationPolicy.additionalPodRangesConfig | object | `{"podRangeNames":[]}` | AdditionalPodRangesConfig is the configuration for additional pod secondary ranges supporting the ClusterUpdate message. |
 | ipAllocationPolicy.additionalPodRangesConfig.podRangeNames | list | `[]` | Name for pod secondary ipv4 range which has the actual range defined ahead. |
 | ipAllocationPolicy.clusterIpv4CidrBlock | string | `nil` | Immutable. The IP address range for the cluster pod IPs. Set to blank to have a range chosen with the default size. Set to /netmask (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g. 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to use. |
 | ipAllocationPolicy.clusterSecondaryRangeName | string | `nil` | Immutable. The name of the existing secondary range in the cluster's subnetwork to use for pod IP addresses. Alternatively, cluster_ipv4_cidr_block can be used to automatically create a GKE-managed one. |
-| ipAllocationPolicy.enabled | bool | `true` | Enables ipAllocationPolicy, allowing to specify pods and services secondary subnets name and CIDR |
+| ipAllocationPolicy.enabled | bool | `false` | Enables ipAllocationPolicy, allowing to specify pods and services secondary subnets name and CIDR |
 | ipAllocationPolicy.podCidrOverprovisionConfig | object | `{"disabled":false}` | Immutable. Configuration for cluster level pod cidr overprovision. Default is disabled=false. |
 | ipAllocationPolicy.podCidrOverprovisionConfig.disabled | bool | `false` | Whether pod cidr overprovision is disabled. |
 | ipAllocationPolicy.servicesIpv4CidrBlock | string | `nil` | Immutable. The IP address range of the services IPs in this cluster. Set to blank to have a range chosen with the default size. Set to /netmask (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g. 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to use. |
@@ -309,6 +309,34 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | nodePoolDefaults.nodeConfigDefaults.gcfsConfig | object | `{"enabled":false}` | GCFS configuration for this node. |
 | nodePoolDefaults.nodeConfigDefaults.gcfsConfig.enabled | bool | `false` | Whether or not GCFS is enabled. |
 | nodePoolDefaults.nodeConfigDefaults.loggingVariant | string | `nil` | Type of logging agent that is used as the default value for node pools in the cluster. Valid values include DEFAULT and MAX_THROUGHPUT. |
+| nodePools[0].autoscaling.enabled | bool | `true` | Enables nodePool autoscaling |
+| nodePools[0].autoscaling.maxNodeCount | int | 3 | Maximal node count. Default to 3 |
+| nodePools[0].autoscaling.minNodeCount | int | 1 | Minimal node count. Default to 1 |
+| nodePools[0].initialNodeCount | int | 1 | Number of nodes at initialization |
+| nodePools[0].management.autoRepair | bool | `true` | Enables node pool autorepair |
+| nodePools[0].management.autoUpgrade | bool | `true` | Enables node pool auto upgrade |
+| nodePools[0].maxPodsPerNode | int | 110 | Max number of Pods per nodes |
+| nodePools[0].name | string | `"np1"` | Name of the node pool |
+| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.enabled | bool | `false` | Enables boot disk attached to each node in the node pool. Must provide a key |
+| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.external | string | `nil` | The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: https://cloud.google.com/compute/docs/disks/customer-managed-encryption |
+| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.kccManaged | bool | `false` | The KMS key was created by kubernetes Config Connector or not |
+| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.name | string | `nil` | Name of the KMS key config connector resource. Only when kccManaged=true |
+| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.namespace | string | `nil` | Namespace of the KMS key config connector resource. Only when kccManaged=true |
+| nodePools[0].nodeConfig.diskSize | int | 100 | Size of the nodes' disk |
+| nodePools[0].nodeConfig.diskType | string | pd-standard | Type of the nodes' disk |
+| nodePools[0].nodeConfig.guestAccelerator | list | See the values.yaml file for an example. | A list of hardware accelerators to be attached to each node. See https://cloud.google.com/compute/docs/gpus for more information about support for GPUs. |
+| nodePools[0].nodeConfig.imageType | string | `"COS_CONTAINERD"` | Type of Image used for the node pool instances |
+| nodePools[0].nodeConfig.labels | object | `{}` | Map of kubernetes labels to apply to nodes in the nodePool |
+| nodePools[0].nodeConfig.localSsdCount | intq | `nil` | The number of local SSD disks to be attached to the node. The limit for this value is dependent upon the maximum number of disks available on a machine per zone. See: https://cloud.google.com/compute/docs/disks/local-ssd for more information. |
+| nodePools[0].nodeConfig.machineType | string | n1-standard-1 | Type of the machine used for nodes |
+| nodePools[0].nodeConfig.metadata | object | `{}` | Map of metadata to apply to the nodes (key: string, value: string) |
+| nodePools[0].nodeConfig.oauthScopes | list | `["https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/trace.append"]` | The set of Google API scopes to be made available on all of the node VMs under the "default" service account. |
+| nodePools[0].nodeConfig.preemptible | bool | `false` | Configure the node pool with preemptible instances |
+| nodePools[0].nodeConfig.serviceAccount.create | bool | `true` | Create the serviceAccount and IamPolicyMembers associated through Config Connector |
+| nodePools[0].nodeConfig.serviceAccount.name | string | `"np1"` | Display name of the service Account used for the runner. If create=false, use the email of the Service Account |
+| nodePools[0].nodeConfig.tags | list | `[]` | Network tags to apply to the node pool. |
+| nodePools[0].nodeConfig.taints | list | See the values.yaml file for an example. | List of taints to apply to the node pool. Must contains the following : [{"effect": "<effect>", "key": "<key>", "value": "<value>"}] |
+| nodePools[0].nodeCount | int | 1 | The number of nodes per instance group. This field can be used to update the number of nodes per instance group but should not be used alongside autoscaling. |
 | nodeVersion | string | `nil` | The Kubernetes version to use for the nodes in the cluster. |
 | notificationConfig | object | `{"pubsub":{"enabled":false,"filter":{"eventType":[]},"topicRef":{"external":null,"name":null,"namespace":null}}}` | The notification config for sending cluster upgrade notifications. |
 | notificationConfig.pubsub | object | `{"enabled":false,"filter":{"eventType":[]},"topicRef":{"external":null,"name":null,"namespace":null}}` | Notification config for Cloud Pub/Sub. |
@@ -321,12 +349,13 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | notificationConfig.pubsub.topicRef.namespace | string | `nil` | Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/ |
 | podSecurityPolicyConfig | object | `{"enabled":false}` | Configuration for the PodSecurityPolicy feature. |
 | podSecurityPolicyConfig.enabled | bool | `false` | Enable the PodSecurityPolicy controller for this cluster. If enabled, pods must be valid under a PodSecurityPolicy to be created. |
-| privateClusterConfig | object | `{"enablePrivateEndpoint":false,"enablePrivateNodes":false,"masterGlobalAccessConfig":{"enabled":false},"masterIpv4CidrBlock":null,"peeringName":null,"privateEndpoint":null,"privateEndpointSubnetworkRef":{"external":null,"name":null,"namespace":null},"publicEndpoint":null}` | Configuration for private clusters, clusters with private nodes. |
+| privateClusterConfig | object | `{"enablePrivateEndpoint":false,"enablePrivateNodes":false,"enabled":true,"masterGlobalAccessConfig":{"enabled":false},"masterIpv4CidrBlock":"172.16.0.0/28","peeringName":null,"privateEndpoint":null,"privateEndpointSubnetworkRef":{"external":null,"name":null,"namespace":null},"publicEndpoint":null}` | Configuration for private clusters, clusters with private nodes. |
 | privateClusterConfig.enablePrivateEndpoint | bool | `false` | When true, the cluster's private endpoint is used as the cluster endpoint and access through the public endpoint is disabled. When false, either endpoint can be used. |
 | privateClusterConfig.enablePrivateNodes | bool | `false` | Immutable. Enables the private cluster feature, creating a private endpoint on the cluster. In a private cluster, nodes only have RFC 1918 private addresses and communicate with the master's private endpoint via private networking. |
+| privateClusterConfig.enabled | bool | `true` | Enables private cluster |
 | privateClusterConfig.masterGlobalAccessConfig | object | `{"enabled":false}` | Controls cluster master global access settings. |
 | privateClusterConfig.masterGlobalAccessConfig.enabled | bool | `false` | Whether the cluster master is accessible globally or not. |
-| privateClusterConfig.masterIpv4CidrBlock | string | `nil` | Immutable. The IP range in CIDR notation to use for the hosted master network. This range will be used for assigning private IP addresses to the cluster master(s) and the ILB VIP. This range must not overlap with any other ranges in use within the cluster's network, and it must be a /28 subnet. See Private Cluster Limitations for more details. This field only applies to private clusters, when enable_private_nodes is true. |
+| privateClusterConfig.masterIpv4CidrBlock | string | `"172.16.0.0/28"` | Immutable. The IP range in CIDR notation to use for the hosted master network. This range will be used for assigning private IP addresses to the cluster master(s) and the ILB VIP. This range must not overlap with any other ranges in use within the cluster's network, and it must be a /28 subnet. See Private Cluster Limitations for more details. This field only applies to private clusters, when enable_private_nodes is true. |
 | privateClusterConfig.peeringName | string | `nil` | The name of the peering between this cluster and the Google owned VPC. |
 | privateClusterConfig.privateEndpoint | string | `nil` | The internal IP address of this cluster's master endpoint. |
 | privateClusterConfig.privateEndpointSubnetworkRef | object | `{"external":null,"name":null,"namespace":null}` | Immutable. Subnetwork in cluster's network where master's endpoint will be provisioned. |

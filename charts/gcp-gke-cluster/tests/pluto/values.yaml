@@ -7,7 +7,7 @@ global:
 
 removeDefaultNodePool: "true"
 
-privateCluster:
+privateClusterConfig:
   enabled: true
   enabledPrivateEndpoint: false
   enablePrivateNodes: true
@@ -53,12 +53,30 @@ ipAllocationPolicy:
 
 name: "test-gke-cluster"
 location: "europe-west1-b"
+
 initialNodeCount: 1
+
+workloadIdentityConfig:
+  enabled: true
+  workloadPool: "ekp-dev.svc.id.goog"
+
 addonsConfig:
+  dnsCacheConfig:
+    enabled: true
+  verticalPodAutoscaling:
+    enabled: true
+  authenticatorGroupsConfig:
+    securityGroup: "gke-security-groups@edixos.com"
+  gcePersistentDiskCsiDriverConfig:
+    enabled: true
+  networkPolicyConfig:
+    disabled: false
+    provider: CALICO
   httpLoadBalancing:
     disabled: false
   horizontalPodAutoscaling:
     disabled: false
+
 enableShieldedNodes: true
 networkingMode: "VPC_NATIVE"
 networkRef:
@@ -76,23 +94,8 @@ masterAuthorizedNetworksConfig:
 
 clusterAutoscaling:
   enabled: false
-resourceID: "test-gke-cluster"
 
-addons:
-  dnsCache:
-    enabled: true
-  verticalPodAutoscaling:
-    enabled: true
-  workloadIdentity:
-    enabled: true
-    workloadPool: "ekp-dev.svc.id.goog"
-  authenticatorGroups:
-    securityGroup: "gke-security-groups@edixos.com"
-  gcePersistentDiskCsiDriver:
-    enabled: true
-  networkPolicy:
-    disabled: false
-    provider: CALICO
+resourceID: "test-gke-cluster"
 
 nodePools:
   - nodePoolName: spot-n2-standard-8-ekp-testNode-a

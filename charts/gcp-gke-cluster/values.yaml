@@ -770,6 +770,7 @@ verticalPodAutoscaling:
 
 # -- Configuration for the use of Kubernetes Service Accounts in GCP IAM policies.
 workloadIdentityConfig:
+  enabled: false
   # -- DEPRECATED. This field will be removed in a future major release as it has been deprecated in the API. Use `workloadPool` instead; `workloadPool` field will supersede this field. Enables workload identity.
   identityNamespace:
   # -- The workload pool to attach all Kubernetes service accounts to.

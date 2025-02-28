@@ -1,4 +1,4 @@
-{{- if and .Values.privateCluster.enabled .Values.privateCluster.webhookPorts }}
+{{- if and .Values.privateClusterConfig.enabled .Values.privateClusterConfig.webhookPorts }}
 apiVersion: compute.cnrm.cloud.google.com/v1beta1
 kind: ComputeFirewall
 metadata:
@@ -12,17 +12,17 @@ metadata:
   name: {{ .Values.name }}-webhook-allow-from-master
 spec:
   allow:
-{{- if .Values.privateCluster.webhookPorts.tcp }}
+{{- if .Values.privateClusterConfig.webhookPorts.tcp }}
   - protocol: tcp
     ports:
-{{- range .Values.privateCluster.webhookPorts.tcp }}
+{{- range .Values.privateClusterConfig.webhookPorts.tcp }}
     - {{ . | quote }}
 {{- end }}
 {{- end }}
-{{- if .Values.privateCluster.webhookPorts.udp }}
+{{- if .Values.privateClusterConfig.webhookPorts.udp }}
   - protocol: udp
     ports:
-{{- range .Values.privateCluster.webhookPorts.udp }}
+{{- range .Values.privateClusterConfig.webhookPorts.udp }}
     - {{ . | quote }}
 {{- end }}
 {{- end }}
@@ -30,7 +30,7 @@ spec:
     external: {{ .Values.networkRef.external }}
     name: {{ .Values.networkRef.name }}
   sourceRanges:
-  - {{ .Values.privateCluster.masterIpv4CidrBlock | quote }}
+  - {{ .Values.privateClusterConfig.masterIpv4CidrBlock | quote }}
   targetTags:
     - {{ .Values.name }}
 {{- end }}

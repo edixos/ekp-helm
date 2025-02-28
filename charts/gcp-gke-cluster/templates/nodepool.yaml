@@ -99,7 +99,7 @@ spec:
         value: {{ .value | quote }}
       {{- end }}
     {{- end }}
-    {{- if $.Values.addons.workloadIdentity.enabled }}
+    {{- if $.Values.workloadIdentityConfig.enabled }}
     workloadMetadataConfig:
       nodeMetadata: GKE_METADATA_SERVER
     {{- end }}
