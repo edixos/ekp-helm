@@ -4,17 +4,20 @@ global:
 bigqueryDataset:
   #defaultTableExpirationMs: 3600
   name: "ekp-gke-billing"
+  # must contain underscore instead of hyphen
+  resourceID: "ekp_gke_billing"
   delete_contents_on_destroy: "false"
   #deletion_policy: abandon
   abandon: true
   description: "ekp-bigquery-dataset"
   friendlyName: "ekp billing dataset"
   location: EU
-  access:
-  - role: OWNER
-    # account lives.
-    userByEmail: bigquerydataset-dep@ekp-dev.iam.gserviceaccount.com
-  - role: WRITER
-    specialGroup: projectWriters
-  - role: READER
-    domain: google.com
+  access: {}
+  # access:
+  # - role: OWNER
+  #   # account lives.
+  #   userByEmail: bigquerydataset-dep@ekp-dev.iam.gserviceaccount.com
+  # - role: WRITER
+  #   specialGroup: projectWriters
+  # - role: READER
+  #   domain: google.com
