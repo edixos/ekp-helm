@@ -1,0 +1,826 @@
+apiVersion: container.cnrm.cloud.google.com/v1beta1
+kind: ContainerCluster
+metadata:
+  annotations:
+    {{- if .Values.global.abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+    {{- end }}
+    cnrm.cloud.google.com/remove-default-node-pool: {{ .Values.removeDefaultNodePool | quote  }}
+    cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId | quote }}
+    {{- if .Values.global.skipUnspecifiedFields }}
+    cnrm.cloud.google.com/state-into-spec: absent
+    {{- end }}
+  labels:
+    {{- include "gcp-gke-cluster.labels" . | nindent 4 }}
+  name: {{ include "gcp-gke-cluster.fullname" . }}
+  namespace: {{ include "gcp-gke-cluster.namespace" . }}
+spec:
+  description: {{ .Values.description }}
+  location: {{ .Values.location }}
+  initialNodeCount: {{ .Values.initialNodeCount }}
+  {{- if .Values.networkRef }}
+  networkRef:
+    {{- if .Values.networkRef.external }}
+    external: {{ .Values.networkRef.external }}
+    {{- end }}
+    {{- if .Values.networkRef.name }}
+    name: {{ .Values.networkRef.name }}
+    {{- end }}
+    {{- if .Values.networkRef.namespace }}
+    namespace: {{ .Values.networkRef.namespace }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.subnetworkRef }}
+  subnetworkRef:
+    {{- if .Values.subnetworkRef.external }}
+    external: {{ .Values.subnetworkRef.external }}
+    {{- end }}
+    {{- if .Values.subnetworkRef.name }}
+    name: {{ .Values.subnetworkRef.name }}
+    {{- end }}
+    {{- if .Values.subnetworkRef.namespace }}
+    namespace: {{ .Values.subnetworkRef.namespace }}
+    {{- end }}
+  {{- end }}
+  networkingMode: {{ .Values.networkingMode }}
+  {{- if and (.Values.clusterIpv4Cidr) (eq .Values.networkingMode "ROUTES") (not .Values.ipAllocationPolicy) }}
+  clusterIpv4Cidr: {{ .Values.clusterIpv4Cidr }}
+  {{- end }}
+  {{- if and .Values.defaultMaxPodsPerNode (eq .Values.networkingMode "ROUTES") (not .Values.ipAllocationPolicy) }}
+  defaultMaxPodsPerNode: {{ .Values.defaultMaxPodsPerNode }}
+  {{- end }}
+  enableKubernetesAlpha: {{ .Values.enableKubernetesAlpha }}
+  enableLegacyAbac: {{ .Values.enableLegacyAbac }}
+  enableShieldedNodes: {{ .Values.enableShieldedNodes }}
+  enableTpu: {{ .Values.enableTpu }}
+  enableIntranodeVisibility: {{ .Values.enableIntranodeVisibility }}
+  enableL4IlbSubsetting: {{ .Values.enableL4IlbSubsetting }}
+  {{- if .Values.enableFqdnNetworkPolicy}}
+  enableFqdnNetworkPolicy: {{ .Values.enableFqdnNetworkPolicy }}
+  {{- end }}
+  enableBinaryAuthorization: {{ .Values.enableBinaryAuthorization }}
+  {{- if .Values.enableAutopilot }}
+  enableAutopilot: {{ .Values.enableAutopilot }}
+  {{- end }}
+  enableMultiNetworking: {{ .Values.enableMultiNetworking }}
+  {{- if .Values.enableK8sBetaApis }}
+    {{- if .Values.enableK8sBetaApis.enabledApis }}
+  enableK8sBetaApis:
+    enabledApis:
+      {{- range .Values.enableK8sBetaApis.enabledApis }}
+      - {{ . }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.addonsConfig }}
+  addonsConfig:
+    {{- if .Values.addonsConfig.cloudrunConfig }}
+    cloudrunConfig:
+      disabled: {{ .Values.addonsConfig.cloudrunConfig.disabled }}
+      {{- if .Values.addonsConfig.cloudrunConfig.loadBalancerType }}
+      loadBalancerType: {{ .Values.addonsConfig.cloudrunConfig.loadBalancerType }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.addonsConfig.configConnectorConfig }}
+    configConnectorConfig:
+      enabled: {{ .Values.addonsConfig.configConnectorConfig.enabled }}
+    {{- end }}
+    {{- if .Values.addonsConfig.dnsCacheConfig }}
+    dnsCacheConfig:
+      enabled: {{ .Values.addonsConfig.dnsCacheConfig.enabled }}
+    {{- end }}
+    {{- if .Values.addonsConfig.gcePersistentDiskCsiDriverConfig }}
+    gcePersistentDiskCsiDriverConfig:
+      enabled: {{ .Values.addonsConfig.gcePersistentDiskCsiDriverConfig.enabled }}
+    {{- end }}
+    {{- if .Values.addonsConfig.gcpFilestoreCsiDriverConfig }}
+    gcpFilestoreCsiDriverConfig:
+      enabled: {{ .Values.addonsConfig.gcpFilestoreCsiDriverConfig.enabled }}
+    {{- end }}
+    {{- if .Values.addonsConfig.gcsFuseCsiDriverConfig }}
+    gcsFuseCsiDriverConfig:
+      enabled: {{ .Values.addonsConfig.gcsFuseCsiDriverConfig.enabled }}
+    {{- end }}
+    {{- if .Values.addonsConfig.gkeBackupAgentConfig }}
+    gkeBackupAgentConfig:
+      enabled: {{ .Values.addonsConfig.gkeBackupAgentConfig.enabled }}
+    {{- end }}
+    {{- if .Values.addonsConfig.horizontalPodAutoscaling }}
+    horizontalPodAutoscaling:
+      disabled: {{ .Values.addonsConfig.horizontalPodAutoscaling.disabled }}
+    {{- end }}
+    {{- if .Values.addonsConfig.httpLoadBalancing }}
+    httpLoadBalancing:
+      disabled: {{ .Values.addonsConfig.httpLoadBalancing.disabled }}
+    {{- end }}
+    {{- if .Values.addonsConfig.istioConfig }}
+    istioConfig:
+      auth: {{ .Values.addonsConfig.istioConfig.auth }}
+      disabled: {{ .Values.addonsConfig.istioConfig.disabled }}
+    {{- end }}
+    {{- if .Values.addonsConfig.kalmConfig }}
+    kalmConfig:
+      enabled: {{ .Values.addonsConfig.kalmConfig.enabled }}
+    {{- end }}
+    {{- if not .Values.datapathProvider }}
+    {{- if .Values.addonsConfig.networkPolicyConfig }}
+    networkPolicyConfig:
+      disabled: {{ .Values.addonsConfig.networkPolicyConfig.disabled }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.authenticatorGroupsConfig }}
+  authenticatorGroupsConfig:
+    {{- if .Values.authenticatorGroupsConfig.securityGroup }}
+    securityGroup: {{ .Values.authenticatorGroupsConfig.securityGroup }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.binaryAuthorization }}
+  binaryAuthorization:
+    enabled: {{ .Values.binaryAuthorization.enabled }}
+    {{- if .Values.binaryAuthorization.evaluationMode }}
+    evaluationMode: {{ .Values.binaryAuthorization.evaluationMode }}
+    {{- end }}
+  {{- end }}
+  {{- if or .Values.enableAutopilot .Values.clusterAutoscaling.enabled }}
+  clusterAutoscaling:
+    {{- if .Values.clusterAutoscaling.autoProvisioningDefaults }}
+    autoProvisioningDefaults:
+      {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.bootDiskKMSKeyRef }}
+      bootDiskKMSKeyRef:
+        {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.bootDiskKMSKeyRef.external }}
+        external: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.bootDiskKMSKeyRef.external }}
+        {{- end }}
+        {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.bootDiskKMSKeyRef.name }}
+        name: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.bootDiskKMSKeyRef.name }}
+        {{- end }}
+        {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.bootDiskKMSKeyRef.namespace }}
+        namespace: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.bootDiskKMSKeyRef.namespace }}
+        {{- end }}
+      {{- end }}
+      diskSize: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.diskSize }}
+      {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.imageType }}
+      imageType: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.imageType }}
+      {{- end }}
+      {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.management }}
+      management:
+        autoRepair: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.management.autoRepair }}
+        autoUpgrade: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.management.autoUpgrade }}
+        {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.management.upgradeOptions }}
+        upgradeOptions:
+          {{- range $.Values.clusterAutoscaling.autoProvisioningDefaults.management.upgradeOptions }}        
+          - autoUpgradeStartTime: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.management.upgradeOptions.autoUpgradeStartTime }}
+            description: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.management.upgradeOptions.description }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.minCpuPlatform }}
+      minCpuPlatform: {{ $.Values.clusterAutoscaling.autoProvisioningDefaults.minCpuPlatform }}
+      {{- end }}
+      {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.oauthScopes }}
+      oauthScopes: 
+        {{- range $.Values.clusterAutoscaling.autoProvisioningDefaults.oauthScopes }}
+        - {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- if $.Values.clusterAutoscaling.autoProvisioningDefaults.serviceAccountRef }}
+      serviceAccountRef:
+        {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.serviceAccountRef.external }}
+        external: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.serviceAccountRef.external }}
+        {{- end }}
+        {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.serviceAccountRef.name }}
+        name: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.serviceAccountRef.name }}
+        {{- end }}
+        {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.serviceAccountRef.namespace }}
+        namespace: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.serviceAccountRef.namespace }}
+        {{- end }}
+      {{- end }}
+      {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.shieldedInstanceConfig }}
+      shieldedInstanceConfig:
+        enableIntegrityMonitoring: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.shieldedInstanceConfig.enableIntegrityMonitoring }}
+        enableSecureBoot: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.shieldedInstanceConfig.enableSecureBoot }}
+      {{- end }}
+      {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings }}
+      upgradeSettings:
+        {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.blueGreenSettings }}
+        blueGreenSettings:
+          {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.blueGreenSettings.nodePoolSoakDuration }}
+          nodePoolSoakDuration: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.blueGreenSettings.nodePoolSoakDuration }}
+          {{- end }}
+          {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.blueGreenSettings.standardRolloutPolicy }}
+          standardRolloutPolicy:
+            {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.blueGreenSettings.standardRolloutPolicy.batchNodeCount }}
+            batchNodeCount: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.blueGreenSettings.standardRolloutPolicy.batchNodeCount }}
+            {{- end }}
+            {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.blueGreenSettings.standardRolloutPolicy.batchPercentage }}
+            batchPercentage: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.blueGreenSettings.standardRolloutPolicy.batchPercentage }}
+            {{- end }}
+            {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.blueGreenSettings.standardRolloutPolicy.batchSoakDuration }}
+            batchSoakDuration: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.blueGreenSettings.standardRolloutPolicy.batchSoakDuration }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.maxSurge }}
+        maxSurge: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.maxSurge }}
+        {{- end }}
+        {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.maxUnavailable }}
+        maxUnavailable: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.maxUnavailable }}
+        {{- end }}
+        {{- if .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.strategy }}
+        strategy: {{ .Values.clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.strategy }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if $.Values.clusterAutoscaling.autoscalingProfile }}
+    autoscalingProfile: {{ $.Values.clusterAutoscaling.autoscalingProfile }}
+    {{- end }}
+    {{- if $.Values.enableAutopilot }}
+    enabled: true
+    {{- else }}
+    enabled: {{ $.Values.clusterAutoscaling.enabled }}
+    {{- end }}
+    {{- if $.Values.clusterAutoscaling.resourceLimits }}
+    resourceLimits:
+    {{- range $.Values.clusterAutoscaling.resourceLimits }}
+    - maximum: {{ .maximum }}
+      minimum: {{ .minimum }}
+      resourceType: {{ .resourceType }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.clusterTelemetry }}
+  {{- if .Values.clusterTelemetry.type }}
+  clusterTelemetry:
+    type: {{ .Values.clusterTelemetry.type }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.confidentialNodes }}
+  confidentialNodes:
+    enabled: {{ .Values.confidentialNodes.enabled }}
+  {{- end }}
+  {{- if .Values.costManagementConfig }}
+  costManagementConfig:
+    enabled: {{ .Values.costManagementConfig.enabled }}
+  {{- end }}
+  {{- if .Values.databaseEncryption }}
+    {{- $databaseEncryption := .Values.databaseEncryption }}
+    {{- if $databaseEncryption.state }}
+  databaseEncryption:
+    keyName: {{ $databaseEncryption.keyName }}
+    state: {{ $databaseEncryption.state }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.datapathProvider }}
+  datapathProvider: {{ .Values.datapathProvider }}
+  {{- end }}
+  {{- if .Values.defaultSnatStatus }}
+  defaultSnatStatus:
+    disabled: {{ .Values.defaultSnatStatus.disabled }}
+  {{- end }}
+  {{- if .Values.dnsConfig }}
+  dnsConfig:
+    {{- if .Values.dnsConfig.clusterDns }}
+    clusterDns: {{ .Values.dnsConfig.clusterDns }}
+    {{- end }}
+    {{- if .Values.dnsConfig.clusterDnsDomain }}
+    clusterDnsDomain: {{ .Values.dnsConfig.clusterDnsDomain }}
+    {{- end }}
+    {{- if .Values.dnsConfig.clusterDnsScope }}
+    clusterDnsScope: {{ .Values.dnsConfig.clusterDnsScope }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.gatewayApiConfig }}
+  gatewayApiConfig:
+    {{- if .Values.gatewayApiConfig.channel }}
+    channel: {{ .Values.gatewayApiConfig.channel }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.identityServiceConfig }}
+  identityServiceConfig:
+    enabled: {{ .Values.identityServiceConfig.enabled }}
+  {{- end }}
+  {{- if .Values.ipAllocationPolicy }}
+    {{- $ipAllocationPolicy := .Values.ipAllocationPolicy }}
+    {{- if or $ipAllocationPolicy.clusterIpv4CidrBlock $ipAllocationPolicy.clusterSecondaryRangeName $ipAllocationPolicy.servicesIpv4CidrBlock $ipAllocationPolicy.servicesSecondaryRangeName $ipAllocationPolicy.additionalPodRangesConfig $ipAllocationPolicy.podCidrOverprovisionConfig $ipAllocationPolicy.stackType }}
+  ipAllocationPolicy:
+      {{- if $ipAllocationPolicy.clusterIpv4CidrBlock }}
+    clusterIpv4CidrBlock: {{ $ipAllocationPolicy.clusterIpv4CidrBlock }}
+      {{- end }}
+      {{- if $ipAllocationPolicy.clusterSecondaryRangeName }}
+    clusterSecondaryRangeName: {{ $ipAllocationPolicy.clusterSecondaryRangeName }}
+      {{- end }}
+      {{- if $ipAllocationPolicy.servicesIpv4CidrBlock }}
+    servicesIpv4CidrBlock: {{ $ipAllocationPolicy.servicesIpv4CidrBlock }}
+      {{- end }}
+      {{- if $ipAllocationPolicy.servicesSecondaryRangeName }}
+    servicesSecondaryRangeName: {{ $ipAllocationPolicy.servicesSecondaryRangeName }}
+      {{- end }}
+      {{- if and $ipAllocationPolicy.additionalPodRangesConfig $ipAllocationPolicy.additionalPodRangesConfig.podRangeNames }}
+    additionalPodRangesConfig:
+      podRangeNames:
+          {{- range $ipAllocationPolicy.additionalPodRangesConfig.podRangeNames }}
+        - {{ . }}
+          {{- end }}
+      {{- end }}
+      {{- if and $ipAllocationPolicy.podCidrOverprovisionConfig (hasKey $ipAllocationPolicy.podCidrOverprovisionConfig "disabled") }}
+    podCidrOverprovisionConfig:
+      disabled: {{ $ipAllocationPolicy.podCidrOverprovisionConfig.disabled }}
+      {{- end }}
+      {{- if $ipAllocationPolicy.stackType }}
+    stackType: {{ $ipAllocationPolicy.stackType }}
+      {{- end }}
+    {{- else }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.loggingConfig }}
+    {{- if .Values.loggingConfig.enableComponents }}
+  loggingConfig:
+    enableComponents:
+      {{- range .Values.loggingConfig.enableComponents }}
+      - {{ . }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  loggingService: {{ .Values.loggingService }}
+  {{- if .Values.maintenancePolicy }}
+    {{- $maintenancePolicy := .Values.maintenancePolicy }}
+  maintenancePolicy:
+    {{- if and $maintenancePolicy.dailyMaintenanceWindow $maintenancePolicy.dailyMaintenanceWindow.startTime }}
+    dailyMaintenanceWindow:
+      {{- if $maintenancePolicy.dailyMaintenanceWindow.duration }}
+      duration: {{ $maintenancePolicy.dailyMaintenanceWindow.duration }}
+      {{- end }}
+      startTime: {{ $maintenancePolicy.dailyMaintenanceWindow.startTime }}
+    {{- end }}
+    {{- if $maintenancePolicy.maintenanceExclusion }}
+      {{- $validExclusions := list }}
+      {{- range $maintenancePolicy.maintenanceExclusion }}
+        {{- if and .endTime .exclusionName .startTime }}
+          {{- $validExclusions = append $validExclusions . }}
+        {{- end }}
+      {{- end }}
+      {{- if $validExclusions }}
+    maintenanceExclusion:
+        {{- range $validExclusions }}
+      - endTime: {{ .endTime }}
+        exclusionName: {{ .exclusionName }}
+        {{- if .exclusionOptions }}
+        exclusionOptions:
+          scope: {{ .exclusionOptions.scope }}
+        {{- end }}
+        startTime: {{ .startTime }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if and $maintenancePolicy.recurringWindow $maintenancePolicy.recurringWindow.endTime $maintenancePolicy.recurringWindow.recurrence $maintenancePolicy.recurringWindow.startTime }}
+    recurringWindow:
+      endTime: {{ $maintenancePolicy.recurringWindow.endTime }}
+      recurrence: {{ $maintenancePolicy.recurringWindow.recurrence }}
+      startTime: {{ $maintenancePolicy.recurringWindow.startTime }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.masterAuth }}
+    {{- $masterAuth := .Values.masterAuth }}
+    {{- if and $masterAuth.clientCertificateConfig $masterAuth.clientCertificateConfig.issueClientCertificate }}
+      {{- if or (not $masterAuth.password) (and $masterAuth.password.valueFrom $masterAuth.password.valueFrom.secretKeyRef $masterAuth.password.valueFrom.secretKeyRef.key $masterAuth.password.valueFrom.secretKeyRef.name) }}
+  masterAuth:
+        {{- if $masterAuth.clientCertificateConfig }}
+    clientCertificateConfig:
+      issueClientCertificate: {{ $masterAuth.clientCertificateConfig.issueClientCertificate }}
+        {{- end }}
+        {{- if $masterAuth.password }}
+    password:
+      valueFrom:
+        secretKeyRef:
+          key: {{ $masterAuth.password.valueFrom.secretKeyRef.key }}
+          name: {{ $masterAuth.password.valueFrom.secretKeyRef.name }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.masterAuthorizedNetworksConfig }}
+  masterAuthorizedNetworksConfig:
+    {{- if .Values.masterAuthorizedNetworksConfig.cidrBlocks }}
+    cidrBlocks:
+      {{- range .Values.masterAuthorizedNetworksConfig.cidrBlocks }}
+      - cidrBlock: {{ .cidrBlock }}
+        {{- if .displayName }}
+        displayName: {{ .displayName }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.masterAuthorizedNetworksConfig.gcpPublicCidrsAccessEnabled }}
+    gcpPublicCidrsAccessEnabled: {{ .Values.masterAuthorizedNetworksConfig.gcpPublicCidrsAccessEnabled }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.masterVersion }}
+  {{- if .Values.meshCertificates }}
+  meshCertificates:
+    enableCertificates: {{ .Values.meshCertificates.enableCertificates }}
+  {{- end }}
+  {{- if .Values.minMasterVersion }}
+  minMasterVersion: {{ .Values.minMasterVersion }}
+  {{- end }}
+  {{- if .Values.monitoringConfig }}
+  monitoringConfig:
+    {{- if .Values.monitoringConfig.advancedDatapathObservabilityConfig }}
+    advancedDatapathObservabilityConfig:
+      {{- range .Values.monitoringConfig.advancedDatapathObservabilityConfig }}
+      - enableMetrics: {{ .enableMetrics }}
+        {{- if .relayMode }}
+        relayMode: {{ .relayMode }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.monitoringConfig.enableComponents }}
+    enableComponents:
+      {{- range .Values.monitoringConfig.enableComponents }}
+      - {{ . }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.monitoringConfig.managedPrometheus }}
+    managedPrometheus:
+      enabled: {{ .Values.monitoringConfig.managedPrometheus.enabled }}
+    {{- end }}
+  {{- end }}
+  monitoringService: {{ .Values.monitoringService }}
+  {{- if not .Values.datapathProvider }}
+  networkPolicy:
+    enabled: {{ .Values.networkPolicy.enabled }}
+    provider: {{ .Values.networkPolicy.provider }}
+  {{- end }}
+
+
+
+
+
+
+  {{- if .Values.nodeConfig }}
+  nodeConfig:
+    {{- if .Values.nodeConfig.advancedMachineFeatures.threadsPerCore }}
+    advancedMachineFeatures:
+      threadsPerCore: {{ .Values.nodeConfig.advancedMachineFeatures.threadsPerCore }}
+    {{- else }}
+    {{- end }}
+    {{- if .Values.nodeConfig.bootDiskKMSCryptoKeyRef }}
+    bootDiskKMSCryptoKeyRef:
+      {{- if .Values.nodeConfig.bootDiskKMSCryptoKeyRef.external }}
+      external: {{ .Values.nodeConfig.bootDiskKMSCryptoKeyRef.external }}
+      {{- end }}
+      {{- if .Values.nodeConfig.bootDiskKMSCryptoKeyRef.name }}
+      name: {{ .Values.nodeConfig.bootDiskKMSCryptoKeyRef.name }}
+      {{- end }}
+      {{- if .Values.nodeConfig.bootDiskKMSCryptoKeyRef.namespace }}
+      namespace: {{ .Values.nodeConfig.bootDiskKMSCryptoKeyRef.namespace }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.nodeConfig.confidentialNodes.enabled }}
+    confidentialNodes:
+      enabled: {{ .Values.nodeConfig.confidentialNodes.enabled }}
+    {{- end }}
+    {{- if .Values.nodeConfig.diskSizeGb }}
+    diskSizeGb: {{ .Values.nodeConfig.diskSizeGb }}
+    {{- end }}
+    {{- if .Values.nodeConfig.diskType }}
+    diskType: {{ .Values.nodeConfig.diskType }}
+    {{- end }}
+    {{- if .Values.nodeConfig.ephemeralStorageConfig.localSsdCount }}
+    ephemeralStorageConfig:
+      localSsdCount: {{ .Values.nodeConfig.ephemeralStorageConfig.localSsdCount }}
+    {{- else }}
+    {{- end }}
+    {{- if .Values.nodeConfig.ephemeralStorageLocalSsdConfig.localSsdCount }}
+    ephemeralStorageLocalSsdConfig:
+      localSsdCount: {{ .Values.nodeConfig.ephemeralStorageLocalSsdConfig.localSsdCount }}
+    {{- else }}
+    {{- end }}
+    {{- if .Values.nodeConfig.fastSocket.enabled }}
+    fastSocket:
+      enabled: {{ .Values.nodeConfig.fastSocket.enabled }}
+    {{- else}}
+    {{- end }}
+    {{- if .Values.nodeConfig.gcfsConfig.enabled }}
+    gcfsConfig:
+      enabled: {{ .Values.nodeConfig.gcfsConfig.enabled }}
+    {{- else }}
+    {{- end }}
+    {{- if and .Values.nodeConfig.guestAccelerator.count .Values.nodeConfig.guestAccelerator.type }}
+    guestAccelerator:
+      {{- range .Values.nodeConfig.guestAccelerator }}
+      - count: {{ .count }}
+        type: {{ .type }}
+        {{- if .gpuDriverInstallationConfig.gpuDriverVersion }}
+        gpuDriverInstallationConfig:
+          gpuDriverVersion: {{ .gpuDriverInstallationConfig.gpuDriverVersion }}
+        {{- end }}
+        {{- if .gpuPartitionSize }}
+        gpuPartitionSize: {{ .gpuPartitionSize }}
+        {{- end }}
+        {{- if and .gpuSharingConfig.gpuSharingStrategy .gpuSharingConfig.maxSharedClientsPerGpu }}
+        gpuSharingConfig:
+          gpuSharingStrategy: {{ .gpuSharingConfig.gpuSharingStrategy }}
+          maxSharedClientsPerGpu: {{ .gpuSharingConfig.maxSharedClientsPerGpu }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.nodeConfig.gvnic.enabled }}
+    gvnic:
+      enabled: {{ .Values.nodeConfig.gvnic.enabled }}
+    {{- end }}
+    {{- if .Values.nodeConfig.hostMaintenancePolicy.maintenanceInterval }}
+    hostMaintenancePolicy:
+      maintenanceInterval: {{ .Values.nodeConfig.hostMaintenancePolicy.maintenanceInterval }}
+    {{- end }}
+    {{- if .Values.nodeConfig.imageType }}
+    imageType: {{ .Values.nodeConfig.imageType }}
+    {{- end }}
+    {{- if .Values.nodeConfig.kubeletConfig.cpuManagerPolicy }}
+    kubeletConfig:
+      cpuCfsQuota: {{ .Values.nodeConfig.kubeletConfig.cpuCfsQuota }}
+      cpuCfsQuotaPeriod: {{ .Values.nodeConfig.kubeletConfig.cpuCfsQuotaPeriod }}
+      cpuManagerPolicy: {{ .Values.nodeConfig.kubeletConfig.cpuManagerPolicy }}
+      podPidsLimit: {{ .Values.nodeConfig.kubeletConfig.podPidsLimit }}
+    {{- end }}
+    {{- if .Values.nodeConfig.labels }}
+    labels:
+      {{- range $key, $value := .Values.nodeConfig.labels }}
+      {{ $key }}: {{ $value | quote }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.nodeConfig.linuxNodeConfig }}
+    linuxNodeConfig:
+      {{- with .Values.nodeConfig.linuxNodeConfig.cgroupMode }}
+      cgroupMode: {{ . | quote }}
+      {{- end }}
+      {{- if .Values.nodeConfig.linuxNodeConfig.sysctls }}
+      sysctls:
+        {{- range $key, $value := .Values.nodeConfig.linuxNodeConfig.sysctls }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- with .Values.nodeConfig.localNvmeSsdBlockConfig }}
+      {{- if and (not (empty .localSsdCount)) (kindIs "int" .localSsdCount) }}
+    localNvmeSsdBlockConfig:
+      localSsdCount: {{ .localSsdCount }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.nodeConfig.localSsdCount }}
+    localSsdCount: {{ .Values.nodeConfig.localSsdCount }}
+    {{- end }}
+    {{- if .Values.nodeConfig.loggingVariant }}
+    loggingVariant: {{ .Values.nodeConfig.loggingVariant }}
+    {{- end }}
+    {{- if .Values.nodeConfig.machineType }}
+    machineType: {{ .Values.nodeConfig.machineType }}
+    {{- end }}
+    {{- if .Values.nodeConfig.metadata }}
+    metadata:
+      {{- range $key, $value := .Values.nodeConfig.metadata }}
+      {{ $key }}: {{ $value | quote }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.nodeConfig.minCpuPlatform }}
+    minCpuPlatform: {{ .Values.nodeConfig.minCpuPlatform }}
+    {{- end }}
+    {{- if .Values.nodeConfig.nodeGroupRef }}
+    nodeGroupRef:
+      {{- if .Values.nodeConfig.nodeGroupRef.external }}
+      external: {{ .Values.nodeConfig.nodeGroupRef.external }}
+      {{- end }}
+      {{- if .Values.nodeConfig.nodeGroupRef.name }}
+      name: {{ .Values.nodeConfig.nodeGroupRef.name }}
+      {{- end }}
+      {{- if .Values.nodeConfig.nodeGroupRef.namespace }}
+      namespace: {{ .Values.nodeConfig.nodeGroupRef.namespace }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.nodeConfig.oauthScopes }}
+    oauthScopes: {{ toYaml .Values.nodeConfig.oauthScopes | nindent 6 }}
+    {{- end }}
+    {{- if .Values.nodeConfig.preemptible }}
+    preemptible: {{ .Values.nodeConfig.preemptible }}
+    {{- end }}
+    {{- with .Values.nodeConfig.reservationAffinity }}
+    {{- if .consumeReservationType }}
+    reservationAffinity:
+      consumeReservationType: {{ .consumeReservationType }}
+      {{- if .key }}
+      key: {{ .key }}
+      {{- end }}
+      {{- if .values }}
+      values:
+        {{- range .values }}
+        - {{ . }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.nodeConfig.resourceLabels }}
+    resourceLabels:
+      {{- range $key, $value := .Values.nodeConfig.resourceLabels }}
+      {{ $key }}: {{ $value }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.nodeConfig.sandboxConfig.sandboxType }}
+    sandboxConfig:
+      sandboxType: {{ .Values.nodeConfig.sandboxConfig.sandboxType }}
+    {{- end }}
+    {{- if .Values.nodeConfig.serviceAccountRef }}
+    serviceAccountRef:
+      {{- if .Values.nodeConfig.serviceAccountRef.external }}
+      external: {{ .Values.nodeConfig.serviceAccountRef.external }}
+      {{- end }}
+      {{- if .Values.nodeConfig.serviceAccountRef.name }}
+      name: {{ .Values.nodeConfig.serviceAccountRef.name }}
+      {{- end }}
+      {{- if .Values.nodeConfig.serviceAccountRef.namespace }}
+      namespace: {{ .Values.nodeConfig.serviceAccountRef.namespace }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.nodeConfig.shieldedInstanceConfig }}
+    shieldedInstanceConfig:
+      enableIntegrityMonitoring: {{ .Values.nodeConfig.shieldedInstanceConfig.enableIntegrityMonitoring }}
+      enableSecureBoot: {{ .Values.nodeConfig.shieldedInstanceConfig.enableSecureBoot }}
+    {{- end }}
+    {{- if .Values.nodeConfig.soleTenantConfig.nodeAffinity }}
+    soleTenantConfig:
+      nodeAffinity:
+        {{- range .Values.nodeConfig.soleTenantConfig.nodeAffinity }}
+        - key: {{ .key }}
+          operator: {{ .operator }}
+          values:
+            {{- range .values }}
+            - {{ . }}
+            {{- end }}
+        {{- end }}
+    {{- end }}
+    {{- if .Values.nodeConfig.spot }}
+    spot: {{ .Values.nodeConfig.spot }}
+    {{- end }}
+    {{- if .Values.nodeConfig.tags }}
+    tags:
+      {{- range .Values.nodeConfig.tags }}
+      - {{ . }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.nodeConfig.taint }}
+    taint:
+      {{- range .Values.nodeConfig.taint }}
+      - effect: {{ .effect }}
+        key: {{ .key }}
+        value: {{ .value }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.nodeConfig.workloadMetadataConfig }}
+    workloadMetadataConfig:
+      {{- if .Values.nodeConfig.workloadMetadataConfig.mode }}
+      mode: {{ .Values.nodeConfig.workloadMetadataConfig.mode }}
+      {{- end }}
+      {{- if .Values.nodeConfig.workloadMetadataConfig.nodeMetadata }}
+      nodeMetadata: {{ .Values.nodeConfig.workloadMetadataConfig.nodeMetadata }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+
+
+
+
+
+  {{- if .Values.nodeLocations }}
+  nodeLocations: 
+    {{- range .Values.nodeLocations }}
+    - {{ . }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.nodePoolAutoConfig }}
+  nodePoolAutoConfig:
+    {{- if .Values.nodePoolAutoConfig.networkTags }}
+    networkTags:
+      {{- if .Values.nodePoolAutoConfig.networkTags.tags }}
+      tags:
+      {{- range .Values.nodePoolAutoConfig.networkTags.tags }}
+      - {{ . }}
+      {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.nodePoolDefaults }}
+  nodePoolDefaults:
+    {{- if .Values.nodePoolDefaults.nodeConfigDefaults }}
+    nodeConfigDefaults:
+      {{- if .Values.nodePoolDefaults.nodeConfigDefaults.gcfsConfig.enabled }}
+      gcfsConfig:
+        enabled: {{ .Values.nodePoolDefaults.nodeConfigDefaults.gcfsConfig.enabled }}
+      {{- end }}
+      {{- if .Values.nodePoolDefaults.nodeConfigDefaults.loggingVariant }}
+      loggingVariant: {{ .Values.nodePoolDefaults.nodeConfigDefaults.loggingVariant }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.nodeVersion }}
+  nodeVersion: {{ .Values.nodeVersion }}
+  {{- end }}
+  {{- if .Values.notificationConfig.pubsub.enabled }}
+  notificationConfig:
+    pubsub:
+      enabled: {{ .Values.notificationConfig.pubsub.enabled }}
+      {{- if .Values.notificationConfig.pubsub.filter.eventType }}
+      filter:
+        eventType:
+          {{- range .Values.notificationConfig.pubsub.filter.eventType }}
+            - {{ . }}
+          {{- end }}
+      {{- end }}
+      {{- if .Values.notificationConfig.pubsub.topicRef }}
+      topicRef:
+        {{- if .Values.notificationConfig.pubsub.topicRef.external }}
+          external: {{ .Values.notificationConfig.pubsub.topicRef.external }}
+        {{- end }}
+        {{- if .Values.notificationConfig.pubsub.topicRef.name }}
+          name: {{ .Values.notificationConfig.pubsub.topicRef.name }}
+        {{- end }}
+        {{- if .Values.notificationConfig.pubsub.topicRef.namespace }}
+          namespace: {{ .Values.notificationConfig.pubsub.topicRef.namespace }}
+        {{- end }}
+      {{- end }}
+  {{- else }}
+  {{- end }}
+  {{- if .Values.podSecurityPolicyConfig }}
+  podSecurityPolicyConfig:
+    enabled: {{ .Values.podSecurityPolicyConfig.enabled }}
+  {{- end }}
+  {{- if .Values.privateClusterConfig.enabled }}
+  privateClusterConfig:
+    enablePrivateEndpoint: {{ .Values.privateClusterConfig.enablePrivateEndpoint | default false }}
+    enablePrivateNodes: {{ .Values.privateClusterConfig.enablePrivateNodes }}
+    masterGlobalAccessConfig:
+      enabled: {{ .Values.privateClusterConfig.masterGlobalAccessConfig.enabled | default false }}
+    masterIpv4CidrBlock: {{ .Values.privateClusterConfig.masterIpv4CidrBlock | default "" }}
+    peeringName: {{ .Values.privateClusterConfig.peeringName | default "" }}
+    privateEndpoint: {{ .Values.privateClusterConfig.privateEndpoint | default "" }}
+    privateEndpointSubnetworkRef:
+      external: {{ .Values.privateClusterConfig.privateEndpointSubnetworkRef.external | default "" }}
+      name: {{ .Values.privateClusterConfig.privateEndpointSubnetworkRef.name | default "" }}
+      namespace: {{ .Values.privateClusterConfig.privateEndpointSubnetworkRef.namespace | default "" }}
+    publicEndpoint: {{ .Values.privateClusterConfig.publicEndpoint | default "" }}
+  {{- else }}
+  {{- end }}
+  {{- if .Values.privateIpv6GoogleAccess }}
+  privateIpv6GoogleAccess: {{ .Values.privateIpv6GoogleAccess }}
+  {{- end }}
+  {{- if .Values.protectConfig }}
+  protectConfig:
+    {{- if .Values.protectConfig.workloadConfig.auditMode }}
+    workloadConfig:
+      auditMode: {{ .Values.protectConfig.workloadConfig.auditMode }}
+    {{- end }}
+    {{- if .Values.protectConfig.workloadVulnerabilityMode }}
+    workloadVulnerabilityMode: {{ .Values.protectConfig.workloadVulnerabilityMode }}
+    {{- end }}
+  {{- end }}
+
+  {{- if .Values.releaseChannel }}
+  releaseChannel:
+    {{- if .Values.releaseChannel.channel }}
+    channel: {{ .Values.releaseChannel.channel }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.resourceID }}
+  resourceID: {{ .Values.resourceID }}
+  {{- end }}
+  {{- if .Values.resourceUsageExportConfig.bigqueryDestination.datasetId }}
+  resourceUsageExportConfig:
+    bigqueryDestination:
+      datasetId: {{ .Values.resourceUsageExportConfig.bigqueryDestination.datasetId }}
+    enableNetworkEgressMetering: {{ .Values.resourceUsageExportConfig.enableNetworkEgressMetering | default false }}
+    enableResourceConsumptionMetering: {{ .Values.resourceUsageExportConfig.enableResourceConsumptionMetering | default true }}
+  {{- end }}
+  {{- if .Values.securityPostureConfig }}
+  securityPostureConfig:
+    {{- if .Values.securityPostureConfig.mode }}
+    mode: {{ .Values.securityPostureConfig.mode }}
+    {{- end }}
+    {{- if .Values.securityPostureConfig.vulnerabilityMode }}
+    vulnerabilityMode: {{ .Values.securityPostureConfig.vulnerabilityMode }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.serviceExternalIpsConfig }}
+  serviceExternalIpsConfig:
+    enabled: {{ .Values.serviceExternalIpsConfig.enabled }}
+  {{- end }}
+  {{- if .Values.verticalPodAutoscaling }}
+  verticalPodAutoscaling:
+    enabled: {{ .Values.verticalPodAutoscaling.enabled }}
+  {{- end }}
+  {{- if .Values.workloadIdentityConfig }}
+  workloadIdentityConfig:
+    {{- if .Values.workloadIdentityConfig.identityNamespace }}
+    identityNamespace: {{ .Values.workloadIdentityConfig.identityNamespace }}
+    {{- end }}
+    {{- if .Values.workloadIdentityConfig.workloadPool }}
+    workloadPool: {{ .Values.workloadIdentityConfig.workloadPool }}
+    {{- end }}
+  {{- end }}
+  {{- end }}

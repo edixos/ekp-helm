@@ -1,0 +1,198 @@
+global:
+  cnrmNamespace: "default"
+  abandon: true
+  skipUnspecifiedFields: false
+  gcpProjectId: "ekp-dev"
+  description: "gke cluster for test"
+
+removeDefaultNodePool: "true"
+
+privateClusterConfig:
+  enabled: true
+  enabledPrivateEndpoint: false
+  enablePrivateNodes: true
+  enabledMasterGlobalAccessConfig: false
+  masterIpv4CidrBlock: "172.20.187.16/28"
+  webhookPorts:
+    # -- List of ports used for admission webhooks. GKE Private Cluster doest only allows communications between masters and node through https 443 by default.
+    tcp:
+      - 8080
+      - 9443
+      - 6443
+      - 8443
+      - 443
+
+tags:
+  networking: true
+
+gcpVpcNetwork:
+  name: "ekp-vpc-network"
+  description: "EKP VPC Network"
+  resourceID: "ekp-vpc-network"
+  routingMode: REGIONAL
+  autoCreateSubnetworks: false
+
+gcpSubnetwork:
+  name: "ekp-subnetwork"
+  description: "EKP Subnetwork"
+  region: "europe-west1"
+  ipCidrRange: "10.0.0.0/24"
+  networkRef:
+    name: "ekp-vpc-network"
+  purpose: ""
+  secondaryIpRange:
+  - ipCidrRange: "10.0.32.0/19"
+    rangeName: "clusterrange"
+  - ipCidrRange: "10.0.16.0/20"
+    rangeName: "servicesrange"
+
+ipAllocationPolicy:
+  enabled: true
+  servicesSecondaryRangeName: servicesrange
+  clusterSecondaryRangeName: clusterrange
+
+name: "test-gke-cluster"
+location: "europe-west1-b"
+
+initialNodeCount: 1
+
+workloadIdentityConfig:
+  enabled: true
+  workloadPool: "ekp-dev.svc.id.goog"
+
+addonsConfig:
+  dnsCacheConfig:
+    enabled: true
+  verticalPodAutoscaling:
+    enabled: true
+  authenticatorGroupsConfig:
+    securityGroup: "gke-security-groups@edixos.com"
+  gcePersistentDiskCsiDriverConfig:
+    enabled: true
+  networkPolicyConfig:
+    disabled: false
+    provider: CALICO
+  httpLoadBalancing:
+    disabled: false
+  horizontalPodAutoscaling:
+    disabled: false
+
+enableShieldedNodes: true
+networkingMode: "VPC_NATIVE"
+networkRef:
+  name: "ekp-vpc-network"
+subnetworkRef:
+  name: "ekp-subnetwork"
+loggingService: "logging.googleapis.com/kubernetes"
+monitoringService: "monitoring.googleapis.com/kubernetes"
+
+# TODO: SHOULD BE MODIFIED ACCORDING TO THE NEEDS
+masterAuthorizedNetworksConfig:
+  cidrBlocks:
+    - cidrBlock: "0.0.0.0/0"
+      displayName: "all"
+
+clusterAutoscaling:
+  enabled: false
+
+resourceID: "test-gke-cluster"
+
+nodePools:
+  - nodePoolName: spot-n2-standard-8-ekp-testNode-a
+    autoscaling:
+      enabled: false
+      minNodeCount: 0
+      maxNodeCount: 1
+    initialNodeCount: 1
+    management:
+      autoRepair: true
+      autoUpgrade: true
+    maxPodsPerNode: 32
+    nodeConfig:
+      bootDiskKMSCryptoKey:
+        enabled: false
+      diskSize: 100
+      diskType: 'pd-balanced'
+      imageType: COS_CONTAINERD
+      spot: true
+      machineType: 'n2-standard-8'
+      metadata:
+        disable-legacy-endpoints: "true"
+      oauthScopes:
+        - "https://www.googleapis.com/auth/devstorage.read_only"
+        - "https://www.googleapis.com/auth/logging.write"
+        - "https://www.googleapis.com/auth/monitoring"
+        - "https://www.googleapis.com/auth/compute"
+      tags:
+        - gke-spot-nodes
+      labels:
+        owner: "ekp-testNode-a-owner"
+        env: "dev"
+        usage: "ekp-testNode-a"
+        resource_type: "gke"
+        function: "ekp-host"
+      serviceAccount:
+        name: ekp-testNode-a-sa
+        create: true
+
+  - nodePoolName: spot-n2-standard-8-ekp-testNode-b
+    autoscaling:
+      enabled: false
+      minNodeCount: 0
+      maxNodeCount: 1
+    initialNodeCount: 1
+    management:
+      autoRepair: true
+      autoUpgrade: true
+    maxPodsPerNode: 32
+    nodeConfig:
+      bootDiskKMSCryptoKey:
+        enabled: false
+      diskSize: 100
+      diskType: 'pd-balanced'
+      imageType: COS_CONTAINERD
+      spot: true
+      machineType: 'n2-standard-8'
+      metadata:
+        disable-legacy-endpoints: "true"
+      oauthScopes:
+        - "https://www.googleapis.com/auth/devstorage.read_only"
+        - "https://www.googleapis.com/auth/logging.write"
+        - "https://www.googleapis.com/auth/monitoring"
+        - "https://www.googleapis.com/auth/compute"
+      tags:
+        - gke-spot-nodes
+      labels:
+        owner: "ekp-testNode-b-owner"
+        env: "dev"
+        usage: "ekp-testNode-b"
+        resource_type: "gke"
+        function: "ekp-host"
+      serviceAccount:
+        name: ekp-testNode-b-sa
+        create: true
+
+resourceUsageExportConfig:
+  bigqueryDestination:
+    datasetId: ekp-gke-billing
+  enableNetworkEgressMetering:
+    enabled: true
+  enableResourceConsumptionMetering:
+    enabled: true
+
+bigquery-dataset:
+  enabled: true
+  bigqueryDataset:
+    name: "ekp-gke-billing"
+    resourceID: "ekp_gke_billing"
+    description: "EKP GKE Billing Dataset"
+    friendlyName: "ekp-gke-biling-dataset"
+    location: EU
+    access:
+    - role: OWNER
+      userByEmail: sa-<OWNER>@ekp-dev.iam.gserviceaccount.com
+    - role: WRITER
+      userByEmail: ekp-testNode-a-sa@ekp-dev.iam.gserviceaccount.com
+    - role: READER
+      groupByEmail: gke-security-groups@edixos.com
+    - role: READER

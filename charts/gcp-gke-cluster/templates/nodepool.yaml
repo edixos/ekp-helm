@@ -1,0 +1,110 @@
+{{- if not $.Values.enableAutopilot }}
+{{- range .Values.nodePools }}
+---
+apiVersion: container.cnrm.cloud.google.com/v1beta1
+kind: ContainerNodePool
+metadata:
+  annotations:
+    cnrm.cloud.google.com/project-id: {{ $.Values.global.gcpProjectId }}
+    {{- if $.Values.global.abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+    {{- end }}
+  labels:
+{{- include "gcp-gke-cluster.labels" $ | nindent 4 }}
+  {{- if and (.nodePoolName) (not .name) }}
+  name: {{ .nodePoolName }}
+  {{- else }}
+  name: {{ $.Values.name }}-{{ .name }}
+  {{- end }}
+spec:
+  {{- if .autoscaling.enabled }}
+  autoscaling:
+    minNodeCount: {{ required "A valid .Values.nodePools.autoscaling.minNodeCount entry required!" .autoscaling.minNodeCount }}
+    maxNodeCount: {{ required "A valid .Values.nodePools.autoscaling.maxNodeCount entry required!" .autoscaling.maxNodeCount }}
+  {{- end }}
+  clusterRef:
+    name: {{ $.Values.name }}
+  initialNodeCount: {{ .initialNodeCount | default 1 }}
+  location: {{ $.Values.location }}
+  management:
+    autoRepair: {{ .management.autoRepair | default "true" }}
+    autoUpgrade: {{ .management.autoUpgrade | default "true" }}
+  maxPodsPerNode: {{ .maxPodsPerNode | default 110 }}
+  {{- if .networkConfig }}
+  networkConfig:
+{{- toYaml .networkConfig | nindent 4 }}
+  {{- end }}  
+  nodeConfig:
+    {{- if .nodeConfig.bootDiskKMSCryptoKey.enabled }}
+    bootDiskKMSCryptoKeyRef:
+      {{- if .nodeConfig.bootDiskKMSCryptoKey.kccManaged }}
+      name: {{ .nodeConfig.bootDiskKMSCryptoKey.name }}
+      {{- with .nodeConfig.bootDiskKMSCryptoKey.namespace }}
+      namespace: {{ . }}
+      {{- end }}
+      {{- else }}
+      external: {{ .nodeConfig.bootDiskKMSCryptoKey.external }}
+      {{- end }}
+    {{- end }}
+    diskSizeGb: {{ .nodeConfig.diskSize | default 100 }}
+    diskType: {{ .nodeConfig.diskType | default "pd-standard" }}
+    {{- if .nodeConfig.guestAccelerator }}
+    guestAccelerator:
+    {{- range .nodeConfig.guestAccelerator }}
+    - count: {{ .count }}
+      type: {{ .type }}
+    {{- end }}
+    {{- end }}
+    imageType: {{ .nodeConfig.imageType | default "COS_CONTAINERD" }}
+    {{- if .nodeConfig.labels }}
+    labels:
+{{- toYaml .nodeConfig.labels | nindent 6 }}
+    {{- end }}
+    {{- with .nodeConfig.localSsdCount }}
+    localSsdCount: {{ . }}
+     {{- end }}
+    machineType: {{ .nodeConfig.machineType | default "n1-standard-1" }}
+    {{- with .nodeConfig.metadata }}
+    metadata:
+{{- . | toYaml | nindent 6 }}
+    {{- end }}
+    {{- if .nodeConfig.minCpuPlatform }}
+    {{- with .nodeConfig.minCpuPlatform }}
+    minCpuPlatform: {{ . }}
+    {{- end }}
+    {{- end }}
+    tags:
+      - {{ $.Values.name }}
+      {{- range .nodeConfig.tags }}
+      - {{ . }}
+      {{- end }}
+    serviceAccountRef:
+      {{- if .nodeConfig.serviceAccount.create }}
+      name: {{ .nodeConfig.serviceAccount.name }}
+      {{- else }}
+      external: {{ .nodeConfig.serviceAccount.name }}
+      {{- end }}
+    preemptible: {{ .nodeConfig.preemptible | default "false" }}
+    oauthScopes:
+    {{- range .nodeConfig.oauthScopes }}
+    - {{ . }}
+    {{- end }}
+    metadata:
+      disable-legacy-endpoints: "true"
+    {{- if .nodeConfig.taints }}
+    taint:
+      {{- range .nodeConfig.taints }}
+      - effect: {{ .effect | quote }}
+        key: {{ .key | quote }}
+        value: {{ .value | quote }}
+      {{- end }}
+    {{- end }}
+    {{- if $.Values.workloadIdentityConfig.enabled }}
+    workloadMetadataConfig:
+      nodeMetadata: GKE_METADATA_SERVER
+    {{- end }}
+  {{- if not .autoscaling.enabled }}
+  nodeCount: {{ (quote .nodeCount) | default 1 | int }}
+  {{- end }}
+{{- end }}
+{{- end }}

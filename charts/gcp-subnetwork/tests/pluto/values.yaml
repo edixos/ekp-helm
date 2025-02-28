@@ -8,7 +8,7 @@ global:
   gcpProjectId: "myprojectid"
   description: "subnetwork for test"
 
-name: "test-subnetwork"
+name: "ekp-subnetwork"
 ipCidrRange: "10.3.192.0/23"
 networkRef:
   external: myvpc

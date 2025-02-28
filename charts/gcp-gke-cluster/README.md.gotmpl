@@ -1,0 +1,194 @@
+# {{ .Name }}
+
+{{ template "chart.versionBadge" .}}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.homepageLine" . }}
+
+- [gke-cluster](#gcp-gke-cluster)
+  - [Prerequisites](#prerequisites)
+  - [Maintainers](#maintainers)
+  - [Description](#description)
+  - [Values](#values)
+  - [GKE Immutable Fields](#gke-immutable-fields)
+  - [Nodepool Immutable Fields](#nodepool-immutable-fields)
+  - [Installing the Chart](#installing-the-chart)
+    - [With Helm](#with-helm)
+    - [With ArgoCD](#with-argocd)
+  - [Develop](#develop)
+    - [Update documentation](#update-documentation)
+    - [Run linter](#run-linter)
+    - [Run pluto](#run-pluto)
+
+## Prerequisites
+
+- Helm v{{ if eq .ApiVersion "v2" }}3{{ else }}2{{end}}
+- Config Connector installed (v1.6.0)
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+## Description
+
+{{ template "chart.description" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+## GKE Immutable Fields
+
+| Key  |  **Required** |  Type | Description  |
+|-----|------|---------|-------------|
+| clusterAutoscaling.autoProvisioningDefaults.bootDiskKMSKeyRef |  | object | The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. |
+| clusterIpv4Cidr |  | string | The IP address range of the Kubernetes pods in this cluster in CIDR notation (e.g. 10.96.0.0/14). Leave blank to have one automatically chosen or specify a /14 block in 10.0.0.0/8. |
+| confidentialNodes  |  | object | Configuration for the confidential nodes feature, which makes nodes run on confidential VMs. Warning: This configuration can't be changed (or added/removed) after cluster creation without deleting and recreating the entire cluster. |
+| confidentialNodes.enabled | X | boolean | Whether Confidential Nodes feature is enabled for all nodes in this cluster. |
+| datapathProvider |  | string | The desired datapath provider for this cluster. By default, uses the IPTables-based kube-proxy implementation. |
+| defaultMaxPodsPerNode |  | integer | The default maximum number of pods per node in this cluster. This doesn't work on "routes-based" clusters, clusters that don't have IP Aliasing enabled. |
+| description |  | string | Description of the cluster. |
+| dnsConfig |  | object |  Description of the cluster. |
+| enableAutopilot |  | boolean | Enable Autopilot for this cluster. |
+| enableKubernetesAlpha |  | boolean | Whether to enable Kubernetes Alpha features for this cluster. Note that when this option is enabled, the cluster cannot be upgraded and will be automatically deleted after 30 days. |
+| enableTpu |  | boolean | Whether to enable Cloud TPU resources in this cluster. |
+| initialNodeCount |  | integer | The number of nodes to create in this cluster's default node pool. In regional or multi-zonal clusters, this is the number of nodes per zone. Must be set if node_pool is not set. If you're using google_container_node_pool objects with no default node pool, you'll need to set this to a value of at least 1, alongside setting remove_default_node_pool to true. |
+| ipAllocationPolicy |  | object | Configuration of cluster IP allocation for VPC-native clusters. Adding this block enables IP aliasing, making the cluster VPC-native instead of routes-based. |
+| ipAllocationPolicy.clusterIpv4CidrBlock |  | string | The IP address range for the cluster pod IPs. Set to blank to have a range chosen with the default size. |
+| ipAllocationPolicy.clusterSecondaryRangeName |  | string | The name of the existing secondary range in the cluster's subnetwork to use for pod IP addresses. Alternatively, cluster_ipv4_cidr_block can be used to automatically create a GKE-managed one. |
+| ipAllocationPolicy.servicesIpv4CidrBlock |  | string | The IP address range of the services IPs in this cluster. Set to blank to have a range chosen with the default size. |
+| ipAllocationPolicy.servicesSecondaryRangeName |  | string | The name of the existing secondary range in the cluster's subnetwork to use for service ClusterIPs. Alternatively, services_ipv4_cidr_block can be used to automatically create a GKE-managed one. |
+| location | X | string | The location (region or zone) in which the cluster master will be created, as well as the default node location. |
+| masterAuth.clientCertificateConfig |  | object | Whether client certificate authorization is enabled for this cluster. |
+| masterAuth.clientCertificateConfig.issueClientCertificate | X | boolean | Whether client certificate authorization is enabled for this cluster. |
+| networkingMode |  | string | Determines whether alias IPs or routes will be used for pod IPs in the cluster. |
+| privateClusterConfig.enablePrivateNodes |  | boolean | Enables the private cluster feature, creating a private endpoint on the cluster. In a private cluster, nodes only have RFC 1918 private addresses and communicate with the master's private endpoint via private networking. |
+| privateClusterConfig.masterIpv4CidrBlock |  | string | The IP range in CIDR notation to use for the hosted master network. This range will be used for assigning private IP addresses to the cluster master(s) and the ILB VIP. |
+| privateClusterConfig.privateEndpointSubnetworkRef |  | object | Subnetwork in cluster's network where master's endpoint will be provisioned. |
+| resourceID |  | string | The name of the resource. Used for creation and acquisition. When unset, the value of `metadata.name` is used as the default. |
+
+## Nodepool Immutable Fields
+
+| Key  |  **Required** |  Type | Description  |
+|-----|------|---------|-------------|
+| clusterRef | X | object | Cluster Target |
+| initialNodeCount | | integer | The initial number of nodes for the pool. In regional or multi-zonal clusters, this is the number of nodes per zone. Changing this will force recreation of the resource. |
+| location | X | string | The location (region or zone) of the cluster. |
+| maxPodsPerNode | | integer | The maximum number of pods per node in this node pool. Note that this does not work on node pools which are "route-based" - that is, node pools belonging to clusters that do not have IP Aliasing enabled. |
+| namePrefix | | string | Creates a unique name for the node pool beginning with the specified prefix. Conflicts with name. |
+| networkConfig.createPodRange | | boolean | Whether to create a new range for pod IPs in this node pool. Defaults are provided for pod_range and pod_ipv4_cidr_block if they are not specified. |
+| networkConfig.podIpv4CidrBlock | | string | The IP address range for pod IPs in this node pool. Only applicable if create_pod_range is true. Set to blank to have a range chosen with the default size. Set to /netmask (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0/14) to pick a specific range to use. |
+| networkConfig.podRange | | string | The ID of the secondary range for pod IPs. If create_pod_range is true, this ID is used for the new range. If create_pod_range is false, uses an existing secondary range with this ID. |
+| nodeConfig | | object | The configuration of the nodepool. |
+| nodeConfig.diskSizeGb |  | integer | Size of the disk attached to each node, specified in GB. The smallest allowed disk size is 10GB. |
+| nodeConfig.diskType | | string | Type of the disk attached to each node. Such as pd-standard, pd-balanced or pd-ssd. |
+| nodeConfig.ephemeralStorageConfig | | object | Parameters for the ephemeral storage filesystem. |
+| nodeConfig.ephemeralStorageConfig.localSsdCount  | X | integer | Number of local SSDs to use to back ephemeral storage. Uses NVMe interfaces. Each local SSD is 375 GB in size. |
+| nodeConfig.gcfsConfig       | | object | GCFS configuration for this node. |
+| nodeConfig.gcfsConfig.enabled    | X | boolean | Whether or not GCFS is enabled. |
+| nodeConfig.guestAccelerator | | list | List of the type and count of accelerator cards attached to the instance. |
+| nodeConfig.guestAccelerator[].count | | integer | The number of the accelerator cards exposed to an instance. |
+| nodeConfig.guestAccelerator[].gpuPartitionSize    | | string | Size of partitions to create on the GPU. Valid values are described in the NVIDIA mig user guide (https://docs.nvidia.com/datacenter/tesla/mig-user-guide/#partitioning). |
+| nodeConfig.guestAccelerator[].gpuSharingConfig    | | object | Configuration for GPU sharing. |
+| nodeConfig.guestAccelerator[].gpuSharingConfig.gpuSharingStrategy    | X | string | The type of GPU sharing strategy to enable on the GPU node. Possible values are described in the API package |
+| nodeConfig.guestAccelerator[].gpuSharingConfig.maxSharedClientsPerGpu   | X | integer | The maximum number of containers that can share a GPU. |
+| nodeConfig.guestAccelerator[].type     | X | string | The accelerator type resource name. |
+| nodeConfig.gvnic     | | object | Enable or disable gvnic in the node pool. |
+| nodeConfig.gvnic.enabled     | X | boolean | Whether or not gvnic is enabled. |
+| nodeConfig.kubeletConfig.cpuManagerPolicy    | X | string | Control the CPU management policy on the node. |
+| nodeConfig.linuxNodeConfig.sysctls    | X | map (key: string, value: string) | The Linux kernel parameters to be applied to the nodes and all pods running on the nodes. |
+| nodeConfig.localSsdCount  | | integer | The number of local SSD disks to be attached to the node. |
+| nodeConfig.machineType | | string | The name of a Google Compute Engine machine type. |
+| nodeConfig.metadata | | map (key: string, value: string) | The metadata key/value pairs assigned to instances in the cluster. |
+| nodeConfig.minCpuPlatform | | string | Minimum CPU platform to be used by this instance. The instance may be scheduled on the specified or newer CPU platform. |
+| nodeConfig.nodeGroupRef   | | object | Setting this field will assign instances of this pool to run on the specified node group. This is useful for running workloads on sole tenant nodes. |
+| nodeConfig.oauthScopes | | list (string)| The set of Google API scopes to be made available on all of the node VMs. |
+| nodeConfig.preemptible | | boolean | Whether the nodes are created as preemptible VM instances. |
+| nodeConfig.reservationAffinity   | | object | The reservation affinity configuration for the node pool. |
+| nodeConfig.reservationAffinity.consumeReservationType     | X |string | Corresponds to the type of reservation consumption. |
+| nodeConfig.reservationAffinity.key     | | string | The label key of a reservation resource. |
+| nodeConfig.reservationAffinity.values     | | list (string) | The label values of the reservation resource. |
+| nodeConfig.sandboxConfig     | | object | Sandbox configuration for this node. |
+| nodeConfig.sandboxConfig.sandboxType   | X | string | Type of the sandbox to use for the node (e.g. 'gvisor'). |
+| nodeConfig.shieldedInstanceConfig    | | object | Shielded Instance options. |
+| nodeConfig.shieldedInstanceConfig.enableIntegrityMonitoring      | | boolean | Defines whether the instance has integrity monitoring enabled. |
+| nodeConfig.shieldedInstanceConfig.enableSecureBoot      | | boolean | Defines whether the instance has Secure Boot enabled. |
+| nodeConfig.spot    | | boolean | Whether the nodes are created as spot VM instances. |
+| nodeConfig.taint | | list (object) | List of Kubernetes taints to be applied to each node. |
+| nodeConfig.taint[].effect | X | string | Effect for taint. |
+| nodeConfig.taint[].key | X | string | Key for taint. |
+| nodeConfig.taint[].value | X | string | Value for taint. |
+| placementPolicy | | object | Specifies the node placement policy. |
+| placementPolicy.type | X | string | Type defines the type of placement policy. |
+| upgradeSettings.blueGreenSettings.standardRolloutPolicy | X | object | Standard rollout policy is the default policy for blue-green. |
+
+## Installing the Chart
+
+### With Helm
+
+To install the chart with the release name `my-release`:
+
+```bash
+helm repo add ekp-helm https://edixos.github.io/ekp-helm
+helm install ekp-helm/{{ .Name }}
+```
+
+### With ArgoCD
+
+Add new application as:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Name }}
+spec:
+  project: infra
+
+  source:
+    repoURL: "https://edixos.github.io/ekp-helm"
+    targetRevision: "{{ .Version }}"
+    chart: {{ .Name }}
+    path: ''
+
+    helm:
+
+      values: |
+        name: mygke
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: "cnrm-system"
+  syncPolicy:
+    automated:
+      prune: true
+```
+
+## Develop
+
+### Update documentation
+
+Chart documentation is generated with [helm-docs](https://github.com/norwoodj/helm-docs) from `values.yaml` file.
+After file modification, regenerate README.md with command:
+
+```bash
+docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 helm-docs
+```
+
+### Run linter
+
+```bash
+docker run --rm -it -w /charts -v $(pwd)/../../:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts /charts/charts/{{ .Name }} --config /charts/charts/{{ .Name }}/ct.yaml
+```
+
+### Run pluto
+
+In order to check if the api-version used in this chart are not deprecated, or worse, removed, we use pluto to check it:
+
+```
+docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:3.17 template {{ .Name }} . -f tests/pluto/values.yaml --output-dir /pluto
+docker run --rm -it -v pluto:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /data -o yaml --ignore-deprecations -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0" -o wide
+docker volume rm pluto
+```
+

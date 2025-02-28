@@ -1,0 +1,36 @@
+{{- if and .Values.privateClusterConfig.enabled .Values.privateClusterConfig.webhookPorts }}
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeFirewall
+metadata:
+  annotations:
+    cnrm.cloud.google.com/project-id: {{ $.Values.global.gcpProjectId }}
+    {{- if $.Values.global.abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+    {{- end }}
+  labels:
+{{- include "gcp-gke-cluster.labels" . | nindent 4 }}
+  name: {{ .Values.name }}-webhook-allow-from-master
+spec:
+  allow:
+{{- if .Values.privateClusterConfig.webhookPorts.tcp }}
+  - protocol: tcp
+    ports:
+{{- range .Values.privateClusterConfig.webhookPorts.tcp }}
+    - {{ . | quote }}
+{{- end }}
+{{- end }}
+{{- if .Values.privateClusterConfig.webhookPorts.udp }}
+  - protocol: udp
+    ports:
+{{- range .Values.privateClusterConfig.webhookPorts.udp }}
+    - {{ . | quote }}
+{{- end }}
+{{- end }}
+  networkRef:
+    external: {{ .Values.networkRef.external }}
+    name: {{ .Values.networkRef.name }}
+  sourceRanges:
+  - {{ .Values.privateClusterConfig.masterIpv4CidrBlock | quote }}
+  targetTags:
+    - {{ .Values.name }}
+{{- end }}

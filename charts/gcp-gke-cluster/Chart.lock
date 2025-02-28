@@ -1,0 +1,12 @@
+dependencies:
+- name: gcp-subnetwork
+  repository: https://edixos.github.io/ekp-helm
+  version: 0.1.5
+- name: gcp-vpc-network
+  repository: https://edixos.github.io/ekp-helm
+  version: 0.1.3
+- name: gcp-bigquery-dataset
+  repository: https://edixos.github.io/ekp-helm
+  version: 0.1.0
+digest: sha256:a8ef8c2bd0e917df321c789a5b5353a7e9142434ad5b5a8c66dce4f974a140fb
+generated: "2025-02-28T18:52:54.168125+01:00"
