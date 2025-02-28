@@ -26,6 +26,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
+| https://edixos.github.io/ekp-helm | bigquery-dataset(gcp-bigquery-dataset) | 0.1.0 |
 | https://edixos.github.io/ekp-helm | gcpSubnetwork(gcp-subnetwork) | 0.1.5 |
 | https://edixos.github.io/ekp-helm | gcpVpcNetwork(gcp-vpc-network) | 0.1.3 |
 
@@ -74,6 +75,7 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | annotations | object | `{}` | Add annotations to the GKE Cluster. |
 | authenticatorGroupsConfig | object | `{"securityGroup":null}` | Configuration for the Google Groups for GKE feature. |
 | authenticatorGroupsConfig.securityGroup | string | `nil` | The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com. |
+| bigquery-dataset | object | `{"bigqueryDataset":{"access":[],"description":"<to_set>","friendlyName":"<to_set>","location":"<to_set>","name":"<to_set>"},"enabled":false,"gcpProjectId":"<to_set>"}` | Enables Bigquery Dataset for billing GKE resources |
 | binaryAuthorization | object | `{"enabled":false,"evaluationMode":"EVALUATION_MODE_UNSPECIFIED"}` | Configuration for the Binary Authorization feature. |
 | binaryAuthorization.enabled | bool | `false` | DEPRECATED. Deprecated in favor of evaluation_mode. Enable Binary Authorization for this cluster. |
 | binaryAuthorization.evaluationMode | string | `"EVALUATION_MODE_UNSPECIFIED"` | Mode of operation for Binary Authorization policy evaluation. |
@@ -389,7 +391,7 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | tags.networking | bool | `false` | Whether we want to create networking features like VPC, Subnetwork, etc. |
 | verticalPodAutoscaling | object | `{"enabled":false}` | Vertical Pod Autoscaling automatically adjusts the resources of pods controlled by it. |
 | verticalPodAutoscaling.enabled | bool | `false` | Enables vertical pod autoscaling. |
-| workloadIdentityConfig | object | `{"identityNamespace":null,"workloadPool":null}` | Configuration for the use of Kubernetes Service Accounts in GCP IAM policies. |
+| workloadIdentityConfig | object | `{"enabled":false,"identityNamespace":null,"workloadPool":null}` | Configuration for the use of Kubernetes Service Accounts in GCP IAM policies. |
 | workloadIdentityConfig.identityNamespace | string | `nil` | DEPRECATED. This field will be removed in a future major release as it has been deprecated in the API. Use `workloadPool` instead; `workloadPool` field will supersede this field. Enables workload identity. |
 | workloadIdentityConfig.workloadPool | string | `nil` | The workload pool to attach all Kubernetes service accounts to. |
 
