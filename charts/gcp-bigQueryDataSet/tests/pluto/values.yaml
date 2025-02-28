@@ -1,4 +1,6 @@
-gcpProjectId: "ekp-dev"
+global:
+  gcpProjectId: ekp-dev
+
 bigqueryDataset:
   #defaultTableExpirationMs: 3600
   name: "ekp-gke-billing"
