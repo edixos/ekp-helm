@@ -64,7 +64,6 @@ It will deploy the following GCP components:
 | bigqueryDataset.defaultPartitionExpirationMs | string | `""` |  |
 | bigqueryDataset.defaultTableExpirationMs | string | `""` |  |
 | bigqueryDataset.delete_contents_on_destroy | string | `"false"` |  |
-| bigqueryDataset.deletion_policy | string | `"abandon"` |  |
 | bigqueryDataset.description | string | `""` | user defines defination |
 | bigqueryDataset.friendlyName | string | `""` | friendly defination |
 | bigqueryDataset.isCaseInsensitive | string | `""` |  |
@@ -75,7 +74,9 @@ It will deploy the following GCP components:
 | bigqueryDataset.projectRef | object | `{}` |  |
 | bigqueryDataset.resourceID | string | `""` |  |
 | bigqueryDataset.storageBillingModel | string | `""` |  |
-| gcpProjectId | string | `"myprojectid"` |  |
+| global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
+| global.deletion_policy | string | `"abandon"` | Keep the VPC even after the kcc resource deletion. |
+| global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
 
 ## Installing the Chart
 
