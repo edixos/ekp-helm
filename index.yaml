@@ -46,6 +46,21 @@ entries:
     urls:
     - eso-0.1.0.tgz
     version: 0.1.0
+  gcp-bigquery-dataset:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-02-28T17:49:00.892368052Z"
+    description: A Helm chart that Creates a BigQueryDataset through Config Connector
+    digest: 5cb693eac181b0d0c24c6204ee176d7fdd6ef845b89d135232950a39ce93f225
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: gcp-bigquery-dataset
+    type: application
+    urls:
+    - gcp-bigquery-dataset-0.1.0.tgz
+    version: 0.1.0
   gcp-service-account:
   - apiVersion: v2
     appVersion: 0.1.2
@@ -181,4 +196,4 @@ entries:
     urls:
     - gcp-vpc-network-0.1.1.tgz
     version: 0.1.1
-generated: "2025-02-28T08:53:34.306279786Z"
+generated: "2025-02-28T17:49:00.892386186Z"
