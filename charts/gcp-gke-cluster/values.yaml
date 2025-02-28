@@ -865,3 +865,14 @@ nodePools:
     # -- (int) The number of nodes per instance group. This field can be used to update the number of nodes per instance group but should not be used alongside autoscaling.
     # @default -- 1
     nodeCount:
+
+# -- Enables Bigquery Dataset for billing GKE resources
+bigquery-dataset:
+  enabled: false
+  gcpProjectId: <to_set>
+  bigqueryDataset:
+    name: "<to_set>"
+    description: "<to_set>"
+    friendlyName: "<to_set>"
+    location: "<to_set>"
+    access: []

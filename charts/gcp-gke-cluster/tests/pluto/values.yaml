@@ -171,3 +171,28 @@ nodePools:
       serviceAccount:
         name: ekp-testNode-b-sa
         create: true
+
+resourceUsageExportConfig:
+  bigqueryDestination:
+    datasetId: ekp-gke-billing
+  enableNetworkEgressMetering:
+    enabled: true
+  enableResourceConsumptionMetering:
+    enabled: true
+
+bigquery-dataset:
+  enabled: true
+  bigqueryDataset:
+    name: "ekp-gke-billing"
+    resourceID: "ekp_gke_billing"
+    description: "EKP GKE Billing Dataset"
+    friendlyName: "ekp-gke-biling-dataset"
+    location: EU
+    access:
+    - role: OWNER
+      userByEmail: sa-<OWNER>@ekp-dev.iam.gserviceaccount.com
+    - role: WRITER
+      userByEmail: ekp-testNode-a-sa@ekp-dev.iam.gserviceaccount.com
+    - role: READER
+      groupByEmail: gke-security-groups@edixos.com
+    - role: READER

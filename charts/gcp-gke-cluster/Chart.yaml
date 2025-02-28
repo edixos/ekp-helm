@@ -21,3 +21,8 @@ dependencies:
   alias: gcpVpcNetwork
   tags:
     - networking
+- name: bigquery-dataset
+  version: 0.1.0
+  repository: "https://edixos.github.io/ekp-helm"
+  alias: bigquery-dataset
+  condition: bigquery-dataset.enabled
