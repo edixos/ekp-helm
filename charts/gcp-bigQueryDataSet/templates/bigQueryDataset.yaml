@@ -5,9 +5,9 @@ metadata:
     {{- if .Values.bigqueryDataset.delete_contents_on_destroy }}
     cnrm.cloud.google.com/delete-contents-on-destroy: {{ .Values.bigqueryDataset.delete_contents_on_destroy | quote }}
     {{- end }}
-    cnrm.cloud.google.com/project-id: {{ .Values.gcpProjectId }}
+    cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId }}
     {{- if .Values.bigqueryDataset.deletion_policy }}
-    cnrm.cloud.google.com/deletion-policy: {{ .Values.bigqueryDataset.deletion_policy }}
+    cnrm.cloud.google.com/deletion-policy: {{ .Values.global.deletion_policy }}
     {{- end }}
   labels:
   {{- include "bigquery-dataset.labels" . | nindent 4 }}

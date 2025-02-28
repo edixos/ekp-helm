@@ -1,7 +1,13 @@
-gcpProjectId: "myprojectid"
+global:
+  # -- Allows to deploy in another namespace than the release one
+  # @default -- `nil`
+  cnrmNamespace: ""
+  # -- Google Project ID
+  gcpProjectId: "myprojectid"
+  # -- Keep the VPC even after the kcc resource deletion.
+  deletion_policy: abandon
 
 bigqueryDataset:
-  deletion_policy: abandon
   delete_contents_on_destroy: "false"
   # -- name of the Dataset
   name: ekp-bigQueryDataset
