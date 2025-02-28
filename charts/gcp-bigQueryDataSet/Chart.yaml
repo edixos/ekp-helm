@@ -1,0 +1,10 @@
+apiVersion: v2
+name: bigquery-dataset
+description: A Helm chart that Creates a BigQueryDataset through Config Connector
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+maintainers:
+  - name: ilyasabdellaoui
+    email: ilyas.abdellaoui21@gmail.com
+    url: https://github.com/ilyasabdellaoui

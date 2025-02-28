@@ -1,0 +1,47 @@
+gcpProjectId: "myprojectid"
+
+bigqueryDataset:
+  deletion_policy: abandon
+  delete_contents_on_destroy: "false"
+  # -- name of the Dataset
+  name: ekp-bigQueryDataset
+  namespace: cnrm-gcp-dev
+  access:
+  - dataset: {}
+    domain: ""
+    groupByEmail: ""
+  # -- roles list for roles writer/reader/admin
+    role: ""
+    routine: {}
+      # datasetId: ""
+      # projectId: ""
+      # routineId: ""
+    specialGroup: ""
+  # -- email id for the gke serviceaccount
+    userByEmail: ""
+    view: {}
+      # datasetId: ""
+      # projectId: ""
+      # tableId: ""
+  defaultCollation: ""
+  defaultEncryptionConfiguration: {}
+    # kmsKeyRef:
+    #   external: ""
+    #   name: ""
+    #   namespace: ""
+  defaultPartitionExpirationMs: ""
+  defaultTableExpirationMs: ""
+  # -- user defines defination
+  description: ""
+  # -- friendly defination
+  friendlyName: ""
+  isCaseInsensitive: ""
+  # -- location of the dataset
+  location: ""
+  maxTimeTravelHours: ""
+  projectRef: {}
+    # external: ""
+    # name: ""
+    # namespace: ""
+  resourceID: ""
+  storageBillingModel: ""
