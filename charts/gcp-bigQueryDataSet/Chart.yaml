@@ -1,5 +1,5 @@
 apiVersion: v2
-name: bigquery-dataset
+name: gcp-bigquery-dataset
 description: A Helm chart that Creates a BigQueryDataset through Config Connector
 type: application
 version: 0.1.0

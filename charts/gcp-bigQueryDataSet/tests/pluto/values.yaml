@@ -9,7 +9,7 @@ bigqueryDataset:
   delete_contents_on_destroy: "false"
   #deletion_policy: abandon
   abandon: true
-  description: "ekp-bigquery-dataset"
+  description: "ekp-gcp-bigquery-dataset"
   friendlyName: "ekp billing dataset"
   location: EU
   access: {}

@@ -1,8 +1,8 @@
-# bigquery-dataset
+# gcp-bigquery-dataset
 
 ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
-- [bigquery-dataset](#bigQuery-dataset)
+- [gcp-bigquery-dataset](#gcp-bigquery-dataset)
   - [Prerequisites](#prerequisites)
   - [BigQueryDatSet Immutable Fields](#bigquery-datset-immutable-fields)
   - [Important Usage Constraints](#Important-usage-constraints)
@@ -86,7 +86,7 @@ To install the chart with the release name `my-release`:
 
 ```bash
 helm repo add ekp-helm https://edixos.github.io/ekp-helm
-helm install ekp-helm/bigquery-dataset
+helm install ekp-helm/gcp-bigquery-dataset
 ```
 
 ### With ArgoCD
@@ -97,20 +97,20 @@ Add new application as:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bigquery-dataset
+  name: gcp-bigquery-dataset
 spec:
   project: infra
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
     targetRevision: "0.1.0"
-    chart: bigquery-dataset
+    chart: gcp-bigquery-dataset
     path: ''
 
     helm:
       values: |
         bigqueryDataset: "mydataset"
-        description: "bigquery-dataset"
+        description: "gcp-bigquery-dataset"
         friendlyName: "billing dataset"
         location: "europe"
         access:
@@ -146,7 +146,7 @@ docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 h
 ### Run linter
 
 ```bash
-docker run --rm -it -w /charts -v $(pwd)/../../:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts /charts/charts/bigquery-dataset --config /charts/charts/bigquery-dataset/ct.yaml
+docker run --rm -it -w /charts -v $(pwd)/../../:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts /charts/charts/gcp-bigquery-dataset --config /charts/charts/gcp-bigquery-dataset/ct.yaml
 ```
 
 ### Run pluto
@@ -154,7 +154,7 @@ docker run --rm -it -w /charts -v $(pwd)/../../:/charts quay.io/helmpack/chart-t
 In order to check if the api-version used in this chart are not deprecated, or worse, removed, we use pluto to check it:
 
 ```
-docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:3.17 template bigquery-dataset . -f tests/pluto/values.yaml --output-dir /pluto
+docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:3.17 template gcp-bigquery-dataset . -f tests/pluto/values.yaml --output-dir /pluto
 docker run --rm -it -v pluto:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /data -o yaml --ignore-deprecations -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0" -o wide
 docker volume rm pluto
 ```

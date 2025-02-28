@@ -6,7 +6,7 @@
 
 {{ template "chart.homepageLine" . }}
 
-- [bigquery-dataset](#bigQuery-dataset)
+- [gcp-bigquery-dataset](#gcp-bigquery-dataset)
   - [Prerequisites](#prerequisites)
   - [BigQueryDatSet Immutable Fields](#bigquery-datset-immutable-fields)
   - [Important Usage Constraints](#Important-usage-constraints)
@@ -84,7 +84,7 @@ spec:
     helm:
       values: |
         bigqueryDataset: "mydataset"
-        description: "bigquery-dataset"
+        description: "gcp-bigquery-dataset"
         friendlyName: "billing dataset"
         location: "europe"
         access:
