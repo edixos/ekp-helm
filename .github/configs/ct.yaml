@@ -2,10 +2,12 @@ remote: origin
 target-branch: main
 chart-dirs:
   - charts
+
+chart-repos:
+ - external-secrets=https://charts.external-secrets.io
+ - dex=https://charts.dexidp.io
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
-chart-repos:
- - dex=https://charts.dexidp.io
 validate-maintainers: false
 validate-yaml: true
 exclude-deprecated: true

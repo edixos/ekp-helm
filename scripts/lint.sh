@@ -9,10 +9,7 @@ echo $SRCROOT
 
 echo -e "\n-- Linting all Helm Charts --\n"
 docker run -it --rm \
-     -v "$SRCROOT:/workdir" \
-     --workdir /workdir \
-     quay.io/helmpack/chart-testing:v3.12.0 \
-     ct lint \
-     --config .github/configs/ct.yaml \
-     --lint-conf .github/configs/lintconf.yaml \
-     --debug
+  -v "$SRCROOT:/workdir" \
+  --workdir /workdir \
+  quay.io/helmpack/chart-testing:v3.12.0 \
+  /bin/bash -c "git config --global --add safe.directory /workdir && ct lint --config .github/configs/ct.yaml --lint-conf .github/configs/lintconf.yaml --debug"
