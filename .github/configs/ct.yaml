@@ -6,6 +6,7 @@ chart-dirs:
 chart-repos:
  - external-secrets=https://charts.external-secrets.io
  - dex=https://charts.dexidp.io
+ - ekp-helm=https://edixos.github.io/ekp-helm
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
 validate-maintainers: false
