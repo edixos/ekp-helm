@@ -20,7 +20,7 @@ member: serviceAccount:iampolicymember@${PROJECT_ID}.iam.gserviceaccount.com
 # -- Immutable. Required. The role for which the Member will be bound.
 role: "roles/editor"
 # -- Immutable. The IAM identity to be bound to the role. Exactly one of 'member' or 'memberFrom' must be used, and only one subfield within 'memberFrom' can be used.
-memberFrom: 
+memberFrom:
   # -- BigQueryConnectionConnection whose service account is to be bound to the role. Use the Type field to specifie the connection type. For "spark" connetion, the service account is in `status.observedState.spark.serviceAccountID`. For "cloudSQL" connection, the service account is in `status.observedState.cloudSQL.serviceAccountID`. For "cloudResource" connection, the service account is in `status.observedState.cloudResource.serviceAccountID`.
   bigQueryConnectionConnectionRef:
     name:
