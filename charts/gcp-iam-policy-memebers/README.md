@@ -1,0 +1,109 @@
+# gcp-iam-policy-memebers
+
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+
+## Prerequisites
+
+- Helm v3
+- Config Connector installed (v1.6.0)
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| ilyasabdellaoui | <ilyas.abdellaoui21@gmail.com> | <https://github.com/ilyasabdellaoui> |
+| wiemaouadi | <wiem.aouadi3@gmail.com> | <https://github.com/wiemaouadi> |
+
+## Description
+
+A Helm chart that Creates GCP IAM Policy Memebers through Config Connector
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| condition | object | `{"description":"","expression":null,"title":null}` | Immutable. Optional. The condition under which the binding applies. |
+| global.abandon | bool | `false` | Keep the resource even after the kcc resource deletion. |
+| global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
+| global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
+| member | string | `"serviceAccount:iampolicymember@${PROJECT_ID}.iam.gserviceaccount.com"` | Immutable. The IAM identity to be bound to the role. Exactly one of 'member' or 'memberFrom' must be used. |
+| memberFrom | object | `{"bigQueryConnectionConnectionRef":{"name":null,"namespace":null,"type":null},"logSinkRef":{"name":null,"namespace":null},"serviceAccountRef":{"name":null,"namespace":null},"serviceIdentityRef":{"name":null,"namespace":null},"sqlInstanceRef":{"name":null,"namespace":null}}` | Immutable. The IAM identity to be bound to the role. Exactly one of 'member' or 'memberFrom' must be used, and only one subfield within 'memberFrom' can be used. |
+| memberFrom.bigQueryConnectionConnectionRef | object | `{"name":null,"namespace":null,"type":null}` | BigQueryConnectionConnection whose service account is to be bound to the role. Use the Type field to specifie the connection type. For "spark" connetion, the service account is in `status.observedState.spark.serviceAccountID`. For "cloudSQL" connection, the service account is in `status.observedState.cloudSQL.serviceAccountID`. For "cloudResource" connection, the service account is in `status.observedState.cloudResource.serviceAccountID`. |
+| memberFrom.bigQueryConnectionConnectionRef.type | string | `nil` | Type field specifies the connection type of the BigQueryConnectionConnection resource, whose service account is to be bound to the role. |
+| memberFrom.logSinkRef | object | `{"name":null,"namespace":null}` | The LoggingLogSink whose writer identity (i.e. its 'status.writerIdentity') is to be bound to the role. |
+| memberFrom.serviceAccountRef | object | `{"name":null,"namespace":null}` | The IAMServiceAccount to be bound to the role. |
+| memberFrom.serviceIdentityRef | object | `{"name":null,"namespace":null}` | The ServiceIdentity whose service account (i.e., its 'status.email') is to be bound to the role. |
+| memberFrom.sqlInstanceRef | object | `{"name":null,"namespace":null}` | The SQLInstance whose service account (i.e. its 'status.serviceAccountEmailAddress') is to be bound to the role. |
+| name | string | `"ekp-iam-policy-member"` | Name of the IAM Policy Member. |
+| resourceRef | object | `{"apiVersion":null,"external":"projects/${PROJECT_ID}","kind":"Project","name":null,"namespace":null}` | Immutable. Required. The GCP resource to set the IAM policy on. |
+| role | string | `"roles/editor"` | Immutable. Required. The role for which the Member will be bound. |
+
+## Installing the Chart
+
+### With Helm
+
+To install the chart with the release name `my-release`:
+
+```bash
+helm repo add ekp-helm https://edixos.github.io/ekp-helm
+helm install ekp-helm/gcp-iam-policy-memebers
+```
+
+### With ArgoCD
+
+Add new application as:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gcp-iam-policy-memebers
+spec:
+  project: infra
+
+  source:
+    repoURL: "https://edixos.github.io/ekp-helm"
+    targetRevision: "0.1.0"
+    chart: gcp-iam-policy-memebers
+    path: ''
+
+    helm:
+
+      values: |
+        name: mysa
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: "cnrm-system"
+  syncPolicy:
+    automated:
+      prune: true
+```
+
+## Develop
+
+### Update documentation
+
+Chart documentation is generated with [helm-docs](https://github.com/norwoodj/helm-docs) from `values.yaml` file.
+After file modification, regenerate README.md with command:
+
+```bash
+docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 helm-docs
+```
+
+### Run linter
+
+```bash
+docker run --rm -it -w /charts -v $(pwd)/../../:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts /charts/charts/gcp-iam-policy-memebers --config /charts/charts/gcp-iam-policy-memebers/ct.yaml
+```
+
+### Run pluto
+
+In order to check if the api-version used in this chart are not deprecated, or worse, removed, we use pluto to check it:
+
+```
+docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:3.17 template gcp-iam-policy-memebers . -f tests/pluto/values.yaml --output-dir /pluto
+docker run --rm -it -v pluto:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /data -o yaml --ignore-deprecations -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0" -o wide
+docker volume rm pluto
+```
+
