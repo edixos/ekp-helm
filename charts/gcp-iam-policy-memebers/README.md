@@ -22,21 +22,10 @@ A Helm chart that Creates GCP IAM Policy Memebers through Config Connector
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| condition | object | `{"description":"","expression":null,"title":null}` | Immutable. Optional. The condition under which the binding applies. |
 | global.abandon | bool | `false` | Keep the resource even after the kcc resource deletion. |
 | global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
 | global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
-| member | string | `"serviceAccount:iampolicymember@${PROJECT_ID}.iam.gserviceaccount.com"` | Immutable. The IAM identity to be bound to the role. Exactly one of 'member' or 'memberFrom' must be used. |
-| memberFrom | object | `{"bigQueryConnectionConnectionRef":{"name":null,"namespace":null,"type":null},"logSinkRef":{"name":null,"namespace":null},"serviceAccountRef":{"name":null,"namespace":null},"serviceIdentityRef":{"name":null,"namespace":null},"sqlInstanceRef":{"name":null,"namespace":null}}` | Immutable. The IAM identity to be bound to the role. Exactly one of 'member' or 'memberFrom' must be used, and only one subfield within 'memberFrom' can be used. |
-| memberFrom.bigQueryConnectionConnectionRef | object | `{"name":null,"namespace":null,"type":null}` | BigQueryConnectionConnection whose service account is to be bound to the role. Use the Type field to specifie the connection type. For "spark" connetion, the service account is in `status.observedState.spark.serviceAccountID`. For "cloudSQL" connection, the service account is in `status.observedState.cloudSQL.serviceAccountID`. For "cloudResource" connection, the service account is in `status.observedState.cloudResource.serviceAccountID`. |
-| memberFrom.bigQueryConnectionConnectionRef.type | string | `nil` | Type field specifies the connection type of the BigQueryConnectionConnection resource, whose service account is to be bound to the role. |
-| memberFrom.logSinkRef | object | `{"name":null,"namespace":null}` | The LoggingLogSink whose writer identity (i.e. its 'status.writerIdentity') is to be bound to the role. |
-| memberFrom.serviceAccountRef | object | `{"name":null,"namespace":null}` | The IAMServiceAccount to be bound to the role. |
-| memberFrom.serviceIdentityRef | object | `{"name":null,"namespace":null}` | The ServiceIdentity whose service account (i.e., its 'status.email') is to be bound to the role. |
-| memberFrom.sqlInstanceRef | object | `{"name":null,"namespace":null}` | The SQLInstance whose service account (i.e. its 'status.serviceAccountEmailAddress') is to be bound to the role. |
-| name | string | `"ekp-iam-policy-member"` | Name of the IAM Policy Member. |
-| resourceRef | object | `{"apiVersion":null,"external":"projects/${PROJECT_ID}","kind":"Project","name":null,"namespace":null}` | Immutable. Required. The GCP resource to set the IAM policy on. |
-| role | string | `"roles/editor"` | Immutable. Required. The role for which the Member will be bound. |
+| iamPolicyMembers | list | `[]` |  |
 
 ## Installing the Chart
 
