@@ -1,11 +1,17 @@
 global:
-  gcpProjectId: ekp-dev
+  gcpProjectId: "ekp-dev"
 
-name: "ekp-iam-policy-member"
+iamPolicyMembers:
+  - name: "member-1"
+    member: "serviceAccount:ekp-infra-sa@ekp-dev.iam.gserviceaccount.com"
+    role: "roles/editor"
+    resourceRef:
+      kind: "Project"
+      external: "projects/ekp-dev"
 
-member: serviceAccount:ekp-infra-sa@ekp-dev.iam.gserviceaccount.com
-role: "roles/bigquery.dataViewer"
-
-resourceRef:
-    kind: "Project"
-    external: "projects/ekp-dev"
+  - name: "member-2"
+    member: "serviceAccount:ekp-infra-sa@ekp-dev.iam.gserviceaccount.com"
+    role: "roles/viewer"
+    resourceRef:
+      kind: "Project"
+      external: "projects/ekp-dev"

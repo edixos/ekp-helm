@@ -1,86 +1,91 @@
+{{- range .Values.iamPolicyMembers }}
+---
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMPolicyMember
 metadata:
   annotations:
-{{- if .Values.global.abandon }}
-    cnrm.cloud.google.com/deletion-policy: abandon
-{{- end }}
-    cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId | quote }}
-  labels:
-{{- include "gcp-iam-policy-memebers.labels" . | nindent 4 }}
-  name: {{ include "gcp-iam-policy-memebers.fullname" . }}
-  namespace: {{ include "gcp-iam-policy-memebers.namespace" . }}
-spec:
-  {{- if .Values.condition }}
-  {{- if and .Values.condition.title .Values.condition.expression }}
-  condition:
-    title: {{ .Values.condition.title }}
-    expression: {{ .Values.condition.expression }}
-    description: {{ .Values.condition.description }}
-  {{- end }}
-  {{- end }}
-  member: {{ .Values.member }}
+    cnrm.cloud.google.com/project-id: {{ $.Values.global.gcpProjectId }}
+  name: {{ .name }}
 
-  {{- if .Values.role }}
-  role: {{ .Values.role }}
+spec:
+  {{- if .condition }}
+  {{- if and .condition.title .condition.expression }}
+  condition:
+    title: {{ .condition.title }}
+    expression: {{ .condition.expression }}
+    description: {{ .condition.description }}
+  {{- end }}
+  {{- end }}
+
+  member: {{ .member }}
+
+  {{- if .role }}
+  role: {{ .role }}
   {{- else }}
   {{- fail "Error: role is required" }}
   {{- end }}
 
-  memberFrom:
-  {{- if .Values.memberFrom.bigQueryConnectionConnectionRef }}
-  {{- if and .Values.memberFrom.bigQueryConnectionConnectionRef.name .Values.memberFrom.bigQueryConnectionConnectionRef.type}}
-    bigQueryConnectionConnectionRef:
-      name: {{ .Values.memberFrom.bigQueryConnectionConnectionRef.name }}
-      type: {{ .Values.memberFrom.bigQueryConnectionConnectionRef.type }}
-      namespace: {{ .Values.memberFrom.bigQueryConnectionConnectionRef.namespace }}
+{{- if .memberFrom }}
+  {{- if .memberFrom.bigQueryConnectionConnectionRef }}
+    {{- if and .memberFrom.bigQueryConnectionConnectionRef.name .memberFrom.bigQueryConnectionConnectionRef.type }}
+      bigQueryConnectionConnectionRef:
+        name: {{ .memberFrom.bigQueryConnectionConnectionRef.name }}
+        type: {{ .memberFrom.bigQueryConnectionConnectionRef.type }}
+        namespace: {{ .memberFrom.bigQueryConnectionConnectionRef.namespace }}
+    {{- end }}
   {{- end }}
-  {{- end }}
-  {{- if .Values.memberFrom.logSinkRef }}
-  {{- if .Values.memberFrom.logSinkRef.name }}
+
+
+
+  {{- if .memberFrom.logSinkRef }}
+  {{- if .memberFrom.logSinkRef.name }}
     logSinkRef:
-      name: {{ .Values.memberFrom.logSinkRef.name }}
-      namespace: {{ .Values.memberFrom.logSinkRef.namespace }}
-  {{- end }}
-  {{- end }}
-  {{- if .Values.memberFrom.serviceAccountRef }}
-  {{- if .Values.memberFrom.serviceAccountRef.name }}
-    serviceAccountRef:
-      name: {{ .Values.memberFrom.serviceAccountRef.name }}
-      namespace: {{ .Values.memberFrom.serviceAccountRef.namespace }}
-  {{- end }}
-  {{- end }}
-  {{- if .Values.memberFrom.serviceIdentityRef }}
-  {{- if .Values.memberFrom.serviceIdentityRef.name }}
-    serviceIdentityRef:
-      name: {{ .Values.memberFrom.serviceIdentityRef.name }}
-      namespace: {{ .Values.memberFrom.serviceIdentityRef.namespace }}
-  {{- end }}
-  {{- end }}
-  {{- if .Values.memberFrom.sqlInstanceRef }}
-  {{- if .Values.memberFrom.sqlInstanceRef.name }}
-    sqlInstanceRef:
-      name: {{ .Values.memberFrom.sqlInstanceRef.name }}
-      namespace: {{ .Values.memberFrom.sqlInstanceRef.namespace }}
+      name: {{ .memberFrom.logSinkRef.name }}
+      namespace: {{ .memberFrom.logSinkRef.namespace }}
   {{- end }}
   {{- end }}
 
-  {{- if .Values.resourceRef }}
-  {{- if and .Values.resourceRef.kind }}
+  {{- if .memberFrom.serviceAccountRef }}
+  {{- if .memberFrom.serviceAccountRef.name }}
+    serviceAccountRef:
+      name: {{ .memberFrom.serviceAccountRef.name }}
+      namespace: {{ .memberFrom.serviceAccountRef.namespace }}
+  {{- end }}
+  {{- end }}
+
+  {{- if .memberFrom.serviceIdentityRef }}
+  {{- if .memberFrom.serviceIdentityRef.name }}
+    serviceIdentityRef:
+      name: {{ .memberFrom.serviceIdentityRef.name }}
+      namespace: {{ .memberFrom.serviceIdentityRef.namespace }}
+  {{- end }}
+  {{- end }}
+
+  {{- if .memberFrom.sqlInstanceRef }}
+  {{- if .memberFrom.sqlInstanceRef.name }}
+    sqlInstanceRef:
+      name: {{ .memberFrom.sqlInstanceRef.name }}
+      namespace: {{ .memberFrom.sqlInstanceRef.namespace }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+  {{- if .resourceRef }}
+  {{- if and .resourceRef.kind }}
   resourceRef:
-    kind: {{ .Values.resourceRef.kind }}
-    {{- if .Values.resourceRef.external }}
-    external: {{ .Values.resourceRef.external }}
-    {{- else if .Values.resourceRef.name }}
-    name: {{ .Values.resourceRef.name }}
+    kind: {{ .resourceRef.kind }}
+    {{- if .resourceRef.external }}
+    external: {{ .resourceRef.external }}
+    {{- else if .resourceRef.name }}
+    name: {{ .resourceRef.name }}
     {{- end }}
-    {{- if .Values.resourceRef.apiVersion }}
-    apiVersion: {{ .Values.resourceRef.apiVersion }}
+    {{- if .resourceRef.apiVersion }}
+    apiVersion: {{ .resourceRef.apiVersion }}
     {{- end }}
-    namespace: {{ .Values.resourceRef.namespace }}
+    namespace: {{ .resourceRef.namespace }}
   {{- else }}
   {{- fail "resourceRef.kind is required" }}
   {{- end }}
   {{- else }}
   {{- fail "Error: resourceRef is required" }}
   {{- end }}
+{{- end }}

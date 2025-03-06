@@ -6,48 +6,4 @@ global:
   gcpProjectId: myprojectid
   # -- Keep the resource even after the kcc resource deletion.
   abandon: false
-
-# -- Name of the IAM Policy Member.
-name: "ekp-iam-policy-member"
-# -- Immutable. Optional. The condition under which the binding applies.
-condition:
-  title:
-  expression:
-  description: ""
-
-# -- Immutable. The IAM identity to be bound to the role. Exactly one of 'member' or 'memberFrom' must be used.
-member: serviceAccount:iampolicymember@${PROJECT_ID}.iam.gserviceaccount.com
-# -- Immutable. Required. The role for which the Member will be bound.
-role: "roles/editor"
-# -- Immutable. The IAM identity to be bound to the role. Exactly one of 'member' or 'memberFrom' must be used, and only one subfield within 'memberFrom' can be used.
-memberFrom:
-  # -- BigQueryConnectionConnection whose service account is to be bound to the role. Use the Type field to specifie the connection type. For "spark" connetion, the service account is in `status.observedState.spark.serviceAccountID`. For "cloudSQL" connection, the service account is in `status.observedState.cloudSQL.serviceAccountID`. For "cloudResource" connection, the service account is in `status.observedState.cloudResource.serviceAccountID`.
-  bigQueryConnectionConnectionRef:
-    name:
-    namespace:
-    # -- Type field specifies the connection type of the BigQueryConnectionConnection resource, whose service account is to be bound to the role.
-    type:
-  # -- The LoggingLogSink whose writer identity (i.e. its 'status.writerIdentity') is to be bound to the role.
-  logSinkRef:
-    name:
-    namespace:
-  # -- The IAMServiceAccount to be bound to the role.
-  serviceAccountRef:
-    name:
-    namespace:
-  # -- The ServiceIdentity whose service account (i.e., its 'status.email') is to be bound to the role.
-  serviceIdentityRef:
-    name:
-    namespace:
-  # -- The SQLInstance whose service account (i.e. its 'status.serviceAccountEmailAddress') is to be bound to the role.
-  sqlInstanceRef:
-    name:
-    namespace:
-
-# -- Immutable. Required. The GCP resource to set the IAM policy on.
-resourceRef:
-  kind: Project
-  external: projects/${PROJECT_ID}
-  apiVersion:
-  name:
-  namespace:
+iamPolicyMembers: []
