@@ -59,7 +59,6 @@ spec:
     helm:
 
       values: |
-        name: mysa
 
   destination:
     server: https://kubernetes.default.svc

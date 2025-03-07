@@ -25,6 +25,7 @@ spec:
   {{- fail "Error: role is required" }}
   {{- end }}
 
+  memberFrom:
 {{- if .memberFrom }}
   {{- if .memberFrom.bigQueryConnectionConnectionRef }}
     {{- if and .memberFrom.bigQueryConnectionConnectionRef.name .memberFrom.bigQueryConnectionConnectionRef.type }}
