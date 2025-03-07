@@ -1,0 +1,7 @@
+remote: origin
+chart-dirs:
+  - charts
+helm-extra-args: --timeout=500
+chart-repos:
+  - {{DEP_CHART_NAME}}={{DEP_URL}}
+check-version-increment: true
