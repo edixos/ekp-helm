@@ -5,13 +5,24 @@
 #   ./ekp-chart.sh create --name <chartName> --dependency-url <url> --dependency-chart-name <depChartName> --dependency-chart-version <depChartVersion>
 #
 # Example:
-#   ./ekp-chart.sh create --name dex --dependency-url https://charts.dexidp.io --dependency-chart-name dex --dependency-chart-version 0.22.0
+#   ./ekp-chart.sh create --name kube-prometheus-stack --dependency-url https://prometheus-community.github.io/helm-charts --dependency-chart-name kube-prometheus-stack --dependency-chart-version 69.8.0
 
 set -euo pipefail
 
 # Determine the directory where the script is located.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CHART_DIR="$SCRIPT_DIR/../charts"
+
+# Determine which sed to use.
+if [[ "$(uname)" == "Darwin" ]]; then
+  if ! command -v gsed >/dev/null 2>&1; then
+    echo "gsed is required on macOS. Please install it using: brew install gnu-sed"
+    exit 1
+  fi
+  SED=gsed
+else
+  SED=sed
+fi
 
 usage() {
   echo "Usage: $0 create --name <chartName> --dependency-url <url> --dependency-chart-name <depChartName> --dependency-chart-version <depChartVersion>"
@@ -92,15 +103,17 @@ EOF
 if [ -f "$SCRIPT_DIR/templates/README.md.gotmpl" ]; then
   cp "$SCRIPT_DIR/templates/README.md.gotmpl" "$CHART_DIR/$CHART_NAME/README.md.gotmpl"
 else
-  echo "Error: README template file not found in $SCRIPT_DIR"
+  echo "Error: README template file not found in $SCRIPT_DIR/templates"
   exit 1
 fi
 
-# Copy ct.yaml template
+# Process ct.yaml template: substitute placeholders with actual dependency values using $SED.
 if [ -f "$SCRIPT_DIR/templates/ct.yaml" ]; then
-  cp "$SCRIPT_DIR/templates/ct.yaml" "$CHART_DIR/$CHART_NAME/ct.yaml"
+  $SED -e "s|{{DEP_CHART_NAME}}|${DEP_CHART_NAME}|g" \
+       -e "s|{{DEP_URL}}|${DEP_URL}|g" \
+       "$SCRIPT_DIR/templates/ct.yaml" > "$CHART_DIR/$CHART_NAME/ct.yaml"
 else
-  echo "Error: ct.yaml template file not found in $SCRIPT_DIR"
+  echo "Error: ct.yaml template file not found in $SCRIPT_DIR/templates"
   exit 1
 fi
 
@@ -121,7 +134,7 @@ fi
   echo "${DEP_CHART_NAME}:"
   if [ -n "$DEFAULT_VALUES" ]; then
     # Indent each line of default values by two spaces
-    printf "%s\n" "$DEFAULT_VALUES" | sed 's/^/  /'
+    printf "%s\n" "$DEFAULT_VALUES" | $SED 's/^/  /'
   fi
 } > "$CHART_DIR/$CHART_NAME/values.yaml"
 

@@ -1,9 +1,7 @@
-
-# See https://github.com/helm/chart-testing#configuration
 remote: origin
 chart-dirs:
   - charts
 helm-extra-args: --timeout=500
 chart-repos:
- - dex: https://charts.dexidp.io
+  - {{DEP_CHART_NAME}}={{DEP_URL}}
 check-version-increment: true
