@@ -1,0 +1,9 @@
+global:
+  # -- Allows to deploy in another namespace than the release one
+  # @default -- `nil`
+  cnrmNamespace: ""
+  # -- Google Project ID
+  gcpProjectId: myprojectid
+  # -- Keep the resource even after the kcc resource deletion.
+  abandon: false
+iamPolicyMembers: []

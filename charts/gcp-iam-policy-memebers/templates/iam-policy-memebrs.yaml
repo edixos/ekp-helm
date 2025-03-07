@@ -1,0 +1,92 @@
+{{- range .Values.iamPolicyMembers }}
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  annotations:
+    cnrm.cloud.google.com/project-id: {{ $.Values.global.gcpProjectId }}
+  name: {{ .name }}
+
+spec:
+  {{- if .condition }}
+  {{- if and .condition.title .condition.expression }}
+  condition:
+    title: {{ .condition.title }}
+    expression: {{ .condition.expression }}
+    description: {{ .condition.description }}
+  {{- end }}
+  {{- end }}
+
+  member: {{ .member }}
+
+  {{- if .role }}
+  role: {{ .role }}
+  {{- else }}
+  {{- fail "Error: role is required" }}
+  {{- end }}
+
+  memberFrom:
+{{- if .memberFrom }}
+  {{- if .memberFrom.bigQueryConnectionConnectionRef }}
+    {{- if and .memberFrom.bigQueryConnectionConnectionRef.name .memberFrom.bigQueryConnectionConnectionRef.type }}
+      bigQueryConnectionConnectionRef:
+        name: {{ .memberFrom.bigQueryConnectionConnectionRef.name }}
+        type: {{ .memberFrom.bigQueryConnectionConnectionRef.type }}
+        namespace: {{ .memberFrom.bigQueryConnectionConnectionRef.namespace }}
+    {{- end }}
+  {{- end }}
+
+
+
+  {{- if .memberFrom.logSinkRef }}
+  {{- if .memberFrom.logSinkRef.name }}
+    logSinkRef:
+      name: {{ .memberFrom.logSinkRef.name }}
+      namespace: {{ .memberFrom.logSinkRef.namespace }}
+  {{- end }}
+  {{- end }}
+
+  {{- if .memberFrom.serviceAccountRef }}
+  {{- if .memberFrom.serviceAccountRef.name }}
+    serviceAccountRef:
+      name: {{ .memberFrom.serviceAccountRef.name }}
+      namespace: {{ .memberFrom.serviceAccountRef.namespace }}
+  {{- end }}
+  {{- end }}
+
+  {{- if .memberFrom.serviceIdentityRef }}
+  {{- if .memberFrom.serviceIdentityRef.name }}
+    serviceIdentityRef:
+      name: {{ .memberFrom.serviceIdentityRef.name }}
+      namespace: {{ .memberFrom.serviceIdentityRef.namespace }}
+  {{- end }}
+  {{- end }}
+
+  {{- if .memberFrom.sqlInstanceRef }}
+  {{- if .memberFrom.sqlInstanceRef.name }}
+    sqlInstanceRef:
+      name: {{ .memberFrom.sqlInstanceRef.name }}
+      namespace: {{ .memberFrom.sqlInstanceRef.namespace }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+  {{- if .resourceRef }}
+  {{- if and .resourceRef.kind }}
+  resourceRef:
+    kind: {{ .resourceRef.kind }}
+    {{- if .resourceRef.external }}
+    external: {{ .resourceRef.external }}
+    {{- else if .resourceRef.name }}
+    name: {{ .resourceRef.name }}
+    {{- end }}
+    {{- if .resourceRef.apiVersion }}
+    apiVersion: {{ .resourceRef.apiVersion }}
+    {{- end }}
+    namespace: {{ .resourceRef.namespace }}
+  {{- else }}
+  {{- fail "resourceRef.kind is required" }}
+  {{- end }}
+  {{- else }}
+  {{- fail "Error: resourceRef is required" }}
+  {{- end }}
+{{- end }}

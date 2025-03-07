@@ -1,0 +1,13 @@
+apiVersion: v2
+name: gcp-iam-policy-memebers
+description: A Helm chart that Creates GCP IAM Policy Memebers through Config Connector
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+maintainers:
+  - name: ilyasabdellaoui
+    email: ilyas.abdellaoui21@gmail.com
+    url: https://github.com/ilyasabdellaoui
+  - name: wiemaouadi
+    email: wiem.aouadi3@gmail.com
+    url: https://github.com/wiemaouadi
