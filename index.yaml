@@ -114,6 +114,25 @@ entries:
     urls:
     - gcp-gke-cluster-0.1.0.tgz
     version: 0.1.0
+  gcp-iam-policy-memebers:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-03-07T13:24:04.652242682Z"
+    description: A Helm chart that Creates GCP IAM Policy Memebers through Config
+      Connector
+    digest: 6de5b5acb333f22d4db04b404ec49c1fb0d9153aa78e8ad0333039c13866262f
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    name: gcp-iam-policy-memebers
+    type: application
+    urls:
+    - gcp-iam-policy-memebers-0.1.0.tgz
+    version: 0.1.0
   gcp-service-account:
   - apiVersion: v2
     appVersion: 0.1.2
@@ -249,4 +268,4 @@ entries:
     urls:
     - gcp-vpc-network-0.1.1.tgz
     version: 0.1.1
-generated: "2025-03-07T11:58:22.623401483Z"
+generated: "2025-03-07T13:24:04.652269863Z"
