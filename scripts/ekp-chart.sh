@@ -2,10 +2,16 @@
 # ekp-chart.sh - Scaffold a new helm chart with ekp-helm conventions using external template files.
 #
 # Usage:
-#   ./ekp-chart.sh create --name <chartName> --dependency-url <url> --dependency-chart-name <depChartName> --dependency-chart-version <depChartVersion>
+#   ./ekp-chart.sh create --name <chartName> --dependency-url <url> --dependency-chart-name <depChartName> --dependency-chart-version <depChartVersion> [--dependency-alias <alias>]
 #
 # Example:
-#   ./ekp-chart.sh create --name kube-prometheus-stack --dependency-url https://prometheus-community.github.io/helm-charts --dependency-chart-name kube-prometheus-stack --dependency-chart-version 69.8.0
+#   ./ekp-chart.sh create --name kube-prometheus-stack \
+#     --dependency-url https://prometheus-community.github.io/helm-charts \
+#     --dependency-chart-name kube-prometheus-stack \
+#     --dependency-chart-version 69.8.0 \
+#     --dependency-alias kps
+#
+# In the above example, the dependency values will be rendered under "kps" instead of "kube-prometheus-stack".
 
 set -euo pipefail
 
@@ -25,7 +31,7 @@ else
 fi
 
 usage() {
-  echo "Usage: $0 create --name <chartName> --dependency-url <url> --dependency-chart-name <depChartName> --dependency-chart-version <depChartVersion>"
+  echo "Usage: $0 create --name <chartName> --dependency-url <url> --dependency-chart-name <depChartName> --dependency-chart-version <depChartVersion> [--dependency-alias <alias>]"
   exit 1
 }
 
@@ -47,6 +53,7 @@ CHART_NAME=""
 DEP_URL=""
 DEP_CHART_NAME=""
 DEP_CHART_VERSION=""
+DEP_ALIAS=""
 
 # Parse options
 while [[ "$#" -gt 0 ]]; do
@@ -67,6 +74,10 @@ while [[ "$#" -gt 0 ]]; do
       DEP_CHART_VERSION="$2"
       shift 2
       ;;
+    --dependency-alias)
+      DEP_ALIAS="$2"
+      shift 2
+      ;;
     *)
       echo "Unknown parameter: $1"
       usage
@@ -80,6 +91,9 @@ if [[ -z "$CHART_NAME" || -z "$DEP_URL" || -z "$DEP_CHART_NAME" || -z "$DEP_CHAR
 fi
 
 echo "Creating chart '$CHART_NAME' with dependency '$DEP_CHART_NAME' ($DEP_CHART_VERSION) from '$DEP_URL'..."
+if [[ -n "$DEP_ALIAS" ]]; then
+  echo "Using dependency alias: $DEP_ALIAS"
+fi
 
 # --- Step 1: Create Chart ---
 helm create "$CHART_DIR/$CHART_NAME" || { echo "helm create failed"; exit 1; }
@@ -90,13 +104,17 @@ rm -rf "$TEMPLATE_DIR"/*
 
 # --- Step 3: Update Chart.yaml ---
 CHART_YAML="$CHART_DIR/$CHART_NAME/Chart.yaml"
-# Append dependency section (you may enhance this to merge or replace as needed)
+# Append dependency section. If a dependency alias is provided, include it.
 cat <<EOF >> "$CHART_YAML"
 dependencies:
   - name: ${DEP_CHART_NAME}
     version: ${DEP_CHART_VERSION}
     repository: "${DEP_URL}"
 EOF
+
+if [[ -n "$DEP_ALIAS" ]]; then
+  echo "    alias: ${DEP_ALIAS}" >> "$CHART_YAML"
+fi
 
 # --- Step 4: Copy external template files ---
 # Copy README template
@@ -128,24 +146,36 @@ if [ -z "$DEFAULT_VALUES" ]; then
   echo "Warning: Unable to fetch default values for ${DEP_CHART_NAME} from ${DEP_URL}."
 fi
 
-# Write values.yaml with an alias for the dependency
+# --- Step 6: Write values.yaml with an alias key if provided ---
 {
-  echo "# Default values for ${DEP_CHART_NAME}."
-  echo "${DEP_CHART_NAME}:"
+  if [[ -n "$DEP_ALIAS" ]]; then
+    echo "# Default values for ${DEP_ALIAS}."
+    echo "${DEP_ALIAS}:"
+  else
+    echo "# Default values for ${DEP_CHART_NAME}."
+    echo "${DEP_CHART_NAME}:"
+  fi
   if [ -n "$DEFAULT_VALUES" ]; then
-    # Indent each line of default values by two spaces
-    printf "%s\n" "$DEFAULT_VALUES" | $SED 's/^/  /'
+    # Remove trailing whitespace and indent each line by two spaces
+    printf "%s\n" "$DEFAULT_VALUES" | $SED -e 's/[[:space:]]\+$//' -e 's/^/  /'
   fi
 } > "$CHART_DIR/$CHART_NAME/values.yaml"
 
-# --- Step 6: Build helm dependencies ---
+# --- Step 7: Build helm dependencies ---
 (
   cd "$CHART_DIR/$CHART_NAME" || { echo "Failed to change directory to $CHART_NAME"; exit 1; }
   helm dependency build
 )
 
-# --- Step 7: Create tests/pluto/values.yaml (empty file) ---
+# --- Step 8: Create tests/pluto/values.yaml (empty file) ---
 mkdir -p "$CHART_DIR/$CHART_NAME/tests/pluto"
 : > "$CHART_DIR/$CHART_NAME/tests/pluto/values.yaml"
+
+# --- Step 9: Generate Documentation with helm-docs ---
+if command -v helm-docs >/dev/null 2>&1; then
+  helm-docs "$CHART_DIR/$CHART_NAME"
+else
+  echo "helm-docs is not installed. Please install helm-docs to generate chart documentation."
+fi
 
 echo "Chart '$CHART_DIR/$CHART_NAME' created successfully."
