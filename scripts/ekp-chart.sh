@@ -11,6 +11,7 @@ set -euo pipefail
 
 # Determine the directory where the script is located.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CHART_DIR="$SCRIPT_DIR/../charts"
 
 usage() {
   echo "Usage: $0 create --name <chartName> --dependency-url <url> --dependency-chart-name <depChartName> --dependency-chart-version <depChartVersion>"
@@ -70,14 +71,14 @@ fi
 echo "Creating chart '$CHART_NAME' with dependency '$DEP_CHART_NAME' ($DEP_CHART_VERSION) from '$DEP_URL'..."
 
 # --- Step 1: Create Chart ---
-helm create "$CHART_NAME" || { echo "helm create failed"; exit 1; }
+helm create "$CHART_DIR/$CHART_NAME" || { echo "helm create failed"; exit 1; }
 
 # --- Step 2: Remove default templates ---
-TEMPLATE_DIR="$CHART_NAME/templates"
+TEMPLATE_DIR="$CHART_DIR/$CHART_NAME/templates"
 rm -rf "$TEMPLATE_DIR"/*
 
 # --- Step 3: Update Chart.yaml ---
-CHART_YAML="$CHART_NAME/Chart.yaml"
+CHART_YAML="$CHART_DIR/$CHART_NAME/Chart.yaml"
 # Append dependency section (you may enhance this to merge or replace as needed)
 cat <<EOF >> "$CHART_YAML"
 dependencies:
@@ -89,7 +90,7 @@ EOF
 # --- Step 4: Copy external template files ---
 # Copy README template
 if [ -f "$SCRIPT_DIR/templates/README.md.gotmpl" ]; then
-  cp "$SCRIPT_DIR/templates/README.md.gotmpl" "$CHART_NAME/README.md.gotmpl"
+  cp "$SCRIPT_DIR/templates/README.md.gotmpl" "$CHART_DIR/$CHART_NAME/README.md.gotmpl"
 else
   echo "Error: README template file not found in $SCRIPT_DIR"
   exit 1
@@ -97,7 +98,7 @@ fi
 
 # Copy ct.yaml template
 if [ -f "$SCRIPT_DIR/templates/ct.yaml" ]; then
-  cp "$SCRIPT_DIR/templates/ct.yaml" "$CHART_NAME/ct.yaml"
+  cp "$SCRIPT_DIR/templates/ct.yaml" "$CHART_DIR/$CHART_NAME/ct.yaml"
 else
   echo "Error: ct.yaml template file not found in $SCRIPT_DIR"
   exit 1
@@ -122,16 +123,16 @@ fi
     # Indent each line of default values by two spaces
     printf "%s\n" "$DEFAULT_VALUES" | sed 's/^/  /'
   fi
-} > "$CHART_NAME/values.yaml"
+} > "$CHART_DIR/$CHART_NAME/values.yaml"
 
 # --- Step 6: Build helm dependencies ---
 (
-  cd "$CHART_NAME" || { echo "Failed to change directory to $CHART_NAME"; exit 1; }
+  cd "$CHART_DIR/$CHART_NAME" || { echo "Failed to change directory to $CHART_NAME"; exit 1; }
   helm dependency build
 )
 
 # --- Step 7: Create tests/pluto/values.yaml (empty file) ---
-mkdir -p "$CHART_NAME/tests/pluto"
-: > "$CHART_NAME/tests/pluto/values.yaml"
+mkdir -p "$CHART_DIR/$CHART_NAME/tests/pluto"
+: > "$CHART_DIR/$CHART_NAME/tests/pluto/values.yaml"
 
-echo "Chart '$CHART_NAME' created successfully."
+echo "Chart '$CHART_DIR/$CHART_NAME' created successfully."
