@@ -1,0 +1,56 @@
+argocd:
+  # Global configuration
+  global:
+    domain: argocd.example.com
+    image:
+      repository: quay.io/argoproj/argocd
+      tag: latest
+      imagePullPolicy: IfNotPresent
+    logging:
+      format: text
+      level: info
+
+  # Redis configuration
+  redis:
+    enabled: true
+    image:
+      repository: public.ecr.aws/docker/library/redis
+      tag: 7.4.2-alpine
+
+  # Dex configuration (for SSO)
+  dex:
+    enabled: false
+
+  # Server configuration
+  server:
+    replicas: 1
+    service:
+      type: ClusterIP
+      servicePortHttp: 80
+      servicePortHttps: 443
+    ingress:
+      enabled: false
+
+  # Repo server configuration
+  repoServer:
+    replicas: 1
+
+  # Application controller configuration
+  controller:
+    replicas: 1
+
+  # Configurations for Argo CD
+  configs:
+    cm:
+      create: true
+      application.instanceLabelKey: argocd.argoproj.io/instance
+      admin.enabled: true
+    secret:
+      createSecret: true
+      argocdServerAdminPassword: "admin"
+
+  # Enable or disable additional components
+  notifications:
+    enabled: false
+  applicationset:
+    enabled: false
