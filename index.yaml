@@ -268,4 +268,19 @@ entries:
     urls:
     - gcp-vpc-network-0.1.1.tgz
     version: 0.1.1
-generated: "2025-03-07T13:24:04.652269863Z"
+  kyverno:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-03-10T09:01:45.390066858Z"
+    dependencies:
+    - name: kyverno
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.3.7
+    description: A Helm chart for Kubernetes
+    digest: 3b5ca9834542bb71f7e75aa4773140925ccbbb5b75111691840ad75e3389706e
+    name: kyverno
+    type: application
+    urls:
+    - kyverno-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-03-10T09:01:45.390083399Z"
