@@ -27,3 +27,10 @@ dependencies:
     version: 3.3.4
     repository: "https://kyverno.github.io/kyverno/"
     alias: kyvernopolicies
+maintainers:
+  - name: wiemaouadi
+    email: wiem.aouadi3@gmail.com
+    url: https://github.com/wiemaouadi
+  - name: smileisak
+    email: ikaboubi@gmail.com
+    url: https://github.com/smileisak
