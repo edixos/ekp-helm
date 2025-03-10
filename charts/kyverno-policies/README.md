@@ -13,6 +13,13 @@
 |------------|------|---------|
 | https://kyverno.github.io/kyverno/ | kyvernopolicies(kyverno-policies) | 3.3.4 |
 
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| wiemaouadi | <wiem.aouadi3@gmail.com> | <https://github.com/wiemaouadi> |
+| smileisak | <ikaboubi@gmail.com> | <https://github.com/smileisak> |
+
 ## Description
 
 A Helm chart for Kubernetes
