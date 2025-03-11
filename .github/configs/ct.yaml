@@ -10,6 +10,7 @@ chart-repos:
  - argo-cd=https://argoproj.github.io/argo-helm
  - kyverno=https://kyverno.github.io/kyverno/
  - cert-manager=https://charts.jetstack.io
+
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
 validate-maintainers: false
