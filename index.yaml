@@ -283,4 +283,27 @@ entries:
     urls:
     - kyverno-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-10T09:01:45.390083399Z"
+  kyverno-policies:
+  - apiVersion: v2
+    appVersion: 1.13.4
+    created: "2025-03-11T08:09:15.806579408Z"
+    dependencies:
+    - alias: kyvernopolicies
+      name: kyverno-policies
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.3.4
+    description: A Helm chart for Kubernetes
+    digest: 20a63b6b105564b75e10fbd85a9bb9b6c32d4611d875a9c08e5ab6a5d59e1cf6
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: kyverno-policies
+    type: application
+    urls:
+    - kyverno-policies-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-03-11T08:09:15.806598904Z"
