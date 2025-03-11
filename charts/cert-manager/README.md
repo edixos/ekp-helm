@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.jetstack.io | certmanager(cert-manager) | 1.17.1 |
+| https://charts.jetstack.io | certmanager(cert-manager) | v1.17.1 |
 
 ## Maintainers
 
@@ -22,7 +22,7 @@
 
 ## Description
 
-A Helm chart for Kubernetes
+A Helm chart for cert-manager
 
 ## Values
 

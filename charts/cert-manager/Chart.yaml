@@ -1,7 +1,6 @@
 apiVersion: v2
 name: cert-manager
-description: A Helm chart for cert-manager 
-
+description: A Helm chart for cert-manager
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
@@ -24,7 +23,7 @@ version: 0.1.0
 appVersion: "1.17.1"
 dependencies:
   - name: cert-manager
-    version: 1.17.1
+    version: "v1.17.1"
     repository: "https://charts.jetstack.io"
     alias: certmanager
 maintainers:
