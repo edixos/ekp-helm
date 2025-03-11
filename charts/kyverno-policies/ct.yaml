@@ -1,0 +1,7 @@
+remote: origin
+chart-dirs:
+  - charts
+helm-extra-args: --timeout=500
+chart-repos:
+  - kyverno-policies=https://kyverno.github.io/kyverno/
+check-version-increment: true
