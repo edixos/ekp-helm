@@ -56,6 +56,8 @@ location: "europe-west1-b"
 
 initialNodeCount: 1
 
+datapathProvider: "ADVANCED_DATAPATH"
+
 workloadIdentityConfig:
   enabled: true
   workloadPool: "ekp-dev.svc.id.goog"

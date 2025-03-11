@@ -1,6 +1,6 @@
 # gcp-gke-cluster
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.1](https://img.shields.io/badge/AppVersion-0.1.1-informational?style=flat-square)
 
 - [gke-cluster](#gcp-gke-cluster)
   - [Prerequisites](#prerequisites)
@@ -123,7 +123,7 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | databaseEncryption | object | `{"keyName":null,"state":null}` | Application-layer Secrets Encryption settings. The object format is {state = string, key_name = string}. Valid values of state are: "ENCRYPTED"; "DECRYPTED". key_name is the name of a CloudKMS key. |
 | databaseEncryption.keyName | string | `nil` | Name of the CloudKMS key to use for Application-layer Secrets Encryption |
 | databaseEncryption.state | string | `nil` | ENCRYPTED or DECRYPTED. If keyName is empty, encryption is managed by google and will always be encrypted |
-| datapathProvider | string | `""` | Immutable. The desired datapath provider for this cluster. By default, uses the IPTables-based kube-proxy implementation. |
+| datapathProvider | string | `""` | Immutable. The desired datapath provider for this cluster. By default, uses the IPTables-based kube-proxy implementation. Possible values: - DATAPATH_PROVIDER_UNSPECIFIED: Default value. - LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy. - ADVANCED_DATAPATH: Use the eBPF based GKE Dataplane V2 with additional features. See the GKE Dataplane V2 documentation for more. |
 | defaultMaxPodsPerNode | int | `0` | Immutable. The default maximum number of pods per node in this cluster. This doesn't work on "routes-based" clusters, clusters that don't have IP Aliasing enabled. |
 | defaultSnatStatus | object | `{"disabled":false}` | Whether the cluster disables default in-node sNAT rules. In-node sNAT rules will be disabled when defaultSnatStatus is disabled. |
 | defaultSnatStatus.disabled | bool | `false` | When disabled is set to false, default IP masquerade rules will be applied to the nodes to prevent sNAT on cluster internal traffic. |
@@ -505,7 +505,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: gcp-gke-cluster
     path: ''
 

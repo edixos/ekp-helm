@@ -220,6 +220,10 @@ databaseEncryption:
   state:
 
 # -- Immutable. The desired datapath provider for this cluster. By default, uses the IPTables-based kube-proxy implementation.
+# Possible values:
+# - DATAPATH_PROVIDER_UNSPECIFIED: Default value.
+# - LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
+# - ADVANCED_DATAPATH: Use the eBPF based GKE Dataplane V2 with additional features. See the GKE Dataplane V2 documentation for more.
 datapathProvider: ""
 
 # -- Immutable. The default maximum number of pods per node in this cluster. This doesn't work on "routes-based" clusters, clusters that don't have IP Aliasing enabled.
