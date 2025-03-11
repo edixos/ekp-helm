@@ -291,6 +291,22 @@ entries:
     urls:
     - gcp-vpc-network-0.1.1.tgz
     version: 0.1.1
+  kube-prometheus-stack:
+  - apiVersion: v2
+    appVersion: v0.80.1
+    created: "2025-03-11T13:22:44.509591441Z"
+    dependencies:
+    - alias: kubePrometheusStack
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 69.8.2
+    description: A Helm chart for Kubernetes
+    digest: af54a277d0bd826da0b00aef7960553aad656f9bd1b13cf4876f78a254617a4b
+    name: kube-prometheus-stack
+    type: application
+    urls:
+    - kube-prometheus-stack-0.1.0.tgz
+    version: 0.1.0
   kyverno:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -329,4 +345,4 @@ entries:
     urls:
     - kyverno-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-11T08:12:48.725549282Z"
+generated: "2025-03-11T13:22:44.509613191Z"
