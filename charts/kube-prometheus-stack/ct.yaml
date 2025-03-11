@@ -1,0 +1,7 @@
+remote: origin
+chart-dirs:
+  - charts
+helm-extra-args: --timeout=500
+chart-repos:
+  - kube-prometheus-stack=https://prometheus-community.github.io/helm-charts
+check-version-increment: true
