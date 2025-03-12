@@ -1,0 +1,7 @@
+remote: origin
+chart-dirs:
+  - charts
+helm-extra-args: --timeout=500
+chart-repos:
+  - velero=https://vmware-tanzu.github.io/helm-charts
+check-version-increment: true
