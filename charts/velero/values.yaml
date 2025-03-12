@@ -3,7 +3,7 @@ velero:
   ##
   ## Configuration settings related to Velero installation namespace
   ##
-  
+
   # Labels settings in namespace
   namespace:
     labels: {}
@@ -21,16 +21,16 @@ velero:
       #   value: privileged
       # - key: pod-security.kubernetes.io/warn-version
       #   value: latest
-  
+
   ##
   ## End of namespace-related settings.
   ##
-  
-  
+
+
   ##
   ## Configuration settings that directly affect the Velero deployment YAML.
   ##
-  
+
   # Details of the container image to use in the Velero deployment & daemonset (if
   # enabling node-agent). Required.
   image:
@@ -43,36 +43,36 @@ velero:
     # One or more secrets to be used when pulling images
     imagePullSecrets: []
     # - registrySecretName
-  
+
   nameOverride: ""
   fullnameOverride: ""
-  
+
   # Annotations to add to the Velero deployment's. Optional.
   #
   # If you are using reloader use the following annotation with your VELERO_SECRET_NAME
   annotations: {}
   # secret.reloader.stakater.com/reload: "<VELERO_SECRET_NAME>"
-  
+
   # Annotations to add to secret
   secretAnnotations: {}
-  
+
   # Labels to add to the Velero deployment's. Optional.
   labels: {}
-  
+
   # Annotations to add to the Velero deployment's pod template. Optional.
   #
   # If using kube2iam or kiam, use the following annotation with your AWS_ACCOUNT_ID
   # and VELERO_ROLE_NAME filled in:
   podAnnotations: {}
     #  iam.amazonaws.com/role: "arn:aws:iam::<AWS_ACCOUNT_ID>:role/<VELERO_ROLE_NAME>"
-  
+
   # Additional pod labels for Velero deployment's template. Optional
   # ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
   podLabels: {}
-  
+
   # Number of old history to retain to allow rollback (If not set, default Kubernetes value is set to 10)
   # revisionHistoryLimit: 1
-  
+
   # Resource requests/limits to specify for the Velero deployment.
   # https://velero.io/docs/v1.6/customize-installation/#customize-resource-requests-and-limits
   resources: {}
@@ -82,7 +82,7 @@ velero:
     # limits:
     #   cpu: 1000m
     #   memory: 512Mi
-  
+
   # Resource requests/limits to specify for the upgradeCRDs job pod. Need to be adjusted by user accordingly.
   upgradeJobResources: {}
   # requests:
@@ -98,12 +98,12 @@ velero:
     extraVolumeMounts: []
     # Extra key/value pairs to be used as environment variables. Optional.
     extraEnvVars: {}
-  
-  
+
+
   # Configure the dnsPolicy of the Velero deployment
   # See: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
   dnsPolicy: ClusterFirst
-  
+
   # Init containers to add to the Velero deployment's pod spec. At least one plugin provider image is required.
   # If the value is a string then it is evaluated as a template.
   initContainers:
@@ -113,13 +113,13 @@ velero:
     #   volumeMounts:
     #     - mountPath: /target
     #       name: plugins
-  
+
   # SecurityContext to use for the Velero deployment. Optional.
   # Set fsGroup for `AWS IAM Roles for Service Accounts`
   # see more informations at: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
   podSecurityContext: {}
     # fsGroup: 1337
-  
+
   # Container Level Security Context for the 'velero' container of the Velero deployment. Optional.
   # See: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   containerSecurityContext: {}
@@ -128,16 +128,16 @@ velero:
     #   drop: ["ALL"]
     #   add: []
     # readOnlyRootFilesystem: true
-  
+
   # Container Lifecycle Hooks to use for the Velero deployment. Optional.
   lifecycle: {}
-  
+
   # Pod priority class name to use for the Velero deployment. Optional.
   priorityClassName: ""
-  
+
   # The number of seconds to allow for graceful termination of the pod. Optional.
   terminationGracePeriodSeconds: 3600
-  
+
   # Liveness probe of the pod
   livenessProbe:
     httpGet:
@@ -149,7 +149,7 @@ velero:
     timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 5
-  
+
   # Readiness probe of the pod
   readinessProbe:
     httpGet:
@@ -161,25 +161,25 @@ velero:
     timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 5
-  
+
   # Tolerations to use for the Velero deployment. Optional.
   tolerations: []
-  
+
   # Affinity to use for the Velero deployment. Optional.
   affinity: {}
-  
+
   # Node selector to use for the Velero deployment. Optional.
   nodeSelector: {}
-  
+
   # DNS configuration to use for the Velero deployment. Optional.
   dnsConfig: {}
-  
+
   # Extra volumes for the Velero deployment. Optional.
   extraVolumes: []
-  
+
   # Extra volumeMounts for the Velero deployment. Optional.
   extraVolumeMounts: []
-  
+
   # Extra K8s manifests to deploy
   extraObjects: []
     # - apiVersion: secrets-store.csi.x-k8s.io/v1
@@ -205,30 +205,30 @@ velero:
     #           objectName: client-secret
     #         secretName: velero-secrets-store
     #         type: Opaque
-  
+
   # Settings for Velero's prometheus metrics. Enabled by default.
   metrics:
     enabled: true
     scrapeInterval: 30s
     scrapeTimeout: 10s
-  
+
     # service metdata if metrics are enabled
     service:
       annotations: {}
       labels: {}
-  
+
     # Pod annotations for Prometheus
     podAnnotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "8085"
       prometheus.io/path: "/metrics"
-  
+
     serviceMonitor:
       autodetect: true
       enabled: false
       annotations: {}
       additionalLabels: {}
-  
+
       # metrics.serviceMonitor.metricRelabelings Specify Metric Relabelings to add to the scrape endpoint
       # ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#relabelconfig
       # metricRelabelings: []
@@ -251,7 +251,7 @@ velero:
       # scheme: ""
       # ServiceMonitor connection tlsConfig. Defaults to {}.
       # tlsConfig: {}
-  
+
     prometheusRule:
       autodetect: true
       enabled: false
@@ -277,7 +277,7 @@ velero:
       #   for: 15m
       #   labels:
       #     severity: warning
-  
+
   kubectl:
     image:
       repository: docker.io/bitnami/kubectl
@@ -295,19 +295,19 @@ velero:
     annotations: {}
     # Labels to set for the upgrade/cleanup job. Optional.
     labels: {}
-  
+
   # This job upgrades the CRDs.
   upgradeCRDs: true
-  
+
   # This job is meant primarily for cleaning up CRDs on CI systems.
   # Using this on production systems, especially those that have multiple releases of Velero, will be destructive.
   cleanUpCRDs: false
-  
+
   ##
   ## End of deployment-related settings.
   ##
-  
-  
+
+
   ##
   ## Parameters for the `default` BackupStorageLocation and VolumeSnapshotLocation,
   ## and additional server settings.
@@ -357,10 +357,10 @@ velero:
       #  Option to skip certificate validation or not if insecureSkipTLSVerify is set to be true, the client side should set the
       #  flag. For Velero client Command like velero backup describe, velero backup logs needs to add the flag --insecure-skip-tls-verify
       #  insecureSkipTLSVerify:
-  
+
       # annotations allows adding arbitrary annotations to this BackupStorageLocation resource. Optional.
       annotations: {}
-  
+
     # Parameters for the VolumeSnapshotLocation(s). Configure multiple by adding other element(s) to the volumeSnapshotLocation slice.
     # See https://velero.io/docs/v1.6/api-types/volumesnapshotlocation/
     volumeSnapshotLocation:
@@ -384,10 +384,10 @@ velero:
     #    incremental:
     #    snapshotLocation:
     #    project:
-  
+
       # annotations allows adding arbitrary annotations to this VolumeSnapshotLocation resource. Optional.
       annotations: {}
-  
+
     # These are server-level settings passed as CLI flags to the `velero server` command. Velero
     # uses default values if they're not passed in, so they only need to be explicitly specified
     # here if using a non-default value. The `velero server` default values are shown in the
@@ -458,25 +458,25 @@ velero:
     # additional command-line arguments that will be passed to the `velero server`
     # e.g.: extraArgs: ["--foo=bar"]
     extraArgs: []
-  
+
     # additional key/value pairs to be used as environment variables such as "AWS_CLUSTER_NAME: 'yourcluster.domain.tld'"
     extraEnvVars: {}
-  
+
     # Set true for backup all pod volumes without having to apply annotation on the pod when used file system backup Default: false.
     defaultVolumesToFsBackup:
-  
+
     # How often repository maintain is run for repositories by default.
     defaultRepoMaintainFrequency:
-  
+
   ##
   ## End of backup/snapshot location settings.
   ##
-  
-  
+
+
   ##
   ## Settings for additional Velero resources.
   ##
-  
+
   rbac:
     # Whether to create the Velero role and role binding to give all permissions to the namespace to Velero.
     create: true
@@ -484,7 +484,7 @@ velero:
     clusterAdministrator: true
     # Name of the ClusterRole.
     clusterAdministratorName: cluster-admin
-  
+
   # Information about the Kubernetes service account Velero uses.
   serviceAccount:
     server:
@@ -494,7 +494,7 @@ velero:
       labels:
       imagePullSecrets: []
       # - registrySecretName
-  
+
   # Info about the secret to be used by the Velero deployment, which
   # should contain credentials for the cloud provider IAM account you've
   # set up for Velero.
@@ -527,15 +527,15 @@ velero:
     # that will be used to load environment variables into velero and node-agent.
     # Secret should be in format - https://kubernetes.io/docs/concepts/configuration/secret/#use-case-as-container-environment-variables
     extraSecretRef: ""
-  
+
   # Whether to create backupstoragelocation crd, if false => do not create a default backup location
   backupsEnabled: true
   # Whether to create volumesnapshotlocation crd, if false => disable snapshot feature
   snapshotsEnabled: true
-  
+
   # Whether to deploy the node-agent daemonset.
   deployNodeAgent: false
-  
+
   nodeAgent:
     podVolumePath: /var/lib/kubelet/pods
     # Pod priority class name to use for the node-agent daemonset. Optional.
@@ -549,68 +549,68 @@ velero:
       # limits:
       #   cpu: 1000m
       #   memory: 1024Mi
-  
+
     # Tolerations to use for the node-agent daemonset. Optional.
     tolerations: []
-  
+
     # Annotations to set for the node-agent daemonset. Optional.
     annotations: {}
-  
+
     # labels to set for the node-agent daemonset. Optional.
     labels: {}
-  
+
     # Additional pod labels for the node-agent daemonset. Optional
     # ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
     podLabels: {}
-  
+
     # will map /scratch to emptyDir. Set to false and specify your own volume
     # via extraVolumes and extraVolumeMounts that maps to /scratch
     # if you don't want to use emptyDir.
     useScratchEmptyDir: true
-  
+
     # Extra volumes for the node-agent daemonset. Optional.
     extraVolumes: []
-  
+
     # Extra volumeMounts for the node-agent daemonset. Optional.
     extraVolumeMounts: []
-  
+
     # Key/value pairs to be used as environment variables for the node-agent daemonset. Optional.
     extraEnvVars: {}
-  
+
     # Additional command-line arguments that will be passed to the node-agent. Optional.
     # e.g.: extraArgs: ["--foo=bar"]
     extraArgs: []
-  
+
     # Configure the dnsPolicy of the node-agent daemonset
     # See: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
     dnsPolicy: ClusterFirst
-  
+
     # SecurityContext to use for the Velero deployment. Optional.
     # Set fsGroup for `AWS IAM Roles for Service Accounts`
     # see more informations at: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
     podSecurityContext:
       runAsUser: 0
       # fsGroup: 1337
-  
+
     # Container Level Security Context for the 'node-agent' container of the node-agent daemonset. Optional.
     # See: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
     containerSecurityContext: {}
-  
+
     # Container Lifecycle Hooks to use for the node-agent daemonset. Optional.
     lifecycle: {}
-  
+
     # Node selector to use for the node-agent daemonset. Optional.
     nodeSelector: {}
-  
+
     # Affinity to use with node-agent daemonset. Optional.
     affinity: {}
-  
+
     # DNS configuration to use for the node-agent daemonset. Optional.
     dnsConfig: {}
-  
+
     # Update strategy to use for the node-agent daemonset. Optional.
     updateStrategy: {}
-  
+
   # Backup schedules to create.
   # Eg:
   # schedules:
@@ -635,7 +635,7 @@ velero:
   #       excludedClusterScopedResources:
   #       - persistentVolumes
   schedules: {}
-  
+
   # Velero ConfigMaps.
   # Eg:
   # configMaps:
@@ -660,7 +660,7 @@ velero:
   #         runAsUser: 1001
   #         runAsGroup: 999
   configMaps: {}
-  
+
   ##
   ## End of additional Velero resource settings.
   ##
