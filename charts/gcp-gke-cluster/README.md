@@ -1,6 +1,6 @@
 # gcp-gke-cluster
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.1](https://img.shields.io/badge/AppVersion-0.1.1-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.2](https://img.shields.io/badge/AppVersion-0.1.2-informational?style=flat-square)
 
 - [gke-cluster](#gcp-gke-cluster)
   - [Prerequisites](#prerequisites)
@@ -219,7 +219,7 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | networkRef.name | string | `nil` | Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names |
 | networkRef.namespace | string | `nil` | Namespace of the referent. More info: https://kubernetes.io/docs/concepts/over |
 | networkingMode | string | `"VPC_NATIVE"` | Networking mode for the cluster. Determines whether alias IPs or routes will be used for pod IPs. Options: "VPC_NATIVE" (default) or "ROUTES". |
-| nodeConfig | object | `{"advancedMachineFeatures":{"threadsPerCore":null},"bootDiskKMSCryptoKeyRef":{"external":null,"name":null,"namespace":null},"confidentialNodes":{"enabled":false},"diskSizeGb":null,"diskType":null,"ephemeralStorageConfig":{"localSsdCount":null},"ephemeralStorageLocalSsdConfig":{"localSsdCount":null},"fastSocket":{"enabled":null},"gcfsConfig":{"enabled":null},"guestAccelerator":[{"count":null,"gpuDriverInstallationConfig":{"gpuDriverVersion":null},"gpuPartitionSize":null,"gpuSharingConfig":{"gpuSharingStrategy":null,"maxSharedClientsPerGpu":null},"type":null}],"gvnic":{"enabled":null},"hostMaintenancePolicy":{"maintenanceInterval":null},"imageType":null,"kubeletConfig":{"cpuCfsQuota":false,"cpuCfsQuotaPeriod":null,"cpuManagerPolicy":null,"podPidsLimit":null},"labels":{},"linuxNodeConfig":{"cgroupMode":null,"sysctls":{}},"localNvmeSsdBlockConfig":{"localSsdCount":null},"localSsdCount":null,"loggingVariant":null,"machineType":null,"metadata":{},"minCpuPlatform":null,"nodeGroupRef":{"external":null,"name":null,"namespace":null},"oauthScopes":[],"preemptible":null,"reservationAffinity":{"consumeReservationType":null,"key":null,"values":null},"resourceLabels":{},"sandboxConfig":{"sandboxType":null},"serviceAccountRef":{"external":null,"name":null,"namespace":null},"shieldedInstanceConfig":{"enableIntegrityMonitoring":null,"enableSecureBoot":null},"soleTenantConfig":{"nodeAffinity":[{"key":null,"operator":null,"values":[]}]},"spot":null,"tags":[],"taint":[{"effect":null,"key":null,"value":null}],"workloadMetadataConfig":{"mode":null,"nodeMetadata":null}}` | Immutable. The configuration of the nodepool. |
+| nodeConfig | object | `{"advancedMachineFeatures":{"threadsPerCore":null},"bootDiskKMSCryptoKeyRef":{"external":null,"name":null,"namespace":null},"confidentialNodes":{"enabled":false},"diskSizeGb":null,"diskType":null,"ephemeralStorageConfig":{"localSsdCount":null},"ephemeralStorageLocalSsdConfig":{"localSsdCount":null},"fastSocket":{"enabled":null},"gcfsConfig":{"enabled":null},"guestAccelerator":[],"gvnic":{"enabled":null},"hostMaintenancePolicy":{"maintenanceInterval":null},"imageType":null,"kubeletConfig":{"cpuCfsQuota":false,"cpuCfsQuotaPeriod":null,"cpuManagerPolicy":null,"podPidsLimit":null},"labels":{},"linuxNodeConfig":{"cgroupMode":null,"sysctls":{}},"localNvmeSsdBlockConfig":{"localSsdCount":null},"localSsdCount":null,"loggingVariant":null,"machineType":null,"metadata":{},"minCpuPlatform":null,"nodeGroupRef":{"external":null,"name":null,"namespace":null},"oauthScopes":[],"preemptible":null,"reservationAffinity":{"consumeReservationType":null,"key":null,"values":null},"resourceLabels":{},"sandboxConfig":{"sandboxType":null},"serviceAccountRef":{"external":null,"name":null,"namespace":null},"shieldedInstanceConfig":{"enableIntegrityMonitoring":null,"enableSecureBoot":null},"soleTenantConfig":{"nodeAffinity":[{"key":null,"operator":null,"values":[]}]},"spot":null,"tags":[],"taint":[{"effect":null,"key":null,"value":null}],"workloadMetadataConfig":{"mode":null,"nodeMetadata":null}}` | Immutable. The configuration of the nodepool. |
 | nodeConfig.advancedMachineFeatures | object | `{"threadsPerCore":null}` | Immutable. Specifies options for controlling advanced machine features. |
 | nodeConfig.advancedMachineFeatures.threadsPerCore | string | `nil` | Immutable. The number of threads per physical core. To disable simultaneous multithreading (SMT) set this to 1. If unset, the maximum number of threads supported per core by the underlying processor is assumed. |
 | nodeConfig.bootDiskKMSCryptoKeyRef | object | `{"external":null,"name":null,"namespace":null}` | Reference to a KMS CryptoKey resource for encrypting the boot disk. |
@@ -238,15 +238,7 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | nodeConfig.fastSocket.enabled | string | `nil` | Whether or not NCCL Fast Socket is enabled. |
 | nodeConfig.gcfsConfig | object | `{"enabled":null}` | Immutable. GCFS configuration for this node. |
 | nodeConfig.gcfsConfig.enabled | string | `nil` | Immutable. Whether or not GCFS is enabled. |
-| nodeConfig.guestAccelerator | list | `[{"count":null,"gpuDriverInstallationConfig":{"gpuDriverVersion":null},"gpuPartitionSize":null,"gpuSharingConfig":{"gpuSharingStrategy":null,"maxSharedClientsPerGpu":null},"type":null}]` | Immutable. List of the type and count of accelerator cards attached to the instance. |
-| nodeConfig.guestAccelerator[0] | object | `{"count":null,"gpuDriverInstallationConfig":{"gpuDriverVersion":null},"gpuPartitionSize":null,"gpuSharingConfig":{"gpuSharingStrategy":null,"maxSharedClientsPerGpu":null},"type":null}` | Immutable. The number of the accelerator cards exposed to an instance. |
-| nodeConfig.guestAccelerator[0].gpuDriverInstallationConfig | object | `{"gpuDriverVersion":null}` | Immutable. Configuration for auto installation of GPU driver. |
-| nodeConfig.guestAccelerator[0].gpuDriverInstallationConfig.gpuDriverVersion | string | `nil` | Immutable. Mode for how the GPU driver is installed. |
-| nodeConfig.guestAccelerator[0].gpuPartitionSize | string | `nil` | Immutable. Size of partitions to create on the GPU. Valid values are described in the NVIDIA mig user guide (https://docs.nvidia.com/datacenter/tesla/mig-user-guide/#partitioning). |
-| nodeConfig.guestAccelerator[0].gpuSharingConfig | object | `{"gpuSharingStrategy":null,"maxSharedClientsPerGpu":null}` | Immutable. Configuration for GPU sharing. |
-| nodeConfig.guestAccelerator[0].gpuSharingConfig.gpuSharingStrategy | string | `nil` | Immutable. The type of GPU sharing strategy to enable on the GPU node. Possible values are described in the API package (https://pkg.go.dev/google.golang.org/api/container/v1#GPUSharingConfig). |
-| nodeConfig.guestAccelerator[0].gpuSharingConfig.maxSharedClientsPerGpu | string | `nil` | Immutable. The maximum number of containers that can share a GPU. |
-| nodeConfig.guestAccelerator[0].type | string | `nil` | Immutable. The accelerator type resource name. |
+| nodeConfig.guestAccelerator | list | `[]` | Immutable. List of the type and count of accelerator cards attached to the instance. |
 | nodeConfig.gvnic | object | `{"enabled":null}` | Immutable. Enable or disable gvnic in the node pool. |
 | nodeConfig.gvnic.enabled | string | `nil` | Immutable. Whether or not gvnic is enabled. |
 | nodeConfig.hostMaintenancePolicy | object | `{"maintenanceInterval":null}` | Immutable. The maintenance policy for the hosts on which the GKE VMs run on. |
@@ -391,7 +383,7 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | tags.networking | bool | `false` | Whether we want to create networking features like VPC, Subnetwork, etc. |
 | verticalPodAutoscaling | object | `{"enabled":false}` | Vertical Pod Autoscaling automatically adjusts the resources of pods controlled by it. |
 | verticalPodAutoscaling.enabled | bool | `false` | Enables vertical pod autoscaling. |
-| workloadIdentityConfig | object | `{"enabled":false,"identityNamespace":null,"workloadPool":null}` | Configuration for the use of Kubernetes Service Accounts in GCP IAM policies. |
+| workloadIdentityConfig | object | `{"identityNamespace":null,"workloadPool":null}` | Configuration for the use of Kubernetes Service Accounts in GCP IAM policies. |
 | workloadIdentityConfig.identityNamespace | string | `nil` | DEPRECATED. This field will be removed in a future major release as it has been deprecated in the API. Use `workloadPool` instead; `workloadPool` field will supersede this field. Enables workload identity. |
 | workloadIdentityConfig.workloadPool | string | `nil` | The workload pool to attach all Kubernetes service accounts to. |
 
@@ -505,7 +497,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: gcp-gke-cluster
     path: ''
 

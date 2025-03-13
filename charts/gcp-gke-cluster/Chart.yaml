@@ -2,8 +2,8 @@ apiVersion: v2
 name: gcp-gke-cluster
 description: A Helm chart to provision a GKE Cluster via Config Connector.
 type: application
-version: 0.1.1
-appVersion: "0.1.1"
+version: 0.1.2
+appVersion: "0.1.2"
 maintainers:
   - name: ilyasabdellaoui
     email: ilyas.abdellaoui21@gmail.com
