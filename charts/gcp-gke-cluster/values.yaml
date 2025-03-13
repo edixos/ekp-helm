@@ -494,23 +494,23 @@ nodeConfig:
     enabled:
 
   # -- Immutable. List of the type and count of accelerator cards attached to the instance.
-  guestAccelerator:
-    # -- Immutable. The number of the accelerator cards exposed to an instance.
-    - count:
-      # -- Immutable. Configuration for auto installation of GPU driver.
-      gpuDriverInstallationConfig:
-        # -- Immutable. Mode for how the GPU driver is installed.
-        gpuDriverVersion:
-      # -- Immutable. Size of partitions to create on the GPU. Valid values are described in the NVIDIA mig user guide (https://docs.nvidia.com/datacenter/tesla/mig-user-guide/#partitioning).
-      gpuPartitionSize:
-      # -- Immutable. Configuration for GPU sharing.
-      gpuSharingConfig:
-        # -- Immutable. The type of GPU sharing strategy to enable on the GPU node. Possible values are described in the API package (https://pkg.go.dev/google.golang.org/api/container/v1#GPUSharingConfig).
-        gpuSharingStrategy:
-        # -- Immutable. The maximum number of containers that can share a GPU.
-        maxSharedClientsPerGpu:
-      # -- Immutable. The accelerator type resource name.
-      type:
+  guestAccelerator: []
+    # # -- Immutable. The number of the accelerator cards exposed to an instance.
+    # - count: 1
+    #   # -- Immutable. Configuration for auto installation of GPU driver.
+    #   gpuDriverInstallationConfig:
+    #     # -- Immutable. Mode for how the GPU driver is installed.
+    #     gpuDriverVersion:
+    #   # -- Immutable. Size of partitions to create on the GPU. Valid values are described in the NVIDIA mig user guide (https://docs.nvidia.com/datacenter/tesla/mig-user-guide/#partitioning).
+    #   gpuPartitionSize:
+    #   # -- Immutable. Configuration for GPU sharing.
+    #   gpuSharingConfig:
+    #     # -- Immutable. The type of GPU sharing strategy to enable on the GPU node. Possible values are described in the API package (https://pkg.go.dev/google.golang.org/api/container/v1#GPUSharingConfig).
+    #     gpuSharingStrategy:
+    #     # -- Immutable. The maximum number of containers that can share a GPU.
+    #     maxSharedClientsPerGpu:
+    #   # -- Immutable. The accelerator type resource name.
+    #   type:
 
   # -- Immutable. Enable or disable gvnic in the node pool.
   gvnic:
@@ -774,7 +774,6 @@ verticalPodAutoscaling:
 
 # -- Configuration for the use of Kubernetes Service Accounts in GCP IAM policies.
 workloadIdentityConfig:
-  enabled: false
   # -- DEPRECATED. This field will be removed in a future major release as it has been deprecated in the API. Use `workloadPool` instead; `workloadPool` field will supersede this field. Enables workload identity.
   identityNamespace:
   # -- The workload pool to attach all Kubernetes service accounts to.

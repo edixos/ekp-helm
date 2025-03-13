@@ -413,7 +413,6 @@ spec:
     gcpPublicCidrsAccessEnabled: {{ .Values.masterAuthorizedNetworksConfig.gcpPublicCidrsAccessEnabled }}
     {{- end }}
   {{- end }}
-  {{- if .Values.masterVersion }}
   {{- if .Values.meshCertificates }}
   meshCertificates:
     enableCertificates: {{ .Values.meshCertificates.enableCertificates }}
@@ -504,6 +503,7 @@ spec:
       enabled: {{ .Values.nodeConfig.gcfsConfig.enabled }}
     {{- else }}
     {{- end }}
+    {{ if .Values.nodeConfig.guestAccelerator }}
     {{- if and .Values.nodeConfig.guestAccelerator.count .Values.nodeConfig.guestAccelerator.type }}
     guestAccelerator:
       {{- range .Values.nodeConfig.guestAccelerator }}
@@ -522,6 +522,7 @@ spec:
           maxSharedClientsPerGpu: {{ .gpuSharingConfig.maxSharedClientsPerGpu }}
         {{- end }}
       {{- end }}
+    {{- end }}
     {{- end }}
     {{- if .Values.nodeConfig.gvnic.enabled }}
     gvnic:
@@ -822,5 +823,4 @@ spec:
     {{- if .Values.workloadIdentityConfig.workloadPool }}
     workloadPool: {{ .Values.workloadIdentityConfig.workloadPool }}
     {{- end }}
-  {{- end }}
   {{- end }}
