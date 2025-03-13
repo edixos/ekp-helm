@@ -106,6 +106,38 @@ entries:
     version: 0.1.0
   gcp-gke-cluster:
   - apiVersion: v2
+    appVersion: 0.1.2
+    created: "2025-03-13T14:17:49.921452304Z"
+    dependencies:
+    - alias: gcpSubnetwork
+      name: gcp-subnetwork
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - networking
+      version: 0.1.5
+    - alias: gcpVpcNetwork
+      name: gcp-vpc-network
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - networking
+      version: 0.1.3
+    - alias: bigquery-dataset
+      condition: bigquery-dataset.enabled
+      name: gcp-bigquery-dataset
+      repository: https://edixos.github.io/ekp-helm
+      version: 0.1.0
+    description: A Helm chart to provision a GKE Cluster via Config Connector.
+    digest: c857b37ef95a71da7bc11774666e580149a537c28156fedb229110d2e763f965
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: gcp-gke-cluster
+    type: application
+    urls:
+    - gcp-gke-cluster-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
     appVersion: 0.1.1
     created: "2025-03-11T15:56:12.576174886Z"
     dependencies:
@@ -377,4 +409,4 @@ entries:
     urls:
     - kyverno-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-11T15:56:12.576199673Z"
+generated: "2025-03-13T14:17:49.921489633Z"
