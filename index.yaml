@@ -409,4 +409,26 @@ entries:
     urls:
     - kyverno-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-13T14:17:49.921489633Z"
+  velero:
+  - apiVersion: v2
+    appVersion: 1.15.2
+    created: "2025-03-14T10:04:51.976112586Z"
+    dependencies:
+    - name: velero
+      repository: https://vmware-tanzu.github.io/helm-charts
+      version: 8.5.0
+    description: A Helm chart for Kubernetes
+    digest: ab95d6fb69fea30163cf2f23961814ebf161fa50f98a494931bee1556acf80e7
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: velero
+    type: application
+    urls:
+    - velero-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-03-14T10:04:51.97615744Z"
