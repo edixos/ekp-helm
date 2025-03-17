@@ -1,0 +1,39 @@
+global:
+  cnrmNamespace: "default"
+  abandon: true
+  gcpProjectId: "ekp-dev"
+
+# Cloud Router Configuration
+gcpCloudRouter:
+  name: "test-cloud-router"
+  description: "Cloud Router for GKE workers in ekp-subnetwork"
+  region: "europe-west1"
+  networkRef:
+    name: "ekp-vpc-network"
+  bgp: {}
+
+# Cloud NAT Configuration
+name: "test-cloud-nat"
+region: "europe-west1"
+routerRef:
+  name: "test-cloud-router"
+natIpAllocateOption: "AUTO_ONLY"
+sourceSubnetworkIpRangesToNat: "LIST_OF_SUBNETWORKS"
+subnetwork:
+  - sourceIpRangesToNat:
+    - LIST_OF_SECONDARY_IP_RANGES
+    subnetworkRef:
+      name: "ekp-subnetwork"
+    secondaryIpRangeNames:
+    - clusterrange
+    - servicesrange
+logConfig:
+  enable: true
+  filter: "ALL"
+enableDynamicPortAllocation: false
+enableEndpointIndependentMapping: true
+icmpIdleTimeoutSec: 30
+tcpEstablishedIdleTimeoutSec: 1200
+tcpTimeWaitTimeoutSec: 120
+tcpTransitoryIdleTimeoutSec: 30
+udpIdleTimeoutSec: 30

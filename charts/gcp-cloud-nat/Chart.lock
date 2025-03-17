@@ -1,0 +1,6 @@
+dependencies:
+- name: gcp-compute-router
+  repository: https://edixos.github.io/ekp-helm
+  version: 0.1.1
+digest: sha256:8c9c4f6651eb22da92383acf6c8346f188c1b99deabbe1af24f83bd8fa51b35b
+generated: "2025-03-17T16:08:49.397622+01:00"

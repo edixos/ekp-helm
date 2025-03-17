@@ -1,0 +1,67 @@
+---
+global:
+  # -- Allows to deploy in another namespace than the release one
+  # @default -- `nil`
+  cnrmNamespace: ""
+  # -- Google Project ID
+  gcpProjectId: myprojectid
+  # -- If true, Keep the Cloud NAT even after the kcc resource deletion.
+  abandon: true
+
+# -- Add annotations to the Cloud NAT.
+annotations: {}
+
+# -- Name of the Compute Router.
+name: "ekp-cloud-nat"
+# -- A text description of the Cloud NAT. Must be less than or equal to 256 UTF-8 bytes.
+description: "Cloud NAT configuration for Google Compute Router"
+
+# -- A list of IP resources to be drained. These IPs must be valid static external IPs that have been assigned to the NAT.
+drainNatIps: []
+# -- Enable Dynamic Port Allocation. If minPortsPerVm is set, minPortsPerVm must be set to a power of two greater than or equal to 32. If minPortsPerVm is not set, a minimum of 32 ports will be allocated to a VM from this NAT config. If maxPortsPerVm is set, maxPortsPerVm must be set to a power of two greater than minPortsPerVm. If maxPortsPerVm is not set, a maximum of 65536 ports will be allocated to a VM from this NAT config. Mutually exclusive with enableEndpointIndependentMapping.
+enableDynamicPortAllocation: false
+# -- Specifies if endpoint independent mapping is enabled. This is enabled by default. For more information see the [official documentation](https://cloud.google.com/nat/docs/overview#specs-rfcs).
+enableEndpointIndependentMapping: true
+# -- Timeout (in seconds) for ICMP connections. Defaults to 30s if not set.
+icmpIdleTimeoutSec: 30
+# -- Configuration for logging on NAT.
+logConfig:
+  # -- Indicates whether or not to export logs.
+  enable: false
+  # -- Specifies the desired filtering of logs on this NAT. Possible values: ["ERRORS_ONLY", "TRANSLATIONS_ONLY", "ALL"].
+  filter: "ALL"
+
+# -- Maximum number of ports allocated to a VM from this NAT. This field can only be set when enableDynamicPortAllocation is enabled.
+maxPortsPerVm: 0
+# -- Minimum number of ports allocated to a VM from this NAT.
+minPortsPerVm: 0
+# -- How external IPs should be allocated for this NAT. Valid values are 'AUTO_ONLY' for only allowing NAT IPs allocated by Google Cloud Platform, or 'MANUAL_ONLY' for only user-allocated NAT IP addresses. Possible values: ["MANUAL_ONLY", "AUTO_ONLY"].
+natIpAllocateOption: "AUTO_ONLY"
+# -- NAT IPs. Only valid if natIpAllocateOption is set to MANUAL_ONLY.
+natIps: []
+# -- Immutable. Region where the router and NAT reside.
+region: "europe-west1"
+# -- Immutable. Optional. The name of the resource. Used for creation and acquisition. When unset, the value of `metadata.name` is used as the default.
+resourceID: ""
+# -- The Cloud Router in which this NAT will be configured.
+routerRef:
+  # -- Allowed value: The `name` field of a `ComputeRouter` resource.
+  external: ""
+  # -- Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+  name: ""
+  # -- Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+  namespace: ""
+# -- A list of rules associated with this NAT.
+rules: []
+# -- How NAT should be configured per Subnetwork. If 'ALL_SUBNETWORKS_ALL_IP_RANGES', all of the IP ranges in every Subnetwork are allowed to Nat. If 'ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES', all of the primary IP ranges in every Subnetwork are allowed to Nat. 'LIST_OF_SUBNETWORKS': A list of Subnetworks are allowed to Nat (specified in the field subnetwork below). Note that if this field contains ALL_SUBNETWORKS_ALL_IP_RANGES or ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any other RouterNat section in any Router for this network in this region. Possible values: ["ALL_SUBNETWORKS_ALL_IP_RANGES", "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES", "LIST_OF_SUBNETWORKS"].
+sourceSubnetworkIpRangesToNat: "ALL_SUBNETWORKS_ALL_IP_RANGES"
+# -- One or more subnetwork NAT configurations. Only used if 'source_subnetwork_ip_ranges_to_nat' is set to 'LIST_OF_SUBNETWORKS'.
+subnetwork: []
+# -- Timeout (in seconds) for TCP established connections. Defaults to 1200s if not set.
+tcpEstablishedIdleTimeoutSec: 1200
+# -- Timeout (in seconds) for TCP connections that are in TIME_WAIT state. Defaults to 120s if not set.
+tcpTimeWaitTimeoutSec: 120
+# -- Timeout (in seconds) for TCP transitory connections. Defaults to 30s if not set.
+tcpTransitoryIdleTimeoutSec: 30
+# -- Timeout (in seconds) for UDP connections. Defaults to 30s if not set.
+udpIdleTimeoutSec: 30
