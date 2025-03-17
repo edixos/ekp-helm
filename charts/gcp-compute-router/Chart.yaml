@@ -1,0 +1,10 @@
+apiVersion: v2
+name: gcp-compute-router
+description: A Helm chart to provision a Google Compute Router via Config Connector
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+maintainers:
+  - name: ilyasabdellaoui
+    email: ilyas.abdellaoui21@gmail.com
+    url: https://github.com/ilyasabdellaoui
