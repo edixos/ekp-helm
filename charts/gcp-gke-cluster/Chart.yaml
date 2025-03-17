@@ -2,8 +2,8 @@ apiVersion: v2
 name: gcp-gke-cluster
 description: A Helm chart to provision a GKE Cluster via Config Connector.
 type: application
-version: 0.1.2
-appVersion: "0.1.2"
+version: 0.1.3
+appVersion: "0.1.3"
 maintainers:
   - name: ilyasabdellaoui
     email: ilyas.abdellaoui21@gmail.com
@@ -26,3 +26,9 @@ dependencies:
   repository: "https://edixos.github.io/ekp-helm"
   alias: bigquery-dataset
   condition: bigquery-dataset.enabled
+- name: gcp-cloud-nat
+  version: 0.1.0
+  repository: "https://edixos.github.io/ekp-helm"
+  alias: gcpCloudNat
+  tags: 
+  - enable-nat

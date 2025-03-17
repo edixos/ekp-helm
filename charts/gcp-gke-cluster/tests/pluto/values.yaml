@@ -25,9 +25,9 @@ privateClusterConfig:
       - 8443
       - 443
 
-
 tags:
   networking: true
+  enable-nat: true
 
 gcpVpcNetwork:
   name: "ekp-vpc-network"
@@ -49,6 +49,33 @@ gcpSubnetwork:
     rangeName: "clusterrange"
   - ipCidrRange: "10.0.16.0/20"
     rangeName: "servicesrange"
+
+gcpCloudNat:
+  gcpCloudRouter:
+    name: "ekp-cloud-router"
+    description: "Cloud Router for GKE workers in ekp-subnetwork"
+    region: "europe-west1"
+    networkRef:
+      name: "ekp-vpc-network"
+    bgp: {}
+  
+  name: "ekp-cloud-nat"
+  region: "europe-west1"
+  routerRef:
+    name: "ekp-cloud-router"
+  natIpAllocateOption: "AUTO_ONLY"
+  sourceSubnetworkIpRangesToNat: "LIST_OF_SUBNETWORKS"
+  subnetwork:
+    - sourceIpRangesToNat:
+      - LIST_OF_SECONDARY_IP_RANGES
+      subnetworkRef:
+        name: "ekp-subnetwork"
+      secondaryIpRangeNames:
+      - clusterrange
+      - servicesrange
+  logConfig:
+    enable: true
+    filter: "ALL"
 
 ipAllocationPolicy:
   enabled: true
@@ -144,43 +171,6 @@ nodePools:
         function: "ekp-host"
       serviceAccount:
         name: ekp-testnode-a-sa
-        create: true
-
-  - nodePoolName: spot-n2-standard-8-ekp-testnode-b
-    autoscaling:
-      enabled: true
-      minNodeCount: 0
-      maxNodeCount: 1
-    initialNodeCount: 1
-    management:
-      autoRepair: true
-      autoUpgrade: true
-    maxPodsPerNode: 32
-    nodeConfig:
-      bootDiskKMSCryptoKey:
-        enabled: false
-      diskSize: 100
-      diskType: 'pd-balanced'
-      imageType: COS_CONTAINERD
-      spot: true
-      machineType: 'n2-standard-8'
-      metadata:
-        disable-legacy-endpoints: "true"
-      oauthScopes:
-        - "https://www.googleapis.com/auth/devstorage.read_only"
-        - "https://www.googleapis.com/auth/logging.write"
-        - "https://www.googleapis.com/auth/monitoring"
-        - "https://www.googleapis.com/auth/compute"
-      tags:
-        - gke-spot-nodes
-      labels:
-        owner: "ekp-testnode-b-owner"
-        env: "dev"
-        usage: "ekp-testnode-b"
-        resource_type: "gke"
-        function: "ekp-host"
-      serviceAccount:
-        name: ekp-testnode-b-sa
         create: true
 
 resourceUsageExportConfig:
