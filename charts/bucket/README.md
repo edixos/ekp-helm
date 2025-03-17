@@ -31,7 +31,6 @@ A Helm chart for Bucket
 | encryption.kmsKeyRefName | string | `"mykms"` | Name of the Cloud KMS key that will be used to encrypt objects inserted into this bucket |
 | encryption.kmsKeyRefNamespace | string | `nil` | Namespace where the KMS key was created through KCC. Only use if kccControlled=true |
 | global.abandon | bool | `true` | Activate abandon of the database (If true, the database will be keep after deleting k8s resources) |
-| global.abandon | bool | `true` | Activate abandon of the database (If true, the database will be keep after deleting k8s resources) |
 | global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
 | global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
 | lifecycleRule | list | See the `values.yaml` for more details | The bucket's lifecycle configuration. See [lifecycle management](https://cloud.google.com/storage/docs/lifecycle) for more information. |
