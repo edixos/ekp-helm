@@ -106,6 +106,20 @@ entries:
     version: 0.1.0
   gcp-compute-router:
   - apiVersion: v2
+    appVersion: 0.1.1
+    created: "2025-03-17T14:56:48.35186611Z"
+    description: A Helm chart to provision a Google Compute Router via Config Connector
+    digest: 0add0c669a8933602b03735dcca13babafaae3747817241770dde24595123528
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: gcp-compute-router
+    type: application
+    urls:
+    - gcp-compute-router-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 0.1.0
     created: "2025-03-17T12:25:52.737389955Z"
     description: A Helm chart to provision a Google Compute Router via Config Connector
@@ -446,4 +460,4 @@ entries:
     urls:
     - velero-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-17T12:25:52.737412327Z"
+generated: "2025-03-17T14:56:48.351894483Z"
