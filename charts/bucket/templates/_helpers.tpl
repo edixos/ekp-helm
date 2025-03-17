@@ -51,6 +51,37 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Define Namespace
+*/}}
+{{- define "bucket.namespace" -}}
+{{ default .Release.Namespace .Values.global.cnrmNamespace }}
+{{- end -}}
+
+
+{{- define "bucket.annotations" -}}
+{{- if or .Values.global.abandon .Values.annotations .Values.global.gcpProjectId -}}
+annotations:
+  {{- if .Values.global.abandon }}
+  cnrm.cloud.google.com/deletion-policy: abandon
+  {{- end }}
+  {{- if .Values.global.gcpProjectId }}
+  cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId }}
+  {{- end }}
+  {{- if .Values.annotations }}
+{{- .Values.annotations | toYaml | nindent 2 }}
+  {{- end }}
+{{- end }}
+{{- end -}}
+
+{{- define "iamPolicyMember.annotations" -}}
+{{- if .Values.global.skipUnspecifiedFields -}}
+annotation:
+  cnrm.cloud.google.com/state-into-spec: absent
+{{- end }}
+{{- end -}}
+
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "bucket.serviceAccountName" -}}

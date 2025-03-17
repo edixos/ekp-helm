@@ -6,8 +6,6 @@ global:
   abandon: true
   # -- Google Project ID
   gcpProjectId: "myprojectid"
-  # global.abandon -- Activate abandon of the database (If true, the database will be keep after deleting k8s resources)
-  abandon: true
 
 # bucketName -- Name of the bucket. Must be unique.
 bucketName: myfirstbucket
