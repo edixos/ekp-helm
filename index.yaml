@@ -460,4 +460,22 @@ entries:
     urls:
     - velero-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-17T14:56:48.351894483Z"
+  workload-identity:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-03-17T16:05:24.086334444Z"
+    description: A Helm chart for workload identity
+    digest: ab914d67b50b8a5dac34f832aaff5b67c738d9bc13926eced266ae1411a227c4
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: workload-identity
+    type: application
+    urls:
+    - workload-identity-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-03-17T16:05:24.08636972Z"
