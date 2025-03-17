@@ -1,0 +1,139 @@
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeRouterNAT
+metadata:
+  annotations:
+    {{- if .Values.global.abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+    {{- end }}
+    cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId | quote }}
+  labels:
+    {{- include "gcp-cloud-nat.labels" . | nindent 4 }}
+  name: {{ include "gcp-cloud-nat.fullname" . }}
+  namespace: {{ include "gcp-cloud-nat.namespace" . }}
+spec:
+  {{- if .Values.drainNatIps }}
+  drainNatIps:
+    {{- range .Values.drainNatIps }}
+    {{- if .name }}
+  - name: {{ .name | quote }}
+    {{- end }}
+    {{- if .external }}
+    external: {{ .external | quote }}
+    {{- end }}
+    {{- if .namespace }}
+    namespace: {{ .namespace | quote }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+  enableDynamicPortAllocation: {{ .Values.enableDynamicPortAllocation | default false }}
+  enableEndpointIndependentMapping: {{ .Values.enableEndpointIndependentMapping | default true }}
+  icmpIdleTimeoutSec: {{ .Values.icmpIdleTimeoutSec | default 30 }}
+  {{- if .Values.logConfig }}
+  {{- if .Values.logConfig.enable }}
+  logConfig:
+    enable: {{ required "logConfig.enable is required" .Values.logConfig.enable | default false }}
+    filter: {{ required "logConfig.filter is required" .Values.logConfig.filter | quote }}
+  {{- end }}
+  {{- end }}
+  maxPortsPerVm: {{ .Values.maxPortsPerVm | default 0 }}
+  minPortsPerVm: {{ .Values.minPortsPerVm | default 0 }}
+  natIpAllocateOption: {{ required "natIpAllocateOption is required" .Values.natIpAllocateOption | quote }}
+  {{- if .Values.natIps }}
+  natIps:
+    {{- range .Values.natIps }}
+    {{- if .namespace }}
+    namespace: {{ .namespace | quote }}
+    {{- end }}
+    {{- if .name }}
+    name: {{ .name | quote }}
+    {{- end }}
+    {{- if .external }}
+    external: {{ .external | quote }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+  region: {{ required "Region is required" .Values.region | quote }}
+  {{- if .Values.resourceID }}
+  resourceID: {{ .Values.resourceID | quote }}
+  {{- end }}
+  {{- if not .Values.routerRef }}
+  {{- fail "routerRef is required" }}
+  {{- else }}
+  routerRef:
+    {{- if .Values.routerRef.external }}
+    external: {{ .Values.routerRef.external | quote }}
+    {{- end }}
+    {{- if .Values.routerRef.name }}
+    name: {{ .Values.routerRef.name | quote }}
+    {{- end }}
+    {{- if .Values.routerRef.namespace }}
+    namespace: {{ .Values.routerRef.namespace | quote }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.rules }}
+  rules:
+  {{- range .Values.rules }}
+  - match: {{ required "rule.match is required" .match | quote }}
+    ruleNumber: {{ required "rule.ruleNumber is required" .ruleNumber }}
+    {{- if .description }}
+    description: {{ .description | quote }}
+    {{- end }}
+    {{- if .action }}
+    action:
+      {{- if .action.sourceNatActiveIpsRefs }}
+      sourceNatActiveIpsRefs:
+        {{- range .action.sourceNatActiveIpsRefs }}
+        - external: {{ .external | quote }}
+          name: {{ .name | quote }}
+          namespace: {{ .namespace | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if .action.sourceNatDrainIpsRefs }}
+      sourceNatDrainIpsRefs:
+        {{- range .action.sourceNatDrainIpsRefs }}
+        - external: {{ .external | quote }}
+          name: {{ .name | quote }}
+          namespace: {{ .namespace | quote }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- end }}
+  sourceSubnetworkIpRangesToNat: {{ required "sourceSubnetworkIpRangesToNat is required" .Values.sourceSubnetworkIpRangesToNat | quote }}
+  {{- if .Values.subnetwork }}
+  subnetwork:
+    {{- range .Values.subnetwork }}
+      {{- if .secondaryIpRangeNames }}
+    - secondaryIpRangeNames:
+        {{- range .secondaryIpRangeNames }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if not .sourceIpRangesToNat }}
+      {{- fail "subnetwork.sourceIpRangesToNat is required" }}
+      {{- else }}
+      sourceIpRangesToNat:
+        {{- range .sourceIpRangesToNat }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if not .subnetworkRef }}
+      {{- fail "subnetwork.subnetworkRef is required" }}
+      {{- else }}
+      subnetworkRef:
+        {{- if .subnetworkRef.external }}
+        external: {{ .subnetworkRef.external | quote }}
+        {{- end }}
+        {{- if .subnetworkRef.name }}
+        name: {{ .subnetworkRef.name | quote }}
+        {{- end }}
+        {{- if .subnetworkRef.namespace }}
+        namespace: {{ .subnetworkRef.namespace | quote }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  tcpEstablishedIdleTimeoutSec: {{ .Values.tcpEstablishedIdleTimeoutSec | default 1200 }}
+  tcpTimeWaitTimeoutSec: {{ .Values.tcpTimeWaitTimeoutSec | default 120 }}
+  tcpTransitoryIdleTimeoutSec: {{ .Values.tcpTransitoryIdleTimeoutSec | default 30 }}
+  udpIdleTimeoutSec: {{ .Values.udpIdleTimeoutSec | default 30 }}

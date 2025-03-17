@@ -1,0 +1,15 @@
+apiVersion: v2
+name: gcp-cloud-nat
+description: A Helm chart to provision a Cloud NAT (ComputeRouterNAT) via Config Connector
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+maintainers:
+  - name: ilyasabdellaoui
+    email: ilyas.abdellaoui21@gmail.com
+    url: https://github.com/ilyasabdellaoui
+dependencies:
+  - name: gcp-compute-router
+    version: "0.1.1"
+    repository: "https://edixos.github.io/ekp-helm"
+    alias: gcpCloudRouter
