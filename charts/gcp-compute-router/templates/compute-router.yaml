@@ -13,7 +13,9 @@ metadata:
 spec:
   description: {{ .Values.description | quote }}
   region: {{ required "Region of Cloud Router is required" .Values.region }}
+  {{- if .Values.resourceID }}
   resourceID: {{ .Values.resourceID | quote }}
+  {{- end }}
   {{- if and (hasKey .Values "encryptedInterconnectRouter") .Values.encryptedInterconnectRouter }}
   encryptedInterconnectRouter: {{ .Values.encryptedInterconnectRouter }}
   {{- end }}
@@ -24,41 +26,45 @@ spec:
     {{- if .Values.networkRef.external }}
     external: {{ .Values.networkRef.external | quote }}
     {{- end }}
-    {{- if not .Values.networkRef.name }}
+    {{- if .Values.networkRef.name }}
     name: {{ .Values.networkRef.name | quote }}
     {{- end }}
-    {{- if not .Values.networkRef.namespace }}
+    {{- if .Values.networkRef.namespace }}
     namespace: {{ .Values.networkRef.namespace | quote }}
     {{- end }}
   {{- end }}
   {{- if .Values.bgp }}
+  {{- if not .Values.bgp.asn }}
+  
+  {{- else }}
   bgp:
     asn: {{ required "bgp.asn is required" .Values.bgp.asn }}
     advertiseMode: {{ .Values.bgp.advertiseMode | default "DEFAULT" | quote }}
     {{- if .Values.bgp.advertisedGroups }}
     advertisedGroups:
-    {{- range .Values.bgp.advertisedGroups }}
+      {{- range .Values.bgp.advertisedGroups }}
       - {{ . | quote }}
-    {{- end }}
+      {{- end }}
     {{- end }}
     {{- if and (hasKey .Values.bgp "advertisedIpRanges") (not (empty .Values.bgp.advertisedIpRanges)) }}
-      {{- $valid := false }}
+      {{- $validRanges := false }}
       {{- range .Values.bgp.advertisedIpRanges }}
         {{- if hasKey . "range" }}
-          {{- $valid = true }}
+          {{- $validRanges = true }}
         {{- end }}
       {{- end }}
-      {{- if $valid }}
+      {{- if $validRanges }}
     advertisedIpRanges:
-      {{- range .Values.bgp.advertisedIpRanges }}
-        {{- if hasKey . "range" }}
+        {{- range .Values.bgp.advertisedIpRanges }}
+          {{- if hasKey . "range" }}
       - range: {{ .range | quote }}
-          {{- if hasKey . "description" }}
+            {{- if hasKey . "description" }}
         description: {{ .description | quote }}
+            {{- end }}
           {{- end }}
         {{- end }}
       {{- end }}
-      {{- end }}
     {{- end }}
     keepaliveInterval: {{ .Values.bgp.keepaliveInterval | default 20 }}
+  {{- end }}
   {{- end }}
