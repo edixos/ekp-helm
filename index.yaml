@@ -104,6 +104,27 @@ entries:
     urls:
     - gcp-bigquery-dataset-0.1.0.tgz
     version: 0.1.0
+  gcp-cloud-nat:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-03-17T16:08:59.040995337Z"
+    dependencies:
+    - alias: gcpCloudRouter
+      name: gcp-compute-router
+      repository: https://edixos.github.io/ekp-helm
+      version: 0.1.1
+    description: A Helm chart to provision a Cloud NAT (ComputeRouterNAT) via Config
+      Connector
+    digest: 3f9205e58f0414b9f45220234a9cda33497fe83081fddc87f51b5134de8aa32e
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: gcp-cloud-nat
+    type: application
+    urls:
+    - gcp-cloud-nat-0.1.0.tgz
+    version: 0.1.0
   gcp-compute-router:
   - apiVersion: v2
     appVersion: 0.1.1
@@ -478,4 +499,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-17T16:05:24.08636972Z"
+generated: "2025-03-17T16:08:59.041027677Z"
