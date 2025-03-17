@@ -234,14 +234,6 @@ defaultSnatStatus:
   # -- When disabled is set to false, default IP masquerade rules will be applied to the nodes to prevent sNAT on cluster internal traffic.
   disabled: false
 
-# -- Immutable. Configuration for Cloud DNS for Kubernetes Engine.
-dnsConfig:
-  # -- Which in-cluster DNS provider should be used.
-  clusterDns: ""
-  # -- The suffix used for all cluster service records.
-  clusterDnsDomain: ""
-  # -- The scope of access to cluster DNS records.
-  clusterDnsScope: ""
 
 # -- Immutable. Enable Autopilot for this cluster.
 enableAutopilot: false
@@ -289,7 +281,7 @@ identityServiceConfig:
   enabled: false
 
 # -- Initial number of nodes in the default node pool. Must be set if no custom node pools are defined.
-initialNodeCount: 1
+initialNodeCount: 0
 
 # -- Immutable. Configuration of cluster IP allocation for VPC-native clusters. Adding this block enables IP aliasing, making the cluster VPC-native instead of routes-based.
 ipAllocationPolicy:
@@ -446,230 +438,10 @@ subnetworkRef:
 # -- Networking mode for the cluster. Determines whether alias IPs or routes will be used for pod IPs. Options: "VPC_NATIVE" (default) or "ROUTES".
 networkingMode: "VPC_NATIVE"
 
-# -- Immutable. The configuration of the nodepool.
-nodeConfig:
-  # -- Immutable. Specifies options for controlling advanced machine features.
-  advancedMachineFeatures:
-    # -- Immutable. The number of threads per physical core. To disable simultaneous multithreading (SMT) set this to 1. If unset, the maximum number of threads supported per core by the underlying processor is assumed.
-    threadsPerCore:
-
-  # -- Reference to a KMS CryptoKey resource for encrypting the boot disk.
-  bootDiskKMSCryptoKeyRef:
-    # -- Allowed value: The `selfLink` field of a `KMSCryptoKey` resource.
-    external:
-    # -- Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-    name:
-    # -- Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
-    namespace:
-
-  # -- Immutable. Configuration for the confidential nodes feature, which makes nodes run on confidential VMs. Warning: This configuration can't be changed (or added/removed) after pool creation without deleting and recreating the entire pool.
-  confidentialNodes:
-    # -- Immutable. Whether Confidential Nodes feature is enabled for all nodes in this pool.
-    enabled: false
-
-  # -- Immutable. Size of the disk attached to each node, specified in GB. The smallest allowed disk size is 10GB.
-  diskSizeGb:
-
-  # -- Immutable. Type of the disk attached to each node. Such as pd-standard, pd-balanced or pd-ssd.
-  diskType:
-
-  # -- Immutable. Parameters for the ephemeral storage filesystem. If unspecified, ephemeral storage is backed by the boot disk.
-  ephemeralStorageConfig:
-    # -- Immutable. Number of local SSDs to use to back ephemeral storage. Uses NVMe interfaces. Each local SSD must be 375 or 3000 GB in size, and all local SSDs must share the same size.
-    localSsdCount:
-
-  # -- Immutable. Parameters for the ephemeral storage filesystem. If unspecified, ephemeral storage is backed by the boot disk.
-  ephemeralStorageLocalSsdConfig:
-    # -- Immutable. Number of local SSDs to use to back ephemeral storage. Uses NVMe interfaces. Each local SSD must be 375 or 3000 GB in size, and all local SSDs must share the same size.
-    localSsdCount:
-
-  # -- Enable or disable NCCL Fast Socket in the node pool.
-  fastSocket:
-    # -- Whether or not NCCL Fast Socket is enabled.
-    enabled:
-
-  # -- Immutable. GCFS configuration for this node.
-  gcfsConfig:
-    # -- Immutable. Whether or not GCFS is enabled.
-    enabled:
-
-  # -- Immutable. List of the type and count of accelerator cards attached to the instance.
-  guestAccelerator: []
-    # # -- Immutable. The number of the accelerator cards exposed to an instance.
-    # - count: 1
-    #   # -- Immutable. Configuration for auto installation of GPU driver.
-    #   gpuDriverInstallationConfig:
-    #     # -- Immutable. Mode for how the GPU driver is installed.
-    #     gpuDriverVersion:
-    #   # -- Immutable. Size of partitions to create on the GPU. Valid values are described in the NVIDIA mig user guide (https://docs.nvidia.com/datacenter/tesla/mig-user-guide/#partitioning).
-    #   gpuPartitionSize:
-    #   # -- Immutable. Configuration for GPU sharing.
-    #   gpuSharingConfig:
-    #     # -- Immutable. The type of GPU sharing strategy to enable on the GPU node. Possible values are described in the API package (https://pkg.go.dev/google.golang.org/api/container/v1#GPUSharingConfig).
-    #     gpuSharingStrategy:
-    #     # -- Immutable. The maximum number of containers that can share a GPU.
-    #     maxSharedClientsPerGpu:
-    #   # -- Immutable. The accelerator type resource name.
-    #   type:
-
-  # -- Immutable. Enable or disable gvnic in the node pool.
-  gvnic:
-    # -- Immutable. Whether or not gvnic is enabled.
-    enabled:
-
-  # -- Immutable. The maintenance policy for the hosts on which the GKE VMs run on.
-  hostMaintenancePolicy:
-    # -- Immutable. The maintenance interval for the hosts.
-    maintenanceInterval:
-
-  # -- The image type to use for this node. Note that for a given image type, the latest version of it will be used.
-  imageType:
-
-  # -- Node kubelet configs.
-  kubeletConfig:
-    # -- Enable CPU CFS quota enforcement for containers that specify CPU limits.
-    cpuCfsQuota: false
-    # -- Set the CPU CFS quota period value 'cpu.cfs_period_us'.
-    cpuCfsQuotaPeriod:
-    # -- Control the CPU management policy on the node.
-    cpuManagerPolicy:
-    # -- Controls the maximum number of processes allowed to run in a pod.
-    podPidsLimit:
-
-  # -- Immutable. The map of Kubernetes labels (key/value pairs) to be applied to each node. These will added in addition to any default label(s) that Kubernetes may apply to the node.
-  labels: {}
-
-  # -- Parameters that can be configured on Linux nodes.
-  linuxNodeConfig:
-    # -- cgroupMode specifies the cgroup mode to be used on the node.
-    cgroupMode:
-    # -- The Linux kernel parameters to be applied to the nodes and all pods running on the nodes.
-    sysctls: {}
-
-  # -- Immutable. Parameters for raw-block local NVMe SSDs.
-  localNvmeSsdBlockConfig:
-    # -- Immutable. Number of raw-block local NVMe SSD disks to be attached to the node. Each local SSD is 375 GB in size.
-    localSsdCount:
-
-  # -- Immutable. The number of local SSD disks to be attached to the node.
-  localSsdCount:
-
-  # -- Type of logging agent that is used as the default value for node pools in the cluster. Valid values include DEFAULT and MAX_THROUGHPUT.
-  loggingVariant:
-
-  # -- Immutable. The name of a Google Compute Engine machine type.
-  machineType:
-
-  # -- Immutable. The metadata key/value pairs assigned to instances in the cluster.
-  metadata: {}
-
-  # -- Immutable. Minimum CPU platform to be used by this instance. The instance may be scheduled on the specified or newer CPU platform.
-  minCpuPlatform:
-
-  # -- Immutable. Setting this field will assign instances of this pool to run on the specified node group. This is useful for running workloads on sole tenant nodes.
-  nodeGroupRef:
-    # -- Allowed value: The `name` field of a `ComputeNodeGroup` resource.
-    external:
-    # -- Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-    name:
-    # -- Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
-    namespace:
-
-  # -- Immutable. The set of Google API scopes to be made available on all of the node VMs.
-  oauthScopes: []
-
-  # -- Immutable. Whether the nodes are created as preemptible VM instances.
-  preemptible:
-
-  # -- Immutable. The reservation affinity configuration for the node pool.
-  reservationAffinity:
-    # -- Immutable. Corresponds to the type of reservation consumption.
-    consumeReservationType:
-    # -- Immutable. The label key of a reservation resource.
-    key:
-    # -- Immutable. The label values of the reservation resource.
-    values:
-
-  # -- The GCE resource labels (a map of key/value pairs) to be applied to the node pool.
-  resourceLabels: {}
-
-  # -- Immutable. Sandbox configuration for this node.
-  sandboxConfig:
-    # -- Type of the sandbox to use for the node (e.g. 'gvisor').
-    sandboxType:
-
-  # -- Reference to a service account used by the node pool.
-  serviceAccountRef:
-    # -- Allowed value: The `email` field of an `IAMServiceAccount` resource.
-    external:
-    # -- Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-    name:
-    # -- Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
-    namespace:
-
-  # -- Immutable. Shielded Instance options.
-  shieldedInstanceConfig:
-    # -- Immutable. Defines whether the instance has integrity monitoring enabled.
-    enableIntegrityMonitoring:
-    # -- Immutable. Defines whether the instance has Secure Boot enabled.
-    enableSecureBoot:
-
-  # -- Immutable. Node affinity options for sole tenant node pools.
-  soleTenantConfig:
-    # -- Immutable. Node affinity configuration for sole tenant node pools.
-    nodeAffinity:
-      # -- Immutable. The key for the node affinity configuration.
-      - key:
-        # -- Immutable. The operator for the node affinity configuration.
-        operator:
-        # -- Immutable. The values for the node affinity configuration.
-        values: []
-
-  # -- Immutable. Whether the nodes are created as spot VM instances.
-  spot:
-
-  # -- The list of instance tags applied to all nodes.
-  tags: []
-
-  # -- List of Kubernetes taints to be applied to each node.
-  taint:
-    # -- Effect for taint.
-    - effect:
-      # -- Key for taint.
-      key:
-      # -- Value for taint.
-      value:
-
-  # -- Immutable. The workload metadata configuration for this node.
-  workloadMetadataConfig:
-    # -- Mode is the configuration for how to expose metadata to workloads running on the node.
-    mode:
-    # -- DEPRECATED. Deprecated in favor of mode. NodeMetadata is the configuration for how to expose metadata to the workloads running on the node.
-    nodeMetadata:
-
-# -- The list of zones in which the cluster's nodes are located. Nodes must be in the region of their regional cluster or in the same region as their cluster's zone for zonal clusters. If this is specified for a zonal cluster, omit the cluster's zone.
 nodeLocations: []
 
-# -- Node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters.
-nodePoolAutoConfig:
-  # -- Collection of Compute Engine network tags that can be applied to a node's underlying VM instance.
-  networkTags:
-    # -- List of network tags applied to auto-provisioned node pools.
-    tags: []
-
-# -- The default node pool settings for the entire cluster.
-nodePoolDefaults:
-  # -- Subset of NodeConfig message that has defaults.
-  nodeConfigDefaults:
-    # -- GCFS configuration for this node.
-    gcfsConfig:
-      # -- Whether or not GCFS is enabled.
-      enabled: false
-    # -- Type of logging agent that is used as the default value for node pools in the cluster. Valid values include DEFAULT and MAX_THROUGHPUT.
-    loggingVariant:
-
 # -- The Kubernetes version to use for the nodes in the cluster.
-nodeVersion:
+# nodeVersion:
 
 # -- The notification config for sending cluster upgrade notifications.
 notificationConfig:
@@ -708,11 +480,8 @@ privateClusterConfig:
     # -- Whether the cluster master is accessible globally or not.
     enabled: false
   # -- Immutable. The IP range in CIDR notation to use for the hosted master network. This range will be used for assigning private IP addresses to the cluster master(s) and the ILB VIP. This range must not overlap with any other ranges in use within the cluster's network, and it must be a /28 subnet. See Private Cluster Limitations for more details. This field only applies to private clusters, when enable_private_nodes is true.
-  masterIpv4CidrBlock: "172.16.0.0/28"
-  # -- The name of the peering between this cluster and the Google owned VPC.
-  peeringName:
-  # -- The internal IP address of this cluster's master endpoint.
-  privateEndpoint:
+  masterIpv4CidrBlock:
+
   # -- Immutable. Subnetwork in cluster's network where master's endpoint will be provisioned.
   privateEndpointSubnetworkRef:
     # -- Allowed value: The `selfLink` field of a `ComputeSubnetwork` resource.
@@ -721,20 +490,10 @@ privateClusterConfig:
     name:
     # -- Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
     namespace:
-  # -- The external IP address of this cluster's master endpoint.
-  publicEndpoint:
 
 # -- The desired state of IPv6 connectivity to Google Services. By default, no private IPv6 access to or from Google Services (all access will be via IPv4).
 privateIpv6GoogleAccess:
 
-# -- Enable/Disable Protect API features for the cluster.
-protectConfig:
-  # -- WorkloadConfig defines which actions are enabled for a cluster's workload configurations.
-  workloadConfig:
-    # -- Sets which mode of auditing should be used for the cluster's workloads. Accepted values are DISABLED, BASIC.
-    auditMode:
-  # -- Sets which mode to use for Protect workload vulnerability scanning feature. Accepted values are DISABLED, BASIC.
-  workloadVulnerabilityMode:
 
 # -- Configuration options for the Release channel feature, which provide more control over automatic upgrades of your GKE clusters. Note that removing this field from your config will not unenroll it. Instead, use the "UNSPECIFIED" channel.
 releaseChannel:
@@ -753,14 +512,8 @@ resourceUsageExportConfig:
   # -- Whether to enable network egress metering for this cluster. If enabled, a daemonset will be created in the cluster to meter network egress traffic.
   enableNetworkEgressMetering: false
   # -- Whether to enable resource consumption metering on this cluster. When enabled, a table will be created in the resource export BigQuery dataset to store resource consumption data. The resulting table can be joined with the resource usage table or with BigQuery billing export. Defaults to true.
-  enableResourceConsumptionMetering: true
+  enableResourceConsumptionMetering: false
 
-# -- Defines the config needed to enable/disable features for the Security Posture API.
-securityPostureConfig:
-  # -- Sets the mode of the Kubernetes security posture API's off-cluster features. Available options include DISABLED and BASIC.
-  mode:
-  # -- Sets the mode of the Kubernetes security posture API's workload vulnerability scanning. Available options include VULNERABILITY_DISABLED and VULNERABILITY_BASIC.
-  vulnerabilityMode:
 
 # -- If set, and enabled=true, services with external ips field will not be blocked.
 serviceExternalIpsConfig:
@@ -793,7 +546,7 @@ nodePools:
       maxNodeCount:
     # -- (int) Number of nodes at initialization
     # @default -- 1
-    initialNodeCount:
+    # initialNodeCount: 1
     management:
       # -- Enables node pool autorepair
       autoRepair: true
@@ -867,7 +620,7 @@ nodePools:
       preemptible: false
     # -- (int) The number of nodes per instance group. This field can be used to update the number of nodes per instance group but should not be used alongside autoscaling.
     # @default -- 1
-    nodeCount:
+    # nodeCount:
 
 # -- Enables Bigquery Dataset for billing GKE resources
 bigquery-dataset:

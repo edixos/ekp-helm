@@ -9,10 +9,13 @@ removeDefaultNodePool: "true"
 
 privateClusterConfig:
   enabled: true
-  enabledPrivateEndpoint: false
+  enablePrivateEndpoint: false
   enablePrivateNodes: true
-  enabledMasterGlobalAccessConfig: false
-  masterIpv4CidrBlock: "172.20.187.16/28"
+  masterIpv4CidrBlock: "172.16.0.0/28"  # Required for private clusters
+  masterGlobalAccessConfig:
+    enabled: false
+  # privateEndpointSubnetworkRef:
+  #   name: "ekp-subnetwork"
   webhookPorts:
     # -- List of ports used for admission webhooks. GKE Private Cluster doest only allows communications between masters and node through https 443 by default.
     tcp:
@@ -24,6 +27,7 @@ privateClusterConfig:
 
 tags:
   networking: true
+  enable-nat: true
 
 gcpVpcNetwork:
   name: "ekp-vpc-network"
@@ -46,6 +50,33 @@ gcpSubnetwork:
   - ipCidrRange: "10.0.16.0/20"
     rangeName: "servicesrange"
 
+gcpCloudNat:
+  gcpCloudRouter:
+    name: "ekp-cloud-router"
+    description: "Cloud Router for GKE workers in ekp-subnetwork"
+    region: "europe-west1"
+    networkRef:
+      name: "ekp-vpc-network"
+    bgp: {}
+  
+  name: "ekp-cloud-nat"
+  region: "europe-west1"
+  routerRef:
+    name: "ekp-cloud-router"
+  natIpAllocateOption: "AUTO_ONLY"
+  sourceSubnetworkIpRangesToNat: "LIST_OF_SUBNETWORKS"
+  subnetwork:
+    - sourceIpRangesToNat:
+      - LIST_OF_SECONDARY_IP_RANGES
+      subnetworkRef:
+        name: "ekp-subnetwork"
+      secondaryIpRangeNames:
+      - clusterrange
+      - servicesrange
+  logConfig:
+    enable: true
+    filter: "ALL"
+
 ipAllocationPolicy:
   enabled: true
   servicesSecondaryRangeName: servicesrange
@@ -60,6 +91,9 @@ datapathProvider: "ADVANCED_DATAPATH"
 
 workloadIdentityConfig:
   workloadPool: "ekp-dev.svc.id.goog"
+
+releaseChannel:
+  channel: REGULAR
 
 addonsConfig:
   dnsCacheConfig:
@@ -84,7 +118,10 @@ networkRef:
   name: "ekp-vpc-network"
 subnetworkRef:
   name: "ekp-subnetwork"
+
+loggingConfig: {}
 loggingService: "logging.googleapis.com/kubernetes"
+monitoringConfig: {}
 monitoringService: "monitoring.googleapis.com/kubernetes"
 
 # TODO: SHOULD BE MODIFIED ACCORDING TO THE NEEDS
@@ -99,9 +136,9 @@ clusterAutoscaling:
 resourceID: "test-gke-cluster"
 
 nodePools:
-  - nodePoolName: spot-n2-standard-8-ekp-testNode-a
+  - nodePoolName: spot-n2-standard-8-ekp-testnode-a
     autoscaling:
-      enabled: false
+      enabled: true
       minNodeCount: 0
       maxNodeCount: 1
     initialNodeCount: 1
@@ -127,59 +164,20 @@ nodePools:
       tags:
         - gke-spot-nodes
       labels:
-        owner: "ekp-testNode-a-owner"
+        owner: "ekp-testnode-a-owner"
         env: "dev"
-        usage: "ekp-testNode-a"
+        usage: "ekp-testnode-a"
         resource_type: "gke"
         function: "ekp-host"
       serviceAccount:
-        name: ekp-testNode-a-sa
-        create: true
-
-  - nodePoolName: spot-n2-standard-8-ekp-testNode-b
-    autoscaling:
-      enabled: false
-      minNodeCount: 0
-      maxNodeCount: 1
-    initialNodeCount: 1
-    management:
-      autoRepair: true
-      autoUpgrade: true
-    maxPodsPerNode: 32
-    nodeConfig:
-      bootDiskKMSCryptoKey:
-        enabled: false
-      diskSize: 100
-      diskType: 'pd-balanced'
-      imageType: COS_CONTAINERD
-      spot: true
-      machineType: 'n2-standard-8'
-      metadata:
-        disable-legacy-endpoints: "true"
-      oauthScopes:
-        - "https://www.googleapis.com/auth/devstorage.read_only"
-        - "https://www.googleapis.com/auth/logging.write"
-        - "https://www.googleapis.com/auth/monitoring"
-        - "https://www.googleapis.com/auth/compute"
-      tags:
-        - gke-spot-nodes
-      labels:
-        owner: "ekp-testNode-b-owner"
-        env: "dev"
-        usage: "ekp-testNode-b"
-        resource_type: "gke"
-        function: "ekp-host"
-      serviceAccount:
-        name: ekp-testNode-b-sa
+        name: ekp-testnode-a-sa
         create: true
 
 resourceUsageExportConfig:
   bigqueryDestination:
-    datasetId: ekp-gke-billing
-  enableNetworkEgressMetering:
-    enabled: true
-  enableResourceConsumptionMetering:
-    enabled: true
+    datasetId: ekp_gke_billing
+  enableNetworkEgressMetering: true
+  enableResourceConsumptionMetering: true
 
 bigquery-dataset:
   enabled: true
@@ -191,9 +189,7 @@ bigquery-dataset:
     location: EU
     access:
     - role: OWNER
-      userByEmail: sa-<OWNER>@ekp-dev.iam.gserviceaccount.com
+      userByEmail: ekp-infra-sa@ekp-dev.iam.gserviceaccount.com
     - role: WRITER
-      userByEmail: ekp-testNode-a-sa@ekp-dev.iam.gserviceaccount.com
-    - role: READER
-      groupByEmail: gke-security-groups@edixos.com
-    - role: READER
+      userByEmail: ekp-testnode-a-sa@ekp-dev.iam.gserviceaccount.com
+    # - role: READER    #   groupByEmail: gke-security-groups@edixos.com
