@@ -30,5 +30,5 @@ dependencies:
   version: 0.1.0
   repository: "https://edixos.github.io/ekp-helm"
   alias: gcpCloudNat
-  tags: 
+  tags:
   - enable-nat
