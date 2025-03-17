@@ -1,0 +1,28 @@
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: {{ .Values.global.gsa.name }}-workload-identity
+  namespace: {{ include "workload-identity.namespace" . }}
+  labels:
+{{- include "workload-identity.labels" . | nindent 4 }}
+  annotations:
+    cnrm.cloud.google.com/project-id: {{ .Values.global.gsa.project }}
+    {{- if .Values.global.abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+    {{- end }}
+    {{- if .Values.annotations }}
+{{- .Values.annotations | toYaml | nindent 4 }}
+    {{- end }}
+spec:
+  resourceRef:
+  {{- if .Values.global.gsa.apiVersion }}
+    apiVersion: {{ .Values.global.gsa.apiVersion }}
+  {{- end }}
+    kind: IAMServiceAccount
+  {{- if .Values.global.gsa.create }}
+    name: {{ .Values.global.gsa.name | quote }}
+  {{- else }}
+    external: projects/{{ .Values.global.gsa.project }}/serviceAccounts/{{ .Values.global.gsa.name }}@{{ .Values.global.gsa.project }}.iam.gserviceaccount.com
+  {{- end }}
+  role: roles/iam.workloadIdentityUser
+  member: serviceAccount:{{ .Values.global.gcpProjectId }}.svc.id.goog[{{ include "workload-identity.ksaNamespace" . }}/{{ .Values.global.ksa.name }}]

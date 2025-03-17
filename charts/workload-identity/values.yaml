@@ -1,0 +1,24 @@
+global:
+  # global.gcpProjectId -- Google Project ID of the Kubernetes Cluster hosting the service Account
+  gcpProjectId: "myprojectid"
+  # global.gsa -- Name of the Google Service Account
+  gsa:
+    # Creates the Google Service Account
+    create: true
+    # Name of the google service account
+    name: wi-k8s
+    # Project Id hosting the google service account.
+    project: ""
+
+  # global.cnrmNamespace -- Allows to deploy in another namespace than the release one
+  cnrmNamespace: ""
+  # global.abandon -- Activate abandon of the resources (If true, the GCP resources will be keep after deleting k8s resources)
+  abandon: false
+  ksa:
+    # global.ksa.namespace -- Kubernetes Service Account namespace. Overrides the Release Namespace
+    namespace: ""
+    # global.ksa.name -- Name of the Kubernetes Service Account
+    name: default
+
+# annotations -- Add annotations to this chart resources
+annotations: {}
