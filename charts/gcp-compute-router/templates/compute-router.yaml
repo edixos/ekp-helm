@@ -1,0 +1,64 @@
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeRouter
+metadata:
+  annotations:
+    {{- if .Values.global.abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+    {{- end }}
+    cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId | quote }}
+  labels:
+    {{- include "gcp-compute-router.labels" . | nindent 4 }}
+  name: {{ include "gcp-compute-router.fullname" . }}
+  namespace: {{ include "gcp-compute-router.namespace" . }}
+spec:
+  description: {{ .Values.description | quote }}
+  region: {{ required "Region of Cloud Router is required" .Values.region }}
+  resourceID: {{ .Values.resourceID | quote }}
+  {{- if and (hasKey .Values "encryptedInterconnectRouter") .Values.encryptedInterconnectRouter }}
+  encryptedInterconnectRouter: {{ .Values.encryptedInterconnectRouter }}
+  {{- end }}
+  {{- if not .Values.networkRef }}
+  {{- fail "networkRef is required" }}
+  {{- else }}
+  networkRef:
+    {{- if .Values.networkRef.external }}
+    external: {{ .Values.networkRef.external | quote }}
+    {{- end }}
+    {{- if not .Values.networkRef.name }}
+    name: {{ .Values.networkRef.name | quote }}
+    {{- end }}
+    {{- if not .Values.networkRef.namespace }}
+    namespace: {{ .Values.networkRef.namespace | quote }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.bgp }}
+  bgp:
+    asn: {{ required "bgp.asn is required" .Values.bgp.asn }}
+    advertiseMode: {{ .Values.bgp.advertiseMode | default "DEFAULT" | quote }}
+    {{- if .Values.bgp.advertisedGroups }}
+    advertisedGroups:
+    {{- range .Values.bgp.advertisedGroups }}
+      - {{ . | quote }}
+    {{- end }}
+    {{- end }}
+    {{- if and (hasKey .Values.bgp "advertisedIpRanges") (not (empty .Values.bgp.advertisedIpRanges)) }}
+      {{- $valid := false }}
+      {{- range .Values.bgp.advertisedIpRanges }}
+        {{- if hasKey . "range" }}
+          {{- $valid = true }}
+        {{- end }}
+      {{- end }}
+      {{- if $valid }}
+    advertisedIpRanges:
+      {{- range .Values.bgp.advertisedIpRanges }}
+        {{- if hasKey . "range" }}
+      - range: {{ .range | quote }}
+          {{- if hasKey . "description" }}
+        description: {{ .description | quote }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
+    {{- end }}
+    keepaliveInterval: {{ .Values.bgp.keepaliveInterval | default 20 }}
+  {{- end }}
