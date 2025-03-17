@@ -3,8 +3,9 @@ global:
   abandon: true
   gcpProjectId: "ekp-dev"
 
-name: "ekp-router"
+name: "test-ekp-router"
 description: "Compute Router for managing BGP routing in GKE cluster"
 region: "europe-west1"
 networkRef:
-  name: "ekp-vpc-network"
+  name: "ekp-vpc"
+bgp: {}
