@@ -24,7 +24,9 @@ spec:
   {{- end }}
   clusterRef:
     name: {{ $.Values.name }}
-  initialNodeCount: {{ .initialNodeCount | default 1 }}
+  {{- if not .nodeCount }}
+  initialNodeCount: {{ .initialNodeCount }}
+  {{- end }}
   location: {{ $.Values.location }}
   management:
     autoRepair: {{ .management.autoRepair | default "true" }}
@@ -104,7 +106,7 @@ spec:
       nodeMetadata: GKE_METADATA_SERVER
     {{- end }}
   {{- if not .autoscaling.enabled }}
-  nodeCount: {{ (quote .nodeCount) | default 1 | int }}
+  nodeCount: {{ (quote .nodeCount) | int }}
   {{- end }}
 {{- end }}
 {{- end }}

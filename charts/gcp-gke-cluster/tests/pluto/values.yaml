@@ -9,10 +9,13 @@ removeDefaultNodePool: "true"
 
 privateClusterConfig:
   enabled: true
-  enabledPrivateEndpoint: false
+  enablePrivateEndpoint: false
   enablePrivateNodes: true
-  enabledMasterGlobalAccessConfig: false
-  masterIpv4CidrBlock: "172.20.187.16/28"
+  masterIpv4CidrBlock: "172.16.0.0/28"  # Required for private clusters
+  masterGlobalAccessConfig:
+    enabled: false
+  # privateEndpointSubnetworkRef:
+  #   name: "ekp-subnetwork"
   webhookPorts:
     # -- List of ports used for admission webhooks. GKE Private Cluster doest only allows communications between masters and node through https 443 by default.
     tcp:
@@ -21,6 +24,7 @@ privateClusterConfig:
       - 6443
       - 8443
       - 443
+
 
 tags:
   networking: true
@@ -61,6 +65,9 @@ datapathProvider: "ADVANCED_DATAPATH"
 workloadIdentityConfig:
   workloadPool: "ekp-dev.svc.id.goog"
 
+releaseChannel:
+  channel: REGULAR
+
 addonsConfig:
   dnsCacheConfig:
     enabled: true
@@ -84,7 +91,10 @@ networkRef:
   name: "ekp-vpc-network"
 subnetworkRef:
   name: "ekp-subnetwork"
+
+loggingConfig: {}
 loggingService: "logging.googleapis.com/kubernetes"
+monitoringConfig: {}
 monitoringService: "monitoring.googleapis.com/kubernetes"
 
 # TODO: SHOULD BE MODIFIED ACCORDING TO THE NEEDS
@@ -99,9 +109,9 @@ clusterAutoscaling:
 resourceID: "test-gke-cluster"
 
 nodePools:
-  - nodePoolName: spot-n2-standard-8-ekp-testNode-a
+  - nodePoolName: spot-n2-standard-8-ekp-testnode-a
     autoscaling:
-      enabled: false
+      enabled: true
       minNodeCount: 0
       maxNodeCount: 1
     initialNodeCount: 1
@@ -127,18 +137,18 @@ nodePools:
       tags:
         - gke-spot-nodes
       labels:
-        owner: "ekp-testNode-a-owner"
+        owner: "ekp-testnode-a-owner"
         env: "dev"
-        usage: "ekp-testNode-a"
+        usage: "ekp-testnode-a"
         resource_type: "gke"
         function: "ekp-host"
       serviceAccount:
-        name: ekp-testNode-a-sa
+        name: ekp-testnode-a-sa
         create: true
 
-  - nodePoolName: spot-n2-standard-8-ekp-testNode-b
+  - nodePoolName: spot-n2-standard-8-ekp-testnode-b
     autoscaling:
-      enabled: false
+      enabled: true
       minNodeCount: 0
       maxNodeCount: 1
     initialNodeCount: 1
@@ -164,22 +174,20 @@ nodePools:
       tags:
         - gke-spot-nodes
       labels:
-        owner: "ekp-testNode-b-owner"
+        owner: "ekp-testnode-b-owner"
         env: "dev"
-        usage: "ekp-testNode-b"
+        usage: "ekp-testnode-b"
         resource_type: "gke"
         function: "ekp-host"
       serviceAccount:
-        name: ekp-testNode-b-sa
+        name: ekp-testnode-b-sa
         create: true
 
 resourceUsageExportConfig:
   bigqueryDestination:
-    datasetId: ekp-gke-billing
-  enableNetworkEgressMetering:
-    enabled: true
-  enableResourceConsumptionMetering:
-    enabled: true
+    datasetId: ekp_gke_billing
+  enableNetworkEgressMetering: true
+  enableResourceConsumptionMetering: true
 
 bigquery-dataset:
   enabled: true
@@ -191,9 +199,7 @@ bigquery-dataset:
     location: EU
     access:
     - role: OWNER
-      userByEmail: sa-<OWNER>@ekp-dev.iam.gserviceaccount.com
+      userByEmail: ekp-infra-sa@ekp-dev.iam.gserviceaccount.com
     - role: WRITER
-      userByEmail: ekp-testNode-a-sa@ekp-dev.iam.gserviceaccount.com
-    - role: READER
-      groupByEmail: gke-security-groups@edixos.com
-    - role: READER
+      userByEmail: ekp-testnode-a-sa@ekp-dev.iam.gserviceaccount.com
+    # - role: READER    #   groupByEmail: gke-security-groups@edixos.com

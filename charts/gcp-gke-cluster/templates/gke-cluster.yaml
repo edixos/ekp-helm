@@ -332,7 +332,9 @@ spec:
     {{- else }}
     {{- end }}
   {{- end }}
-  {{- if .Values.loggingConfig }}
+  {{- if .Values.loggingService }}
+  loggingService: {{ .Values.loggingService }}
+  {{- else if .Values.loggingConfig }}
     {{- if .Values.loggingConfig.enableComponents }}
   loggingConfig:
     enableComponents:
@@ -341,7 +343,6 @@ spec:
       {{- end }}
     {{- end }}
   {{- end }}
-  loggingService: {{ .Values.loggingService }}
   {{- if .Values.maintenancePolicy }}
     {{- $maintenancePolicy := .Values.maintenancePolicy }}
   maintenancePolicy:
@@ -420,7 +421,9 @@ spec:
   {{- if .Values.minMasterVersion }}
   minMasterVersion: {{ .Values.minMasterVersion }}
   {{- end }}
-  {{- if .Values.monitoringConfig }}
+  {{- if .Values.monitoringService }}
+  monitoringService: {{ .Values.monitoringService }}
+  {{- else if .Values.monitoringConfig }}
   monitoringConfig:
     {{- if .Values.monitoringConfig.advancedDatapathObservabilityConfig }}
     advancedDatapathObservabilityConfig:
@@ -442,17 +445,11 @@ spec:
       enabled: {{ .Values.monitoringConfig.managedPrometheus.enabled }}
     {{- end }}
   {{- end }}
-  monitoringService: {{ .Values.monitoringService }}
   {{- if not .Values.datapathProvider }}
   networkPolicy:
     enabled: {{ .Values.networkPolicy.enabled }}
     provider: {{ .Values.networkPolicy.provider }}
   {{- end }}
-
-
-
-
-
 
   {{- if .Values.nodeConfig }}
   nodeConfig:
@@ -684,11 +681,6 @@ spec:
     {{- end }}
   {{- end }}
 
-
-
-
-
-
   {{- if .Values.nodeLocations }}
   nodeLocations: 
     {{- range .Values.nodeLocations }}
@@ -707,6 +699,7 @@ spec:
       {{- end }}
     {{- end }}
   {{- end }}
+  {{- if ne (int .Values.initialNodeCount) 0 }}
   {{- if .Values.nodePoolDefaults }}
   nodePoolDefaults:
     {{- if .Values.nodePoolDefaults.nodeConfigDefaults }}
@@ -720,8 +713,6 @@ spec:
       {{- end }}
     {{- end }}
   {{- end }}
-  {{- if .Values.nodeVersion }}
-  nodeVersion: {{ .Values.nodeVersion }}
   {{- end }}
   {{- if .Values.notificationConfig.pubsub.enabled }}
   notificationConfig:
@@ -758,14 +749,14 @@ spec:
     enablePrivateNodes: {{ .Values.privateClusterConfig.enablePrivateNodes }}
     masterGlobalAccessConfig:
       enabled: {{ .Values.privateClusterConfig.masterGlobalAccessConfig.enabled | default false }}
+    {{- if .Values.privateClusterConfig.masterIpv4CidrBlock }}
     masterIpv4CidrBlock: {{ .Values.privateClusterConfig.masterIpv4CidrBlock | default "" }}
-    peeringName: {{ .Values.privateClusterConfig.peeringName | default "" }}
-    privateEndpoint: {{ .Values.privateClusterConfig.privateEndpoint | default "" }}
+    {{- else if .Values.privateClusterConfig.privateEndpointSubnetworkRef }}
     privateEndpointSubnetworkRef:
       external: {{ .Values.privateClusterConfig.privateEndpointSubnetworkRef.external | default "" }}
       name: {{ .Values.privateClusterConfig.privateEndpointSubnetworkRef.name | default "" }}
       namespace: {{ .Values.privateClusterConfig.privateEndpointSubnetworkRef.namespace | default "" }}
-    publicEndpoint: {{ .Values.privateClusterConfig.publicEndpoint | default "" }}
+    {{- end }}
   {{- else }}
   {{- end }}
   {{- if .Values.privateIpv6GoogleAccess }}
@@ -795,8 +786,16 @@ spec:
   resourceUsageExportConfig:
     bigqueryDestination:
       datasetId: {{ .Values.resourceUsageExportConfig.bigqueryDestination.datasetId }}
-    enableNetworkEgressMetering: {{ .Values.resourceUsageExportConfig.enableNetworkEgressMetering | default false }}
-    enableResourceConsumptionMetering: {{ .Values.resourceUsageExportConfig.enableResourceConsumptionMetering | default true }}
+    {{- if hasKey .Values.resourceUsageExportConfig "enableNetworkEgressMetering" }}
+    enableNetworkEgressMetering: {{ .Values.resourceUsageExportConfig.enableNetworkEgressMetering }}
+    {{- else }}
+    enableNetworkEgressMetering: false
+    {{- end }}
+    {{- if hasKey .Values.resourceUsageExportConfig "enableResourceConsumptionMetering" }}
+    enableResourceConsumptionMetering: {{ .Values.resourceUsageExportConfig.enableResourceConsumptionMetering }}
+    {{- else }}
+    enableResourceConsumptionMetering: true
+    {{- end }}
   {{- end }}
   {{- if .Values.securityPostureConfig }}
   securityPostureConfig:
