@@ -104,6 +104,21 @@ entries:
     urls:
     - gcp-bigquery-dataset-0.1.0.tgz
     version: 0.1.0
+  gcp-compute-router:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-03-17T12:25:52.737389955Z"
+    description: A Helm chart to provision a Google Compute Router via Config Connector
+    digest: 0264e2e3d10347e2cd45b2d900d7f2b8019c8ab91da9ae887b1d16fa1cba7b2d
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: gcp-compute-router
+    type: application
+    urls:
+    - gcp-compute-router-0.1.0.tgz
+    version: 0.1.0
   gcp-gke-cluster:
   - apiVersion: v2
     appVersion: 0.1.2
@@ -431,4 +446,4 @@ entries:
     urls:
     - velero-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-14T10:04:51.97615744Z"
+generated: "2025-03-17T12:25:52.737412327Z"
