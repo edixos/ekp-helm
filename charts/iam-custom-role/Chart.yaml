@@ -1,0 +1,13 @@
+apiVersion: v2
+name: iam-custom-role
+description: A Helm chart for IAM custom role
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
+maintainers:
+  - name: wiemaouadi
+    email: wiem.aouadi3@gmail.com
+    url: https://github.com/wiemaouadi
+  - name: smileisak
+    email: ikaboubi@gmail.com
+    url: https://github.com/smileisak

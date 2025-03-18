@@ -1,0 +1,26 @@
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMCustomRole
+metadata:
+  name: {{ .Values.customRoleName | quote }}
+  namespace: {{ include "iam-custom-role.namespace" . }}
+  labels:
+{{- include "iam-custom-role.labels" .| nindent 4 }}
+  annotations:
+{{- if .Values.global.skipUnspecifiedFields }}
+    cnrm.cloud.google.com/state-into-spec: absent
+{{- end }}
+{{- if .Values.global.gcpProjectId }}
+    cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId | quote }}
+{{- end }}
+{{- if .Values.global.gcpOrganisationId }}
+    cnrm.cloud.google.com/organization-id: {{ .Values.global.gcpOrganisationId | quote }}
+{{- end }}
+spec:
+  title: {{ .Values.title }}
+  description: {{ .Values.description }}
+  permissions:
+  {{- range .Values.permissions }}
+    - {{ . }}
+  {{- end }}
+  stage: {{ .Values.customRoleStage | default "GA" }}

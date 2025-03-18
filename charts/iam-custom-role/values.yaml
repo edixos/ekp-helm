@@ -1,0 +1,26 @@
+global:
+  # global.gcpProjectId -- Project ID where to deploy the custom role
+  gcpProjectId: "myprojectid"
+  # global.gcpOrganisationId -- Organisation ID where to deploy the custom role
+  gcpOrganisationId: ""
+  # global.skipUnspecifiedFields -- This skips populating unspecified fields into the Kubernetes resource spec
+  skipUnspecifiedFields: false
+  # global.cnrmNamespace -- Allows to deploy in another namespace than the release one
+  cnrmNamespace: ""
+
+# -- The name of the IAM Custom Role
+customRoleName: velero
+# -- A human-readable description for the role
+description: "The description of the custom role resource"
+# -- A human-readable title for the role
+title: velero
+# -- custom role permissions
+permissions: []
+  # - compute.disks.create
+  # - compute.disks.createSnapshot
+  # - compute.disks.get
+  # - compute.snapshots.create
+  # - compute.snapshots.delete
+  # - compute.snapshots.get
+  # - compute.snapshots.useReadOnly
+  # - compute.zones.get
