@@ -1,0 +1,66 @@
+---
+
+global:
+  # global.cnrmNamespace -- Allows to deploy in another namespace than the release one
+  # @default -- `nil`
+  cnrmNamespace: ""
+  # global.abandon -- Abandon resource if the manifests are deleted. Allow deleting a resource from config connector without deleting it from GCP
+  abandon: true
+  # global.forceDestroy -- Force the deletion of the objects created within the dns zone first, then deletes the dns-zone.
+  forceDestroy: false
+  # global.skipUnspecifiedFields --  This skips populating unspecified fields into the Kubernetes resource spec.
+  skipUnspecifiedFields: false
+  # global.description -- Dns zone descriptions
+  description: "The description of the dns-zone resource"
+  # global.gcpProjectId -- Project ID where to deploy the cluster
+  gcpProjectId: "myprojectid"
+
+# dnsManagedZone -- DNS Managed zone configuration
+dnsManagedZone:
+  # dnsManagedZone.name -- The name of dnsManagedZone
+  name: tst1-poc-gcp-renault-com
+  # dnsManagedZone.dnsName -- The name of DNS
+  dnsName: tst1.poc.gcp.renault.com.
+  # dnsManagedZone.visibility -- The visibility of the DNS zone
+  visibility: public
+  # dnsManagedZone.privateVisibilityConfig -- The configuration of private DNS zone
+  privateVisibilityConfig:
+    networks: []
+    #   - networkRef:
+    #       name: dnsmanagedzone-dep
+    #       namespace: ""
+    #       external: ""
+    gkeClusters: []
+    #   - gkeClusterNameRef:
+    #       external: test
+    #       name: tst
+    #       namespace: test
+
+# dnsRecordSet -- DNS Records to create. Possible records: A, CNAME and NS
+dnsRecordSet: []
+  # - dnsRecordName: "*.tst1.poc.gcp.renault.com."
+  #   name: tst1-poc-gcp-renault-com
+  #   type: A
+  #   computeAddressRef: addr1
+  # - dnsRecordName: "example.com"
+  #   name: ns-example-com
+  #   type: NS
+  #   dnsNsRecords:
+  #   - "ns-cloud-a1.googledomains.com."
+  #   - "ns-cloud-a2.googledomains.com."
+  #   - "ns-cloud-a3.googledomains.com."
+  #   - "ns-cloud-a4.googledomains.com."
+  # - dnsRecordName: "*.example.com"
+  #   name: cname-example-com
+  #   type: CNAME
+  #   dnsCnameRecords:
+  #   - ".www.example.com."
+
+# computeAddresses -- List of compute addresses to create
+computeAddresses: []
+  # - name: addr1
+  #   addressType: EXTERNAL
+  #   description: the first ip address to allocate
+  #   purpose: GCE_ENDPOINT
+  #   networkTier: STANDARD
+  #   subnetworkRef: XXXXXXXXXXXXX

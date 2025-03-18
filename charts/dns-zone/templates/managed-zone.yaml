@@ -1,0 +1,43 @@
+apiVersion: dns.cnrm.cloud.google.com/v1beta1
+kind: DNSManagedZone
+metadata:
+  annotations:
+{{- if .Values.global.abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+{{- end }}
+{{- if .Values.global.forceDestroy }}
+    cnrm.cloud.google.com/force-destroy: "true"
+{{- end }}
+{{- if .Values.global.skipUnspecifiedFields }}
+    cnrm.cloud.google.com/state-into-spec: absent
+{{- end }}
+    cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId | quote }}
+  labels:
+    {{- include "dns-zone.labels" . | nindent 4 }}
+  name: {{ .Values.dnsManagedZone.name | quote }}
+  namespace: {{ include "dns-zone.namespace" . }}
+spec:
+  description: {{ .Values.global.description }}
+  dnsName: {{ .Values.dnsManagedZone.dnsName | quote  }}
+  visibility: {{ .Values.dnsManagedZone.visibility }}
+{{- if eq .Values.dnsManagedZone.visibility "private" }}
+  privateVisibilityConfig:
+    {{- if .Values.dnsManagedZone.privateVisibilityConfig.networks }}
+    networks:
+    {{- range .Values.dnsManagedZone.privateVisibilityConfig.networks }}
+    - networkRef: 
+        name: {{ .networkRef.name }}
+        namespace: {{ .networkRef.namespace }}
+        external: {{ .networkRef.external }}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.dnsManagedZone.privateVisibilityConfig.gkeClusters }}
+    gkeClusters:
+    {{- range .Values.dnsManagedZone.privateVisibilityConfig.gkeClusters }}
+    - gkeClusterNameRef:
+        external: {{ .gkeClusterNameRef.external }}
+        name: {{ .gkeClusterNameRef.name }}
+        namespace: {{ .gkeClusterNameRef.namespace }}
+    {{- end }}
+    {{- end }}
+{{- end }}

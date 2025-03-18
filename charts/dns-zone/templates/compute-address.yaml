@@ -1,0 +1,36 @@
+{{- if .Values.computeAddresses }}
+{{- $data := . -}}
+{{- $dnsRecordSet := $data.Values.computeAddresses -}}
+{{- range $adresses := .Values.computeAddresses }}
+---
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeAddress
+metadata:
+  annotations:
+{{- if $data.Values.global.abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+{{- end }}
+    cnrm.cloud.google.com/project-id: {{ $data.Values.global.gcpProjectId | quote }}
+  name: {{ .name }}
+  namespace: {{ include "dns-zone.namespace" $data }}
+spec:
+  addressType: {{ .addressType | default "EXTERNAL" }}
+  description: {{ .description }}
+  location: {{ .location |  default "global" }}
+  networkTier: {{ .networkTier | default "PREMIUM" }}
+  ipVersion: {{ .ipVersion |  default "IPV4" }}
+  {{- if eq .addressType "INTERNAL" }}
+  purpose: {{ .purpose | default "VPC_PEERING" }}
+  {{- end }}
+  {{- with .prefixLength }}
+  prefixLength: {{ . }}
+  {{- end }}
+{{- if .networkRef }}
+  networkRef:
+    external: {{ .networkRef }}
+{{- else if .subnetworkRef }}
+  subnetworkRef:
+    external: {{ .subnetworkRef }}
+{{- end }}
+{{- end }}
+{{- end }}
