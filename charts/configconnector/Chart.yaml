@@ -1,0 +1,10 @@
+apiVersion: v2
+name: configconnector
+description: Deploys Config Connector as described here https://cloud.google.com/config-connector/docs/how-to/install-other-kubernetes
+type: application
+version: 0.1.0
+appVersion: 1.129.2
+maintainers:
+  - name: ilyasabdellaoui
+    email: ilyas.abdellaoui21@gmail.com
+    url: https://github.com/ilyasabdellaoui

@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    {{- include "configconnector-operator.commonAnnotations" . | nindent 4 }}
+  labels:
+    {{- include "configconnector-operator.labels" . | nindent 4 }}
+  name: {{ include "configconnector-operator.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: controller-manager
+      port: 443
+  selector:
+    {{- include "configconnector-operator.selectorLabels" . | nindent 4 }}

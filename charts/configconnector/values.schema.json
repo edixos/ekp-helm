@@ -1,0 +1,87 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "properties": {
+        "installationMode": {
+            "type": "string",
+            "description": "Config Connector installation Mode. Namespaced mode allows to deploy a config connector for specific namespace. Allowing a mapping 1 google projetc = 1 namespace.",
+            "enum": [
+                "namespaced",
+                "cluster"
+            ]
+        }
+    },
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "installationMode": {
+                        "const": "cluster"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "authentication": {
+                        "type": "object",
+                        "description": "KSA to GCP authentication parameters",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "description": "Type of authentication used by the KSA to connect to GCP",
+                                "enum": [
+                                    "key",
+                                    "workloadIdentity"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ],
+                        "allOf": [
+                            {
+                                "if": {
+                                    "properties": {
+                                        "type": {
+                                            "const": "workloadIdentity"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "properties": {
+                                        "gsaEmail": {
+                                            "type": "string",
+                                            "description": "GSA Email to map with config connector KSA",
+                                            "format": "email"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "if": {
+                                    "properties": {
+                                        "type": {
+                                            "const": "key"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "properties": {
+                                        "gsaKeySecretName": {
+                                            "type": "string",
+                                            "description": "Name of the secret containing the GSA key"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ],
+    "required": [
+        "installationMode"
+    ],
+    "title": "Values",
+    "type": "object"
+}

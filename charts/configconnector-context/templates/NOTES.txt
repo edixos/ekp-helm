@@ -1,0 +1,8 @@
+Bind the KSA to the GSA:
+
+gcloud iam service-accounts add-iam-policy-binding \
+{{ include "config-connector-context.gsaEmail" . }} \
+--member="serviceAccount:{{ .Values.gcpProjectId }}.svc.id.goog[cnrm-system/cnrm-controller-manager-{{ .Release.Namespace }}]" \
+--role="roles/iam.workloadIdentityUser"
+
+Binds the GSA to the needed roles in your project

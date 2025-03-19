@@ -1,0 +1,144 @@
+# {{ .Name }}
+
+{{ template "chart.versionBadge" .}}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Prerequisites
+
+- Helm v{{ if eq .ApiVersion "v2" }}3{{ else }}2{{end}}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+## Description
+
+{{ template "chart.description" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+## Installing the Chart
+
+### With Helm
+
+To install the chart with the release name `{{ .Name }}`:
+
+```bash
+helm repo add ekp-helm https://edixos.github.io/ekp-helm
+helm install ekp-helm/{{ .Name }}
+```
+
+### With ArgoCD
+
+Add new application as:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Name }}
+spec:
+  project: infra
+
+  source:
+    repoURL: "https://edixos.github.io/ekp-helm"
+    targetRevision: "{{ .Version }}"
+    chart: {{ .Name }}
+    path: ''
+    helm:
+      values: |
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: "cnrm-system"
+  syncPolicy:
+    automated:
+      prune: true
+```
+
+## Integration with other charts
+
+Add this chart as requirements in `requirements.yaml` file:
+
+```yaml
+dependencies:
+  - name: {{ .Name }}
+    version: ~{{ .Version }}
+    repository: "https://edixos.github.io/ekp-helm"
+    alias: configConnector
+    condition: configConnector.enabled
+```
+
+and add configuration parameters in `values.yaml` file:
+
+```yaml
+configConnector:
+  enabled: true
+```
+
+## Develop
+
+### Upgrade to newest version
+
+You must download the latest release through gsutil:
+
+```bash
+# List all version available
+$ gsutil ls gs://configconnector-operator/
+...
+gs://configconnector-operator/1.116.0/
+gs://configconnector-operator/1.117.0/
+gs://configconnector-operator/1.118.1/
+gs://configconnector-operator/latest/
+# Select the last version (here 1.118.2)
+$ gsutil cp gs://configconnector-operator/<LAST VERSION>/release-bundle.tar.gz last-release-bundle.tar.gz
+# Untar the release
+mkdir <LAST VERSION> && cd <LAST VERSION>
+tar -zxvf ../last-release-bundle.tar.gz
+```
+
+Download the chart version
+
+
+```bash
+gsutil cp gs://configconnector-operator/{{ .AppVersion }}/release-bundle.tar.gz {{ .AppVersion }}-release-bundle.tar.gz
+# Untar the release
+mkdir {{ .AppVersion }} && cd {{ .AppVersion }}
+tar -zxvf ../{{ .AppVersion }}-release-bundle.tar.gz
+```
+
+Through a diff tool (ex: [meld](https://meldmerge.org/)), check the diff between the 2 version and report the changes in the chart.
+
+```bash
+meld {{ .AppVersion }}/samples/configconnector_*mode*.yaml <LAST VERSION>/samples/configconnector_*mode*.yaml
+```
+
+### Update documentation
+
+Chart documentation is generated with [helm-docs](https://github.com/norwoodj/helm-docs) from `values.yaml` file.
+After file modification, regenerate README.md with command:
+
+```bash
+docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 helm-docs
+```
+
+### Run linter
+
+```bash
+docker run --rm -it -w /charts -v $(pwd)/../../:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts /charts/charts/{{ .Name }} --config /charts/charts/{{ .Name }}/ct.yaml
+```
+
+### Run pluto
+
+In order to check if the api-version used in this chart are not deprecated, or worse, removed, we use pluto to check it:
+
+```
+docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:3.17 template {{ .Name }} . -f tests/pluto/values.yaml --output-dir /pluto
+docker run --rm -it -v pluto:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /data -o yaml --ignore-deprecations -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0" -o wide
+docker volume rm pluto
+```

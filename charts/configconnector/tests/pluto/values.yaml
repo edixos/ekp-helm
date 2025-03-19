@@ -1,0 +1,4 @@
+installationMode: "cluster"
+
+authentication:
+  gsaEmail: config-connector@ekp-dev.iam.gserviceaccount.com

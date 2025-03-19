@@ -1,0 +1,8 @@
+# Default values for config-connector-context.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# gcpProjectId -- Id of the GCP project you want to control with Config Connector
+gcpProjectId: ekp-dev
+# gsa -- Name of the Google Service Account which will be bound to the Config Connector KSA
+gsa: config-connector
