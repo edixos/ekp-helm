@@ -1,0 +1,106 @@
+global:
+  # -- Allows to deploy in another namespace than the release one
+  # @default -- `nil`
+  cnrmNamespace: ""
+  # global.abandon -- Activate abandon of the database (If true, the database will be keep after deleting k8s resources)
+  abandon: true
+  # -- Google Project ID
+  gcpProjectId: "myprojectid"
+
+# bucketName -- Name of the bucket. Must be unique.
+bucketName: myfirstbucket
+
+# annotations -- Add annotations to this chart resources
+annotations: {}
+
+# accessControl -- Configure access control for the bucket
+accessControl:
+  # accessControl.uniformBucketLevelAccess -- Activate [uniform bucket-level access](https://cloud.google.com/storage/docs/uniform-bucket-level-access)
+  uniformBucketLevelAccess: false
+  # accessControl.publicAccessPrevention -- The bucket's public access prevention status, which is either "inherited" or "enforced". If "inherited", the bucket uses public access prevention only if the bucket is subject to the public access prevention organization policy constraint.
+  publicAccessPrevention: inherited
+  # accessControl.createCloudIamPolicy -- Create iam policy member for the bucket through kcc, based on the `iamPolicy` list.
+  createCloudIamPolicy: true
+  iamPolicy:
+      # accessControl.iamPolicy[0].member -- An identifier for the member, which usually has the following form: member-type:id. For example, user:my-user@example.com. For a full list of the values that member can have, see the [Policy Binding reference](https://cloud.google.com/iam/docs/reference/rest/v1/Policy#Binding).
+    - member: serviceAccount:sa-name@${gcpProjectId?}.iam.gserviceaccount.com
+      # accessControl.iamPolicy[0].role -- Name of the [role](https://cloud.google.com/storage/docs/access-control/iam-roles) to apply to the bucket
+      role: roles/storage.admin
+
+# cors -- The bucket's [Cross-Origin Resource Sharing](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing#:~:text=Cross%2Dorigin%20resource%20sharing%20(CORS,scripts%2C%20iframes%2C%20and%20videos.) (CORS) configuration.
+# @default -- See the `values.yaml` for more details
+cors: []
+    # cors[0].maxAgeSeconds -- The value, in seconds, to return in the Access-Control-Max-Age header used in preflight responses.
+# - maxAgeSeconds:
+    # cors[0].method -- The list of HTTP methods on which to include CORS response headers, (GET, OPTIONS, POST, etc) Note: "*" is permitted in the list of methods, and means "any method".
+#   method: []
+    # cors[0].origin -- The list of Origins eligible to receive CORS response headers. Note: "*" is permitted in the list of origins, and means "any Origin".
+#   origin: []
+    # cors[0].responseHeader -- The list of HTTP headers other than the simple response headers to give permission for the user-agent to share across domains.
+#   responseHeader: []
+
+# defaultEventBasedHold -- Whether or not to automatically apply an [eventBasedHold](https://cloud.google.com/storage/docs/object-holds#hold-types) to new objects added to the bucket.
+defaultEventBasedHold: false
+
+encryption:
+  # encryption.enabled -- Enables customer-supplied or customer-managed encryption. By default, Bucket are encrypted
+  enabled: false
+  # encryption.kccControlled -- Specify if the KMS key was created through Kubernetes Config Connector on the same cluster or if it was create outside.
+  kccControlled: false
+  # encryption.kmsKeyRefName -- (string) Name of the Cloud KMS key that will be used to encrypt objects inserted into this bucket
+  kmsKeyRefName: mykms
+  # encryption.kmsKeyRefNamespace -- (string) Namespace where the KMS key was created through KCC. Only use if kccControlled=true
+  kmsKeyRefNamespace:
+
+# lifecycleRule -- The bucket's lifecycle configuration. See [lifecycle management](https://cloud.google.com/storage/docs/lifecycle) for more information.
+# @default -- See the `values.yaml` for more details
+lifecycleRule: []
+    # lifecycleRule[0].action -- The lifecycle action to take.
+# - action:
+      # lifecycleRule[0].action.storageClass -- The new storage class when action.type is SetStorageClass. See [lifecycle actions](https://cloud.google.com/storage/docs/lifecycle#actions) for a table of supported storage class transitions.
+#     storageClass:
+      # lifecycleRule[0].action.type -- Type of the action. Currently, `Delete` and `SetStorageClass` are supported.
+#     type:
+    # lifecycleRule[0].condition -- The condition(s) under which the action will be taken.
+#   condition:
+      # lifecycleRule[0].condition.age -- Age of an object (in days). This condition is satisfied when an object reaches the specified age.
+#     age:
+      # lifecycleRule[0].condition.createdBefore -- A date in RFC 3339 format with only the date part (for instance, "2013-01-15"). This condition is satisfied when an object is created before midnight of the specified date in UTC.
+#     createdBefore:
+      # lifecycleRule[0].condition.matchesStorageClass -- Objects having any of the storage classes specified by this condition will be matched. Values include STANDARD, NEARLINE, COLDLINE, ARCHIVE, MULTI_REGIONAL, REGIONAL, and DURABLE_REDUCED_AVAILABILITY.
+#     matchesStorageClass: []
+
+logging:
+  # logging.enabled -- Enables logging for the bucket
+  enabled: false
+  # logging.logBucket -- The destination bucket where the current bucket's logs should be placed.
+  logBucket: access_log_gcs_irn70740_lab_adm
+  # logging.logObjectPrefix --A prefix for log object names. The default prefix is the bucket name.
+  logObjectPrefix:
+
+# requestPays -- Charge the requester instead of the owner
+requestPays: false
+
+# retentionPolicy -- Bucket's retention policy configuration
+retentionPolicy:
+  # retentionPolicy.enabled -- Enables the bucket's retention policy
+  enabled: false
+  # retentionPolicy.isLocked -- Whether or not the retentionPolicy is locked. If true, the retentionPolicy cannot be removed and the retention period cannot be reduced.
+  isLocked: true
+  # retentionPolicy.retentionPeriod -- The period of time, in seconds, that objects in the bucket must be retained and cannot be deleted, overwritten, or made noncurrent. The value must be greater than 0 seconds and less than 3,155,760,000 seconds.
+  retentionPeriod: 8192
+
+# storageClass -- Type of [storage class](https://cloud.google.com/storage/docs/storage-classes). Accepted values: [STANDARD, NEARLINE, COLDLINE, ARCHIVE]
+storageClass: STANDARD
+
+# enableVersioning -- Activate bucket versioning
+enableVersioning: false
+
+# website -- Website configuration of the bucket
+website:
+  # website.enabled -- Enable website feature of the bucket
+  enabled: false
+  # website.mainPageSuffix -- Main page name
+  mainPageSuffix: index.html
+  # website.notFoundPage -- Name of the page containing the 404 error page
+  notFoundPage: 404.html

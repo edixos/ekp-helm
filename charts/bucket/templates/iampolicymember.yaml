@@ -1,0 +1,21 @@
+{{- if .Values.accessControl.createCloudIamPolicy }}
+{{- range $index, $items := .Values.accessControl.iamPolicy }}
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: {{ printf "%s-%d" ( include "bucket.fullname" $ ) $index | trunc 63 | trimSuffix "-" }}
+  namespace: {{ include "bucket.namespace" $ }}
+  labels:
+{{- include "bucket.labels" $ | nindent 4 }}
+  {{- include "iamPolicyMember.annotations" $ | nindent 2 }}
+spec:
+  member: {{ tpl $items.member $ }}
+  role: {{ $items.role }}
+  resourceRef:
+    apiVersion: storage.cnrm.cloud.google.com/v1beta1
+    kind: StorageBucket
+    name: {{ include "bucket.fullname" $ }}
+    namespace: {{ include "bucket.namespace" $ }}
+{{- end }}
+{{- end }}

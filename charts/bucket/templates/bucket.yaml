@@ -1,0 +1,79 @@
+apiVersion: storage.cnrm.cloud.google.com/v1beta1
+kind: StorageBucket
+metadata:
+  name: {{ include "bucket.fullname" . }}
+  namespace: {{ include "bucket.namespace" . }}
+  labels:
+{{- include "bucket.labels" $ | nindent 4 }}
+  {{- include "bucket.annotations" . | nindent 2 }}
+spec:
+  uniformBucketLevelAccess: {{ .Values.accessControl.uniformBucketLevelAccess }}
+  publicAccessPrevention: {{ .Values.accessControl.publicAccessPrevention | default "inherited" }}
+  {{- if .Values.cors }}
+  cors:
+    {{- range .Values.cors }}
+    - maxAgeSeconds: {{ .maxAgeSeconds }}
+      method:
+        {{- range .method }}
+        - {{ . }}
+        {{- end }}
+      origin:
+        {{- range .origin }}
+        - {{ . }}
+        {{- end }}
+      responseHeader:
+        {{- range .responseHeader }}
+        - {{ . }}
+        {{- end }}
+    {{- end }}
+  {{- end }}
+  defaultEventBasedHold: {{ .Values.defaultEventBasedHold }}
+  {{- if .Values.encryption.enabled }}
+  encryption:
+    kmsKeyRef:
+      {{- if .Values.encryption.kccControlled -}}
+      name: {{ .Values.encryption.kmsKeyRefName }}
+      {{- with .Values.encryption.kmsKeyRefNamespace }}
+      namespace: {{ . }}
+      {{- end }}
+      {{- else }}
+      external: {{ .Values.encryption.kmsKeyRefName }}
+      {{- end }}
+  {{- end }}
+  {{- if .Values.lifecycleRule }}
+  lifecycleRule:
+  {{- range .Values.lifecycleRule }}
+  - action:
+      storageClass: {{ .action.storageClass}}
+      type: {{ .action.type }}
+    condition:
+      age: {{ .condition.age }}
+      createdBefore: {{ .condition.createdBefore }}
+      matchesStorageClass:
+      {{- range .condition.matchesStorageClass }}
+      - {{ . }}
+      {{- end }}
+      numNewerVersions: {{ .condition.numNewerVersions }}
+      withState: {{ .condition.withState }}
+  {{- end }}
+  {{- end }}
+  location: {{ .Values.global.location }}
+  {{- if .Values.logging.enabled }}
+  logging:
+    logBucket: {{ .Values.logging.logBucket }}
+    logObjectPrefix: {{ .Values.logging.logObjectPrefix }}
+  {{- end }}
+  requesterPays: {{ .Values.requestPays }}
+  {{- if .Values.retentionPolicy.enabled }}
+  retentionPolicy:
+    isLocked: {{ .Values.retentionPolicy.isLocked }}
+    retentionPeriod: {{ .Values.retentionPolicy.retentionPeriod }}
+  {{- end }}
+  storageClass: {{ .Values.storageClass }}
+  versioning:
+    enabled: {{ .Values.enableVersioning }}
+  {{- if .Values.website.enabled }}
+  website:
+    mainPageSuffix: {{ .Values.website.mainPageSuffix }}
+    notFoundPage: {{ .Values.website.notFoundPage }}
+  {{- end }}
