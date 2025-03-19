@@ -1,0 +1,46 @@
+{{- if .Values.dnsRecordSet }}
+{{- $data := . -}}
+{{- $dnsRecordSet := $data.Values.dnsRecordSet -}}
+{{- range $records := .Values.dnsRecordSet }}
+---
+apiVersion: dns.cnrm.cloud.google.com/v1beta1
+kind: DNSRecordSet
+metadata:
+  annotations:
+{{- if $data.Values.global.abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+{{- end }}
+{{- if $data.Values.global.skipUnspecifiedFields }}
+    cnrm.cloud.google.com/state-into-spec: absent
+{{- end }}
+    cnrm.cloud.google.com/project-id: {{ $data.Values.global.gcpProjectId | quote }}
+  name: {{ .name | quote }}
+  namespace: {{ include "dns-zone.namespace" $data }}
+spec:
+  name: {{ .dnsRecordName | quote }} 
+  type: {{ .type | quote }} 
+  ttl: {{ .ttl | default 300 }} 
+  managedZoneRef:
+    name: {{ $data.Values.dnsManagedZone.name | quote }}
+  {{- if and (eq .type "A") (.computeAddressRef) (not .computeAddresses) }}
+  rrdatasRefs:
+    - name: {{ .computeAddressRef }} 
+      kind: ComputeAddress
+  {{- else if and (eq .type "A") (.computeAddresses) }}
+  rrdatas:
+  {{- range .computeAddresses }}
+  - {{ . | quote }}
+  {{- end }}
+  {{- else if eq .type "NS" }}
+  rrdatas:
+  {{- range .dnsNsRecords }}
+  - {{ . | quote}}
+  {{- end }}
+  {{- else if eq .type "CNAME" }}
+  rrdatas:
+  {{- range .dnsCnameRecords }}
+  - {{ . | quote}}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
