@@ -1,0 +1,5 @@
+ConfigConnector is deployed in {{ .Values.installationMode }}
+
+{{- if eq .Values.installationMode "cluster" }}
+The authentication of the KSA with GCP is done through {{ .Values.authentication.type }}
+{{- end }}

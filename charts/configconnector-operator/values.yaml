@@ -1,0 +1,61 @@
+# Default values for configconnector-operator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  # -- Image Repository
+  repository: gcr.io/gke-release/cnrm/operator
+  # -- Image pull Policy
+  pullPolicy: Always
+  # -- Image tag
+  tag: "3570282"
+
+# -- List of image pull secrets
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+# -- Is the Cluster Autopilot
+isAutopilot: false
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+rbac:
+  # -- Create ClusterRole and ClusterRoleBinding
+  create: true
+
+# -- Annotations to add to to the Pod
+podAnnotations: {}
+
+# -- Annotations to add to all the resources
+commonAnnotations: {}
+
+# -- security context to apply to the pod ([documentation](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod))
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# -- security context to apply to the container ([documentation](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container))
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - all
+  runAsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# -- Resources to apply to the configconnector container
+resources:
+  limits:
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 512Mi

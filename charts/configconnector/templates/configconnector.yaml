@@ -1,0 +1,13 @@
+apiVersion: core.cnrm.cloud.google.com/v1beta1
+kind: ConfigConnector
+metadata:
+  name: configconnector.core.cnrm.cloud.google.com
+spec:
+  mode: {{ .Values.installationMode }}
+  {{- if eq .Values.installationMode "cluster" }}
+  {{- if eq .Values.authentication.type "workloadIdentity" }}
+  googleServiceAccount: {{ .Values.authentication.gsaEmail | quote }}
+  {{- else }}
+  credentialSecretName: {{ .Values.authentication.gsaKeySecretName }}
+  {{- end }}
+  {{- end }}

@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    {{- include "configconnector-operator.commonAnnotations" . | nindent 4 }}
+  labels:
+    cnrm.cloud.google.com/component: configconnector-operator
+    cnrm.cloud.google.com/operator-system: "true"
+  name: {{ include "configconnector-operator.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "configconnector-operator.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "configconnector-operator.fullname" . }}
+  template:
+    metadata:
+      annotations:
+        {{- include "configconnector-operator.commonAnnotations" . | nindent 8 }}
+        {{- with .Values.podAnnotations }}
+        {{- . | toYaml | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "configconnector-operator.labels" . | nindent 8}}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - args:
+            {{- if .Values.isAutopilot }}
+            - --local-repo=/configconnector-operator/autopilot-channels
+            {{- else }}
+            - --local-repo=/configconnector-operator/channels
+            {{- end }}
+          command:
+            - /configconnector-operator/manager
+          image: {{ printf "%s:%s" .Values.image.repository ( .Values.image.tag | toString ) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          name: manager
+          resources:
+            {{- .Values.resources | toYaml | nindent 12 }}
+          securityContext:
+            {{- .Values.securityContext | toYaml | nindent 12 }}
+      enableServiceLinks: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: {{ include "configconnector-operator.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 10

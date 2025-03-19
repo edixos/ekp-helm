@@ -1,0 +1,12 @@
+# -- Config Connector installation Mode. Values in  ["cluster","namespaced"]
+# Namespaced mode allows to deploy a config connector for specific namespace. Allowing a mapping 1 google projetc = 1 namespace
+installationMode: namespaced
+
+# -- **Only if installationMode=cluster**
+authentication:
+  # -- Type of authentication used by the KSA to connect to GCP. Values in ["key","workloadIdentity"]
+  type: workloadIdentity
+  # -- **Only if type=workloadIdentity**. GSA Email to map with config connector KSA
+  gsaEmail:
+  # -- **Only if type=key**. Name of the secret containing the GSA key
+  gsaKeySecretName:
