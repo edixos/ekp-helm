@@ -2,7 +2,7 @@ apiVersion: v2
 name: configconnector-context
 description: Deploy a config connector context for a specific namespace
 type: application
-appVersion: "v1.120.1"
+appVersion: "v1.129.2"
 version: 0.1.0
 maintainers:
   - name: ilyasabdellaoui
