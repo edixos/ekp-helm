@@ -84,6 +84,24 @@ entries:
     urls:
     - dex-0.1.0.tgz
     version: 0.1.0
+  dns-zone:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-03-19T09:12:13.657107065Z"
+    description: A Helm chart for dns-zone
+    digest: 6c918f2c22d524612835289cba17783d01e6f1059e5f5d9413481c0c666d963b
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: dns-zone
+    type: application
+    urls:
+    - dns-zone-0.1.0.tgz
+    version: 0.1.0
   eso:
   - apiVersion: v2
     appVersion: 0.14.2
@@ -555,4 +573,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-19T08:29:34.421627586Z"
+generated: "2025-03-19T09:12:13.657144545Z"
