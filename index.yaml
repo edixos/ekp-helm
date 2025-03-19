@@ -61,6 +61,51 @@ entries:
     urls:
     - cert-manager-0.1.0.tgz
     version: 0.1.0
+  configconnector:
+  - apiVersion: v2
+    appVersion: 1.129.2
+    created: "2025-03-19T13:07:47.906918914Z"
+    description: Deploys Config Connector as described here https://cloud.google.com/config-connector/docs/how-to/install-other-kubernetes
+    digest: 61b7a2089a4cba30a52805e4b5bad8eaa898206580dcad34690814ef54a68106
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: configconnector
+    type: application
+    urls:
+    - configconnector-0.1.0.tgz
+    version: 0.1.0
+  configconnector-context:
+  - apiVersion: v2
+    appVersion: v1.129.2
+    created: "2025-03-19T13:07:48.084536774Z"
+    description: Deploy a config connector context for a specific namespace
+    digest: d298ca6ad09f0a573a68aa9952983f12d77e5d6789cd54d2e5702ea64d98a6bb
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: configconnector-context
+    type: application
+    urls:
+    - configconnector-context-0.1.0.tgz
+    version: 0.1.0
+  configconnector-operator:
+  - apiVersion: v2
+    appVersion: 1.129.2
+    created: "2025-03-19T13:07:48.185731197Z"
+    description: Deploys Config Connector Operator as described here https://cloud.google.com/config-connector/docs/how-to/install-other-kubernetes
+    digest: 5603cef234a07d2927f1fb2c7403827b1d5ddc799c8c3c7723c3870d0646efaf
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: configconnector-operator
+    type: application
+    urls:
+    - configconnector-operator-0.1.0.tgz
+    version: 0.1.0
   dex:
   - apiVersion: v2
     appVersion: 2.42.0
@@ -573,4 +618,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-19T09:12:13.657144545Z"
+generated: "2025-03-19T13:07:48.185761473Z"
