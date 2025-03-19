@@ -1,6 +1,6 @@
 apiVersion: v2
 name: iam-custom-role
-description: A Helm chart for IAM custom role
+description: A Helm chart for iam custom role
 type: application
 version: 0.1.0
 appVersion: 0.1.0
