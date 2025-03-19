@@ -20,6 +20,24 @@ entries:
     urls:
     - argocd-0.1.0.tgz
     version: 0.1.0
+  bucket:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-03-19T08:29:34.421586419Z"
+    description: A Helm chart for Bucket
+    digest: fe07fccf6fd4316ca854726c7340b3f56d95b034fd053204f6b8417f2261ba79
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: bucket
+    type: application
+    urls:
+    - bucket-0.1.0.tgz
+    version: 0.1.0
   cert-manager:
   - apiVersion: v2
     appVersion: 1.17.1
@@ -537,4 +555,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-17T16:24:13.233340954Z"
+generated: "2025-03-19T08:29:34.421627586Z"
