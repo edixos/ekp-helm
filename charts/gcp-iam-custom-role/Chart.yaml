@@ -1,5 +1,5 @@
 apiVersion: v2
-name: iam-custom-role
+name: gcp-iam-custom-role
 description: A Helm chart for iam custom role
 type: application
 version: 0.1.0
