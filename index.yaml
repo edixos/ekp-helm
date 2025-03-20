@@ -185,6 +185,24 @@ entries:
     urls:
     - gcp-bigquery-dataset-0.1.0.tgz
     version: 0.1.0
+  gcp-bucket:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-03-20T08:04:39.478303354Z"
+    description: A Helm chart for Bucket
+    digest: e3dcb8393a3a2c5a9089aacae3a7a05081cedf406aec6703e8e15d9bddd97a80
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: gcp-bucket
+    type: application
+    urls:
+    - gcp-bucket-0.1.0.tgz
+    version: 0.1.0
   gcp-cloud-nat:
   - apiVersion: v2
     appVersion: 0.1.0
@@ -635,4 +653,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-20T08:01:52.242405551Z"
+generated: "2025-03-20T08:04:39.478337718Z"
