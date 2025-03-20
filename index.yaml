@@ -405,6 +405,24 @@ entries:
     urls:
     - gcp-gke-cluster-0.1.0.tgz
     version: 0.1.0
+  gcp-iam-custom-role:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-03-20T08:15:33.397346368Z"
+    description: A Helm chart for iam custom role
+    digest: d5dc5bee4825cb449fcae6e589a6b87d577701175c48c47417392c11c8786fb6
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: gcp-iam-custom-role
+    type: application
+    urls:
+    - gcp-iam-custom-role-0.1.0.tgz
+    version: 0.1.0
   gcp-iam-policy-memebers:
   - apiVersion: v2
     appVersion: 0.1.0
@@ -653,4 +671,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-20T08:04:39.478337718Z"
+generated: "2025-03-20T08:15:33.397382707Z"
