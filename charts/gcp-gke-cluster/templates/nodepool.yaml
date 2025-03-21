@@ -35,8 +35,23 @@ spec:
   {{- if .networkConfig }}
   networkConfig:
 {{- toYaml .networkConfig | nindent 4 }}
-  {{- end }}  
+  {{- end }}
   nodeConfig:
+    {{- if .nodeConfig.kubeletConfig }}
+    kubeletConfig:
+      {{- if .nodeConfig.kubeletConfig.cpuCfsQuota }}
+      cpuCfsQuota: {{ .nodeConfig.kubeletConfig.cpuCfsQuota }}
+      {{- end }}
+      {{- if .nodeConfig.kubeletConfig.cpuCfsQuotaPeriod }}
+      cpuCfsQuotaPeriod: {{ .nodeConfig.kubeletConfig.cpuCfsQuotaPeriod }}
+      {{- end }}
+      {{- if .nodeConfig.kubeletConfig.cpuManagerPolicy }}
+      cpuManagerPolicy: {{ .nodeConfig.kubeletConfig.cpuManagerPolicy }}
+      {{- end }}
+      {{- if .nodeConfig.kubeletConfig.podPidsLimit }}
+      podPidsLimit: {{ .nodeConfig.kubeletConfig.podPidsLimit }}
+      {{- end }}
+    {{- end }}
     {{- if .nodeConfig.bootDiskKMSCryptoKey.enabled }}
     bootDiskKMSCryptoKeyRef:
       {{- if .nodeConfig.bootDiskKMSCryptoKey.kccManaged }}
@@ -86,6 +101,7 @@ spec:
       {{- else }}
       external: {{ .nodeConfig.serviceAccount.name }}
       {{- end }}
+    spot: {{ .nodeConfig.spot | default "false" }}
     preemptible: {{ .nodeConfig.preemptible | default "false" }}
     oauthScopes:
     {{- range .nodeConfig.oauthScopes }}
