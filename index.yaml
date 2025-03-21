@@ -272,6 +272,44 @@ entries:
     version: 0.1.0
   gcp-gke-cluster:
   - apiVersion: v2
+    appVersion: 0.1.4
+    created: "2025-03-21T12:45:35.196511472Z"
+    dependencies:
+    - alias: gcpSubnetwork
+      name: gcp-subnetwork
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - networking
+      version: 0.1.5
+    - alias: gcpVpcNetwork
+      name: gcp-vpc-network
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - networking
+      version: 0.1.3
+    - alias: bigquery-dataset
+      condition: bigquery-dataset.enabled
+      name: gcp-bigquery-dataset
+      repository: https://edixos.github.io/ekp-helm
+      version: 0.1.0
+    - alias: gcpCloudNat
+      name: gcp-cloud-nat
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - enable-nat
+      version: 0.1.0
+    description: A Helm chart to provision a GKE Cluster via Config Connector.
+    digest: f563c5dc79e8152e84b9f571dda49d34e6d360b49ac8e276a0a7c36411e5a2c0
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: gcp-gke-cluster
+    type: application
+    urls:
+    - gcp-gke-cluster-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
     appVersion: 0.1.3
     created: "2025-03-17T16:24:13.233305648Z"
     dependencies:
@@ -671,4 +709,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-20T08:15:33.397382707Z"
+generated: "2025-03-21T12:45:35.196550435Z"
