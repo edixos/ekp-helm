@@ -1,0 +1,47 @@
+---
+
+rule_files:
+  - ../../resources/prometheus-rules/grafana-up.yaml
+
+evaluation_interval: 1m
+
+tests:
+
+  # Test 1
+  - interval: 1m
+    input_series:
+      - series: 'up{endpoint="grafana",instance="172.20.190.56:3000",job="grafana-stack",namespace="test-grafana",pod="grafana-stack-86678dfcfb-l8ff7",service="grafana-stack"}'
+        values: '1+0x30 0+0x60 1+0x50'
+
+    # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 1m
+        alertname: GrafanaIsDown
+
+      # No alert :
+      - eval_time: 40m
+        alertname: GrafanaIsDown
+
+      # Alert triggered :
+      - eval_time: 1h
+        alertname: GrafanaIsDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              endpoint: grafana
+              job: grafana-stack
+              instance: 172.20.190.56:3000
+              namespace: test-grafana
+              pod: grafana-stack-86678dfcfb-l8ff7
+              service: grafana-stack
+              alertname: GrafanaIsDown
+            exp_annotations:
+              summary: '[grafana] Service grafana is down'
+              message: 'Service "grafana" in namespace "test-grafana" is down.'
+
+      # Alert stopped:
+      - eval_time: 2h
+        alertname: GrafanaIsDown
+

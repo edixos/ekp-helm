@@ -1,0 +1,218 @@
+# Default values for grafana-stack.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# --
+nameOverride: ""
+# --
+fullnameOverride: ""
+
+
+prometheus:
+  # -- Enables prometheus operator resources
+  enabled: true
+  serviceMonitor:
+    # -- Enables prometheus operator service monitor
+    enabled: true
+    # -- Map of labels to apply to the servicemonitor, used to select prometheus target
+    labels:
+      prometheus: prometheus-operator-prometheus
+  rules:
+    # -- Labels to affect to the Prometheus Rules, used to select prometheus target
+    labels:
+      prometheus: prometheus-operator-prometheus
+
+global:
+  # -- Annotate Custom Resources with `argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true` for Argocd
+  enableArgocdAnnotations: false
+
+
+ingress:
+  # -- Enables ingress for alertmanager
+  enabled: false
+  # -- Map of annotations to apply to the ingress
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.allow-http: "false"
+    kubernetes.io/ingress.class: "nginx"
+  # -- FQDN of the grafana
+  host: ""
+  # -- Path of the incoming request (/* or / if used with nginx)
+  path: "/"
+  tls:
+    # -- Name of the secret containing the certificates
+    secretName: grafana-tls
+
+grafana:
+  image:
+    # -- Image repository
+    repository: grafana/grafana
+    # -- Image tag
+    tag: 9.2.4
+    # -- Image sha (optional)
+    sha: ""
+
+  sidecar:
+    dashboards:
+      # -- Enables the cluster wide search for dashboards and adds/updates/deletes them in grafana
+      enabled: true
+      # -- Folder in the pod that should hold the collected dashboards. This path will be mounted.
+      folder: "/tmp/dashboards"
+      # -- Label that config maps with dashboards should have to be added
+      label: grafana_dashboard
+      # -- If specified, the sidecar will search for dashboard config-maps inside this namespace. Otherwise the namespace in which the sidecar is running will be used. It's also possible to specify ALL to search in all namespaces
+      searchNamespace: ""
+    datasources:
+      # -- Enables the cluster wide search for datasources and adds/updates/deletes them in grafana
+      enabled: true
+
+  # -- Configure grafana dashboard providers, see [grafana documentation](https://grafana.com/docs/grafana/latest/administration/provisioning/#dashboards)
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'Kubernetes'
+          orgId: 1
+          folder: 'Kubernetes'
+          type: file
+          disableDeletion: true
+          editable: false
+          options:
+            path: /tmp/dashboards/k8s
+        - name: 'Grafana'
+          orgId: 1
+          folder: 'Grafana'
+          type: file
+          disableDeletion: true
+          editable: false
+          options:
+            path: /tmp/dashboards/grafana
+        - name: 'Project'
+          orgId: 1
+          folder: 'Project'
+          type: file
+          disableDeletion: true
+          editable: false
+          options:
+            path: /tmp/dashboards/project
+
+  persistence:
+    enabled: false
+
+  # -- Name of a Kubernetes secret (must be manually created in the same namespace) containing values to be added to the environment (Contains Dex secrets) (see `grafanadexclient.secret.name` )
+  envFromSecret: grafana-dex-client
+
+  env:
+    # -- OAUTH auth url for OIDC integration
+    GF_AUTH_GENERIC_OAUTH_AUTH_URL: ""
+    # -- Enables OAUTH
+    GF_AUTH_GENERIC_OAUTH_ENABLED: true
+    # -- OAUTH token url for OIDC integration
+    GF_AUTH_GENERIC_OAUTH_TOKEN_URL: ""
+    # -- OAUTH scopes for OIDC integration
+    GF_AUTH_GENERIC_OAUTH_SCOPES: "email openid"
+    # -- Client ID for OIDC integration, see `grafanadexclient.client.id`
+    GF_AUTH_GENERIC_OAUTH_CLIENT_ID: grafana-infra
+
+  # -- Plugins to be loaded along with Grafana
+  plugins:
+    - grafana-piechart-panel
+
+  # -- Grafana's primary configuration, see [grafana configuration documentation](https://grafana.com/docs/grafana/latest/administration/configuration/)
+  grafana.ini:
+    server:
+      root_url: https://grafana.changeme.com
+
+    users:
+      allow_sign_up: false
+      auto_assign_org_role: editor
+
+    auth:
+      disable_login_form: true
+      oauth_auto_login: true
+
+    auth.basic:
+      enabled: false
+
+    metrics:
+      # Disable / Enable internal metrics
+      enabled: true
+
+  # -- Configure grafana datasource providers, see [grafana documentation](https://grafana.com/docs/grafana/latest/administration/provisioning/#data-sources)
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          url: http://prometheus-operated.infra-prometheus-operator:9090
+
+  # -- Number of instance of grafana
+  replicas: 1
+
+  service:
+    # -- Type of service for the grafana
+    type: ClusterIP
+    # -- Name of the service
+    portName: http-grafana
+    # -- Custom labels to apply
+    labels:
+      app.kubernetes.io/name: grafana-infra
+      app.kubernetes.io/component: grafana
+
+  # -- Priority class assigned to the Pods
+  priorityClassName: ""
+
+  # -- [Security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) for grafana
+  securityContext:
+    runAsUser: 472
+    runAsGroup: 472
+    fsGroup: 472
+    runAsNonRoot: true
+
+  # -- Add resources limits and request to grafana container.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 1000m
+      memory: 500Mi
+
+  testFramework:
+    enabled: false
+
+grafanadexclient:
+  # -- enable OIDC credentials generation with [dex](https://github.com/dexidp/dex)
+  enabled: true
+  client:
+    # -- OIDC Client ID of grafana
+    id: grafana-infra
+    # -- Name of grafana client in Dex
+    name: grafana-infra
+    # -- Defines if the client is public (not needed for grafana)
+    public: false
+
+    # -- Overrides the fullname of the cliet resources
+    fullnameOverride: grafana-dex-client
+    # -- Overrides the name of the cliet resources
+    nameOverride: grafana-dex
+    # -- List of redirect uris
+    redirect_uris:
+      - https://grafana.changeme.com/login/generic_oauth
+
+  secret:
+    # -- Create the secret containing the dex client secret
+    create: true
+    # -- Name of the secret containing the dex client secret
+    name: grafana-dex-client
+    # -- Key of the secret containing the dex client secret
+    key: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
+
+dashboards:
+  # -- Labels added to configmap dashboards
+  labels: {}
+  k8s:
+    # -- Create grafana dashboards to monitor kubernetes cluster
+    create: false

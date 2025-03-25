@@ -1,0 +1,145 @@
+# {{ .Name }}
+
+{{ template "chart.versionBadge" .}}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.homepageLine" . }}
+
+----
+
+[[_TOC_]]
+
+----
+
+## Prerequisites
+
+- Helm v3.1+
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+## Description
+
+{{ template "chart.description" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+## Installing the Chart
+
+### With Helm
+
+To install the chart with the release name `my-release`:
+
+```bash
+helm repo add ekp-helm https://edixos.github.io/ekp-helm
+helm install ekp-helm/{{ .Name }}
+```
+
+### With ArgoCD
+
+Add new application as:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Name }}
+spec:
+  project: infra
+
+  source:
+    repoURL: "https://edixos.github.io/ekp-helm"
+    targetRevision: "{{ .Version }}"
+    chart: {{ .Name }}
+    path: ''
+
+    helm:
+      values: |
+        ingress:
+          enabled: true
+          host: grafana.example.com
+
+        grafana:
+          sidecar:
+            dashboards:
+                searchNamespace: "ALL"
+          grafana.ini:
+            server:
+              root_url: "https://grafana.example.com/"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: "infra-monitoring"
+
+  ignoreDifferences:
+  - group: ""
+    kind: Secret
+    name: grafana-dex-client
+    jsonPointers:
+    - /data/secretId
+    - /data/encyptionKey
+```
+
+
+## Develop
+
+### Add grafana dashboard
+
+To deploy new dashboard, copy dashboard as json file into [./resources/grafana/](./resources/grafana/) directory.
+if `grafana.sidecar.dashboards.enabled` is set, json content will be copied to configmap.
+By default, only configmap in current namespace will be searched. Configure `grafana.sidecar.dashboards.searchNamespace` variable to define namespace.
+It's also possible to specify `ALL` to search in all namespaces.
+
+Dashboards can be sorted by folder. Set `k8s-sidecar-target-directory: \{\{ .Values.grafana.sidecar.dashboards.folder \}\}/custom_folder` annotations to customize dashboard folder.
+
+### Add prometheus rules and alerts
+
+To deploy new rules, copy your rules (without the group) into [.resources/prometheus-rules/grafana-records.yaml](.resources/prometheus-rules/grafana-records.yaml).
+To deploy new alerts, copy your alerts (without the group) into [.resources/prometheus-rules/grafana-up.yaml](.resources/prometheus-rules/grafana-up.yaml).
+
+Some rules and alerts come from the grafana github repository:
+- https://github.com/grafana/grafana/blob/master/grafana-mixin/rules/rules.yaml
+- https://github.com/grafana/grafana/blob/master/grafana-mixin/alerts/alerts.yaml
+
+### Update documentation
+
+Chart documentation is generated with [helm-docs](https://github.com/norwoodj/helm-docs) from `values.yaml` file.
+After file modification, regenerate README.md with command:
+
+```bash
+docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 helm-docs
+```
+
+### Run linter
+
+```bash
+docker run --rm -it -w /charts -v $(pwd)/../../:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts /charts/charts/{{ .Name }} --config /charts/charts/{{ .Name }}/ct.yaml
+```
+
+### Run pluto
+
+In order to check if the api-version used in this chart are not deprecated, or worse, removed, we use pluto to check it:
+
+```
+docker run --rm -it -v $(pwd):/apps -v pluto:/pluto renaultdigital/helm:v3.4.0 template {{ .Name }} . -f tests/pluto/values.yaml --output-dir /pluto
+docker run --rm -it -v pluto:/pluto renaultdigital/pluto:v3.5.2 detect-files -d /pluto -o yaml --ignore-deprecations -t "k8s=v1.17.0,cert-manager=v0.15.1,istio=v1.6.0" -o wide
+docker volume rm pluto
+```
+
+### Prometheus Rules
+
+Check rules:
+
+```bash
+docker run --rm --entrypoint /bin/sh -v $(pwd):/workdir -w /workdir prom/prometheus -c -- "promtool check rules resources/prometheus-rules/*"
+```
+
+Test rules:
+
+```bash
+docker run --rm --entrypoint /bin/sh -v $(pwd):/workdir -w /workdir prom/prometheus -c -- "promtool test rules tests/prometheus/*"
+```
