@@ -1,0 +1,296 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: {{ template "prometheus.fullname" . }}-prometheus
+  labels:
+    app: {{ template "prometheus.name" . }}-prometheus
+    {{- include "prometheus.labels" . | nindent 4 }}
+  {{- if .Values.prometheus.annotations }}
+  annotations:
+  {{- toYaml .Values.prometheus.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  alerting:
+    alertmanagers:
+      {{- if .Values.alerting.endpoints }}
+      {{- toYaml .Values.alerting.endpoints | nindent 6 }}
+      {{- else }}
+      []
+      {{- end }}
+  {{- if .Values.prometheus.apiserverConfig }}
+  apiserverConfig:
+  {{ toYaml .Values.prometheus.apiserverConfig | indent 4}}
+  {{- end }}
+  image: {{ include "prometheus.image" . }}
+  {{- if .Values.prometheus.externalLabels }}
+  externalLabels:
+  {{ toYaml .Values.prometheus.externalLabels | indent 4}}
+  {{- end }}
+  {{- if .Values.prometheus.prometheusExternalLabelNameClear }}
+  prometheusExternalLabelName: ""
+  {{- else if .Values.prometheus.prometheusExternalLabelName }}
+  prometheusExternalLabelName: "{{ .Values.prometheus.prometheusExternalLabelName }}"
+  {{- end }}
+  {{- if .Values.prometheus.replicaExternalLabelNameClear }}
+  replicaExternalLabelName: ""
+  {{- else if .Values.prometheus.replicaExternalLabelName }}
+  replicaExternalLabelName: "{{ .Values.prometheus.replicaExternalLabelName }}"
+  {{- end }}
+  externalUrl: {{ include "prometheus.externalUrl" . | quote }}
+  {{- if .Values.prometheus.nodeSelector }}
+  nodeSelector:
+  {{ toYaml .Values.prometheus.nodeSelector | indent 4 }}
+  {{- end }}
+  paused: {{ .Values.prometheus.paused }}
+  replicas: {{ .Values.prometheus.replicas }}
+  logLevel:  {{ .Values.prometheus.logLevel }}
+  logFormat:  {{ .Values.prometheus.logFormat }}
+  listenLocal: false
+  enableAdminAPI: {{ .Values.prometheus.enableAdminAPI }}
+  {{- if .Values.prometheus.scrapeInterval }}
+  scrapeInterval: {{ .Values.prometheus.scrapeInterval }}
+  {{- end }}
+  {{- if .Values.prometheus.evaluationInterval }}
+  evaluationInterval: {{ .Values.prometheus.evaluationInterval }}
+  {{- end }}
+  {{- if .Values.prometheus.resources }}
+  resources:
+  {{- toYaml .Values.prometheus.resources | nindent 4 }}
+  {{- end }}
+  retention: {{ .Values.prometheus.retention | quote  }}
+  {{- if .Values.prometheus.retentionSize }}
+  retentionSize: {{ .Values.prometheus.retentionSize | quote }}
+  {{- end }}
+  {{- if .Values.prometheus.walCompression }}
+  walCompression: {{ .Values.prometheus.walCompression }}
+  {{- end }}
+  {{- if .Values.prometheus.routePrefix }}
+  routePrefix: {{ .Values.prometheus.routePrefix | quote  }}
+  {{- end }}
+  {{- if .Values.prometheus.secrets }}
+  secrets:
+  {{- toYaml .Values.prometheus.secrets | nindent 4 }}
+  {{- end }}
+  {{- if .Values.prometheus.configMaps }}
+  configMaps:
+  {{- toYaml .Values.prometheus.configMaps | nindent 4 }}
+  {{- end }}
+  serviceAccountName: {{ template "prometheus.serviceAccountName" . }}
+  {{- if .Values.prometheus.serviceMonitorSelector }}
+  serviceMonitorSelector:
+  {{- toYaml .Values.prometheus.serviceMonitorSelector | nindent 4 }}
+  {{- else }}
+  serviceMonitorSelector: {}
+  {{- end }}
+  {{- if .Values.rbac.scopeNamespaced }}
+  {{/* No serviceNamespaceSelector, search only in current namespace */}}
+  {{- else if .Values.prometheus.serviceMonitorNamespaceSelector }}
+  serviceMonitorNamespaceSelector:
+  {{- toYaml .Values.prometheus.serviceMonitorNamespaceSelector | nindent 4 }}
+  {{- else }}
+  serviceMonitorNamespaceSelector: {}
+  {{- end }}
+  {{- if .Values.prometheus.podMonitorSelector }}
+  podMonitorSelector:
+  {{- toYaml .Values.prometheus.podMonitorSelector | nindent 4 }}
+  {{- else }}
+  podMonitorSelector: {}
+  {{- end }}
+  {{- if .Values.rbac.scopeNamespaced }}
+  {{/* No podNamespaceSelector, search only in current namespace */}}
+  {{- else if .Values.prometheus.podMonitorNamespaceSelector }}
+  podMonitorNamespaceSelector:
+  {{- toYaml .Values.prometheus.podMonitorNamespaceSelector | nindent 4 }}
+  {{- else }}
+  podMonitorNamespaceSelector: {}
+  {{- end }}
+  {{- if .Values.prometheus.remoteRead }}
+  remoteRead:
+  {{- toYaml .Values.prometheus.remoteRead | nindent 4 }}
+  {{- end }}
+  {{- if .Values.prometheus.remoteWrite }}
+  remoteWrite:
+  {{- toYaml .Values.prometheus.remoteWrite | nindent 4 }}
+  {{- end }}
+  {{- if .Values.prometheus.securityContext }}
+  securityContext:
+  {{- toYaml .Values.prometheus.securityContext | nindent 4 }}
+  {{- end }}
+  {{- if .Values.rbac.scopeNamespaced }}
+  {{/* No ruleNamespaceSelector, search only in current namespace */}}
+  {{- else if .Values.prometheus.ruleNamespaceSelector }}
+  ruleNamespaceSelector:
+  {{- toYaml .Values.prometheus.ruleNamespaceSelector | nindent 4 }}
+  {{- else }}
+  ruleNamespaceSelector: {}
+  {{- end }}
+  {{- if .Values.prometheus.ruleSelector }}
+  ruleSelector:
+  {{- toYaml .Values.prometheus.ruleSelector | nindent 4}}
+  {{- else }}
+  {{- if .Values.rules.enabled }}
+  ruleSelector:
+    matchLabels:
+      {{- include "prometheus.rule.selectorLabels"  . | nindent 6 }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.prometheus.storageSpec }}
+  storage:
+  {{- toYaml .Values.prometheus.storageSpec | nindent 4 }}
+  {{- end }}
+  {{- if or .Values.prometheus.podMetadata.annotations .Values.prometheus.podMetadata.labels .Values.istio.useCertificates }}
+  podMetadata:
+    {{- if .Values.prometheus.podMetadata.labels }}
+    labels:
+      {{- toYaml .Values.prometheus.podMetadata.labels | nindent 6 }}
+    {{- end }}
+  {{- if or .Values.prometheus.podMetadata.annotations .Values.istio.useCertificates }}
+    annotations:
+      {{- if .Values.prometheus.podMetadata.annotations }}
+      {{- toYaml .Values.prometheus.podMetadata.annotations | nindent 6 }}
+      {{- end }}
+      {{- if .Values.istio.useCertificates }}
+      {{- toYaml .Values.istio.podAnnotations | nindent 6 }}
+      {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.prometheus.query }}
+  query:
+  {{- toYaml .Values.prometheus.query | nindent 4}}
+  {{- end }}
+  {{- if or .Values.prometheus.podAntiAffinity .Values.prometheus.affinity }}
+  affinity:
+    {{- if .Values.prometheus.affinity }}
+    {{- toYaml .Values.prometheus.affinity | nindent 4 }}
+    {{- end }}
+    {{- if eq .Values.prometheus.podAntiAffinity "hard" }}
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - topologyKey: {{ .Values.prometheus.podAntiAffinityTopologyKey }}
+          labelSelector:
+            matchLabels:
+              app: prometheus
+              prometheus: {{ template "prometheus.fullname" . }}-prometheus
+    {{- else if eq .Values.prometheus.podAntiAffinity "soft" }}
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            topologyKey: {{ .Values.prometheus.podAntiAffinityTopologyKey }}
+            labelSelector:
+              matchLabels:
+                app: prometheus
+                prometheus: {{ template "prometheus.fullname" . }}-prometheus
+  {{- end }}
+  {{- end }}
+  {{- if .Values.prometheus.tolerations }}
+  tolerations:
+  {{ toYaml .Values.prometheus.tolerations | indent 4 }}
+  {{- end }}
+  {{- if .Values.imagePullSecrets }}
+  imagePullSecrets:
+  {{ toYaml .Values.imagePullSecrets | indent 4 }}
+  {{- end }}
+  {{- if .Values.prometheus.additionalScrapeConfigs }}
+  additionalScrapeConfigs:
+    name: {{ template "prometheus.fullname" . }}-prometheus-scrape-config
+    key: additional-scrape-configs.yaml
+  {{- end }}
+  {{- if .Values.prometheus.additionalScrapeConfigsSecret.enabled }}
+  additionalScrapeConfigs:
+    name: {{ .Values.prometheus.additionalScrapeConfigsSecret.name }}
+    key: {{ .Values.prometheus.additionalScrapeConfigsSecret.key }}
+  {{- end }}
+  {{- if .Values.prometheus.additionalAlertManagerConfigs }}
+  additionalAlertManagerConfigs:
+    name: {{ template "prometheus.fullname" . }}-prometheus-am-confg
+    key: additional-alertmanager-configs.yaml
+  {{- end }}
+  {{- if .Values.prometheus.additionalAlertRelabelConfigs }}
+  additionalAlertRelabelConfigs:
+    name: {{ template "prometheus.fullname" . }}-prometheus-am-relabel-confg
+    key: additional-alert-relabel-configs.yaml
+  {{- end }}
+
+
+  {{- if or .Values.prometheus.containers .Values.oidc.enabled }}
+  containers:
+      {{- if .Values.oidc.enabled }}
+    - name: oidc-proxy
+      image: "{{ .Values.oidc.image.repository }}:{{ .Values.oidc.image.tag }}"
+      imagePullPolicy: {{ .Values.oidc.image.pullPolicy }}
+      ports:
+        - name: {{ .Values.oidc.portName }}
+          containerPort: {{ .Values.oidc.port }}
+          protocol: TCP
+      args:
+        - -listen={{ printf "0.0.0.0:%v" .Values.oidc.port }}
+        - -config=/etc/oidc/config.yaml
+        - -client-secret=$(CLIENT_SECRET)
+      {{- if .Values.oidc.configMap.enableEncryptedToken }}
+        - --encryption-key=$(ENCRYPTION_KEY)
+      {{- end }}
+      env:
+        {{- if .Values.oidc.configMap.enableEncryptedToken }}
+        - name: ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "prometheus.oidc.secretName" . | quote }}
+              key: {{ .Values.oidc.secret.encryptionKeyKey }}
+        {{- end }}
+        - name: CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "prometheus.oidc.secretName" . | quote  }}
+              key: {{ .Values.oidc.secret.clientSecretKey }}
+      {{- if .Values.oidc.env }}
+      {{- toYaml .Values.oidc.env | trim | nindent 8 }}
+      {{- end }}
+      resources:
+      {{- if .Values.oidc.resources }}
+      {{- toYaml .Values.oidc.resources | trim | nindent 8 -}}
+      {{- end }}
+      volumeMounts:
+        - mountPath: /etc/oidc
+          name: oidc-config
+    {{- end }}
+    {{- if .Values.prometheus.containers }}
+    {{- toYaml .Values.prometheus.containers | nindent 4 }}
+    {{- end }}
+  {{- end }}
+
+
+  {{- if .Values.prometheus.initContainers }}
+  initContainers:
+  {{- toYaml .Values.prometheus.initContainers | nindent 4 }}
+  {{- end }}
+  {{- if .Values.prometheus.priorityClassName }}
+  priorityClassName: {{ .Values.prometheus.priorityClassName }}
+  {{- end }}
+  {{- if .Values.prometheus.disableCompaction }}
+  disableCompaction: {{ .Values.prometheus.disableCompaction }}
+  {{- end }}
+  portName: {{ .Values.prometheus.portName }}
+  {{- if .Values.prometheus.enforcedNamespaceLabel }}
+  enforcedNamespaceLabel: {{ .Values.prometheus.enforcedNamespaceLabel }}
+  {{- end }}
+  {{- if or .Values.prometheus.volumes .Values.oidc.enabled }}
+  volumes:
+  {{- if .Values.prometheus.volumes }}
+  {{- toYaml .Values.prometheus.volumes | nindent 4 }}
+  {{- end }}
+  {{- if .Values.oidc.enabled }}
+    - name: oidc-config
+      configMap:
+        name: {{ include "prometheus.oidc.configmapName" . | quote }}
+  {{- end }}
+  {{- end }}
+  {{- if or .Values.prometheus.volumeMounts .Values.istio.useCertificates }}
+  volumeMounts:
+    {{- if .Values.prometheus.volumeMounts }}
+    {{- toYaml .Values.prometheus.volumeMounts | nindent 4 }}
+    {{- end }}
+    {{- if .Values.istio.useCertificates }}
+    {{- toYaml .Values.istio.volumeMount | nindent 4 }}
+    {{- end }}
+  {{- end }}

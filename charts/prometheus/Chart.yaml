@@ -1,0 +1,9 @@
+apiVersion: v2
+description: Deploys Prometheus through prometheus operator
+name: prometheus
+version: 0.1.0
+appVersion: "v3.0.1"
+maintainers:
+  - name: ilyasabdellaoui
+    email: ilyas.abdellaoui21@gmail.com
+    url: https://github.com/ilyasabdellaoui
