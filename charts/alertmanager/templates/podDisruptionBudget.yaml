@@ -1,0 +1,24 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+{{- $kubeTargetVersion := default .Capabilities.KubeVersion.GitVersion .Values.kubeTargetVersionOverride }}
+{{- if semverCompare "< 1.21.0-0" $kubeTargetVersion }}
+apiVersion: policy/v1beta1
+{{- else }}
+apiVersion: policy/v1
+{{- end }}
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "alertmanager.fullname" . }}-alertmanager
+  labels:
+    {{- include "alertmanager.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  {{- end }}
+  {{- if .Values.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.podDisruptionBudget.maxUnavailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ printf "%s-alertmanager" (include "alertmanager.name" . ) }}
+      alertmanager: {{ template "alertmanager.fullname" . }}-alertmanager
+  {{- end }}

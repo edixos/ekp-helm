@@ -1,0 +1,213 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: {{ template "alertmanager.fullname" . }}-alertmanager
+  labels:
+    {{- include "alertmanager.labels" . | nindent 4 }}
+  {{- if .Values.global.enableArgocdAnnotations }}
+  annotations:
+    {{- include "alertmanager.argocd.annotations" . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.image.repository }}
+  image: {{ .Values.image.repository }}:{{ include "alertmanager.image.tag" . }}
+  {{- end }}
+  version: {{ include "alertmanager.image.tag" . }}
+  {{- if .Values.image.sha }}
+  sha: {{ .Values.image.sha }}
+  {{- end }}
+  replicas: {{ .Values.replicaCount }}
+  listenLocal: {{ .Values.listenLocal }}
+  serviceAccountName: {{ template "alertmanager.serviceAccountName" . }}
+  externalUrl: {{ include "alertmanager.externalUrl" . | quote }}
+  {{- if .Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml .Values.nodeSelector | nindent 4 }}
+  {{- end }}
+  paused: {{ .Values.paused }}
+  logFormat: {{ .Values.logFormat | quote  }}
+  logLevel: {{ .Values.logLevel | quote  }}
+  retention: {{ .Values.retention | quote  }}
+  {{- if .Values.secrets }}
+  secrets:
+    {{- toYaml .Values.secrets | nindent 4 }}
+  {{- end }}
+  {{- if ( include "alertmanager.config.secretName" . ) }}
+  configSecret: {{ include "alertmanager.config.secretName" . | quote }}
+  {{- end }}
+  {{- if .Values.configMaps }}
+  configMaps:
+    {{- toYaml .Values.configMaps | nindent 4 }}
+  {{- end }}
+  {{- if .Values.resources }}
+  resources:
+    {{- toYaml .Values.resources | nindent 4 }}
+  {{- end }}
+  {{- if .Values.routePrefix }}
+  routePrefix: {{ .Values.routePrefix | quote}}
+  {{- end }}
+  {{- if .Values.securityContext }}
+  securityContext:
+    {{- toYaml .Values.securityContext | nindent 4 }}
+  {{- end }}
+  {{- if .Values.storage }}
+  storage:
+    {{- toYaml .Values.storage | nindent 4 }}
+  {{- end }}
+  podMetadata:
+    annotations:
+      checksum/config: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+      {{- if and .Values.podMetadata .Values.podMetadata.annotations }}
+      {{- toYaml .Values.podMetadata.annotations | nindent 6 }}
+      {{- end }}
+    labels:
+      {{- ( include "alertmanager.labels" . ) | nindent 6 }}
+      {{- if and .Values.podMetadata .Values.podMetadata.labels }}
+      {{- toYaml .Values.podMetadata.labels | nindent 6 }}
+      {{- end }}
+
+  {{- if or .Values.podAntiAffinity .Values.affinity }}
+  affinity:
+    {{- if .Values.affinity }}
+    {{- toYaml .Values.affinity | nindent 4 }}
+    {{- end }}
+    {{- if eq .Values.podAntiAffinity "hard" }}
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - topologyKey: {{ .Values.podAntiAffinityTopologyKey }}
+          labelSelector:
+            matchLabels:
+              app: alertmanager
+              alertmanager: {{ template "alertmanager.fullname" . }}-alertmanager
+    {{- else if eq .Values.podAntiAffinity "soft" }}
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            topologyKey: {{ .Values.podAntiAffinityTopologyKey }}
+            labelSelector:
+              matchLabels:
+                app: alertmanager
+                alertmanager: {{ template "alertmanager.fullname" . }}-alertmanager
+    {{- end }}
+  {{- end }}
+  {{- if .Values.tolerations }}
+  tolerations:
+    {{- toYaml .Values.tolerations | nindent 4 }}
+  {{- end }}
+  {{- if .Values.imagePullSecrets }}
+  imagePullSecrets:
+    {{- toYaml .Values.imagePullSecrets | nindent 4 }}
+  {{- end }}
+  {{- if or .Values.containers .Values.oidc.enabled }}
+  containers:
+    {{- if or .Values.containers }}
+    {{- toYaml .Values.containers | nindent 4 }}
+    {{- end }}
+    {{- if .Values.oidc.enabled }}
+    - name: oidc-proxy
+      image: "{{ .Values.oidc.image.repository }}:{{ .Values.oidc.image.tag }}"
+      imagePullPolicy: {{ .Values.oidc.image.pullPolicy }}
+      ports:
+        - name: {{ .Values.oidc.portName }}
+          containerPort: {{ .Values.oidc.port }}
+          protocol: TCP
+        - name: {{ .Values.oidc.metricsPortName }}
+          containerPort: {{ .Values.oidc.metricsPort }}
+          protocol: TCP
+      args:
+        - --http-address={{ printf "0.0.0.0:%v" .Values.oidc.port }}
+        - --config=/etc/oidc/oauth2-proxy.cfg
+        - --client-secret=$(CLIENT_SECRET)
+        - --cookie-secret=$(COOKIE_SECRET_KEY)
+      env:
+        - name: COOKIE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "alertmanager.oidc.secretName" . | quote }}
+              key: {{ .Values.oidc.secret.cookieSecretKey }}
+        - name: CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "alertmanager.oidc.secretName" . | quote  }}
+              key: {{ .Values.oidc.secret.clientSecretKey }}
+        {{- if .Values.oidc.env }}
+        {{- toYaml .Values.oidc.env | trim | nindent 8 }}
+        {{- end }}
+      {{- if .Values.oidc.resources }}
+      resources:
+        {{- toYaml .Values.oidc.resources | trim | nindent 8 -}}
+      {{- end }}
+      readinessProbe:
+        httpGet:
+          port: {{ .Values.oidc.portName }}
+          path: /ping
+      livenessProbe:
+        httpGet:
+          port: {{ .Values.oidc.portName }}
+          path: /ping
+      volumeMounts:
+        - mountPath: /etc/oidc
+          name: oidc-config
+        {{- if .Values.karma.enabled }}
+        - mountPath: /etc/karma
+          name: htpasswd
+        {{- end }}
+    {{- if .Values.authorizations.enabled }}
+    - name: authorization-envoy
+      image: "{{ .Values.authorizations.envoy.image.repository }}:{{ .Values.authorizations.envoy.image.tag }}"
+      imagePullPolicy: {{ .Values.authorizations.envoy.image.pullPolicy }}
+      args:
+        - -c
+        - /etc/envoy/envoy-custom.yaml
+      {{- if .Values.authorizations.envoy.resources }}
+      resources:
+        {{- toYaml .Values.authorizations.envoy.resources | trim | nindent 8 -}}
+      {{- end }}
+      volumeMounts:
+      - mountPath: /etc/envoy
+        name: envoy-config
+    {{- end }}
+    {{- end }}
+    {{- if .Values.containers }}
+    {{- toYaml .Values.containers | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.priorityClassName }}
+  priorityClassName: {{.Values.priorityClassName }}
+  {{- end }}
+  {{- if .Values.additionalPeers }}
+  additionalPeers:
+    {{- toYaml .Values.additionalPeers | nindent 4 }}
+  {{- end }}
+  {{- if or .Values.volumes .Values.oidc.enabled }}
+  volumes:
+    {{- if .Values.volumes }}
+    {{- toYaml .Values.volumes | nindent 4 }}
+    {{- end }}
+    {{- if .Values.oidc.enabled }}
+    - name: oidc-config
+      configMap:
+        name: {{ include "alertmanager.oidc.configmapName" . | quote }}
+    {{- end }}
+    {{- if .Values.authorizations.enabled }}
+    - name: envoy-config
+      configMap:
+        name: {{ include "alertmanager.envoy.configmapName" . | quote}}
+    {{- if .Values.karma.enabled }}
+    - name: htpasswd
+      secret:
+        secretName: {{ .Values.karma.htpasswd.secretName }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.volumeMounts }}
+  volumeMounts:
+  {{- toYaml .Values.volumeMounts | nindent 4 }}
+  {{- end }}
+  portName: {{ .Values.portName }}
+  {{- if .Values.clusterAdvertiseAddress }}
+  clusterAdvertiseAddress: {{ .Values.clusterAdvertiseAddress }}
+  {{- end }}
+

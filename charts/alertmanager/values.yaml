@@ -1,0 +1,509 @@
+# Default values for alertmanager.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# nameOverride --
+nameOverride: ""
+# fullnameOverride --
+fullnameOverride: ""
+
+# -- Labels to apply to all resources
+commonLabels: {}
+
+# -- Reference to one or more secrets to be used when pulling images
+# ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# - name: "image-pull-secret"
+
+image:
+# image.repository -- Override alertmanager image name, use image defined by alertmanager controller if not defined
+  repository: ""
+# image.tag -- Override image tag, use `.Chart.appVersion` by default
+  tag: ""
+
+
+global:
+# -- Annotate Custom Resources with `global.argocdAnnotations`
+  enableArgocdAnnotations: false
+  argocdAnnotations:
+    - "argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true"
+
+
+# -- Size is the expected size of the alertmanager cluster. The controller will eventually make the size of the
+# running cluster equal to the expected size.
+replicaCount: 3
+
+# clusterName -- Alertmanager name
+clusterName: ""
+
+# -- Standard object’s metadata. More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#metadata
+# Metadata Labels and Annotations gets propagated to the Alertmanager pods.
+podMetadata: {}
+
+# -- If true then the user will be responsible to provide a secret with alertmanager configuration
+# So when true the config part will be ignored (including templateFiles) and the one in the secret will be used
+# See `configSecret`
+useExistingSecret: false
+
+# -- List of Secrets in the same namespace as the Alertmanager object, which shall be mounted into the
+# Alertmanager Pods. The Secrets are mounted into /etc/alertmanager/secrets/.
+secrets: []
+
+# -- Name of a Kubernetes Secret in the same namespace as the Alertmanager object, which contains configuration for
+# this Alertmanager instance.
+# The secret is mounted into /etc/alertmanager/config and should contains `alertmanager.yaml` key.
+# @default -- 'alertmanager-{{ fullname }}'
+configSecret: ""
+
+# -- List of ConfigMaps in the same namespace as the Alertmanager object, which shall be mounted into the Alertmanager Pods.
+# The ConfigMaps are mounted into /etc/alertmanager/configmaps/.
+configMaps: []
+
+# -- Define Log Format
+# Use logfmt (default) or json-formatted logging
+logFormat: logfmt
+
+# -- Log level for Alertmanager to be configured with.
+logLevel: info
+
+# -- Time duration Alertmanager shall retain data for. Default is '120h', and must match the regular expression
+# [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours).
+retention: 120h
+
+# -- Storage is the definition of how storage will be used by the Alertmanager instances.
+# ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/user-guides/storage.md
+storage: {}
+# volumeClaimTemplate:
+#   spec:
+#     storageClassName: gluster
+#     accessModes: ["ReadWriteOnce"]
+#     resources:
+#       requests:
+#         storage: 50Gi
+#   selector: {}
+
+# -- Additional volumes on the output StatefulSet definition.
+volumes: []
+
+# -- Additional VolumeMounts on the output StatefulSet definition.
+volumeMounts: []
+
+# -- The external URL the Alertmanager instances will be available under. This is necessary to generate correct URLs.
+# This is necessary if Alertmanager is not served from root of a DNS name.
+# @default -- Use ingress host if enabled else generated from Chart name
+externalUrl: ""
+
+# -- The route prefix Alertmanager registers HTTP handlers for. This is useful, if using ExternalURL and a proxy
+# is rewriting HTTP routes of a request, and the actual ExternalURL is still true,
+# but the server serves requests under a different route prefix. For example for use with kubectl proxy.
+routePrefix: /
+
+# -- If set to true all actions on the underlying managed objects are not going to be performed, except for delete actions.
+paused: false
+
+# -- Define which Nodes the Pods are scheduled on.
+# ref: https://kubernetes.io/docs/user-guide/node-selection/
+nodeSelector: {}
+
+# Define resources requests and limits for single Pods.
+# ref: https://kubernetes.io/docs/user-guide/compute-resources/
+resources:
+  requests:
+    cpu: 5m
+    memory: 200Mi
+  limits:
+    cpu: 100m
+    memory: 500Mi
+
+# -- Pod anti-affinity can prevent the scheduler from placing Prometheus replicas on the same node.
+# The default value "soft" means that the scheduler should *prefer* to not schedule two replica pods onto the same node but no guarantee is provided.
+# The value "hard" means that the scheduler is *required* to not schedule two replica pods onto the same node.
+# The value "" will disable pod anti-affinity so that no anti-affinity rules will be configured.
+podAntiAffinity: ""
+
+# -- If anti-affinity is enabled sets the topologyKey to use for anti-affinity.
+# This can be changed to, for example, failure-domain.beta.kubernetes.io/zone
+podAntiAffinityTopologyKey: kubernetes.io/hostname
+
+# -- Assign custom affinity rules to the alertmanager instance
+# ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+affinity: {}
+# nodeAffinity:
+#   requiredDuringSchedulingIgnoredDuringExecution:
+#     nodeSelectorTerms:
+#     - matchExpressions:
+#       - key: kubernetes.io/e2e-az-name
+#         operator: In
+#         values:
+#         - e2e-az1
+#         - e2e-az2
+
+# -- If specified, the pod's tolerations.
+# ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+tolerations: []
+# - key: "key"
+#   operator: "Equal"
+#   value: "value"
+#   effect: "NoSchedule"
+
+# -- SecurityContext holds pod-level security attributes and common container settings.
+# This defaults to non root user with uid 1000 and gid 2000.	*v1.PodSecurityContext	false
+# ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+securityContext:
+  runAsGroup: 2000
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 2000
+
+# -- ListenLocal makes the Alertmanager server listen on loopback, so that it does not bind against the Pod IP.
+# Note this is only for the Alertmanager UI, not the gossip communication.
+listenLocal: false
+
+# -- Allows to inject additional containers. This is meant to allow adding an authentication proxy to an Alertmanager pod.
+containers: []
+
+# -- Priority class assigned to the Pods
+priorityClassName: ""
+
+# -- AdditionalPeers allows injecting a set of additional Alertmanagers to peer with to form a highly available cluster.
+additionalPeers: []
+
+# -- PortName to use for Alert Manager.
+portName: "web"
+
+# -- Explicit address to advertise in cluster. Needs to be provided for non RFC1918 [1] (public) addresses.
+# [1] RFC1918: https://tools.ietf.org/html/rfc1918
+clusterAdvertiseAddress: false
+
+
+# Configuration for AlertManager service
+service:
+  # -- Map of labels to apply to the service
+  labels: {}
+
+  # -- Map of annotations to apply to the service
+  annotations: {}
+
+  # -- Cluster IP
+  # Only use if service.type is "ClusterIP"
+  clusterIP: ""
+
+  # -- Port for Prometheus Service to listen on
+  port: 9093
+
+  # -- To be used with a proxy extraContainer port
+  targetPort: 9093
+
+  # -- List of IP addresses at which the Prometheus server service is available
+  # Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+  externalIPs: []
+
+  # -- Port to expose on each node
+  # Only used if service.type is 'NodePort'
+  nodePort: 30090
+
+  # -- Loadbalancer IP
+  # Only use if service.type is "loadbalancer"
+  loadBalancerIP: ""
+
+  # service.loadSourceRanges -- Only use if service.type is "loadbalancer"
+  loadBalancerSourceRanges: []
+
+  # -- Service type
+  type: ClusterIP
+
+  # service.sessionAffinity --
+  sessionAffinity: ""
+
+
+istio:
+  # -- Enables istio features
+  enabled: false
+
+
+ingress:
+  # -- Enables ingress for alertmanager
+  enabled: false
+
+  # -- Map of labels to apply to the ingress
+  labels: {}
+
+  #  -- Map of default annotations to apply to the ingress
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+
+  acme:
+    # -- Manage certificates with ACME protocol
+    enabled: true
+    # -- Annotations to add when `ingress.acme.enabled` is true
+    annotations:
+      - 'kubernetes.io/tls-acme: "true"'
+
+  # -- Map of annotations to add  to th ingress
+  extraAnnotations: {}
+
+  # -- FQDN of the prometheus
+  host: ""
+
+  # -- Path of the incoming request (/* or / if used with nginx)
+  path: "/*"
+
+  tls:
+    # -- Name of the secret containing the certificates
+    # @default -- Generated name based on chart release full name
+    secretName: ""
+
+
+prometheus:
+  # -- Enables prometheus operator resources
+  enabled: true
+  serviceMonitor:
+    # -- Enables prometheus operator service monitor
+    enabled: true
+    # -- Map of labels to apply to the servicemonitor
+    labels:
+      prometheus: prometheus-operator-prometheus
+    # -- Scrape interval. If not set, the Prometheus default scrape interval is used. dd
+    interval: ""
+    # -- HTTP scheme to use for scraping. Can be used with `tlsConfig` for example if using istio mTLS.
+    scheme: ""
+    # -- TLS configuration to use when scraping the endpoint. For example if using istio mTLS.
+    # Of type: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#tlsconfig
+    tlsConfig: {}
+    # --
+    bearerTokenFile:
+
+    # -- metric relabel configs to apply to samples before ingestion.
+    metricRelabelings: []
+    # - action: keep
+    #   regex: 'kube_(daemonset|deployment|pod|namespace|node|statefulset).+'
+    #   sourceLabels: [__name__]
+
+    # -- Relabel configs to apply to samples before ingestion.
+    relabelings: []
+    # - sourceLabels: [__meta_kubernetes_pod_node_name]
+    #   separator: ;
+    #   regex: ^(.*)$
+    #   targetLabel: nodename
+    #   replacement: $1
+    #   action: replace
+
+    # -- Map of annotations to apply to the ServiceMonitor
+    annotations: {}
+
+
+  rules:
+    # -- Labels to affect to the Prometheus Rules
+    labels:
+      prometheus: prometheus-operator-prometheus
+
+  grafanaDashboard:
+    # -- If `true`, deploy grafana dashboard
+    enabled: true
+    # -- Labels to apply to dashboard configmap
+    label:
+      grafana_dashboard: "1"
+
+# -- Configure pod disruption budgets for AlertManager
+# ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
+# This configuration is immutable once created and will require the PDB to be deleted to be changed
+# https://github.com/kubernetes/kubernetes/issues/45398
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+  maxUnavailable: ""
+# Service account for AlertManager to use.
+# ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+serviceAccount:
+  # -- When `true`, create alertmanager serviceAccount with `serviceAccount.name`. If `serviceAccount.name` is empty, use `.Chart.fullname` value.
+  create: true
+  # -- Name of the ServiceAccount to use to run the Prometheus Pods. If `prometheus.serviceAccount.create` is `false` and no name is defined, use `default`.
+  name: ""
+  # -- Annotations for ServiceAccount
+  annotations: {}
+  # --          automountServiceAccountToken
+  automountServiceAccountToken: false
+
+
+oidc:
+  # -- If `true`, enable oidc authentification with sidecar container
+  enabled: false
+
+  # Image of oauth2-proxy. Manage image with operator if not defined
+  image:
+    # -- Container name for oauth2-proxy sidecar
+    repository: quay.io/oauth2-proxy/oauth2-proxy
+    # -- Container image tag  for oauth2-proxy sidecar
+    tag: v7.3.0
+    # -- Container image pull policy for oauth2-proxy sidecar
+    pullPolicy: IfNotPresent
+
+  # -- PortName to use for oidc proxy sidecar
+  portName: http-oidc
+  # -- Port to listen by oidc proxy
+  port: 3000
+
+  # -- Deploy prometheus ServiceMonitor resource to scrape oidc proxy metrics.
+  serviceMonitor: true
+  # -- PortName to use for oidc proxy sidecar metrics
+  metricsPortName: http-oauth-prom
+  # -- Port number where to expose prometheus proxy for oidc proxy
+  metricsPort: 3090
+
+  # -- Environment variables to inject into sidecar
+  env: []
+  # - name: "http_proxy"
+  #   value: "{{ .Values.httpProxy }}"
+  # - name: "https_proxy"
+  #   value: "{{ .Values.httpProxy }}"
+  # - name: "no_proxy"
+  #   value: "{{ .Values.noProxy }},*.cluster.local"
+
+  configMap:
+    # -- Create and configure configmap  with name `oidc.configMap.name`
+    create: true
+    # -- Configmap name to inject into sidecar
+    # @default -- Generated from release chart name
+    name: ""
+    # -- Map of annotations to apply to the configMap
+    annotations: {}
+    # -- Required, the OpenID Connect issuer URL, e.g. "https://accounts.google.com"
+    issuerUrl: ""
+    # -- Upstream service to proxy
+    # @default -- http://localhost:<service.targetPort>
+    upstreamUrl: ""
+    # -- Override the provider's name with the given string; used for the sign-in page
+    providerDisplayName: ""
+    # -- Authenticate emails with the specified domain. Use * to authenticate any email
+    emailDomains:
+      - "*"
+
+    # -- Are we running behind a reverse proxy, controls whether headers like X-Real-IP are accepted and allows
+    # X-Forwarded-{Proto,Host,Uri} headers to be used on redirect selection
+    reverseProxy: true
+
+    # -- Pass HTTP Basic Auth, X-Forwarded-User and X-Forwarded-Email information to upstream
+    passBasicAuth: true
+
+    # -- Pass X-Forwarded-User, X-Forwarded-Groups, X-Forwarded-Email and X-Forwarded-Preferred-Username information to upstream
+    passUserHeaders: true
+
+    # -- Pass OAuth Access token to upstream via "X-Forwarded-Access-Token"
+    passAccessToken: true
+
+    # -- Set X-Auth-Request-User, X-Auth-Request-Groups, X-Auth-Request-Email and X-Auth-Request-Preferred-Username.
+    # When used with pass_access_token, X-Auth-Request-Access-Token is added to response headers
+    setXauthrequest: false
+
+    # -- the cookie name for use with an AES cipher when cookie_refresh or pass_access_token is set
+    cookieName: "_oauth2_proxy"
+    # -- Cookie domain to force cookies to (ie: .yourcompany.com)
+    cookieDomains: ""
+    # -- Expire timeframe for cookie
+    cookieExpire: "12h"
+    # -- Refresh the cookie when duration has elapsed after cookie was initially set.
+    # Should be less than cookie_expire; set to 0 to disable.
+    # On refresh, OAuth token is re-validated.
+    # (ie: 1h means tokens are refreshed on request 1hr+ after it was set)
+    cookieRefresh: ""
+    # -- Secure cookies are only sent by the browser of a HTTPS connection (recommended)
+    cookieSecure: true
+    # -- HttpOnly cookies are not readable by javascript (recommended)
+    cookieHttponly: true
+
+    # -- Extra options to add to configuration file.
+    # See [oauth2-proxy documentation](https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview/#config-file)
+    # for details
+    extraConfig: ""
+    # silence_ping_logging = true
+  secret:
+    # -- Create and configure secrets with name `oidc.secret.name`. If `false`, use existing secret.
+    create: true
+    # -- Secret name use to store oidc secrets
+    # @default -- Generated from release chart name
+    name: ""
+    # -- Map of annotations to apply to the Secret created
+    annotations: {}
+    # -- Secret key name for encryption key.
+    # If `oidc.secret.create` is `true`, a secret with this key will be generated.
+    # Else, this key matches existing key in `oidc.secret.name`.
+    # The value key length should be either 16 or 32 bytes, depending or whether you want AES-128 or AES-256
+    cookieSecretKey: "encryption_key"
+    # -- Secret key name for OAUTH2 client secret.
+    # If `oidc.secret.create` is `true`, a secret with this key will be generated.
+    # Else, this key matches existing key in `oidc.secret.name`.
+    clientSecretKey: "client_secret"
+
+  # -- OAUTH2 client id
+  # @default -- release chart full name
+  applicationId: ""
+
+  dexClient:
+    # -- Manage aplicationId/secret as Dex resource
+    enabled: false
+    # -- Map of annotations to apply to the dex Client created
+    annotations: {}
+
+  # -- Add resources limits and request to oidc proxy side-car container.
+  resources:
+    limits:
+      cpu: 100m
+      memory: 50Mi
+    requests:
+      cpu: 5m
+      memory: 30Mi
+
+
+authorizations:
+  # -- Enable `envoy-proxy` sidecar to manage rbac access
+  enabled: false
+
+  envoy:
+    port: 8888
+
+    image:
+      # -- Container name for envoy-proxy
+      repository: docker.io/envoyproxy/envoy-distroless
+      # image.tag -- Container image tag
+      tag: v1.22-latest
+      # -- Container image pull policy
+      pullPolicy: Always
+
+    # -- Add resources limits and request to envoy proxy side-car container.
+    resources:
+      limits:
+        cpu: 100m
+        memory: 50Mi
+      requests:
+        cpu: 5m
+        memory: 30Mi
+
+    configMap:
+      # -- Create and configure configmap  with name `authorizations.envoy.configMap.name`
+      create: true
+      # -- Configmap name to inject into envoy sidecar
+      # @default -- Generated from release chart name
+      name: ""
+
+  rbac:
+    # -- List of resources to protect (name: <rule_name>  ,uri: /<URI>, methods: [<METHOD>], roles: [])
+    resources: {}
+      # - name: dev
+      #   uri: /*
+      #   methods:
+      #     - GET
+      #     - POST
+      #   groups:
+      #    - developer
+
+karma:
+  # -- Enable karma authentication with htpasswd file
+  enabled: false
+  htpasswd:
+    # -- Secret name that contains htpasswd file used to share credentials with karma instance
+    secretName: karma-secret
+    # -- Secret key that contains htpasswd file used to share credentials with karma instance
+    secretKey: htpasswd
+  # -- User groups set when authenticated with htpasswd file
+  groups:
+    - karma

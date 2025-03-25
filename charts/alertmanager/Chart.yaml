@@ -1,0 +1,9 @@
+apiVersion: v2
+description: Deploies Alertmanager through Prometheus-Operator
+name: alertmanager
+version: 0.1.0
+appVersion: "v0.27.0"
+maintainers:
+  - name: ilyasabdellaoui
+    email: ilyas.abdellaoui21@gmail.com
+    url: https://github.com/ilyasabdellaoui

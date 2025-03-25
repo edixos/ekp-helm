@@ -1,0 +1,149 @@
+---
+rule_files:
+  - ../../resources/prometheus-rules/alertmanager.yaml
+
+evaluation_interval: 1m
+
+tests:
+
+  # Test AlertmanagerConfigInconsistent
+  - interval: 1m
+    input_series:
+      - series: 'alertmanager_config_hash{endpoint="9093",instance="10.44.2.14:9093",job="alertmanager",namespace="infra-prometheus-operator",pod="alertmanager-alertmanager-0",service="alertmanager"}'
+        values: '3+0x90 4+0x50'
+      - series: 'alertmanager_config_hash{endpoint="9093",instance="10.44.3.20:9093",job="alertmanager",namespace="infra-prometheus-operator",pod="alertmanager-alertmanager-2",service="alertmanager"}'
+        values: '3+0x30 4+0x60 4+0x50'
+      - series: 'alertmanager_config_hash{endpoint="9093",instance="10.44.5.4:9093",job="alertmanager",namespace="infra-prometheus-operator",pod="alertmanager-alertmanager-1",service="alertmanager"}'
+        values: '3+0x30 4+0x60 4+0x50'
+      - series: 'prometheus_operator_spec_replicas{controller="alertmanager",endpoint="http",instance="10.44.2.7:8080",job="prometheus-operator-operator",name="alertmanager",namespace="infra-prometheus-operator",pod="prometheus-operator-operator-54fdd6c966-wfh9h",service="prometheus-operator-operator"}'
+        values: '3+0x140'
+
+    # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 5m
+        alertname: AlertmanagerConfigInconsistent
+
+      # No alert :
+      - eval_time: 35m
+        alertname: AlertmanagerConfigInconsistent
+
+      # Alert triggered :
+      - eval_time: 36m
+        alertname: AlertmanagerConfigInconsistent
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            config_hash: 4
+            service: alertmanager
+            alertname: AlertmanagerConfigInconsistent
+          exp_annotations:
+            message: 'The configuration of the instances of the Alertmanager cluster alertmanager are out of sync.'
+        - exp_labels:
+            severity: critical
+            config_hash: 3
+            service: alertmanager
+            alertname: AlertmanagerConfigInconsistent
+          exp_annotations:
+            message: 'The configuration of the instances of the Alertmanager cluster alertmanager are out of sync.'
+
+      # Alert stopped:
+      - eval_time: 96m
+        alertname: AlertmanagerConfigInconsistent
+
+  # Test: AlertmanagerFailedReload
+  - interval: 1m
+    input_series:
+      - series: alertmanager_config_last_reload_successful{endpoint="9093",instance="10.44.2.14:9093",job="alertmanager",namespace="infra-prometheus-operator",pod="alertmanager-alertmanager-0",service="alertmanager"}
+        values: '1+0x30 0+0x60 1+0x50'
+
+  # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 5m
+        alertname: AlertmanagerFailedReload
+
+      # No alert :
+      - eval_time: 40m
+        alertname: AlertmanagerFailedReload
+
+      # Alert triggered :
+      - eval_time: 41m
+        alertname: AlertmanagerFailedReload
+        exp_alerts:
+        - exp_labels:
+            severity: warning
+            endpoint: 9093
+            instance: 10.44.2.14:9093
+            job: alertmanager
+            namespace: infra-prometheus-operator
+            pod: alertmanager-alertmanager-0
+            service: alertmanager
+          exp_annotations:
+            message: "Reloading Alertmanager's configuration has failed for `infra-prometheus-operator/alertmanager-alertmanager-0`."
+
+      # Alert stopped:
+      - eval_time: 95m
+        alertname: AlertmanagerFailedReload
+
+  # Test: AlertmanagerMembersInconsistent
+  - interval: 1m
+    input_series:
+      - series: alertmanager_cluster_members{endpoint="9093",instance="10.44.2.14:9093",job="alertmanager",namespace="infra-prometheus-operator",pod="alertmanager-alertmanager-0",service="alertmanager"}
+        values: '3+0x30 1+0x60 3+0x50'
+      - series: alertmanager_cluster_members{endpoint="9093",instance="10.44.3.20:9093",job="alertmanager",namespace="infra-prometheus-operator",pod="alertmanager-alertmanager-2",service="alertmanager"}
+        values: '3+0x30 2+0x60 3+0x50'
+      - series: alertmanager_cluster_members{endpoint="9093",instance="10.44.5.4:9093",job="alertmanager",namespace="infra-prometheus-operator",pod="alertmanager-alertmanager-1",service="alertmanager"}
+        values: '3+0x30 2+0x60 3+0x50'
+
+  # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 5m
+        alertname: AlertmanagerMembersInconsistent
+
+      # No alert :
+      - eval_time: 35m
+        alertname: AlertmanagerMembersInconsistent
+
+      # Alert triggered :
+      - eval_time: 36m
+        alertname: AlertmanagerMembersInconsistent
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            endpoint: 9093
+            instance: 10.44.2.14:9093
+            job: alertmanager
+            namespace: infra-prometheus-operator
+            pod: alertmanager-alertmanager-0
+            service: alertmanager
+          exp_annotations:
+            message: "Alertmanager has not found all other members of the cluster."
+        - exp_labels:
+            severity: critical
+            endpoint: 9093
+            instance: 10.44.3.20:9093
+            job: alertmanager
+            namespace: infra-prometheus-operator
+            pod: alertmanager-alertmanager-2
+            service: alertmanager
+          exp_annotations:
+            message: "Alertmanager has not found all other members of the cluster."
+        - exp_labels:
+            severity: critical
+            endpoint: 9093
+            instance: 10.44.5.4:9093
+            job: alertmanager
+            namespace: infra-prometheus-operator
+            pod: alertmanager-alertmanager-1
+            service: alertmanager
+          exp_annotations:
+            message: "Alertmanager has not found all other members of the cluster."
+
+      # Alert stopped:
+      - eval_time: 95m
+        alertname: AlertmanagerMembersInconsistent
