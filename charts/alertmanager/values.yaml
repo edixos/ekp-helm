@@ -327,14 +327,12 @@ serviceAccount:
 
 oidc:
   # -- If `true`, enable oidc authentification with sidecar container
-  enabled: false
+  enabled: true
 
   # Image of oauth2-proxy. Manage image with operator if not defined
   image:
     # -- Container name for oauth2-proxy sidecar
     repository: quay.io/oauth2-proxy/oauth2-proxy
-    # -- Container image tag  for oauth2-proxy sidecar
-    tag: v7.3.0
     # -- Container image pull policy for oauth2-proxy sidecar
     pullPolicy: IfNotPresent
 
