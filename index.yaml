@@ -689,6 +689,26 @@ entries:
     urls:
     - kyverno-policies-0.1.0.tgz
     version: 0.1.0
+  prometheus:
+  - apiVersion: v2
+    appVersion: v3.0.1
+    created: "2025-03-26T07:45:50.565713928Z"
+    dependencies:
+    - alias: oidc
+      condition: oidc.enabled
+      name: oauth2-proxy
+      repository: https://oauth2-proxy.github.io/manifests
+      version: 7.12.7
+    description: Deploys Prometheus through prometheus operator
+    digest: a0da2ca434b19647149bbf57e733ffb6237d1a88d9da1d54de4a7663b5beb6d3
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: prometheus
+    urls:
+    - prometheus-0.1.0.tgz
+    version: 0.1.0
   velero:
   - apiVersion: v2
     appVersion: 1.15.2
@@ -729,4 +749,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-26T07:45:32.288620349Z"
+generated: "2025-03-26T07:45:50.565739335Z"
