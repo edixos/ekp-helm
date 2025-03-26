@@ -327,7 +327,7 @@ serviceAccount:
 
 oidc:
   # -- If `true`, enable oidc authentification with sidecar container
-  enabled: true
+  enabled: false
 
   # Image of oauth2-proxy. Manage image with operator if not defined
   image:

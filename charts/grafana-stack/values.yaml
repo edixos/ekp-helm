@@ -47,8 +47,6 @@ grafana:
   image:
     # -- Image repository
     repository: grafana/grafana
-    # -- Image tag
-    tag: 9.2.4
     # -- Image sha (optional)
     sha: ""
 
@@ -98,9 +96,6 @@ grafana:
 
   persistence:
     enabled: false
-
-  # -- Name of a Kubernetes secret (must be manually created in the same namespace) containing values to be added to the environment (Contains Dex secrets) (see `grafanadexclient.secret.name` )
-  envFromSecret: grafana-dex-client
 
   env:
     # -- OAUTH auth url for OIDC integration
