@@ -1,0 +1,20 @@
+{{- if and .Values.grafana.sidecar.dashboards.enabled .Values.prometheus.enabled }}
+
+  {{- $root := . }}
+  {{- $files := .Files }}
+  {{- range $path, $bytes := .Files.Glob "resources/grafana-dashboards/*.json" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-{{ base $path | replace ".json" "" }}
+  labels:
+  {{- include "grafana-stack.labels"  $root | nindent 4 }}
+  annotations:
+    k8s-sidecar-target-directory: {{ $root.Values.grafana.sidecar.dashboards.folder }}/grafana
+
+data:
+  {{ base $path }}: {{ $root.Files.Get $path | quote }}
+
+  {{ end }}
+{{- end }}

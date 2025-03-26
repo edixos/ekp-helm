@@ -1,0 +1,13 @@
+apiVersion: v2
+description: Deploys Grafana instance. Pre-configured values from [upstream grafana chart](https://github.com/helm/charts/tree/master/stable/grafana)
+name: grafana-stack
+version: 0.1.0
+appVersion: 11.3.1
+maintainers:
+  - name: ilyasabdellaoui
+    email: ilyas.abdellaoui21@gmail.com
+    url: https://github.com/ilyasabdellaoui
+dependencies:
+  - name: grafana
+    version: 8.10.4
+    repository: https://grafana.github.io/helm-charts
