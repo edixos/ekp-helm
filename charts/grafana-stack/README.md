@@ -46,7 +46,6 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.env.GF_AUTH_GENERIC_OAUTH_TOKEN_URL | string | `""` | OAUTH token url for OIDC integration |
 | grafana.image.repository | string | `"grafana/grafana"` | Image repository |
 | grafana.image.sha | string | `""` | Image sha (optional) |
-| grafana.image.tag | string | `"9.2.4"` | Image tag |
 | grafana.persistence.enabled | bool | `false` |  |
 | grafana.plugins | list | `["grafana-piechart-panel"]` | Plugins to be loaded along with Grafana |
 | grafana.priorityClassName | string | `""` | Priority class assigned to the Pods |

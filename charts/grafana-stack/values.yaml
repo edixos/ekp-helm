@@ -47,8 +47,6 @@ grafana:
   image:
     # -- Image repository
     repository: grafana/grafana
-    # -- Image tag
-    tag: 9.2.4
     # -- Image sha (optional)
     sha: ""
 

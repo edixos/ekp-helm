@@ -97,7 +97,6 @@ Deploys Prometheus through prometheus operator
 | prometheus.externalLabels | object | `{}` | External labels to add to any time series or alerts when communicating with external systems |
 | prometheus.externalUrl | string | `""` | External URL at which Prometheus will be reachable. |
 | prometheus.image.repository | string | `"quay.io/prometheus/prometheus"` | Image of Prometheus to deploy. |
-| prometheus.image.tag | string | based on {{ .Chart.AppVersion }} | Version to deploy |
 | prometheus.initContainers | list | `[]` | InitContainers allows injecting additional initContainers. This is meant to allow doing some changes (permissions, dir tree) on mounted volumes before starting prometheus |
 | prometheus.logFormat | string | `"logfmt"` | Log format for Prometheus be configured in |
 | prometheus.logLevel | string | `"info"` | Log level for Prometheus be configured in |
