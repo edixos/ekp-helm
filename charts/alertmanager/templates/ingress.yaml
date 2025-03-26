@@ -1,0 +1,44 @@
+{{- if .Values.ingress.enabled }}
+---
+{{- $serviceName := printf "%s-%s" (include "alertmanager.fullname" . ) "alertmanager" }}
+{{- $servicePort := ( include "alertmanager.ingress.servicePort" . ) -}}
+{{- $routePrefix := list .Values.routePrefix }}
+{{- $paths := .Values.ingress.paths | default $routePrefix -}}
+{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1" }}
+apiVersion: networking.k8s.io/v1
+{{- else }}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $serviceName }}
+  {{- if or .Values.ingress.annotations .Values.ingress.extraAnnotations .Values.ingress.acme.enabled }}
+  annotations:
+    {{- include "alertmanager.ingress.annotations" . | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "alertmanager.labels" . | nindent 4 }}
+    {{- if .Values.ingress.labels }}
+    {{- toYaml .Values.ingress.labels | nindent 4 }}
+    {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          {{- range $p := $paths }}
+          - path: {{ tpl $p $ }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $serviceName }}
+                port: 
+                  number: {{ $servicePort }}
+          {{- end -}}
+  {{- if .Values.ingress.tls }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host | quote }}
+      secretName: {{ include "alertmanager.ingress.tlsName" . | quote }}
+  {{- end -}}
+{{- end -}}

@@ -1,0 +1,65 @@
+{{- if and .Values.prometheus.serviceMonitor.enabled .Values.prometheus.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ template "alertmanager.fullname" . }}-alertmanager
+  labels:
+    {{- include "alertmanager.labels" . | nindent 4 }}
+    {{- toYaml .Values.prometheus.serviceMonitor.labels | nindent 4 }}
+  {{- if or .Values.prometheus.serviceMonitor.annotations .Values.global.enableArgocdAnnotations }}
+  annotations:
+  {{- if or .Values.prometheus.serviceMonitor.annotations .Values.global.argocdAnnotations }}
+    {{- if or .Values.prometheus.serviceMonitor.annotations }}
+    {{- toYaml .Values.prometheus.serviceMonitor.annotations | nindent 4 }}
+    {{- end }}
+    {{- include "alertmanager.argocd.annotations" . | nindent 4 }}
+  {{- end }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "alertmanager.name" . }}-alertmanager
+      clusterName: {{ include "alertmanager.clustername" . }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace | quote }}
+  endpoints:
+    - port: {{ .Values.portName }}
+      {{- if .Values.prometheus.serviceMonitor.interval }}
+      interval: {{ .Values.prometheus.serviceMonitor.interval }}
+      {{- end }}
+      {{- if .Values.prometheus.serviceMonitor.scheme }}
+      scheme: {{ .Values.prometheus.serviceMonitor.scheme }}
+      {{- end }}
+      {{- if .Values.prometheus.serviceMonitor.tlsConfig }}
+      tlsConfig: {{ toYaml .Values.prometheus.serviceMonitor.tlsConfig | nindent 6 }}
+      {{- end }}
+      {{- if .Values.prometheus.serviceMonitor.bearerTokenFile }}
+      bearerTokenFile: {{ .Values.prometheus.serviceMonitor.bearerTokenFile }}
+      {{- end }}
+      path: "{{ trimSuffix "/" .Values.routePrefix }}/metrics"
+      {{- if .Values.prometheus.serviceMonitor.metricRelabelings }}
+      metricRelabelings:
+      {{ tpl (toYaml .Values.prometheus.serviceMonitor.metricRelabelings | indent 6) . }}
+      {{- end }}
+      {{- if .Values.prometheus.serviceMonitor.relabelings }}
+      relabelings:
+    {{ toYaml .Values.prometheus.serviceMonitor.relabelings | indent 6 }}
+    {{- end }}
+    {{- if ( include "alertmanager.oidc.metricsEnabled" . ) }}
+    - port: {{ .Values.oidc.metricsPortName }}
+      {{- if .Values.prometheus.serviceMonitor.interval }}
+      interval: {{ .Values.prometheus.serviceMonitor.interval }}
+      {{- end }}
+      {{- if .Values.prometheus.serviceMonitor.scheme }}
+      scheme: {{ .Values.prometheus.serviceMonitor.scheme }}
+      {{- end }}
+      {{- if .Values.prometheus.serviceMonitor.tlsConfig }}
+      tlsConfig: {{ toYaml .Values.prometheus.serviceMonitor.tlsConfig | nindent 6 }}
+      {{- end }}
+      {{- if .Values.prometheus.serviceMonitor.bearerTokenFile }}
+      bearerTokenFile: {{ .Values.prometheus.serviceMonitor.bearerTokenFile }}
+      {{- end }}
+      path: "/metrics"
+  {{- end }}
+{{- end }}

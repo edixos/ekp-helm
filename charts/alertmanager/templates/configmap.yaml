@@ -1,0 +1,285 @@
+{{- if and .Values.oidc.enabled .Values.oidc.configMap.create }}
+apiVersion: "v1"
+kind: ConfigMap
+metadata:
+  name: {{ include "alertmanager.oidc.configmapName" . }}
+  labels:
+    {{- include "alertmanager.labels" . | nindent 4 }}
+  {{- if .Values.oidc.configMap.annotations }}
+  annotations:
+  {{- toYaml .Values.oidc.configMap.annotations | nindent 4 }}
+  {{- end }}
+data:
+  oauth2-proxy.cfg: |
+    ## OAuth2 Proxy Config File
+    ## https://github.com/oauth2-proxy/oauth2-proxy
+
+
+    ## the OAuth Redirect URL.
+    # defaults to the "https://" + requested host header + "/oauth2/callback"
+    redirect_url = {{ include "alertmanager.dex.redirectionUrl"  . | quote }}
+
+    ## the http url(s) of the upstream endpoint. If multiple, routing is based on path
+    upstreams = [
+      {{ include "alertmanager.oidc.configMap.upstreamUrl" . | quote }}
+    ]
+
+    ## pass HTTP Basic Auth, X-Forwarded-User and X-Forwarded-Email information to upstream
+    pass_basic_auth = {{ .Values.oidc.configMap.passBasicAuth }}
+
+    ## pass X-Forwarded-User, X-Forwarded-Groups, X-Forwarded-Email and X-Forwarded-Preferred-Username information to upstream
+    pass_user_headers = {{ .Values.oidc.configMap.passUserHeaders }}
+
+    ## Pass OAuth Access token to upstream via "X-Forwarded-Access-Token"
+    pass_access_token = {{ .Values.oidc.configMap.passAccessToken }}
+
+    ## Set X-Auth-Request-User, X-Auth-Request-Groups, X-Auth-Request-Email and X-Auth-Request-Preferred-Username.
+    ## When used with pass_access_token, X-Auth-Request-Access-Token is added to response headers
+    set_xauthrequest = {{ .Values.oidc.configMap.setXauthrequest }}
+
+
+    ## bypass authentication for requests that match the method & path. Format: method=path_regex OR path_regex alone for all methods
+    skip_auth_routes = [
+       "GET=^/metrics",
+    ]
+
+    ## Email Domains to allow authentication for (this authorizes any email on this domain)
+    ## for more granular authorization use `authenticated_emails_file`
+    ## To authorize any email addresses use "*"
+    email_domains = [
+      {{- range .Values.oidc.configMap.emailDomains }}
+      {{ . | quote }},
+      {{- end }}
+    ]
+
+    ## The OAuth Client ID, Secret
+    client_id = {{ include "alertmanager.clientApplicationId" . | quote}}
+
+    provider = "oidc"
+    {{- if .Values.oidc.configMap.providerDisplayName }}
+    provider_display_name = {{ .Values.oidc.configMap.providerDisplayName | quote }}
+    {{- end }}
+
+    oidc_issuer_url = {{ required "valid oidc issuer url is required, see .Values.oidc.configMap.issuerUrl" .Values.oidc.configMap.issuerUrl | quote }}
+
+    ## Cookie Settings
+    ## Name     - the cookie name
+    ##            for use with an AES cipher when cookie_refresh or pass_access_token
+    ##            is set
+    ## Domain   - (optional) cookie domain to force cookies to (ie: .yourcompany.com)
+    ## Expire   - (duration) expire timeframe for cookie
+    ## Refresh  - (duration) refresh the cookie when duration has elapsed after cookie was initially set.
+    ##            Should be less than cookie_expire; set to 0 to disable.
+    ##            On refresh, OAuth token is re-validated.
+    ##            (ie: 1h means tokens are refreshed on request 1hr+ after it was set)
+    ## Secure   - secure cookies are only sent by the browser of a HTTPS connection (recommended)
+    ## HttpOnly - httponly cookies are not readable by javascript (recommended)
+    cookie_name = {{ .Values.oidc.configMap.cookieName | quote }}
+    {{- if .Values.oidc.configMap.cookieDomains }}
+    cookie_domains = {{ .Values.oidc.configMap.cookieDomains | quote }}
+    {{- end }}
+    {{- if .Values.oidc.configMap.cookieExpire }}
+    cookie_expire = {{ .Values.oidc.configMap.cookieExpire | quote }}
+    {{- end }}
+    {{- if .Values.oidc.configMap.cookieRefresh }}
+    cookie_refresh = {{ .Values.oidc.configMap.cookieRefresh | quote }}
+    {{- end }}
+    cookie_secure = {{ .Values.oidc.configMap.cookieSecure }}
+    cookie_httponly = {{ .Values.oidc.configMap.cookieHttponly }}
+
+    # Are we running behind a reverse proxy, controls whether headers like X-Real-IP are accepted and allows
+    # X-Forwarded-{Proto,Host,Uri} headers to be used on redirect selection
+    reverse_proxy = {{ .Values.oidc.configMap.reverseProxy }}
+
+    {{- if .Values.karma.enabled }}
+    # htpasswd is only for karma integration
+    display_htpasswd_form = false
+    htpasswd_file = {{ include "alertmanager.oidc.htpasswdfile" . | quote }}
+    htpasswd_user_groups = [
+      {{- range .Values.karma.groups }}
+      {{ . | quote }},
+      {{- end }}
+    ]
+    {{- end }}
+
+    {{- if .Values.oidc.configMap.extraConfig }}
+    {{- .Values.oidc.configMap.extraConfig | nindent 4 }}
+    {{- end }}
+
+    metrics_address = "0.0.0.0:{{ .Values.oidc.metricsPort }}"
+
+{{- end }}
+
+{{- if .Values.authorizations.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "alertmanager.envoy.configmapName" . }}
+  labels:
+    {{- include "alertmanager.labels" . | nindent 4 }}
+  {{- if .Values.oidc.configMap.annotations }}
+  annotations:
+  {{- toYaml .Values.oidc.configMap.annotations | nindent 4 }}
+  {{- end }}
+data:
+  envoy-custom.yaml: |
+    # Restrict access to admin endpoint
+    admin:
+      address:
+        socket_address:
+          address: 127.0.0.1
+          port_value: 8889
+
+    static_resources:
+      listeners:
+        - name: listener_http
+          address:
+            socket_address:
+              protocol: TCP
+              address: 127.0.0.1
+              port_value: {{ .Values.authorizations.envoy.port }}
+
+          listener_filters:
+            # HTTP Inspector listener filter allows detecting whether the application protocol appears to be HTTP,
+            # and if it is HTTP, it detects the HTTP protocol (HTTP/1.x or HTTP/2) further. This can be used to select
+            # a FilterChain via the application_protocols of a FilterChainMatch.
+            - name: "envoy.filters.listener.http_inspector"
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.listener.http_inspector.v3.HttpInspector
+          filter_chains:
+            - filters:
+                # The HTTP connection manager is the only network filter.
+                - name: envoy.filters.network.http_connection_manager
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                    stat_prefix: ingress_http
+                    # to avoid consuming HTTP headers from external clients
+                    use_remote_address: true
+                    normalize_path: true
+                    merge_slashes: true
+                    path_with_escaped_slashes_action: UNESCAPE_AND_REDIRECT
+                    common_http_protocol_options:
+                      idle_timeout: 3600s  # 1 hour
+                      headers_with_underscores_action: REJECT_REQUEST
+                    http2_protocol_options:
+                      max_concurrent_streams: 100
+                      initial_stream_window_size: 65536  # 64 KiB
+                      initial_connection_window_size: 1048576  # 1 MiB
+                    stream_idle_timeout: 300s  # 5 mins, must be disabled for long-lived and streaming requests
+                    request_timeout: 300s  # 5 mins, must be disabled for long-lived and streaming requests
+
+                    route_config:
+                      name: local_route
+                      virtual_hosts:
+                        - name: local_service
+                          domains: [ "*" ]
+                          routes:
+                            - match:
+                                prefix: "/"
+                              route:
+                                cluster: alertmanager
+                                idle_timeout: 15s
+                            {{- if .Values.prometheus.enabled }}
+                            - match:
+                                prefix: "/metrics"
+                              route:
+                                cluster: alertmanager
+                                idle_timeout: 15s
+                              typed_per_filter_config:
+                                envoy.filters.http.rbac:
+                                  "@type": type.googleapis.com/envoy.extensions.filters.http.rbac.v3.RBACPerRoute
+                                  rbac:
+                                    rules:
+                                      action: ALLOW
+                            {{- end }}
+                            {{- if .Values.authorizations.rbac.resources }}
+                            {{- range .Values.authorizations.rbac.resources }}
+                            - match:
+                                prefix: {{ .uri | quote }}
+                              route:
+                                cluster: alertmanager
+                                idle_timeout: 15s
+                              typed_per_filter_config:
+                                envoy.filters.http.rbac:
+                                  "@type": type.googleapis.com/envoy.extensions.filters.http.rbac.v3.RBACPerRoute
+                                  rbac:
+                                    rules:
+                                      action: ALLOW
+                                      policies:
+                                        {{ required "a name is mandatory for rbac rule" .name | quote }}:
+                                          principals:
+                                            any: true
+                                          permissions:
+                                            and_rules:
+                                              rules:
+                                                - header:
+                                                    name: "X-Forwarded-Groups"
+                                                    string_match:
+                                                      safe_regex:
+                                                        regex: {{ .groups | join "|" | quote }}
+                                                        google_re2: {}
+                                                - header:
+                                                    name: ":method"
+                                                    string_match:
+                                                      safe_regex:
+                                                        regex: {{ .method | join "|" | quote }}
+                                                        google_re2: {}
+                            {{- end }}
+                            {{- end }}
+
+
+                    # CustomFilter and the HTTP router filter are the HTTP filter chain.
+                    http_filters:
+                      {{- if .Values.karma.enabled }}
+                      - name: envoy.filters.http.rbac
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.filters.http.rbac.v3.RBAC
+                          rules:
+                            action: ALLOW
+                            policies:
+                              "karma-access":
+                                principals:
+                                  any: true
+                                # Allow all method for karma group, header is set with oauth2-proxy
+                                permissions:
+                                  and_rules:
+                                    rules:
+                                      - or_rules:
+                                          rules:
+                                            {{- range .Values.karma.groups }}
+                                            - header:
+                                                name: "X-Forwarded-Groups"
+                                                string_match:
+                                                  safe_regex:
+                                                    regex: {{ . | quote }}
+                                                    google_re2: {}
+                                            {{- end }}
+                                            - header:
+                                                name: ":method"
+                                                string_match:
+                                                  safe_regex:
+                                                    regex: "POST|GET|DELETE|HEAD|OPTIONS|PUT"
+                                                    google_re2: {}
+                      {{- end }}
+
+                      - name: envoy.filters.http.router
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+
+
+      clusters:
+        - name: alertmanager
+          connect_timeout: 0.25s
+          type: STATIC
+          lb_policy: ROUND_ROBIN
+          load_assignment:
+            cluster_name: alertmanager
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address:
+                          address: 127.0.0.1
+                          port_value: {{ .Values.service.targetPort }}
+{{- end }}

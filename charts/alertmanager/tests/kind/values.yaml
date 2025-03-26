@@ -1,0 +1,4 @@
+gcp:
+  project: test
+oidc:
+  enabled: false
