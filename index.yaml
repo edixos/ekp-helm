@@ -1,5 +1,25 @@
 apiVersion: v1
 entries:
+  alertmanager:
+  - apiVersion: v2
+    appVersion: v0.27.0
+    created: "2025-03-26T07:45:32.288579804Z"
+    dependencies:
+    - alias: oidc
+      condition: oidc.enabled
+      name: oauth2-proxy
+      repository: https://oauth2-proxy.github.io/manifests
+      version: 7.12.7
+    description: Deploies Alertmanager through Prometheus-Operator
+    digest: a7aaff2f8938ebb1ebfbb748d89e7ca16046f919712d680c57b33e744c10fb09
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: alertmanager
+    urls:
+    - alertmanager-0.1.0.tgz
+    version: 0.1.0
   argocd:
   - apiVersion: v2
     appVersion: 2.14.4
@@ -709,4 +729,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-21T12:45:35.196550435Z"
+generated: "2025-03-26T07:45:32.288620349Z"
