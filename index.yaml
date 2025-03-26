@@ -3,6 +3,25 @@ entries:
   alertmanager:
   - apiVersion: v2
     appVersion: v0.27.0
+    created: "2025-03-26T10:22:18.704525187Z"
+    dependencies:
+    - alias: oidc
+      condition: oidc.enabled
+      name: oauth2-proxy
+      repository: https://oauth2-proxy.github.io/manifests
+      version: 7.12.7
+    description: Deploies Alertmanager through Prometheus-Operator
+    digest: 01c18fdd4d64d060bccf31ff0b2c0d62ed3259564074690c7affa9e3b9da7e58
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: alertmanager
+    urls:
+    - alertmanager-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: v0.27.0
     created: "2025-03-26T07:45:32.288579804Z"
     dependencies:
     - alias: oidc
@@ -638,6 +657,24 @@ entries:
   grafana-stack:
   - apiVersion: v2
     appVersion: 11.3.1
+    created: "2025-03-26T10:22:18.874221215Z"
+    dependencies:
+    - name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: 8.10.4
+    description: Deploys Grafana instance. Pre-configured values from [upstream grafana
+      chart](https://github.com/helm/charts/tree/master/stable/grafana)
+    digest: b4f908d76319f0dec9056abdf5e9c2a17eca329478203048ae342271404483dd
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: grafana-stack
+    urls:
+    - grafana-stack-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 11.3.1
     created: "2025-03-26T08:56:12.024468261Z"
     dependencies:
     - name: grafana
@@ -768,4 +805,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-26T08:56:12.024503776Z"
+generated: "2025-03-26T10:22:19.025685864Z"
