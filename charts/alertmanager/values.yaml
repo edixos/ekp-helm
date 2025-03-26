@@ -359,14 +359,14 @@ oidc:
 
   configMap:
     # -- Create and configure configmap  with name `oidc.configMap.name`
-    create: true
+    create: false
     # -- Configmap name to inject into sidecar
     # @default -- Generated from release chart name
     name: ""
     # -- Map of annotations to apply to the configMap
     annotations: {}
     # -- Required, the OpenID Connect issuer URL, e.g. "https://accounts.google.com"
-    issuerUrl: "https://accounts.google.com"
+    issuerUrl: ""
     # -- Upstream service to proxy
     # @default -- http://localhost:<service.targetPort>
     upstreamUrl: ""

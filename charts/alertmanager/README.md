@@ -84,10 +84,10 @@ Deploies Alertmanager through Prometheus-Operator
 | oidc.configMap.cookieName | string | `"_oauth2_proxy"` | the cookie name for use with an AES cipher when cookie_refresh or pass_access_token is set |
 | oidc.configMap.cookieRefresh | string | `""` | Refresh the cookie when duration has elapsed after cookie was initially set. Should be less than cookie_expire; set to 0 to disable. On refresh, OAuth token is re-validated. (ie: 1h means tokens are refreshed on request 1hr+ after it was set) |
 | oidc.configMap.cookieSecure | bool | `true` | Secure cookies are only sent by the browser of a HTTPS connection (recommended) |
-| oidc.configMap.create | bool | `true` | Create and configure configmap  with name `oidc.configMap.name` |
+| oidc.configMap.create | bool | `false` | Create and configure configmap  with name `oidc.configMap.name` |
 | oidc.configMap.emailDomains | list | `["*"]` | Authenticate emails with the specified domain. Use * to authenticate any email |
 | oidc.configMap.extraConfig | string | `""` | Extra options to add to configuration file. See [oauth2-proxy documentation](https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview/#config-file) for details |
-| oidc.configMap.issuerUrl | string | `"https://accounts.google.com"` | Required, the OpenID Connect issuer URL, e.g. "https://accounts.google.com" |
+| oidc.configMap.issuerUrl | string | `""` | Required, the OpenID Connect issuer URL, e.g. "https://accounts.google.com" |
 | oidc.configMap.name | string | Generated from release chart name | Configmap name to inject into sidecar |
 | oidc.configMap.passAccessToken | bool | `true` | Pass OAuth Access token to upstream via "X-Forwarded-Access-Token" |
 | oidc.configMap.passBasicAuth | bool | `true` | Pass HTTP Basic Auth, X-Forwarded-User and X-Forwarded-Email information to upstream |
