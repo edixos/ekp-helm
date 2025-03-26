@@ -7,3 +7,9 @@ maintainers:
   - name: ilyasabdellaoui
     email: ilyas.abdellaoui21@gmail.com
     url: https://github.com/ilyasabdellaoui
+dependencies:
+  - name: oauth2-proxy
+    version: 7.12.7
+    repository: https://oauth2-proxy.github.io/manifests
+    alias: oidc
+    condition: oidc.enabled
