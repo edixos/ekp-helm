@@ -1,0 +1,200 @@
+# {{ .Name }}
+
+{{ template "chart.versionBadge" .}}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.homepageLine" . }}
+
+----
+
+[[_TOC_]]
+
+----
+
+## Prerequisites
+
+- Helm v3
+- [Prometheus-operator](https://github.com/edixos/ekp-helm/tree/main/charts/kube-prometheus-stack) deployed on the K8S Cluster
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+## Description
+
+{{ template "chart.description" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+## Installing the Chart
+
+### With Helm
+
+To install the chart with the release name `my-release`:
+
+```bash
+helm repo add ekp-helm https://edixos.github.io/ekp-helm
+helm install ekp-helm/{{ .Name }}
+```
+
+### With ArgoCD
+
+#### Cluster k8s with access to public registry
+
+Add new application as:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Name }}
+spec:
+  project: infra
+
+  source:
+    repoURL: "https://edixos.github.io/ekp-helm"
+    targetRevision: "{{ .Version }}"
+    chart: {{ .Name }}
+    path: ''
+
+    helm:
+
+      values: |
+        ingress:
+          # Configure ingress
+          enabled: true
+          host: "prom.example.com"
+          # Use nginx ingress controller
+          extraAnnotations:
+            kubernetes.io/ingress.class: nginx
+          path: "/"
+
+        prometheus:
+          # Provision 10Gi to store data using default storageClassName
+          storageSpec:
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: "10Gi"
+                volumeMode: Filesystem
+
+
+        # Self monitor prometheus instance
+        serviceMonitor:
+          enabled: true
+
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: "infra-monitoring"
+
+  ignoreDifferences:
+  - group: ""
+    kind: Secret
+    name: prometheus-gatekeeper
+    jsonPointers:
+    - /data/secretId
+    - /data/encyptionKey
+```
+
+
+#### Istio integration
+
+To allow prometheus to scrap application metrics when istio mtls is enable, inject istio sidecar that will obtain certificate at init.
+See [istio documentation](https://istio.io/latest/docs/ops/integrations/prometheus/?_ga=2.130085258.425225454.1609851114-318080454.1558103507#tls-settings)
+for details.
+
+If prometheus is deployed with prometheus-operator and prometheus helm chart
+
+    1. enable istio-injection on prometheus namespace
+
+
+    2. enable helm flags
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Name }}
+spec:
+  ...
+  source:
+    helm:
+      values: |
+        ...
+        istio:
+            useCertificates: true
+        ...
+
+  destination:
+    ...
+```
+
+    3. Configure ServiceMonitor resources to use istio certificate
+
+```yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: my-service
+spec:
+  endpoints:
+  - path: /metrics
+    port: http-metrics
+    scheme: https
+    tlsConfig:
+      caFile: /etc/istio-certs/root-cert.pem
+      certFile: /etc/istio-certs/cert-chain.pem
+      keyFile: /etc/istio-certs/key.pem
+      insecureSkipVerify: true
+    ...
+  ...
+```
+
+
+## Develop
+
+### Update documentation
+
+Chart documentation is generated with [helm-docs](https://github.com/norwoodj/helm-docs) from `values.yaml` file.
+After file modification, regenerate README.md with command:
+
+```bash
+docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 helm-docs
+```
+
+### Run linter
+
+```bash
+docker run --rm -it -w /charts -v $(pwd)/../../:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts /charts/charts/{{ .Name }} --config /charts/charts/{{ .Name }}/ct.yaml
+```
+
+### Prometheus Rules
+
+Check rules:
+
+```bash
+docker run --rm --entrypoint /bin/sh -v $(pwd):/workdir -w /workdir prom/prometheus -c -- "promtool check rules resources/prometheus-rules/*"
+```
+
+Test rules:
+
+```bash
+docker run --rm --entrypoint /bin/sh -v $(pwd):/workdir -w /workdir prom/prometheus -c -- "promtool test rules tests/prometheus/*"
+```
+
+### Run pluto
+
+In order to check if the api-version used in this chart are not deprecated, or worse, removed, we use pluto to check it:
+
+```
+docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:3.17 template {{ .Name }} . -f tests/pluto/values.yaml --output-dir /pluto
+docker run --rm -it -v pluto:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /data -o yaml --ignore-deprecations -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0" -o wide
+docker volume rm pluto
+```

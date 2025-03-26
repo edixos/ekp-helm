@@ -1,0 +1,60 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ template "prometheus.fullname" . }}-prometheus
+  labels:
+    app: {{ template "prometheus.name" . }}-prometheus
+    {{- include "prometheus.labels" . | nindent 4 }}
+  {{- if .Values.serviceMonitor.annotations}}
+  annotations:
+    {{- toYaml .Values.serviceMonitor.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "prometheus.name" . }}-prometheus
+      release: {{ .Release.Name | quote }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace | quote }}
+  endpoints:
+  - port: {{ .Values.prometheus.portName }}
+    {{- if .Values.serviceMonitor.interval }}
+    interval: {{ .Values.serviceMonitor.interval }}
+    {{- end }}
+    {{- if .Values.serviceMonitor.scheme }}
+    scheme: {{ .Values.serviceMonitor.scheme }}
+    {{- end }}
+    {{- if .Values.serviceMonitor.tlsConfig }}
+    tlsConfig: {{ toYaml .Values.serviceMonitor.tlsConfig | nindent 6 }}
+    {{- end }}
+    {{- if .Values.serviceMonitor.bearerTokenFile }}
+    bearerTokenFile: {{ .Values.serviceMonitor.bearerTokenFile }}
+    {{- end }}
+    path: "{{ trimSuffix "/" .Values.prometheus.routePrefix }}/metrics"
+{{- if .Values.serviceMonitor.metricRelabelings }}
+    metricRelabelings:
+{{ tpl (toYaml .Values.serviceMonitor.metricRelabelings | indent 6) . }}
+{{- end }}
+{{- if .Values.serviceMonitor.relabelings }}
+    relabelings:
+{{ toYaml .Values.serviceMonitor.relabelings | indent 6 }}
+{{- end }}
+{{- if ( include "prometheus.oidc.metricsEnabled" . ) }}
+  - port: {{ .Values.oidc.portName }}
+    {{- if .Values.serviceMonitor.interval }}
+    interval: {{ .Values.serviceMonitor.interval }}
+    {{- end }}
+    {{- if .Values.serviceMonitor.scheme }}
+    scheme: {{ .Values.serviceMonitor.scheme }}
+    {{- end }}
+    {{- if .Values.serviceMonitor.tlsConfig }}
+    tlsConfig: {{ toYaml .Values.serviceMonitor.tlsConfig | nindent 6 }}
+    {{- end }}
+    {{- if .Values.serviceMonitor.bearerTokenFile }}
+    bearerTokenFile: {{ .Values.serviceMonitor.bearerTokenFile }}
+    {{- end }}
+    path: "/oauth/metrics"
+{{- end }}
+{{- end }}

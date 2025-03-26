@@ -1,0 +1,602 @@
+# -- Provide a name in place of prometheus for `app:` labels
+nameOverride: ""
+
+# -- Provide a name to substitute for the full names of resources
+fullnameOverride: ""
+
+# -- Labels to apply to all resources
+commonLabels: {}
+
+rbac:
+  # -- Create rbac resources when set to `true`
+  create: true
+  # -- Use `Role` and `RoleBinding` resources when set to true, else `ClusterRole` and `ClusterRoleBinding` 
+  scopeNamespaced: true
+
+# -- Reference to one or more secrets to be used when pulling images
+# ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# - name: "image-pull-secret"
+
+alerting:
+  # -- AlertmanagerEndpoints Prometheus should fire alerts against
+  endpoints: []
+  #  - name: alertmanager-operated
+  #    namespace: ""
+  #    port: web
+
+istio:
+  # -- Allow to scrap metrics using istio certificates
+  useCertificates: false
+  # -- Annotate prometheus pod to allow to inject side car
+  podAnnotations:
+    traffic.sidecar.istio.io/includeInboundPorts: ""   # do not intercept any inbound ports
+    traffic.sidecar.istio.io/includeOutboundIPRanges: ""  # do not intercept any outbound traffic
+    proxy.istio.io/config: |  # configure an env variable `OUTPUT_CERTS` to write certificates to the given folder
+      proxyMetadata:
+        OUTPUT_CERTS: /etc/istio-certs/
+    sidecar.istio.io/userVolume: '[{"name": "istio-certs", "emptyDir": {"medium": "Memory"}}]'
+    sidecar.istio.io/userVolumeMount: '[{"name": "istio-certs", "mountPath": "/etc/istio-certs/"}]'
+  # -- volumeMount used to expose istio certificates
+  volumeMount:
+    - name: istio-certs
+      mountPath: /etc/istio-certs/
+      readOnly: true
+
+prometheus:
+  # -- Annotations for Prometheus
+  annotations: {}
+
+  # -- APIServerConfig
+  # ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#apiserverconfig
+  apiserverConfig: {}
+
+  image:
+    # -- Image of Prometheus to deploy.
+    repository: quay.io/prometheus/prometheus
+    # -- Version to deploy
+    # @default -- based on {{ .Chart.AppVersion }}
+    tag: ""
+
+  ## Service account for Prometheuses to use.
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+  ##
+  serviceAccount:
+    # -- When `true`, create prometheus serviceAccount with `prometheus.serviceAccount.name`. If `prometheus.serviceAccount.name` is empty, use `.Chart.fullname` value.
+    create: true
+    # -- Name of the ServiceAccount to use to run the Prometheus Pods. If `prometheus.serviceAccount.create` is `false` and no name is defined, use `default`.
+    name: ""
+    # -- Annotations for Prometheus
+    annotations: {}
+
+  # -- External labels to add to any time series or alerts when communicating with external systems
+  externalLabels: {}
+
+  # -- Name of the external label used to denote replica name
+  replicaExternalLabelName: ""
+
+  # -- If true, the Operator won't add the external label used to denote replica name
+  replicaExternalLabelNameClear: false
+
+  # -- Name of the external label used to denote Prometheus instance name
+  prometheusExternalLabelName: ""
+
+  # -- If true, the Operator won't add the external label used to denote Prometheus instance name
+  prometheusExternalLabelNameClear: false
+
+  # -- Define which Nodes the Pods are scheduled on.
+  # ref: https://kubernetes.io/docs/user-guide/node-selection/
+  nodeSelector: {}
+
+  # -- Secrets is a list of Secrets in the same namespace as the Prometheus object, which shall be mounted into the Prometheus Pods.
+  # The Secrets are mounted into /etc/prometheus/secrets/. Secrets changes after initial creation of a Prometheus object are not
+  # reflected in the running Pods. To change the secrets mounted into the Prometheus Pods, the object must be deleted and recreated
+  # with the new list of secrets.
+  secrets: []
+
+  # -- ConfigMaps is a list of ConfigMaps in the same namespace as the Prometheus object, which shall be mounted into the Prometheus Pods.
+  # The ConfigMaps are mounted into /etc/prometheus/configmaps/.
+  configMaps: []
+
+  # -- Interval between consecutive evaluations.
+  evaluationInterval: ""
+
+
+  # -- EnableAdminAPI enables Prometheus the administrative HTTP API which includes functionality such as deleting time series.
+  # This is disabled by default.
+  # ref: https://prometheus.io/docs/prometheus/latest/querying/api/#tsdb-admin-apis
+  enableAdminAPI: false
+
+  # -- External URL at which Prometheus will be reachable.
+  externalUrl: ""
+
+  # -- How long to retain metrics
+  retention: 10d
+
+  # -- Maximum size of metrics
+  retentionSize: ""
+
+  # -- Enable compression of the write-ahead log using Snappy.
+  walCompression: false
+
+  # -- If true, pass --storage.tsdb.max-block-duration=2h to prometheus
+  disableCompaction: false
+
+  # -- If true, the Operator won't process any Prometheus configuration changes
+  paused: false
+
+  # -- Number of Prometheus replicas desired
+  replicas: 1
+
+  # -- Log level for Prometheus be configured in
+  logLevel: info
+
+  # -- Log format for Prometheus be configured in
+  logFormat: logfmt
+
+  # -- Prefix used to register routes, overriding externalUrl route.
+  # Useful for proxies that rewrite URLs.
+  routePrefix: /
+
+  # -- QuerySpec defines the query command line flags when starting Prometheus.
+  # ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#queryspec
+  query: {}
+
+  # -- Namespaces to be selected for PrometheusRules discovery.
+  # If nil, select own namespace. Namespaces to be selected for PrometheusRules discovery.
+  # See https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/#labelselector-v1-meta for usage
+  ruleNamespaceSelector: {}
+
+  # -- PrometheusRules to be selected for target discovery.
+  # If {}, select all PrometheusRules.
+  # See [values.yaml](./values.yaml) for example.
+  ruleSelector: {}
+  ## Example which select all prometheusrules resources
+  ## with label "prometheus" with values any of "example-rules" or "example-rules-2"
+  # ruleSelector:
+  #   matchExpressions:
+  #     - key: prometheus
+  #       operator: In
+  #       values:
+  #         - example-rules
+  #         - example-rules-2
+  #
+  ## Example which select all prometheusrules resources with label "role" set to "example-rules"
+  # ruleSelector:
+  #   matchLabels:
+  #     role: example-rules
+
+  # -- ServiceMonitors to be selected for target discovery.
+  # If {}, select all ServiceMonitors
+  # See [values.yaml](./values.yaml) for example.
+  serviceMonitorSelector: {}
+  ## Example which selects ServiceMonitors with label "prometheus" set to "somelabel"
+  # serviceMonitorSelector:
+  #   matchLabels:
+  #     prometheus: somelabel
+
+  # -- Namespaces to be selected for ServiceMonitor discovery.
+  # See https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/#labelselector-v1-meta for usage
+  serviceMonitorNamespaceSelector: {}
+
+  # -- PodMonitors to be selected for target discovery.
+  # If {}, select all PodMonitors
+  # See [values.yaml](./values.yaml) for example.
+  podMonitorSelector: {}
+  ## Example which selects PodMonitors with label "prometheus" set to "somelabel"
+  # podMonitorSelector:
+  #   matchLabels:
+  #     prometheus: somelabel
+
+  # -- Namespaces to be selected for PodMonitor discovery.
+  # See https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/#labelselector-v1-meta for usage
+  podMonitorNamespaceSelector: {}
+
+  # -- The remote_read spec configuration for Prometheus.
+  # ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#remotereadspec
+  remoteRead: []
+  # - url: http://remote1/read
+
+  # -- The remote_write spec configuration for Prometheus.
+  # ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#remotewritespec
+  remoteWrite: []
+  # - url: http://remote1/push
+
+  # -- Add resources limits and request to prometheus container.
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1000Mi
+    requests:
+      cpu: 500m
+      memory: 700Mi
+
+
+  # -- Interval between consecutive scrapes.
+  scrapeInterval: ""
+
+  # -- Configure pod disruption budgets for Prometheus
+  # ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
+  # This configuration is immutable once created and will require the PDB to be deleted to be changed
+  # https://github.com/kubernetes/kubernetes/issues/45398
+  #
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+    maxUnavailable: ""
+
+  securityContext:
+    # -- Indicates that the container must run as a non-root user
+    runAsNonRoot: true
+    # -- The UID to run the entrypoint of the container process
+    runAsUser: 1000
+    # -- The GID to run the entrypoint of the container process
+    runAsGroup: 1000
+    # --
+    fsGroup: 1000
+
+  # -- Standard object’s metadata. More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#metadata
+  # Metadata Labels and Annotations gets propagated to the prometheus pods.
+  podMetadata:
+    # -- Labels to add add on prometheus pod
+    labels: {}
+    # -- Annotations to add add on prometheus pod
+    annotations: {}
+
+  # -- Pod anti-affinity can prevent the scheduler from placing Prometheus replicas on the same node.
+  # The default value "soft" means that the scheduler should *prefer* to not schedule two replica pods onto the same node but no guarantee is provided.
+  # The value "hard" means that the scheduler is *required* to not schedule two replica pods onto the same node.
+  # The value "" will disable pod anti-affinity so that no anti-affinity rules will be configured.
+  podAntiAffinity: ""
+
+  # -- If anti-affinity is enabled sets the topologyKey to use for anti-affinity.
+  # This can be changed to, for example, failure-domain.beta.kubernetes.io/zone
+  podAntiAffinityTopologyKey: kubernetes.io/hostname
+
+  # -- Assign custom affinity rules to the prometheus instance
+  # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  affinity: {}
+  # nodeAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: kubernetes.io/e2e-az-name
+  #         operator: In
+  #         values:
+  #         - e2e-az1
+  #         - e2e-az2
+
+  # -- Tolerations for use with node taints
+  # ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  tolerations: []
+  #  - key: "key"
+  #    operator: "Equal"
+  #    value: "value"
+  #    effect: "NoSchedule"
+
+  # -- AdditionalScrapeConfigs allows specifying additional Prometheus scrape configurations. Scrape configurations
+  # are appended to the configurations generated by the Prometheus Operator. Job configurations must have the form
+  # as specified in the official Prometheus documentation:
+  # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config. As scrape configs are
+  # appended, the user is responsible to make sure it is valid. Note that using this feature may expose the possibility
+  # to break upgrades of Prometheus. It is advised to review Prometheus release notes to ensure that no incompatible
+  # scrape configs are going to break Prometheus after the upgrade.
+  #
+  # The scrape configuraiton example below will find master nodes, provided they have the name .*mst.*, relabel the
+  # port to 2379 and allow etcd scraping provided it is running on all Kubernetes master nodes
+  additionalScrapeConfigs: []
+  # - job_name: kube-etcd
+  #   kubernetes_sd_configs:
+  #     - role: node
+  #   scheme: https
+  #   tls_config:
+  #     ca_file:   /etc/prometheus/secrets/etcd-client-cert/etcd-ca
+  #     cert_file: /etc/prometheus/secrets/etcd-client-cert/etcd-client
+  #     key_file:  /etc/prometheus/secrets/etcd-client-cert/etcd-client-key
+  #   relabel_configs:
+  #   - action: labelmap
+  #     regex: __meta_kubernetes_node_label_(.+)
+  #   - source_labels: [__address__]
+  #     action: replace
+  #     targetLabel: __address__
+  #     regex: ([^:;]+):(\d+)
+  #     replacement: ${1}:2379
+  #   - source_labels: [__meta_kubernetes_node_name]
+  #     action: keep
+  #     regex: .*mst.*
+  #   - source_labels: [__meta_kubernetes_node_name]
+  #     action: replace
+  #     targetLabel: node
+  #     regex: (.*)
+  #     replacement: ${1}
+  #   metric_relabel_configs:
+  #   - regex: (kubernetes_io_hostname|failure_domain_beta_kubernetes_io_region|beta_kubernetes_io_os|beta_kubernetes_io_arch|beta_kubernetes_io_instance_type|failure_domain_beta_kubernetes_io_zone)
+  #     action: labeldrop
+
+  # -- If additional scrape configurations are already deployed in a single secret file you can use this section.
+  # Expected values are the secret name and key
+  # Cannot be used with additionalScrapeConfigs
+  additionalScrapeConfigsSecret: {}
+    # enabled: false
+    # name:
+    # key:
+
+  # -- AdditionalAlertManagerConfigs allows for manual configuration of alertmanager jobs in the form as specified
+  # in the official Prometheus documentation https://prometheus.io/docs/prometheus/latest/configuration/configuration/#<alertmanager_config>.
+  # AlertManager configurations specified are appended to the configurations generated by the Prometheus Operator.
+  # As AlertManager configs are appended, the user is responsible to make sure it is valid. Note that using this
+  # feature may expose the possibility to break upgrades of Prometheus. It is advised to review Prometheus release
+  # notes to ensure that no incompatible AlertManager configs are going to break Prometheus after the upgrade.
+  additionalAlertManagerConfigs: []
+  # - consul_sd_configs:
+  #   - server: consul.dev.test:8500
+  #     scheme: http
+  #     datacenter: dev
+  #     tag_separator: ','
+  #     services:
+  #       - metrics-prometheus-alertmanager
+
+  # -- AdditionalAlertRelabelConfigs allows specifying Prometheus alert relabel configurations. Alert relabel configurations specified are appended
+  # to the configurations generated by the Prometheus Operator. Alert relabel configurations specified must have the form as specified in the
+  # official Prometheus documentation: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#alert_relabel_configs.
+  # As alert relabel configs are appended, the user is responsible to make sure it is valid. Note that using this feature may expose the
+  # possibility to break upgrades of Prometheus. It is advised to review Prometheus release notes to ensure that no incompatible alert relabel
+  # configs are going to break Prometheus after the upgrade.
+  additionalAlertRelabelConfigs: []
+  # - separator: ;
+  #   regex: prometheus_replica
+  #   replacement: $1
+  #   action: labeldrop
+
+  # -- Priority class assigned to the Pods
+  priorityClassName: ""
+
+  # -- Containers allows injecting additional containers. This is meant to allow adding an authentication proxy to a Prometheus pod.
+  # if using proxy extraContainer, update targetPort with proxy container port
+  containers: []
+
+  # --  InitContainers allows injecting additional initContainers. This is meant to allow doing some changes
+  # (permissions, dir tree) on mounted volumes before starting prometheus
+  initContainers: []
+
+  # -- PortName to use for Prometheus.
+  portName: "http-web"
+
+  # -- Prometheus StorageSpec for persistent data
+  # ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/user-guides/storage.md
+  storageSpec: {}
+  #  volumeClaimTemplate:
+  #    spec:
+  #      storageClassName: standard
+  #      accessModes: ["ReadWriteOnce"]
+  #      resources:
+  #        requests:
+  #          storage: 50Gi
+  #    selector: {}
+
+  # -- Additional volumes on the output StatefulSet definition.
+  volumes: []
+  # -- Additional VolumeMounts on the output StatefulSet definition.
+  volumeMounts: []
+
+  # -- EnforcedNamespaceLabel enforces adding a namespace label of origin for each alert and metric that is user created. The label value will always be the namespace of the object that is being created.
+  enforcedNamespaceLabel: ""
+
+
+## Configuration for Prometheus service
+##
+service:
+  # -- Map of labels to apply to the service
+  labels: {}
+  # -- Map of annotations to apply to the service
+  annotations: {}
+
+  # -- Cluster IP
+  # Only use if service.type is "ClusterIP"
+  clusterIP: ""
+
+  # -- Port for Prometheus Service to listen on
+  port: 9090
+
+  # -- To be used with a proxy extraContainer port
+  targetPort: 9090
+
+  # -- List of IP addresses at which the Prometheus server service is available
+  # Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+  externalIPs: []
+
+  # -- Port to expose on each node
+  # Only used if service.type is 'NodePort'
+  nodePort: 30090
+
+  # -- Loadbalancer IP
+  # Only use if service.type is "loadbalancer"
+  loadBalancerIP: ""
+  # service.loadSourceRanges -- Only use if service.type is "loadbalancer"
+  loadBalancerSourceRanges: []
+
+  # -- Service type
+  type: ClusterIP
+  # service.sessionAffinity --
+  sessionAffinity: ""
+
+
+ingress:
+  # -- Enables ingress for prometheus
+  enabled: false
+  # -- Map of labels to apply to the ingress
+  labels: {}
+  #  -- Map of default annotations to apply to the ingress
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+  acme:
+    # -- Manage certificates with ACME protocol
+    enabled: true
+    # -- Annotations to add when `ingress.acme.enabled` is true
+    annotations:
+      - 'kubernetes.io/tls-acme: "true"'
+
+  # -- Map of annotations to add  to th ingress
+  extraAnnotations: {}
+  # -- FQDN of the prometheus
+  host: ""
+  #  -- Path of the incoming request (/* or / if used with nginx)
+  path: "/*"
+  tls:
+    # -- Name of the secret containing the certificates
+    # @default -- Generated name based on chart release full name
+    secretName: ""
+
+
+serviceMonitor:
+  # -- If `true` Self monitor prometheus with ServiceMonitor
+  enabled: false
+
+  # -- Scrape interval. If not set, the Prometheus default scrape interval is used. dd
+  interval: ""
+
+  # -- HTTP scheme to use for scraping. Can be used with `tlsConfig` for example if using istio mTLS.
+  scheme: ""
+
+  # -- TLS configuration to use when scraping the endpoint. For example if using istio mTLS.
+  # Of type: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#tlsconfig
+  tlsConfig: {}
+
+  # --
+  bearerTokenFile:
+
+  # -- metric relabel configs to apply to samples before ingestion.
+  metricRelabelings: []
+  # - action: keep
+  #   regex: 'kube_(daemonset|deployment|pod|namespace|node|statefulset).+'
+  #   sourceLabels: [__name__]
+
+  # -- Relabel configs to apply to samples before ingestion.
+  relabelings: []
+  # - sourceLabels: [__meta_kubernetes_pod_node_name]
+  #   separator: ;
+  #   regex: ^(.*)$
+  #   targetLabel: nodename
+  #   replacement: $1
+  #   action: replace
+
+  # -- Map of annotations to apply to the ServiceMonitor
+  annotations: {}
+
+
+oidc:
+  # -- If `true`, enable oidc authentification with sidecar container
+  enabled: false
+
+  # -- Image of Prometheus. Manage image with operator if not defined
+  image:
+    # -- Container name for oidc proxy
+    repository: quay.io/oauth2-proxy/oauth2-proxy
+    # -- Container image pull policy for oidc proxy
+    pullPolicy: IfNotPresent
+
+  # -- PortName to use for oidc proxy sidecar
+  portName: http-oidc
+  # -- Port to listen by oidc proxy
+  port: 3000
+
+  # -- Deploy prometheus ServiceMonitor resource to scrape oidc proxy metrics.
+  serviceMonitor: true
+
+  # -- Environment variables to inject into sidecar
+  env: []
+  # - name: "http_proxy"
+  #   value: "{{ .Values.httpProxy }}"
+  # - name: "https_proxy"
+  #   value: "{{ .Values.httpProxy }}"
+  # - name: "no_proxy"
+  #   value: "{{ .Values.noProxy }},*.cluster.local"
+
+  configMap:
+    # -- Create and configure configmap  with name `oidc.configMap.name`
+    create: true
+    # -- Configmap name to inject into sidecar
+    # @default -- Generated from release chart name
+    name: ""
+    # -- Map of annotations to apply to the configMap
+    annotations: {}
+    # -- Required, openid connect discovery url
+    discoveryUrl: ""
+    # -- Upstream service to proxy
+    # @default -- http://localhost:<service.targetPort>
+    upstreamUrl: ""
+    # --  List of resources to protect (uri: /<URI>, methods: [<METHOD>], roles: [],  white-listed: true)
+    resources:
+      - uri: /*
+    # -- Additional scopes to add to the default (openid+email+profile)
+    scopes:
+      - groups
+    # -- whether to enable refresh tokens
+    enableRefreshTokens: true
+    # -- By default, the access and refresh cookies are session-only and disposed of on browser close.
+    # If `true`, disable this feature
+    enableSessionCookies: true
+    # -- Encrypt the session cookie.
+    # A secret with encryption key must be present. See `oidc.secret.encryption_key_key`
+    enableEncryptedToken: true
+    # -- Indicates we should deny by default all requests and explicitly specify what is permitted
+    enableDefaultDeny: true
+    # -- The proxy supports adding a variable list of claim matches against the presented tokens for additional access control.
+    # You can match the 'iss' or 'aud' to the token or custom attributes; each of the matches are regexes.
+    # See https://github.com/louketo/louketo-proxy/blob/master/docs/user-guide.md#claim-matching
+    matchClaims: {}
+      # aud: openvpn
+      # iss: http://keycloak.example.com/realms/commons
+      # email: ^.*@example.com$
+    # -- If `true` a Prometheus endpoint can be found on `/oauth/metrics`
+    enableMetric: true
+    # -- Add verbose logs
+    verbose: false
+
+  secret:
+    # -- Create and configure secrets with name `oidc.secret.name`. If `false`, use existing secret.
+    create: true
+    # -- Secret name use to store oidc secrets
+    # @default -- Generated from release chart name
+    name: ""
+    # -- Map of annotations to apply to the Secret created
+    annotations: {}
+    # -- Secret key name for encryption key.
+    # Used when `oidc.configMap.enableEncryptedToken` is enabled.
+    # If `oidc.secret.create` is `true`, a secret with this key will be generated.
+    # Else, this key matches existing key in `oidc.secret.name`.
+    # The value key length should be either 16 or 32 bytes, depending or whether you want AES-128 or AES-256
+    encryptionKeyKey: "encryption_key"
+    # -- Secret key name for OAUTH2 client secret.
+    # If `oidc.secret.create` is `true`, a secret with this key will be generated.
+    # Else, this key matches existing key in `oidc.secret.name`.
+    clientSecretKey: "client_secret"
+
+  # -- OAUTH2 client id
+  # @default -- release chart full name
+  applicationId: ""
+
+  dexClient:
+    # -- Manage aplicationId/secret as Dex resource
+    enabled: false
+    # -- Map of annotations to apply to the dex Client created
+    annotations: {}
+
+  # -- Add resources limits and request to oidc proxy side-car container.
+  resources:
+    limits:
+      cpu: 100m
+      memory: 50Mi
+    requests:
+      cpu: 5m
+      memory: 30Mi
+
+rules:
+  # -- If `true`, create prometheus rules to monitor prometheus instance when ServiceMonitor is enabled
+  enabled: true
+  # --  Map of labels to apply to the prometheus rules.
+  # This labels are used to define `prometheus.ruleSelector`
+  # @default -- `{prometheus: "release chart fullname"}`
+  labels: {}
+  # -- Map of annotations to apply to the prometheus rules created
+  annotations: {}

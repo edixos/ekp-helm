@@ -1,0 +1,44 @@
+{{- if and .Values.oidc.enabled .Values.oidc.configMap.create }}
+apiVersion: "v1"
+kind: ConfigMap
+metadata:
+  name: {{ include "prometheus.oidc.configmapName" . }}
+  labels:
+    app: {{ template "prometheus.name" . }}-prometheus
+    {{- include "prometheus.labels" . | nindent 4 }}
+  {{- if .Values.oidc.configMap.annotations }}
+  annotations:
+  {{- toYaml .Values.oidc.configMap.annotations | nindent 4 }}
+  {{- end }}
+data:
+  config.yaml: |
+    client-id: {{ include "prometheus.clientApplicationId" . | quote}}
+    redirection-url: {{ include "prometheus.externalUrl" . }}
+    discovery-url: {{ required "OIDC discovery url is mandatory" .Values.oidc.configMap.discoveryUrl }}
+    enable-refresh-tokens: {{ .Values.oidc.configMap.enableRefreshTokens }}
+    enable-session-cookies: {{ .Values.oidc.configMap.enableSessionCookies }}
+    enable-encrypted-token: {{ .Values.oidc.configMap.enableEncryptedToken }}
+    upstream-url: {{ include "prometheus.oidc.configmap.upstreamUrl" . }}
+    enable-default-deny: {{ .Values.oidc.configMap.enableDefaultDeny }}
+    {{- if .Values.oidc.configMap.scopes }}
+    scopes:
+    {{- toYaml .Values.oidc.configMap.scopes | nindent 6}}
+    {{- end }}
+    {{- if .Values.oidc.configMap.matchClaims }}
+    match-claims:
+      {{- toYaml .Values.oidc.configMap.matchClaims | nindent 6 }}
+    {{- end }}
+    {{- if or .Values.oidc.configMap.resources ( include "prometheus.oidc.metricsEnabled" . ) }}
+    resources:
+    {{- if  include "prometheus.oidc.metricsEnabled" . -}}
+    {{/* Allow prometheus to scrape metrics */}}
+      - uri: /metrics
+        methods:
+          - GET
+        white-listed: true
+    {{- end }}
+    {{- toYaml .Values.oidc.configMap.resources | nindent 6}}
+    {{- end }}
+    enable-metrics: {{ include "prometheus.oidc.metricsEnabled" . }}
+    verbose: {{ .Values.oidc.configMap.verbose }}
+{{- end }}

@@ -1,0 +1,17 @@
+
+{{- define "prometheus.additionalScrapeConfigs" -}}
+{{ .Values.prometheus.additionalScrapeConfigs | toYaml }}
+{{- end -}}
+
+{{- if .Values.prometheus.additionalScrapeConfigs }}
+---
+apiVersion: "v1"
+kind: Secret
+metadata:
+  name: {{ template "prometheus.fullname" . }}-prometheus-scrape-config
+  labels:
+    app: {{ template "prometheus.name" . }}-prometheus
+    {{- include "prometheus.labels" . | nindent 4 }}
+data:
+  additional-scrape-configs.yaml: {{ include "prometheus.additionalScrapeConfigs" . | b64enc | quote }}
+{{- end }}
