@@ -366,7 +366,7 @@ oidc:
     # -- Map of annotations to apply to the configMap
     annotations: {}
     # -- Required, the OpenID Connect issuer URL, e.g. "https://accounts.google.com"
-    issuerUrl: ""
+    issuerUrl: "https://accounts.google.com"
     # -- Upstream service to proxy
     # @default -- http://localhost:<service.targetPort>
     upstreamUrl: ""

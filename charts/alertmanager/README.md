@@ -87,7 +87,7 @@ Deploies Alertmanager through Prometheus-Operator
 | oidc.configMap.create | bool | `true` | Create and configure configmap  with name `oidc.configMap.name` |
 | oidc.configMap.emailDomains | list | `["*"]` | Authenticate emails with the specified domain. Use * to authenticate any email |
 | oidc.configMap.extraConfig | string | `""` | Extra options to add to configuration file. See [oauth2-proxy documentation](https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview/#config-file) for details |
-| oidc.configMap.issuerUrl | string | `""` | Required, the OpenID Connect issuer URL, e.g. "https://accounts.google.com" |
+| oidc.configMap.issuerUrl | string | `"https://accounts.google.com"` | Required, the OpenID Connect issuer URL, e.g. "https://accounts.google.com" |
 | oidc.configMap.name | string | Generated from release chart name | Configmap name to inject into sidecar |
 | oidc.configMap.passAccessToken | bool | `true` | Pass OAuth Access token to upstream via "X-Forwarded-Access-Token" |
 | oidc.configMap.passBasicAuth | bool | `true` | Pass HTTP Basic Auth, X-Forwarded-User and X-Forwarded-Email information to upstream |
