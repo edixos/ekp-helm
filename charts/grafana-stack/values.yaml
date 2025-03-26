@@ -183,33 +183,6 @@ grafana:
   testFramework:
     enabled: false
 
-grafanadexclient:
-  # -- enable OIDC credentials generation with [dex](https://github.com/dexidp/dex)
-  enabled: true
-  client:
-    # -- OIDC Client ID of grafana
-    id: grafana-infra
-    # -- Name of grafana client in Dex
-    name: grafana-infra
-    # -- Defines if the client is public (not needed for grafana)
-    public: false
-
-    # -- Overrides the fullname of the cliet resources
-    fullnameOverride: grafana-dex-client
-    # -- Overrides the name of the cliet resources
-    nameOverride: grafana-dex
-    # -- List of redirect uris
-    redirect_uris:
-      - https://grafana.changeme.com/login/generic_oauth
-
-  secret:
-    # -- Create the secret containing the dex client secret
-    create: true
-    # -- Name of the secret containing the dex client secret
-    name: grafana-dex-client
-    # -- Key of the secret containing the dex client secret
-    key: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
-
 dashboards:
   # -- Labels added to configmap dashboards
   labels: {}

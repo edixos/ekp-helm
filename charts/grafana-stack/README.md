@@ -63,16 +63,6 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.sidecar.dashboards.searchNamespace | string | `""` | If specified, the sidecar will search for dashboard config-maps inside this namespace. Otherwise the namespace in which the sidecar is running will be used. It's also possible to specify ALL to search in all namespaces |
 | grafana.sidecar.datasources.enabled | bool | `true` | Enables the cluster wide search for datasources and adds/updates/deletes them in grafana |
 | grafana.testFramework.enabled | bool | `false` |  |
-| grafanadexclient.client.fullnameOverride | string | `"grafana-dex-client"` | Overrides the fullname of the cliet resources |
-| grafanadexclient.client.id | string | `"grafana-infra"` | OIDC Client ID of grafana |
-| grafanadexclient.client.name | string | `"grafana-infra"` | Name of grafana client in Dex |
-| grafanadexclient.client.nameOverride | string | `"grafana-dex"` | Overrides the name of the cliet resources |
-| grafanadexclient.client.public | bool | `false` | Defines if the client is public (not needed for grafana) |
-| grafanadexclient.client.redirect_uris | list | `["https://grafana.changeme.com/login/generic_oauth"]` | List of redirect uris |
-| grafanadexclient.enabled | bool | `true` | enable OIDC credentials generation with [dex](https://github.com/dexidp/dex) |
-| grafanadexclient.secret.create | bool | `true` | Create the secret containing the dex client secret |
-| grafanadexclient.secret.key | string | `"GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET"` | Key of the secret containing the dex client secret |
-| grafanadexclient.secret.name | string | `"grafana-dex-client"` | Name of the secret containing the dex client secret |
 | ingress.annotations | object | `{"kubernetes.io/ingress.allow-http":"false","kubernetes.io/ingress.class":"nginx","kubernetes.io/tls-acme":"true"}` | Map of annotations to apply to the ingress |
 | ingress.enabled | bool | `false` | Enables ingress for alertmanager |
 | ingress.host | string | `""` | FQDN of the grafana |
@@ -130,14 +120,6 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: "infra-monitoring"
-
-  ignoreDifferences:
-  - group: ""
-    kind: Secret
-    name: grafana-dex-client
-    jsonPointers:
-    - /data/secretId
-    - /data/encyptionKey
 ```
 
 ## Develop
