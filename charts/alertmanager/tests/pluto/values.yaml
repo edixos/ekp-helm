@@ -1,0 +1,34 @@
+authorizations:
+  enabled: true
+  rbac:
+    resources:
+    - name: default
+      uri: /*
+      method:
+      - HEAD
+      - DELETE
+      - POST
+      - GET
+      - OPTIONS
+      - PUT
+      groups:
+      - digital-cloud-platform
+
+global:
+  enableArgocdAnnotations: true
+
+prometheus:
+  serviceMonitor:
+    enabled: true
+karma:
+  # -- Enable karma authentication with htpasswd file
+  enabled: true
+  htpasswd:
+    # -- Secret name that contains htpasswd file used to share credentials with karma instance
+    secretName: karma-secret
+    # -- Secret key that contains htpasswd file used to share credentials with karma instance
+    secretKey: htpasswd
+  # -- User groups set when authenticated with htpasswd file
+  groups:
+    - karma
+

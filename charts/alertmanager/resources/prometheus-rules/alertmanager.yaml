@@ -1,0 +1,34 @@
+groups:
+- name: alertmanager.rules
+  rules:
+  - alert: AlertmanagerConfigInconsistent
+    annotations:
+      message: The configuration of the instances of the Alertmanager cluster {{ $labels.service }} are out of sync.
+    expr: count_values("config_hash", alertmanager_config_hash{job="alertmanager",namespace="infra-prometheus-operator"}) BY (service) / ON(service) GROUP_LEFT() label_replace(max(prometheus_operator_spec_replicas{job="prometheus-operator-operator",namespace="infra-prometheus-operator",controller="alertmanager"}) by (name, job, namespace, controller), "service", "$1", "name", "(.*)") != 1
+    for: 5m
+    labels:
+      severity: critical
+  - alert: AlertmanagerFailedReload
+    annotations:
+      message: Reloading Alertmanager's configuration has failed for `{{ $labels.namespace }}/{{ $labels.pod}}`.
+    expr: alertmanager_config_last_reload_successful{job="alertmanager",namespace="infra-prometheus-operator"} == 0
+    for: 10m
+    labels:
+      severity: warning
+  - alert: AlertmanagerMembersInconsistent
+    annotations:
+      message: Alertmanager has not found all other members of the cluster.
+    expr: |-
+      alertmanager_cluster_members{job="alertmanager",namespace="infra-prometheus-operator"}
+        != on (service) GROUP_LEFT()
+      count by (service) (alertmanager_cluster_members{job="alertmanager",namespace="infra-prometheus-operator"})
+    for: 5m
+    labels:
+      severity: critical
+  - alert: DeadManSwitch
+    annotations:
+      message: An alert that should always be firing to certify that Alertmanager is working properly.
+    expr: vector(1)
+    for: 5m
+    labels:
+      severity: none

@@ -1,0 +1,42 @@
+{{- define "alertmanager.config" -}}
+{{- $root := . -}}
+{{- $uniqChannel := list }}
+global:
+  resolve_timeout: 5m
+
+receivers:
+- name: "null"
+- name: "blackhole"
+# Inhibition rules allow to mute a set of alerts given that another alert is
+# firing.
+# We use this to mute any warning-level notifications if the same alert is
+# already critical.
+inhibit_rules:
+- source_match:
+    severity: 'critical'
+  target_match:
+    severity: 'warning'
+  # Apply inhibition if the alertname is the same.
+  equal: ['alertname']
+
+route:
+  group_by:
+  - alertname
+  - namespace
+  - job
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  receiver:  "null"
+  routes:
+    - receiver: "null"
+      match:
+        alertname: "Watchdog"
+    - receiver: "null"
+      match:
+        # Ignore alerts on kube-system because cluster is managed with gke
+        namespace: "kube-system"
+    - receiver: blackhole
+      match:
+        severity: "none"
+{{- end -}}

@@ -1,0 +1,23 @@
+{{- if .Values.prometheus.enabled }}
+{{- $root := . }}
+{{- $files := .Files }}
+{{- range $path, $bytes := .Files.Glob "resources/prometheus-rules/*.yaml" }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    {{- include "alertmanager.labels" $root | nindent 4 }}
+    {{- toYaml $root.Values.prometheus.rules.labels | nindent 4 }}
+    role: alert-rules
+  name: {{ base $path | replace ".yaml" ".rules" }}
+{{- if $.Values.global.enableArgocdAnnotations }}
+  annotations:
+    {{- include "alertmanager.argocd.annotations" $root | nindent 4 }}
+{{- end }}
+spec:
+{{ with $root.Files.Get $path  }}
+    {{- . | indent 2 }}
+{{- end }}
+{{- end }}
+{{- end }}
