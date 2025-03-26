@@ -54,9 +54,6 @@ prometheus:
   image:
     # -- Image of Prometheus to deploy.
     repository: quay.io/prometheus/prometheus
-    # -- Version to deploy
-    # @default -- based on {{ .Chart.AppVersion }}
-    tag: ""
 
   ## Service account for Prometheuses to use.
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
