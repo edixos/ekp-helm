@@ -13,6 +13,12 @@
 - Helm v3
 - [Prometheus-operator](https://github.com/edixos/ekp-helm/tree/main/charts/kube-prometheus-stack) deployed on the K8S Cluster
 
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| https://oauth2-proxy.github.io/manifests | oidc(oauth2-proxy) | 7.12.7 |
+
 ## Maintainers
 
 | Name | Email | Url |
@@ -92,11 +98,10 @@ Deploies Alertmanager through Prometheus-Operator
 | oidc.configMap.upstreamUrl | string | http://localhost:<service.targetPort> | Upstream service to proxy |
 | oidc.dexClient.annotations | object | `{}` | Map of annotations to apply to the dex Client created |
 | oidc.dexClient.enabled | bool | `false` | Manage aplicationId/secret as Dex resource |
-| oidc.enabled | bool | `false` | If `true`, enable oidc authentification with sidecar container |
+| oidc.enabled | bool | `true` | If `true`, enable oidc authentification with sidecar container |
 | oidc.env | list | `[]` | Environment variables to inject into sidecar |
 | oidc.image.pullPolicy | string | `"IfNotPresent"` | Container image pull policy for oauth2-proxy sidecar |
 | oidc.image.repository | string | `"quay.io/oauth2-proxy/oauth2-proxy"` | Container name for oauth2-proxy sidecar |
-| oidc.image.tag | string | `"v7.3.0"` | Container image tag  for oauth2-proxy sidecar |
 | oidc.metricsPort | int | `3090` | Port number where to expose prometheus proxy for oidc proxy |
 | oidc.metricsPortName | string | `"http-oauth-prom"` | PortName to use for oidc proxy sidecar metrics |
 | oidc.port | int | `3000` | Port to listen by oidc proxy |
