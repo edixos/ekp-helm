@@ -635,6 +635,25 @@ entries:
     urls:
     - gcp-vpc-network-0.1.1.tgz
     version: 0.1.1
+  grafana-stack:
+  - apiVersion: v2
+    appVersion: 11.3.1
+    created: "2025-03-26T08:56:12.024468261Z"
+    dependencies:
+    - name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: 8.10.4
+    description: Deploys Grafana instance. Pre-configured values from [upstream grafana
+      chart](https://github.com/helm/charts/tree/master/stable/grafana)
+    digest: a2418248c701d47614e9ca72958c3f1f35c8662336f4a8085d2fca3a94286267
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: grafana-stack
+    urls:
+    - grafana-stack-0.1.0.tgz
+    version: 0.1.0
   kube-prometheus-stack:
   - apiVersion: v2
     appVersion: v0.80.1
@@ -749,4 +768,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-26T07:45:50.565739335Z"
+generated: "2025-03-26T08:56:12.024503776Z"
