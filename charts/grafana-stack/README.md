@@ -1,6 +1,6 @@
 # grafana-stack
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![AppVersion: 11.3.1](https://img.shields.io/badge/AppVersion-11.3.1-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: 11.3.1](https://img.shields.io/badge/AppVersion-11.3.1-informational?style=flat-square)
 
 ----
 
@@ -44,7 +44,6 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.env.GF_AUTH_GENERIC_OAUTH_ENABLED | bool | `true` | Enables OAUTH |
 | grafana.env.GF_AUTH_GENERIC_OAUTH_SCOPES | string | `"email openid"` | OAUTH scopes for OIDC integration |
 | grafana.env.GF_AUTH_GENERIC_OAUTH_TOKEN_URL | string | `""` | OAUTH token url for OIDC integration |
-| grafana.envFromSecret | string | `"grafana-dex-client"` | Name of a Kubernetes secret (must be manually created in the same namespace) containing values to be added to the environment (Contains Dex secrets) (see `grafanadexclient.secret.name` ) |
 | grafana.image.repository | string | `"grafana/grafana"` | Image repository |
 | grafana.image.sha | string | `""` | Image sha (optional) |
 | grafana.image.tag | string | `"9.2.4"` | Image tag |
@@ -99,7 +98,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: grafana-stack
     path: ''
 

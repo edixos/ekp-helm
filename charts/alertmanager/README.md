@@ -1,6 +1,6 @@
 # alertmanager
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![AppVersion: v0.27.0](https://img.shields.io/badge/AppVersion-v0.27.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: v0.27.0](https://img.shields.io/badge/AppVersion-v0.27.0-informational?style=flat-square)
 
 ----
 
@@ -98,7 +98,7 @@ Deploies Alertmanager through Prometheus-Operator
 | oidc.configMap.upstreamUrl | string | http://localhost:<service.targetPort> | Upstream service to proxy |
 | oidc.dexClient.annotations | object | `{}` | Map of annotations to apply to the dex Client created |
 | oidc.dexClient.enabled | bool | `false` | Manage aplicationId/secret as Dex resource |
-| oidc.enabled | bool | `true` | If `true`, enable oidc authentification with sidecar container |
+| oidc.enabled | bool | `false` | If `true`, enable oidc authentification with sidecar container |
 | oidc.env | list | `[]` | Environment variables to inject into sidecar |
 | oidc.image.pullPolicy | string | `"IfNotPresent"` | Container image pull policy for oauth2-proxy sidecar |
 | oidc.image.repository | string | `"quay.io/oauth2-proxy/oauth2-proxy"` | Container name for oauth2-proxy sidecar |
@@ -190,7 +190,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: alertmanager
     path: ''
 
