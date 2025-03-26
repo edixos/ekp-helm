@@ -1,0 +1,23 @@
+{{- if and .Values.prometheus.serviceMonitor.enabled .Values.prometheus.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    {{- toYaml .Values.prometheus.serviceMonitor.labels | nindent 4 }}
+  name: {{ .Release.Name | quote }}
+  namespace: {{ .Release.Namespace }}
+{{- if .Values.global.enableArgocdAnnotations }}
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+{{- end }}
+spec:
+  endpoints:
+  - path: /metrics
+    port: {{ .Values.grafana.service.portName }}
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- toYaml .Values.grafana.service.labels | nindent 6 }}
+{{- end -}}

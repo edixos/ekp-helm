@@ -1,0 +1,25 @@
+groups:
+  - name: GrafanaIsDown
+    rules:
+      - alert: GrafanaIsDown
+        expr: up{job=~".*grafana.*"} < 1
+        for: 20m
+        labels:
+          severity: critical
+        annotations:
+          summary: '[grafana] Service grafana is down'
+          message: 'Service "grafana" in namespace "{{ $labels.namespace }}" is down.'
+  # Copied from : https://github.com/grafana/grafana/blob/master/grafana-mixin/alerts/alerts.yaml
+  - name: GrafanaAlerts
+    rules:
+    - alert: GrafanaRequestsFailing
+      for: 5m
+      expr: |
+        100 * namespace_job_handler_statuscode:http_request_total:rate5m{handler!~"/datasources/proxy/:id.*|/ds/query|/tsdb/query", statuscode=~"5.."}
+        /
+        namespace_job_handler_statuscode:http_request_total:rate5m{handler!~"/datasources/proxy/:id.*|/ds/query|/tsdb/query"}
+        > 0.5
+      labels:
+        severity: 'critical'
+      annotations:
+        message: "'{{ $labels.namespace }}' / '{{ $labels.job }}' / '{{ $labels.handler }}' is experiencing {{ $value | humanize }}% errors"

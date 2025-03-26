@@ -13,6 +13,7 @@ chart-repos:
  - kube-prometheus-stack=https://prometheus-community.github.io/helm-charts
  - velero=https://vmware-tanzu.github.io/helm-charts
  - oauth2-proxy=https://oauth2-proxy.github.io/manifests
+ - grafana=https://grafana.github.io/helm-charts
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
 validate-maintainers: false
