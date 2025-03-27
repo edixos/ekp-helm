@@ -691,6 +691,26 @@ entries:
     urls:
     - grafana-stack-0.1.0.tgz
     version: 0.1.0
+  ingress-nginx:
+  - apiVersion: v2
+    appVersion: 1.12.1
+    created: "2025-03-27T16:37:59.861574384Z"
+    dependencies:
+    - alias: ingressNginx
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 4.12.1
+    description: A Helm chart for Kubernetes
+    digest: 8ae10f8fd5fd6c35be41c8a682ba9da69c66f1d45c1842b98d8d0bb723cdad83
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: ingress-nginx
+    type: application
+    urls:
+    - ingress-nginx-0.1.0.tgz
+    version: 0.1.0
   kube-prometheus-stack:
   - apiVersion: v2
     appVersion: v0.80.1
@@ -805,4 +825,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-26T10:22:19.025685864Z"
+generated: "2025-03-27T16:37:59.861615511Z"
