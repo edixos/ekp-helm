@@ -1,0 +1,27 @@
+groups:
+  - name: CertificateExpiration
+    rules:
+      - alert: CertificateExpired
+        expr: (certmanager_certificate_expiration_timestamp_seconds - time()) / 3600 / 24 <= 10
+        labels:
+          severity: warning
+        annotations:
+          summary: '[{{ $labels.job }}] Certificate {{ $labels.name }} will expire in less than 10 days'
+          message: 'Certificate "{{ $labels.name }}" in namespace "{{ $labels.namespace }}" will expire in {{ $value }} days.'
+
+      - alert: CertificateExpired
+        expr: (certmanager_certificate_expiration_timestamp_seconds - time()) / 3600 / 24 <= 5
+        labels:
+          severity: critical
+        annotations:
+          summary: '[{{ $labels.job }}] Certificate {{ $labels.name }} will expire in less than 5 days'
+          message: 'Certificate "{{ $labels.name }}" in namespace "{{ $labels.namespace }}" will expire in {{ $value }} days.'
+
+      - alert: CertificateExpired
+        expr: (certmanager_certificate_expiration_timestamp_seconds - time()) / 3600 / 24 <= 0
+        labels:
+          severity: critical
+        annotations:
+          summary: '[{{ $labels.job }}] Certificate {{ $labels.name }} expired'
+          message: 'Renew expirated certificate "{{ $labels.name }}" in namespace "{{ $labels.namespace }}".'
+
