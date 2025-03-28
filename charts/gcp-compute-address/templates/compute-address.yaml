@@ -1,0 +1,65 @@
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeAddress
+metadata:
+  annotations:
+    {{- if .Values.global.abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+    {{- end }}
+    cnrm.cloud.google.com/project-id: {{ .Values.global.gcpProjectId | quote }}
+  labels:
+    {{- include "gcp-compute-address.labels" . | nindent 4 }}
+  name: {{ include "gcp-compute-address.fullname" . }}
+  namespace: {{ include "gcp-compute-address.namespace" . }}
+spec:
+  {{- if and (eq .Values.addressType "INTERNAL") .Values.networkTier }}
+  {{ fail "networkTier should not be set when addressType is INTERNAL" }}
+  {{- end }}
+
+  location: {{ .Values.location | quote }}
+  {{- if .Values.address }}
+  address: {{ .Values.address | quote }}
+  {{- end }}
+  addressType: {{ .Values.addressType | default "EXTERNAL" | quote }}
+  {{- if .Values.description }}
+  description: {{ .Values.description | quote }}
+  {{- end }}
+  ipVersion: {{ .Values.ipVersion | default "IPV4" | quote }}
+  {{- if .Values.ipv6EndpointType }}
+  ipv6EndpointType: {{ .Values.ipv6EndpointType | quote }}
+  {{- end }}
+  {{- if .Values.networkTier }}
+  networkTier: {{ .Values.networkTier | quote }}
+  {{- end }}
+  {{- if .Values.prefixLength }}
+  prefixLength: {{ .Values.prefixLength }}
+  {{- end }}
+  {{- if .Values.purpose }}
+  purpose: {{ .Values.purpose | quote }}
+  {{- end }}
+  {{- if .Values.resourceID }}
+  resourceID: {{ .Values.resourceID | quote }}
+  {{- end }}
+  {{- if .Values.networkRef }}
+  networkRef:
+    {{- if .Values.networkRef.external }}
+    external: {{ .Values.networkRef.external | quote }}
+    {{- end }}
+    {{- if .Values.networkRef.name }}
+    name: {{ .Values.networkRef.name | quote }}
+    {{- end }}
+    {{- if .Values.networkRef.namespace }}
+    namespace: {{ .Values.networkRef.namespace | quote }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.subnetworkRef }}
+  subnetworkRef:
+    {{- if .Values.subnetworkRef.external }}
+    external: {{ .Values.subnetworkRef.external | quote }}
+    {{- end }}
+    {{- if .Values.subnetworkRef.name }}
+    name: {{ .Values.subnetworkRef.name | quote }}
+    {{- end }}
+    {{- if .Values.subnetworkRef.namespace }}
+    namespace: {{ .Values.subnetworkRef.namespace | quote }}
+    {{- end }}
+  {{- end }}
