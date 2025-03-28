@@ -109,7 +109,7 @@ gcpbucket:
     # accessControl.publicAccessPrevention -- The bucket's public access prevention status, which is either "inherited" or "enforced". If "inherited", the bucket uses public access prevention only if the bucket is subject to the public access prevention organization policy constraint.
     publicAccessPrevention: inherited
     # accessControl.createCloudIamPolicy -- Create iam policy member for the bucket through kcc, based on the `iamPolicy` list.
-    createCloudIamPolicy: false
+    createCloudIamPolicy: true
     iamPolicy:
         # accessControl.iamPolicy[0].member -- An identifier for the member, which usually has the following form: member-type:id. For example, user:my-user@example.com. For a full list of the values that member can have, see the [Policy Binding reference](https://cloud.google.com/iam/docs/reference/rest/v1/Policy#Binding).
       - member: serviceAccount:sa-name@${gcpProjectId?}.iam.gserviceaccount.com
