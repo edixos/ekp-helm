@@ -263,6 +263,21 @@ entries:
     urls:
     - gcp-cloud-nat-0.1.0.tgz
     version: 0.1.0
+  gcp-compute-address:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-03-28T07:42:59.777246421Z"
+    description: A Helm chart to provision a Compute Address via Config Connector
+    digest: dc7d0376f36293553f2968d1031b67d2c87d7238bca5159f079d604fc8b4e204
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: gcp-compute-address
+    type: application
+    urls:
+    - gcp-compute-address-0.1.0.tgz
+    version: 0.1.0
   gcp-compute-router:
   - apiVersion: v2
     appVersion: 0.1.1
@@ -825,4 +840,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-27T16:37:59.861615511Z"
+generated: "2025-03-28T07:42:59.777285345Z"
