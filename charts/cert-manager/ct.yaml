@@ -4,4 +4,5 @@ chart-dirs:
 helm-extra-args: --timeout=500
 chart-repos:
   - cert-manager=https://charts.jetstack.io
+  - ekp-helm=https://edixos.github.io/ekp-helm
 check-version-increment: true

@@ -1,0 +1,31 @@
+{{- $root := . }}
+{{ range $cert := .Values.certs }}
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $cert.name }}
+  namespace: {{ $cert.namespace | default $root.Release.Namespace }}
+  labels:
+    app: cert-manager
+spec:
+  # Name of a secret to store tls certificate
+  secretName: {{ $cert.name }}-tls
+  {{- if $cert.secretTemplate }}
+  secretTemplate:
+    {{- with $cert.secretTemplate.annotations }}
+    annotations:
+{{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with $cert.secretTemplate.labels }}
+    labels:
+{{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- end}}
+  issuerRef:
+    name: {{ $cert.issuerRef }}
+    kind: {{ $cert.issuerKind}}
+  dnsNames:
+{{ toYaml $cert.dnsnames | indent 4 }}
+{{- end }}

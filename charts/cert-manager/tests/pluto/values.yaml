@@ -1,0 +1,54 @@
+certmanager:
+  prometheus:
+    enabled: true
+    servicemonitor:
+      enabled: true
+
+  serviceAccount:
+    annotations:
+      iam.gke.io/gcp-service-account: cert-manager@ekp-dev.iam.gserviceaccount.com
+
+tags:
+  configConnector: true
+
+workloadIdentity:
+  global:
+    gcpProjectId: ekp-dev
+    gsa:
+      create: false
+      name: wi-k8s
+      project: ""
+
+    cnrmNamespace: ""
+    abandon: false
+    ksa:
+      namespace: "default"
+      name: default
+
+issuers:
+  - name: letsencrypt-dns-staging
+    kind: ClusterIssuer
+    spec:
+      acme:
+        server: https://acme-staging-v02.api.letsencrypt.org/directory
+        email: ""
+        privateKeySecretRef:
+          name: letsencrypt-dns-staging
+        solvers:
+        - selector: {}
+          dns01:
+            cloudDNS:
+              project: ekp-dev
+  - name: letsencrypt-dns-prd
+    kind: ClusterIssuer
+    spec:
+      acme:
+        server: https://acme-v02.api.letsencrypt.org/directory
+        email: ""
+        privateKeySecretRef:
+          name: letsencrypt-dns-prd
+        solvers:
+        - selector: {}
+          dns01:
+            cloudDNS:
+              project: ekp-dev

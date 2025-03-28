@@ -1,0 +1,13 @@
+{{- if and .Values.grafanaDashboard.enabled .Values.certmanager.prometheus.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "call-nested" (list . "certmanager" "cert-manager.fullname") }}-grafana-dashboards
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: cert-manager-grafana
+{{- .Values.grafanaDashboard.label | toYaml | nindent 4 }}
+data:
+  {{- (.Files.Glob "resources/grafana-dashboards/*.json").AsConfig | nindent 2 }}
+{{- end }}

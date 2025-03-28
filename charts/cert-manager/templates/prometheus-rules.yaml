@@ -1,0 +1,19 @@
+{{- if .Values.certmanager.prometheus.enabled }}
+{{- $root := . }}
+{{- $files := .Files }}
+{{ range $path, $bytes := .Files.Glob "resources/prometheus-rules/*.yaml" }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+{{- toYaml $.Values.prometheusRules.rules.labels | nindent 4}}
+    role: alert-rules
+  name: {{ base $path | replace ".yaml" ".rules" }}
+  namespace: {{ $.Release.Namespace | quote }}
+spec:
+{{ with $root.Files.Get $path  }}
+    {{- . | indent 2 }}
+{{ end }}
+{{ end }}
+{{- end }}

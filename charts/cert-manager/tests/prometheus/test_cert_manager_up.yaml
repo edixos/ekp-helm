@@ -1,0 +1,47 @@
+---
+
+rule_files:
+  - ../../resources/prometheus-rules/cert-manager-up.yaml
+
+evaluation_interval: 1m
+
+tests:
+
+  # Test 1
+  - interval: 1m
+    input_series:
+      - series: 'up{endpoint="9402",instance="10.44.1.34:9402",job="cert-manager-metrics",namespace="infra-cert-manager",pod="cert-manager-6898f8fbcb-6fkx8",service="cert-manager-metrics"}'
+        values: '1+0x30 0+0x60 1+0x50'
+
+    # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 1m
+        alertname: CertManagerIsDown
+
+      # No alert :
+      - eval_time: 40m
+        alertname: CertManagerIsDown
+
+      # Alert triggered :
+      - eval_time: 1h
+        alertname: CertManagerIsDown
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            endpoint: "9402"
+            job: cert-manager-metrics
+            instance: 10.44.1.34:9402
+            namespace: infra-cert-manager
+            pod: cert-manager-6898f8fbcb-6fkx8
+            service: cert-manager-metrics
+            alertname: CertManagerIsDown
+          exp_annotations:
+            summary: '[cert-manager-metrics] Service cert-manager is down'
+            message: 'Service "cert-manager" in namespace "infra-cert-manager" is down.'
+
+      # Alert stopped:
+      - eval_time: 2h
+        alertname: CertManagerIsDown
+

@@ -1,0 +1,12 @@
+{{- $root := . }}
+{{- range $issuer := .Values.issuers }}
+---
+apiVersion: cert-manager.io/v1
+kind: {{ default "Issuer" $issuer.kind }}
+metadata:
+  name: {{ $issuer.name }}
+  labels:
+    app: cert-manager
+spec:
+{{- $issuer.spec | toYaml | nindent 2 }}
+{{- end }}
