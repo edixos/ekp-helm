@@ -36,13 +36,13 @@ A Helm chart for Kubernetes
 | backups.namespaces | list | `["default"]` | List of namespace backuped by velero |
 | backups.schedule | string | `"@every 24h"` | Period of backup |
 | backups.ttl | string | `"96h0m0s"` | ttl of the backup |
-| gcpbucket | object | `{"accessControl":{"createCloudIamPolicy":true,"iamPolicy":[{"member":"serviceAccount:sa-name@${gcpProjectId?}.iam.gserviceaccount.com","role":"roles/storage.admin"}],"publicAccessPrevention":"inherited","uniformBucketLevelAccess":false},"bucketName":"","global":{"abandon":false,"cnrmNamespace":"","gcpProjectId":"myprojectid","location":"EUROPE-WEST1","skipUnspecifiedFields":false}}` | `tags.configConnector` must be set to `true` |
+| gcpbucket | object | `{"accessControl":{"createCloudIamPolicy":false,"iamPolicy":[{"member":"serviceAccount:sa-name@${gcpProjectId?}.iam.gserviceaccount.com","role":"roles/storage.admin"}],"publicAccessPrevention":"inherited","uniformBucketLevelAccess":false},"bucketName":"","global":{"abandon":false,"cnrmNamespace":"","gcpProjectId":"myprojectid","location":"EUROPE-WEST1","skipUnspecifiedFields":false}}` | `tags.configConnector` must be set to `true` |
 | iamCustomRole | object | `{"customRoleName":"velero","description":"The description of the custom role resource","global":{"cnrmNamespace":"","gcpOrganisationId":"","gcpProjectId":"myprojectid","skipUnspecifiedFields":false},"permissions":["compute.disks.create","compute.disks.createSnapshot","compute.disks.get","compute.snapshots.create","compute.snapshots.delete","compute.snapshots.get","compute.snapshots.useReadOnly","compute.zones.get"],"title":"velero"}` | `tags.configConnector` must be set to `true` |
 | iamCustomRole.customRoleName | string | `"velero"` | The name of the IAM Custom Role |
 | iamCustomRole.description | string | `"The description of the custom role resource"` | A human-readable description for the role |
 | iamCustomRole.permissions | list | `["compute.disks.create","compute.disks.createSnapshot","compute.disks.get","compute.snapshots.create","compute.snapshots.delete","compute.snapshots.get","compute.snapshots.useReadOnly","compute.zones.get"]` | custom role permissions |
 | iamCustomRole.title | string | `"velero"` | A human-readable title for the role |
-| iamPolicyMembers | string | `nil` | `tags.configConnector` must be set to `true` |
+| iamPolicyMembers | list | `[]` | `tags.configConnector` must be set to `true` |
 | prometheus.enabled | bool | `true` | Enables Prometheus Operator monitoring |
 | prometheus.rules.labels | object | `{"prometheus":"prometheus-operator-prometheus"}` | Labels to affect to the Prometheus Rules |
 | tags.configConnector | bool | `false` | Enables Config Connector features |
