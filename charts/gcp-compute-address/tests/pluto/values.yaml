@@ -1,0 +1,11 @@
+global:
+  cnrmNamespace: "cnrm-system"
+  abandon: true
+  gcpProjectId: "ekp-dev"
+
+name: "ekp-ingress-nginx-ip"
+addressType: "EXTERNAL"
+description: "Static external IP for ingress on ekp-vpc-network-dev"
+ipVersion: "IPV4"
+location: "europe-west1"
+networkTier: "STANDARD"
