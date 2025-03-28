@@ -1,0 +1,29 @@
+groups:
+  - name: AtLeastOneVeleroAvailable
+    rules:
+      - alert: AtLeastOneVeleroAvailable
+        expr: kube_deployment_status_replicas_available{deployment="velero"} < 1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: '[{{ $labels.deployment }}] Service Velero is down'
+          message: 'None instance of {{ $labels.deployment }} available in namespace "{{ $labels.namespace }}".'
+  - name: VeleroFailures
+    rules:     
+      - alert: VeleroBackupPartialFailures
+        annotations:
+          message: Velero backup {{ $labels.schedule }} has {{ $value | humanizePercentage }} partialy failed backups.
+        expr: |-
+          velero_backup_partial_failure_total{schedule!=""} / velero_backup_attempt_total{schedule!=""} > 0.25
+        for: 15m
+        labels:
+          severity: warning
+      - alert: VeleroBackupFailures
+        annotations:
+          message: Velero backup {{ $labels.schedule }} has {{ $value | humanizePercentage }} failed backups.
+        expr: |-
+          velero_backup_failure_total{schedule!=""} / velero_backup_attempt_total{schedule!=""} > 0.25
+        for: 15m
+        labels:
+          severity: warning
