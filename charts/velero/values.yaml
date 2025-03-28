@@ -170,4 +170,4 @@ iamCustomRole:
     - compute.zones.get
 
 # -- `tags.configConnector` must be set to `true`
-iamPolicyMembers: []
+iamPolicyMembers: null
