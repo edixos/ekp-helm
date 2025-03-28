@@ -1,0 +1,11 @@
+groups:
+  - name: CertManagerIsDown
+    rules:
+      - alert: CertManagerIsDown
+        expr: up{job="cert-manager-metrics"} < 1
+        for: 20m
+        labels:
+          severity: critical
+        annotations:
+          summary: '[{{ $labels.job }}] Service cert-manager is down'
+          message: 'Service "cert-manager" in namespace "{{ $labels.namespace }}" is down.'
