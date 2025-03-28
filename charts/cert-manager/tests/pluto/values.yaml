@@ -8,10 +8,6 @@ certmanager:
     annotations:
       iam.gke.io/gcp-service-account: cert-manager@ekp-dev.iam.gserviceaccount.com
 
-crds:
-  enabled: true
-  keep: true
-
 tags:
   configConnector: true
 
