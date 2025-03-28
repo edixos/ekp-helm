@@ -42,7 +42,7 @@ A Helm chart for Kubernetes
 | iamCustomRole.description | string | `"The description of the custom role resource"` | A human-readable description for the role |
 | iamCustomRole.permissions | list | `["compute.disks.create","compute.disks.createSnapshot","compute.disks.get","compute.snapshots.create","compute.snapshots.delete","compute.snapshots.get","compute.snapshots.useReadOnly","compute.zones.get"]` | custom role permissions |
 | iamCustomRole.title | string | `"velero"` | A human-readable title for the role |
-| iamPolicyMembers | list | `[]` | `tags.configConnector` must be set to `true` |
+| iamPolicyMembers | string | `nil` | `tags.configConnector` must be set to `true` |
 | prometheus.enabled | bool | `true` | Enables Prometheus Operator monitoring |
 | prometheus.rules.labels | object | `{"prometheus":"prometheus-operator-prometheus"}` | Labels to affect to the Prometheus Rules |
 | tags.configConnector | bool | `false` | Enables Config Connector features |
