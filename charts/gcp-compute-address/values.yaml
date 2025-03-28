@@ -1,0 +1,67 @@
+---
+global:
+  # -- Allows to deploy in another namespace than the release one
+  # @default -- `nil`
+  cnrmNamespace: ""
+  # -- Google Project ID
+  gcpProjectId: myprojectid
+  # -- If true, Keep the Compute Address even after the kcc resource deletion.
+  abandon: true
+
+# -- Add annotations to the Compute Address.
+annotations: {}
+
+# -- Name of Compute Address
+name: "gcp-static-ip"
+
+# -- Optional: The static external IP address represented by this resource.
+#    Must be inside the specified subnetwork if defined.
+address: ""
+# -- The type of address to reserve.
+#    Valid options: "INTERNAL" or "EXTERNAL". Default: "EXTERNAL".
+addressType: "EXTERNAL"
+# -- A text description of the Compute Address.
+#    Must be less than or equal to 256 UTF-8 bytes.
+description: "Compute Address configuration for Google Compute Router"
+# -- The IP Version that will be used by this address.
+#    Valid options: "IPV4", "IPV6". Default: "IPV4".
+ipVersion: "IPV4"
+# -- The endpoint type for an IPv6 address.
+#    Valid options: "VM", "NETLB".
+ipv6EndpointType: ""
+# -- The geographical location for the Compute Address.
+#    Specify a region (e.g., "us-central1") or "global" for global resources.
+location: "europe-west1-b"
+# -- The networking tier used for configuring this address.
+#    Valid options: "PREMIUM", "STANDARD".
+#    Should not be used with INTERNAL addresses.
+networkTier: "STANDARD"
+# -- The prefix length if the resource represents an IP range.
+prefixLength: null
+# -- The purpose of this resource.
+#    Valid options include:
+#      "GCE_ENDPOINT", "SHARED_LOADBALANCER_VIP", "VPC_PEERING",
+#      "IPSEC_INTERCONNECT", "PRIVATE_SERVICE_CONNECT"
+purpose: null
+# # -- Optional: The resource identifier.
+# #    When unset, the value of metadata.name will be used.
+# resourceID: ""
+# -- Optional: Network reference configuration.
+#    Only applicable for INTERNAL addresses with VPC_PEERING or IPSEC_INTERCONNECT purposes.
+networkRef:
+  # -- The selfLink of the ComputeNetwork resource.
+  external: ""
+  # -- The name of the referent.
+  name: ""
+  # -- The namespace of the referent.
+  namespace: ""
+
+# -- Optional: Subnetwork reference configuration.
+#    Only applicable for INTERNAL addresses with GCE_ENDPOINT/DNS_RESOLVER purposes.
+subnetworkRef:
+  # -- The selfLink of the ComputeSubnetwork resource.
+  external: ""
+  # -- The name of the referent.
+  name: ""
+  # -- The namespace of the referent.
+  namespace: ""
