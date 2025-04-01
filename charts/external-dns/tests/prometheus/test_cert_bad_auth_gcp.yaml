@@ -1,0 +1,46 @@
+---
+
+rule_files:
+  - ../../resources/prometheus-rules/bad-auth-gcp.yaml
+
+evaluation_interval: 1m
+
+tests:
+
+  # Test 1
+  - interval: 1m
+    input_series:
+      - series: 'http_request_duration_seconds_count{status="200",endpoint="http",handler="instrumented_http",host="www.googleapis.com",instance="10.44.5.24:7979",job="external-dns",method="GET",namespace="infra-external-dns",path="managedZones",pod="external-dns-746859755d-lz8kn",scheme="https",service="external-dns"}'
+        values: '1+1x10 11+0x20 11+1x20'
+      - series: 'http_request_duration_seconds_count{status="401",endpoint="http",handler="instrumented_http",host="www.googleapis.com",instance="10.44.5.24:7979",job="external-dns",method="GET",namespace="infra-external-dns",path="managedZones",pod="external-dns-746859755d-lz8kn",scheme="https",service="external-dns"}'
+        values: '1+0x10 1+1x20 21+0x20'
+
+    # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 1m
+        alertname: ExternalDnsBadAuth
+
+      # No alert :
+      - eval_time: 40m
+        alertname:
+
+      # Alert triggered :
+      - eval_time: 15m
+        alertname: ExternalDnsBadAuth
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            job: external-dns
+            host: "www.googleapis.com"
+            path: "managedZones"
+            alertname: ExternalDnsBadAuth
+          exp_annotations:
+            summary: '[external-dns] Bad authentication to gcp'
+            message: 'Bad authentication to google gcp when external-dns try to update dns entries.'
+
+      # Alert stopped:
+      - eval_time: 40m
+        alertname: ExternalDnsBadAuth
+

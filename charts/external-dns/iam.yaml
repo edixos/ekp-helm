@@ -1,0 +1,12 @@
+global:
+  gcpProjectId: ekp-dev
+  cnrmNamespace: "cnrm-system"
+
+iamPolicyMembers:
+  - name: external-dns-gsa
+    member: serviceAccount:wi-external-dns@ekp-dev.iam.gserviceaccount.com
+    role: roles/dns.admin
+    resourceRef:
+      kind: Project
+      external: projects/ekp-dev
+      namespace: "cnrm-system"

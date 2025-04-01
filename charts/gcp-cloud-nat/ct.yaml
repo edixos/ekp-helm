@@ -2,5 +2,8 @@
 remote: origin
 chart-dirs:
   - charts
+chart-repos:
+  - external-dns=https://kubernetes-sigs.github.io/external-dns
+  - ekp-helm=https://edixos.github.io/ekp-helm
 helm-extra-args: --timeout=500
 check-version-increment: true

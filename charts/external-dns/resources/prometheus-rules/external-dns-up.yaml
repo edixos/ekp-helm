@@ -1,0 +1,31 @@
+groups:
+  - name: ExternalDnsIsDown
+    rules:
+      - alert: ExternalDnsIsDown
+        expr: up{job="external-dns", namespace="infra-external-dns"} < 1
+        for: 20m
+        labels:
+          severity: critical
+        annotations:
+          summary: '[{{ $labels.job }}] Service external-dns is down'
+          message: 'Service "external-dns" in namespace "{{ $labels.namespace }}" is down.'
+  - name: ExternalDnsRegistryErrorsAreHigh
+    rules:
+      - alert: ExternalDnsRegistryErrorsAreHigh
+        expr: increase(external_dns_registry_errors_total[2m]) > 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'External-dns has registry errors'
+          message: 'There must be a problem on the DNS registry as the external-dns registries error are > 0'
+  - name: ExternalDnsSourceErrorsAreHigh
+    rules:
+      - alert: ExternalDnsSourceErrorsAreHigh
+        expr: increase(external_dns_source_errors_total[2m]) > 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'External-dns has source errors'
+          message: 'There must be a problem on the DNS Kubernetes sources as the external-dns source error are > 0'
