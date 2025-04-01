@@ -243,6 +243,37 @@ entries:
     urls:
     - eso-0.1.0.tgz
     version: 0.1.0
+  external-dns:
+  - apiVersion: v2
+    appVersion: 0.16.1
+    created: "2025-04-01T16:51:12.60405124Z"
+    dependencies:
+    - alias: externaldns
+      name: external-dns
+      repository: https://kubernetes-sigs.github.io/external-dns/
+      version: 1.16.0
+    - alias: workloadIdentity
+      name: workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.0
+    - alias: iamPolicy
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    description: Deploys external-dns and its monitoring
+    digest: ecce2e6cca3aae92bef78ffd5b995703f121062f15fbaea668370e14a5fba6a1
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: external-dns
+    urls:
+    - external-dns-0.1.0.tgz
+    version: 0.1.0
   gcp-bigquery-dataset:
   - apiVersion: v2
     appVersion: 0.1.0
@@ -893,4 +924,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-01T16:26:19.002375666Z"
+generated: "2025-04-01T16:51:12.898242265Z"
