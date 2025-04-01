@@ -15,7 +15,7 @@ chart-repos:
  - oauth2-proxy=https://oauth2-proxy.github.io/manifests
  - grafana=https://grafana.github.io/helm-charts
  - ingress-nginx=https://kubernetes.github.io/ingress-nginx
-  - external-dns=https://kubernetes-sigs.github.io/external-dns/
+ - external-dns=https://kubernetes-sigs.github.io/external-dns/
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
 validate-maintainers: false
