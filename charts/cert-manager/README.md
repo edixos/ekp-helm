@@ -1,6 +1,6 @@
 # cert-manager
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.17.1](https://img.shields.io/badge/AppVersion-1.17.1-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.17.1](https://img.shields.io/badge/AppVersion-1.17.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@
 | Repository | Name | Version |
 |------------|------|---------|
 | https://charts.jetstack.io | certmanager(cert-manager) | 1.17.1 |
-| https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-memebers) | 0.1.0 |
+| https://edixos.github.io/ekp-helm | iamPolicy(gcp-iam-policy-members) | 0.1.1 |
 | https://edixos.github.io/ekp-helm | workloadIdentity(workload-identity) | 0.1.0 |
 
 ## Maintainers
@@ -218,16 +218,20 @@ A Helm chart for cert-manager
 | certmanager.webhook.volumeMounts | list | `[]` |  |
 | certmanager.webhook.volumes | list | `[]` |  |
 | certs | list | Please look at the `values.yaml` file | Generate basic certificates |
+| global.abandon | bool | `false` | Activate abandon of the resources (If true, the GCP resources will be keep after deleting k8s resources) |
+| global.cnrmNamespace | string | `""` | Allows to deploy in another namespace than the release one |
+| global.gcpProjectId | string | `""` | Google Project ID of the Kubernetes Cluster hosting the service Account |
 | grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
 | grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
-| iamPolicyMembers.roles | list | `["roles/dns.admin"]` | Roles to apply to cert-manager google service account |
+| iamPolicy.iamPolicyMembers[0].member | string | `""` |  |
+| iamPolicy.iamPolicyMembers[0].name | string | `"cert-manager-gsa"` |  |
+| iamPolicy.iamPolicyMembers[0].resourceRef.external | string | `""` |  |
+| iamPolicy.iamPolicyMembers[0].resourceRef.kind | string | `"Project"` |  |
+| iamPolicy.iamPolicyMembers[0].role | string | `"roles/dns.admin"` | Roles to apply to cert-manager google service account |
 | issuers | list | Please look at the `values.yaml` file | List of issuers to create. Please read the following [documentation](https://cert-manager.io/docs/concepts/issuer/) |
 | prometheusRules.rules.enabled | bool | `false` | Enables prometheus operator rules for cert-manager |
 | prometheusRules.rules.labels | object | `{"prometheus":"prometheus-operator-prometheus"}` | Labels to affect to the Prometheus Rules |
 | tags.configConnector | bool | `false` | Enables Config Connector features |
-| workloadIdentity.global.abandon | bool | `false` |  |
-| workloadIdentity.global.cnrmNamespace | string | `""` |  |
-| workloadIdentity.global.gcpProjectId | string | `"ekp-dev"` |  |
 | workloadIdentity.global.gsa.create | bool | `true` |  |
 | workloadIdentity.global.gsa.name | string | `"wi-k8s"` |  |
 | workloadIdentity.global.gsa.project | string | `""` |  |
@@ -259,7 +263,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: cert-manager
     path: ''
     helm:

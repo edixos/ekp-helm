@@ -1,3 +1,11 @@
+global:
+  # global.gcpProjectId -- Google Project ID of the Kubernetes Cluster hosting the service Account
+  gcpProjectId: ""
+  # global.cnrmNamespace -- Allows to deploy in another namespace than the release one
+  cnrmNamespace: ""
+  # global.abandon -- Activate abandon of the resources (If true, the GCP resources will be keep after deleting k8s resources)
+  abandon: false
+
 grafanaDashboard:
   # -- Add grafana dashboard as a configmap
   enabled: true
@@ -1544,15 +1552,18 @@ tags:
   # -- Enables Config Connector features
   configConnector: false
 
-iamPolicyMembers:
-  # -- Roles to apply to cert-manager google service account
-  roles:
-    - roles/dns.admin
+iamPolicy:
+  iamPolicyMembers:
+    - name: "cert-manager-gsa"
+      member: ""
+      # -- Roles to apply to cert-manager google service account
+      role: "roles/dns.admin"
+      resourceRef:
+        kind: Project
+        external: ""
 
 workloadIdentity:
   global:
-    # global.gcpProjectId -- Google Project ID of the Kubernetes Cluster hosting the service Account
-    gcpProjectId: ekp-dev
     # global.gsa -- Name of the Google Service Account
     gsa:
       # Creates the Google Service Account
@@ -1561,11 +1572,6 @@ workloadIdentity:
       name: wi-k8s
       # Project Id hosting the google service account.
       project: ""
-
-    # global.cnrmNamespace -- Allows to deploy in another namespace than the release one
-    cnrmNamespace: ""
-    # global.abandon -- Activate abandon of the resources (If true, the GCP resources will be keep after deleting k8s resources)
-    abandon: false
     ksa:
       # global.ksa.namespace -- Kubernetes Service Account namespace. Overrides the Release Namespace
       namespace: ""

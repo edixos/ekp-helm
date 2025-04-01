@@ -2,7 +2,7 @@ apiVersion: v2
 name: cert-manager
 description: A Helm chart for cert-manager
 type: application
-version: 0.1.1
+version: 0.1.2
 appVersion: "1.17.1"
 maintainers:
   - name: wiemaouadi
@@ -22,9 +22,9 @@ dependencies:
     alias: workloadIdentity
     tags:
       - configConnector
-  - name: gcp-iam-policy-memebers
-    version: 0.1.0
+  - name: gcp-iam-policy-members
+    version: 0.1.1
     repository: "https://edixos.github.io/ekp-helm"
-    alias: iamPolicyMembers
+    alias: iamPolicy
     tags:
       - configConnector
