@@ -1,12 +1,21 @@
+{{- $globalValues := default dict .Values.global -}}
+{{- $gcpProjectId := default .Values.gcpProjectId $globalValues.gcpProjectId -}}
+{{- $abandon := default .Values.abandon $globalValues.abandon -}}
+
 {{- range .Values.iamPolicyMembers }}
 ---
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMPolicyMember
 metadata:
   annotations:
-    cnrm.cloud.google.com/project-id: {{ $.Values.global.gcpProjectId }}
-  name: {{ .name }}
-
+    {{- if $abandon }}
+    cnrm.cloud.google.com/deletion-policy: abandon
+    {{- end }}
+    cnrm.cloud.google.com/project-id: {{ $gcpProjectId | quote }}
+  labels:
+    {{- include "gcp-iam-policy-members.labels" $ | nindent 4 }}
+  name: {{ .name | default (include "gcp-iam-policy-members.fullname" $) }}
+  namespace: {{ include "gcp-iam-policy-members.namespace" $ }}
 spec:
   {{- if .condition }}
   {{- if and .condition.title .condition.expression }}
@@ -17,7 +26,7 @@ spec:
   {{- end }}
   {{- end }}
 
-  member: {{ .member }}
+  member: {{ .member | quote }}
 
   {{- if .role }}
   role: {{ .role }}
@@ -35,8 +44,6 @@ spec:
         namespace: {{ .memberFrom.bigQueryConnectionConnectionRef.namespace }}
     {{- end }}
   {{- end }}
-
-
 
   {{- if .memberFrom.logSinkRef }}
   {{- if .memberFrom.logSinkRef.name }}

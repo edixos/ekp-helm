@@ -1,0 +1,11 @@
+# Global configuration
+global:
+  # -- Google Project ID
+  gcpProjectId: myprojectid
+  # -- Allows to deploy in another namespace than the release one
+  cnrmNamespace: ""
+  # -- Keep the resource even after the kcc resource deletion
+  abandon: false
+
+# -- List of IAM policy members to create
+iamPolicyMembers: []

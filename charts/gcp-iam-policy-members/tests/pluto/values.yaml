@@ -1,0 +1,11 @@
+global:
+  gcpProjectId: "ekp-dev"
+  cnrmNamespace: "cnrm-system"
+
+iamPolicyMembers:
+  - name: "test-iam-policy-members-0"
+    member: "serviceAccount:iampolicymemberstest@ekp-dev.iam.gserviceaccount.com"
+    role: "roles/dns.admin"
+    resourceRef:
+      kind: "Project"
+      external: "projects/ekp-dev"
