@@ -18,8 +18,8 @@ dependencies:
     alias: workloadIdentity
     tags:
       - configConnector
-  - name: gcp-iam-policy-memebers
-    version: 0.1.0
+  - name: gcp-iam-policy-members
+    version: 0.1.1
     repository: "https://edixos.github.io/ekp-helm"
     alias: iamPolicy
     tags:

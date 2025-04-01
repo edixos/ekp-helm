@@ -347,7 +347,7 @@ iamPolicy:
       role: "roles/dns.admin"
       resourceRef:
         kind: Project
-        name: ""
+        external: ""
 
 workloadIdentity:
   global:

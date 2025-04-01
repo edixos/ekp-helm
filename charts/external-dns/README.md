@@ -11,9 +11,15 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://edixos.github.io/ekp-helm | iamPolicy(gcp-iam-policy-memebers) | 0.1.0 |
+| https://edixos.github.io/ekp-helm | iamPolicy(gcp-iam-policy-members) | 0.1.1 |
 | https://edixos.github.io/ekp-helm | workloadIdentity(workload-identity) | 0.1.0 |
 | https://kubernetes-sigs.github.io/external-dns/ | externaldns(external-dns) | 1.16.0 |
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| ilyasabdellaoui | <ilyas.abdellaoui21@gmail.com> | <https://github.com/ilyasabdellaoui> |
 
 ## Description
 
@@ -117,8 +123,8 @@ Deploys external-dns and its monitoring
 | global.gcpProjectId | string | `""` |  |
 | iamPolicy.iamPolicyMembers[0].member | string | `""` |  |
 | iamPolicy.iamPolicyMembers[0].name | string | `"external-dns-gsa"` |  |
+| iamPolicy.iamPolicyMembers[0].resourceRef.external | string | `""` |  |
 | iamPolicy.iamPolicyMembers[0].resourceRef.kind | string | `"Project"` |  |
-| iamPolicy.iamPolicyMembers[0].resourceRef.name | string | `""` |  |
 | iamPolicy.iamPolicyMembers[0].role | string | `"roles/dns.admin"` | Roles to apply to external-dns google service account |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
