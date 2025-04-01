@@ -1,0 +1,11 @@
+groups:
+  - name: ExternalDnsBadAuth
+    rules:
+      - alert: ExternalDnsBadAuth
+        expr: sum(rate(http_request_duration_seconds_count{job="external-dns", host="www.googleapis.com", status="401", path="managedZones"}[10m])) by(job, host, path) > 0.005
+        labels:
+          severity: critical
+        annotations:
+          summary: '[{{ $labels.job }}] Bad authentication to gcp'
+          message: 'Bad authentication to google gcp when {{ $labels.job }} try to update dns entries.'
+

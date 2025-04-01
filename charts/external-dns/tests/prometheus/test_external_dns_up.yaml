@@ -1,0 +1,165 @@
+---
+
+rule_files:
+  - ../../resources/prometheus-rules/external-dns-up.yaml
+
+evaluation_interval: 1m
+
+tests:
+
+  # Test 1
+  - interval: 1m
+    input_series:
+      - series: 'up{endpoint="http",instance="10.44.1.47:7979",job="external-dns",namespace="infra-external-dns",pod="external-dns-ccbb54f5c-7vsjd",service="external-dns"}'
+
+        values: '1+0x30 0+0x60 1+0x50'
+
+    # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 1m
+        alertname: ExternalDnsIsDown
+
+      # No alert :
+      - eval_time: 40m
+        alertname: ExternalDnsIsDown
+
+      # Alert triggered :
+      - eval_time: 1h
+        alertname: ExternalDnsIsDown
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            endpoint: "http"
+            job: external-dns
+            instance: 10.44.1.47:7979
+            namespace: infra-external-dns
+            pod: external-dns-ccbb54f5c-7vsjd
+            service: external-dns
+            alertname: ExternalDnsIsDown
+          exp_annotations:
+            summary: '[external-dns] Service external-dns is down'
+            message: 'Service "external-dns" in namespace "infra-external-dns" is down.'
+
+      # Alert stopped:
+      - eval_time: 2h
+        alertname: ExternalDnsIsDown
+
+  - interval: 1m
+    input_series:
+      - series: 'external_dns_registry_errors_total{container="external-dns", endpoint="http", instance="10.44.5.240:7979", job="external-dns", namespace="infra-external-dns", pod="external-dns-8668495b87-kbbtj", service="external-dns"}'
+
+        values: '1+0x30 1+1x60 61+0x50'
+
+    # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 1m
+        alertname: ExternalDnsRegistryErrorsAreHigh
+
+      # No alert :
+      - eval_time: 40m
+        alertname: ExternalDnsRegistryErrorsAreHigh
+
+      # Alert triggered :
+      - eval_time: 42m
+        alertname: ExternalDnsRegistryErrorsAreHigh
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            container: "external-dns"
+            endpoint: "http"
+            instance: "10.44.5.240:7979"
+            job: "external-dns"
+            namespace: "infra-external-dns"
+            pod: "external-dns-8668495b87-kbbtj"
+            service: "external-dns"
+            alertname: ExternalDnsRegistryErrorsAreHigh
+          exp_annotations:
+            summary: 'External-dns has registry errors'
+            message: 'There must be a problem on the DNS registry as the external-dns registries error are > 0'
+
+      # Alert stopped:
+      - eval_time: 93m
+        alertname: ExternalDnsRegistryErrorsAreHigh
+
+  - interval: 1m
+    input_series:
+      - series: 'external_dns_registry_errors_total{container="external-dns", endpoint="http", instance="10.44.5.240:7979", job="external-dns", namespace="infra-external-dns", pod="external-dns-8668495b87-kbbtj", service="external-dns"}'
+
+        values: '1+0x30 1+1x60 0+0x50'
+
+    # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 1m
+        alertname: ExternalDnsRegistryErrorsAreHigh
+
+      # No alert :
+      - eval_time: 40m
+        alertname: ExternalDnsRegistryErrorsAreHigh
+
+      # Alert triggered :
+      - eval_time: 42m
+        alertname: ExternalDnsRegistryErrorsAreHigh
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            container: "external-dns"
+            endpoint: "http"
+            instance: "10.44.5.240:7979"
+            job: "external-dns"
+            namespace: "infra-external-dns"
+            pod: "external-dns-8668495b87-kbbtj"
+            service: "external-dns"
+            alertname: ExternalDnsRegistryErrorsAreHigh
+          exp_annotations:
+            summary: 'External-dns has registry errors'
+            message: 'There must be a problem on the DNS registry as the external-dns registries error are > 0'
+
+      # Alert stopped:
+      - eval_time: 93m
+        alertname: ExternalDnsRegistryErrorsAreHigh
+
+  - interval: 1m
+    input_series:
+      - series: 'external_dns_source_errors_total{container="external-dns", endpoint="http", instance="10.44.5.240:7979", job="external-dns", namespace="infra-external-dns", pod="external-dns-8668495b87-kbbtj", service="external-dns"}'
+
+        values: '1+0x30 1+1x60 0+0x50'
+
+    # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 1m
+        alertname: ExternalDnsSourceErrorsAreHigh
+
+      # No alert :
+      - eval_time: 40m
+        alertname: ExternalDnsSourceErrorsAreHigh
+
+      # Alert triggered :
+      - eval_time: 42m
+        alertname: ExternalDnsSourceErrorsAreHigh
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            container: "external-dns"
+            endpoint: "http"
+            instance: "10.44.5.240:7979"
+            job: "external-dns"
+            namespace: "infra-external-dns"
+            pod: "external-dns-8668495b87-kbbtj"
+            service: "external-dns"
+            alertname: ExternalDnsSourceErrorsAreHigh
+          exp_annotations:
+            summary: 'External-dns has source errors'
+            message: 'There must be a problem on the DNS Kubernetes sources as the external-dns source error are > 0'
+
+      # Alert stopped:
+      - eval_time: 93m
+        alertname: ExternalDnsSourceErrorsAreHigh
+
