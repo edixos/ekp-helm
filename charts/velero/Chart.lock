@@ -5,14 +5,14 @@ dependencies:
 - name: workload-identity
   repository: https://edixos.github.io/ekp-helm
   version: 0.1.0
-- name: gcp-iam-policy-memebers
+- name: gcp-iam-policy-members
   repository: https://edixos.github.io/ekp-helm
-  version: 0.1.0
+  version: 0.1.1
 - name: gcp-iam-custom-role
   repository: https://edixos.github.io/ekp-helm
   version: 0.1.0
 - name: gcp-bucket
   repository: https://edixos.github.io/ekp-helm
   version: 0.1.0
-digest: sha256:ea3814af957144208c75b6fe32e2fc989cc55864888f5d183259af3a8e04e242
-generated: "2025-03-28T17:32:18.220735698+01:00"
+digest: sha256:ae44015509a06039f4e4db8d2a4ad8dff8e0b57c43c977034ac15f959afa2719
+generated: "2025-04-02T10:17:38.177425296+01:00"
