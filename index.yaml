@@ -616,6 +616,24 @@ entries:
     version: 0.1.0
   gcp-iam-policy-members:
   - apiVersion: v2
+    appVersion: 0.1.2
+    created: "2025-04-02T16:07:02.754981791Z"
+    description: A Helm chart that Creates GCP IAM Policy Memebers through Config
+      Connector
+    digest: 9a840ce12864f115540ff17e1d6fc625a19a78b6ee8e8e7e39333b5315dc1fdc
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    name: gcp-iam-policy-members
+    type: application
+    urls:
+    - gcp-iam-policy-members-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
     appVersion: 0.1.1
     created: "2025-04-01T16:26:19.00233999Z"
     description: A Helm chart that Creates GCP IAM Policy Memebers through Config
@@ -958,4 +976,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-02T06:47:33.061832588Z"
+generated: "2025-04-02T16:07:02.755034901Z"
