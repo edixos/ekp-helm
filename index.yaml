@@ -805,6 +805,24 @@ entries:
     urls:
     - gcp-vpc-network-0.1.1.tgz
     version: 0.1.1
+  gcp-workload-identity:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-04-02T16:11:46.92755909Z"
+    description: A Helm chart for workload identity
+    digest: 8b54c95d5a0688f5fb7785394d56049588dd43670212992a460d919c79e8030d
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: gcp-workload-identity
+    type: application
+    urls:
+    - gcp-workload-identity-0.1.1.tgz
+    version: 0.1.1
   grafana-stack:
   - apiVersion: v2
     appVersion: 11.3.1
@@ -976,4 +994,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-02T16:07:02.755034901Z"
+generated: "2025-04-02T16:11:46.927629081Z"
