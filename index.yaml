@@ -280,6 +280,36 @@ entries:
   external-dns:
   - apiVersion: v2
     appVersion: 0.16.1
+    created: "2025-04-02T16:19:36.566149421Z"
+    dependencies:
+    - alias: externaldns
+      name: external-dns
+      repository: https://kubernetes-sigs.github.io/external-dns/
+      version: 1.16.0
+    - alias: workloadIdentity
+      name: gcp-workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    - alias: iamPolicyMembers
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.2
+    description: Deploys external-dns and its monitoring
+    digest: 78c464cc351825eaea2c0f64364c8e7baca301b5c3a73823d7ea9283ac46a3b4
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: external-dns
+    urls:
+    - external-dns-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.16.1
     created: "2025-04-01T16:51:12.60405124Z"
     dependencies:
     - alias: externaldns
@@ -994,4 +1024,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-02T16:11:46.927629081Z"
+generated: "2025-04-02T16:19:36.56619704Z"
