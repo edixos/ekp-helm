@@ -13,7 +13,7 @@
 |------------|------|---------|
 | https://edixos.github.io/ekp-helm | gcpbucket(gcp-bucket) | 0.1.0 |
 | https://edixos.github.io/ekp-helm | iamCustomRole(gcp-iam-custom-role) | 0.1.0 |
-| https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-memebers) | 0.1.0 |
+| https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-members) | 0.1.1 |
 | https://edixos.github.io/ekp-helm | workloadIdentity(workload-identity) | 0.1.0 |
 | https://vmware-tanzu.github.io/helm-charts | velero | 8.5.0 |
 
