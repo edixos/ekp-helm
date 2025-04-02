@@ -80,6 +80,40 @@ entries:
   cert-manager:
   - apiVersion: v2
     appVersion: 1.17.1
+    created: "2025-04-02T06:47:33.061774119Z"
+    dependencies:
+    - alias: certmanager
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: 1.17.1
+    - alias: workloadIdentity
+      name: workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.0
+    - alias: iamPolicy
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    description: A Helm chart for cert-manager
+    digest: aed8ce82b628a88b3077d9d346be66632bb5d486e7a0a707b710727268ffaea8
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: cert-manager
+    type: application
+    urls:
+    - cert-manager-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.17.1
     created: "2025-03-28T15:13:03.10668867Z"
     dependencies:
     - alias: certmanager
@@ -924,4 +958,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-01T16:51:12.898242265Z"
+generated: "2025-04-02T06:47:33.061832588Z"
