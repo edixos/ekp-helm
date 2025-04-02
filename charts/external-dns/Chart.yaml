@@ -1,6 +1,6 @@
 apiVersion: v2
 name: external-dns
-version: 0.1.0
+version: 0.1.1
 appVersion: "0.16.1"
 description: Deploys external-dns and its monitoring
 maintainers:
@@ -12,15 +12,15 @@ dependencies:
     version: 1.16.0
     repository: "https://kubernetes-sigs.github.io/external-dns/"
     alias: externaldns
-  - name: workload-identity
-    version: 0.1.0
+  - name: gcp-workload-identity
+    version: 0.1.1
     repository: "https://edixos.github.io/ekp-helm"
     alias: workloadIdentity
     tags:
       - configConnector
   - name: gcp-iam-policy-members
-    version: 0.1.1
+    version: 0.1.2
     repository: "https://edixos.github.io/ekp-helm"
-    alias: iamPolicy
+    alias: iamPolicyMembers
     tags:
       - configConnector

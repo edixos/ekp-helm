@@ -12,8 +12,8 @@
 | Repository | Name | Version |
 |------------|------|---------|
 | https://charts.jetstack.io | certmanager(cert-manager) | 1.17.1 |
-| https://edixos.github.io/ekp-helm | iamPolicy(gcp-iam-policy-members) | 0.1.1 |
-| https://edixos.github.io/ekp-helm | workloadIdentity(workload-identity) | 0.1.0 |
+| https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-members) | 0.1.2 |
+| https://edixos.github.io/ekp-helm | workloadIdentity(gcp-workload-identity) | 0.1.1 |
 
 ## Maintainers
 
@@ -223,11 +223,11 @@ A Helm chart for cert-manager
 | global.gcpProjectId | string | `""` | Google Project ID of the Kubernetes Cluster hosting the service Account |
 | grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
 | grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
-| iamPolicy.iamPolicyMembers[0].member | string | `""` |  |
-| iamPolicy.iamPolicyMembers[0].name | string | `"cert-manager-gsa"` |  |
-| iamPolicy.iamPolicyMembers[0].resourceRef.external | string | `""` |  |
-| iamPolicy.iamPolicyMembers[0].resourceRef.kind | string | `"Project"` |  |
-| iamPolicy.iamPolicyMembers[0].role | string | `"roles/dns.admin"` | Roles to apply to cert-manager google service account |
+| iamPolicyMembers.members[0].member | string | `""` |  |
+| iamPolicyMembers.members[0].name | string | `"cert-manager-gsa"` |  |
+| iamPolicyMembers.members[0].resourceRef.external | string | `""` |  |
+| iamPolicyMembers.members[0].resourceRef.kind | string | `"Project"` |  |
+| iamPolicyMembers.members[0].role | string | `"roles/dns.admin"` | Roles to apply to cert-manager google service account |
 | issuers | list | Please look at the `values.yaml` file | List of issuers to create. Please read the following [documentation](https://cert-manager.io/docs/concepts/issuer/) |
 | prometheusRules.rules.enabled | bool | `false` | Enables prometheus operator rules for cert-manager |
 | prometheusRules.rules.labels | object | `{"prometheus":"prometheus-operator-prometheus"}` | Labels to affect to the Prometheus Rules |

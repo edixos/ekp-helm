@@ -339,8 +339,8 @@ tags:
   # -- Enables Config Connector features
   configConnector: false
 
-iamPolicy:
-  iamPolicyMembers:
+iamPolicyMembers:
+  members:
     - name: "external-dns-gsa"
       member: ""
       # -- Roles to apply to external-dns google service account

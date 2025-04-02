@@ -1,6 +1,6 @@
 # external-dns
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![AppVersion: 0.16.1](https://img.shields.io/badge/AppVersion-0.16.1-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: 0.16.1](https://img.shields.io/badge/AppVersion-0.16.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,8 +11,8 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://edixos.github.io/ekp-helm | iamPolicy(gcp-iam-policy-members) | 0.1.1 |
-| https://edixos.github.io/ekp-helm | workloadIdentity(workload-identity) | 0.1.0 |
+| https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-members) | 0.1.2 |
+| https://edixos.github.io/ekp-helm | workloadIdentity(gcp-workload-identity) | 0.1.1 |
 | https://kubernetes-sigs.github.io/external-dns/ | externaldns(external-dns) | 1.16.0 |
 
 ## Maintainers
@@ -121,11 +121,11 @@ Deploys external-dns and its monitoring
 | global.abandon | bool | `false` | Activate abandon of the resources (If true, the GCP resources will be keep after deleting k8s resources) |
 | global.cnrmNamespace | string | `"cnrm-system"` | Allows to deploy in another namespace than the release one |
 | global.gcpProjectId | string | `""` |  |
-| iamPolicy.iamPolicyMembers[0].member | string | `""` |  |
-| iamPolicy.iamPolicyMembers[0].name | string | `"external-dns-gsa"` |  |
-| iamPolicy.iamPolicyMembers[0].resourceRef.external | string | `""` |  |
-| iamPolicy.iamPolicyMembers[0].resourceRef.kind | string | `"Project"` |  |
-| iamPolicy.iamPolicyMembers[0].role | string | `"roles/dns.admin"` | Roles to apply to external-dns google service account |
+| iamPolicyMembers.members[0].member | string | `""` |  |
+| iamPolicyMembers.members[0].name | string | `"external-dns-gsa"` |  |
+| iamPolicyMembers.members[0].resourceRef.external | string | `""` |  |
+| iamPolicyMembers.members[0].resourceRef.kind | string | `"Project"` |  |
+| iamPolicyMembers.members[0].role | string | `"roles/dns.admin"` | Roles to apply to external-dns google service account |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
@@ -163,7 +163,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: external-dns
     path: ''
     helm:
