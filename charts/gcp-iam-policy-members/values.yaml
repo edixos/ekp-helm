@@ -8,4 +8,4 @@ global:
   abandon: false
 
 # -- List of IAM policy members to create
-iamPolicyMembers: []
+members: []

@@ -2,7 +2,7 @@ global:
   gcpProjectId: "ekp-dev"
   cnrmNamespace: "cnrm-system"
 
-iamPolicyMembers:
+members:
   - name: "test-iam-policy-members-0"
     member: "serviceAccount:iampolicymemberstest@ekp-dev.iam.gserviceaccount.com"
     role: "roles/dns.admin"
