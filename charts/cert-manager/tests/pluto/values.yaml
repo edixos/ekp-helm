@@ -1,3 +1,8 @@
+global:
+  gcpProjectId: ekp-dev
+  cnrmNamespace: "cnrm-system"
+  abandon: true
+
 certmanager:
   prometheus:
     enabled: true
@@ -11,19 +16,25 @@ certmanager:
 tags:
   configConnector: true
 
+iamPolicy:
+  iamPolicyMembers:
+    - name: "cert-manager-gsa"
+      member: "serviceAccount:wi-cert-manager@ekp-dev.iam.gserviceaccount.com"
+      role: "roles/dns.admin"
+      resourceRef:
+        kind: Project
+        external: "projects/ekp-dev"
+
 workloadIdentity:
   global:
-    gcpProjectId: ekp-dev
     gsa:
       create: false
-      name: wi-k8s
-      project: ""
+      name: wi-cert-manager
+      project: "ekp-dev"
 
-    cnrmNamespace: ""
-    abandon: false
     ksa:
-      namespace: "default"
-      name: default
+      namespace: "infra-cert-manager"
+      name: cert-certmanager
 
 issuers:
   - name: letsencrypt-dns-staging
