@@ -2,7 +2,7 @@
 {{- $gcpProjectId := default .Values.gcpProjectId $globalValues.gcpProjectId -}}
 {{- $abandon := default .Values.abandon $globalValues.abandon -}}
 
-{{- range .Values.iamPolicyMembers }}
+{{- range .Values.members }}
 ---
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMPolicyMember
@@ -34,8 +34,8 @@ spec:
   {{- fail "Error: role is required" }}
   {{- end }}
 
-  memberFrom:
 {{- if .memberFrom }}
+  memberFrom:
   {{- if .memberFrom.bigQueryConnectionConnectionRef }}
     {{- if and .memberFrom.bigQueryConnectionConnectionRef.name .memberFrom.bigQueryConnectionConnectionRef.type }}
       bigQueryConnectionConnectionRef:
@@ -89,7 +89,9 @@ spec:
     {{- if .resourceRef.apiVersion }}
     apiVersion: {{ .resourceRef.apiVersion }}
     {{- end }}
+    {{- if .resourceRef.namespace }}
     namespace: {{ .resourceRef.namespace }}
+    {{- end }}
   {{- else }}
   {{- fail "resourceRef.kind is required" }}
   {{- end }}
