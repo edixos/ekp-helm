@@ -1,8 +1,8 @@
 apiVersion: v2
-name: workload-identity
+name: gcp-workload-identity
 description: A Helm chart for workload identity
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "1.16.0"
 maintainers:
   - name: wiemaouadi
