@@ -16,15 +16,15 @@ dependencies:
     version: "1.17.1"
     repository: "https://charts.jetstack.io"
     alias: certmanager
-  - name: workload-identity
-    version: 0.1.0
+  - name: gcp-workload-identity
+    version: 0.1.1
     repository: "https://edixos.github.io/ekp-helm"
     alias: workloadIdentity
     tags:
       - configConnector
   - name: gcp-iam-policy-members
-    version: 0.1.1
+    version: 0.1.2
     repository: "https://edixos.github.io/ekp-helm"
-    alias: iamPolicy
+    alias: iamPolicyMembers
     tags:
       - configConnector

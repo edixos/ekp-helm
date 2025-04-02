@@ -34,8 +34,8 @@ workloadIdentity:
       namespace: "infra-external-dns"
       name: dns-externaldns
 
-iamPolicy:
-  iamPolicyMembers:
+iamPolicyMembers:
+  members:
     - name: "external-dns-gsa"
       member: "serviceAccount:wi-external-dns@ekp-dev.iam.gserviceaccount.com"
       role: "roles/dns.admin"

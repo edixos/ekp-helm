@@ -16,8 +16,8 @@ certmanager:
 tags:
   configConnector: true
 
-iamPolicy:
-  iamPolicyMembers:
+iamPolicyMembers:
+  members:
     - name: "cert-manager-gsa"
       member: "serviceAccount:wi-cert-manager@ekp-dev.iam.gserviceaccount.com"
       role: "roles/dns.admin"

@@ -1552,8 +1552,8 @@ tags:
   # -- Enables Config Connector features
   configConnector: false
 
-iamPolicy:
-  iamPolicyMembers:
+iamPolicyMembers:
+  members:
     - name: "cert-manager-gsa"
       member: ""
       # -- Roles to apply to cert-manager google service account
