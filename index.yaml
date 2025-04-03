@@ -438,6 +438,22 @@ entries:
     version: 0.1.0
   gcp-dns-zone:
   - apiVersion: v2
+    created: "2025-04-03T11:36:05.929968524Z"
+    description: A Helm chart for gcp-dns-zone resource
+    digest: 1e2127e1fa23a224759702f05f4a23ac281b1ac0e8ff718f53604820a255ece2
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: gcp-dns-zone
+    type: application
+    urls:
+    - gcp-dns-zone-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     created: "2025-03-20T08:01:52.242373451Z"
     description: A Helm chart for gcp-dns-zone resource
     digest: f74e4067e9acc5af95ec8fce0c7fa81f9cd7dc3d8c23dd9ca3f37cc0d40f4085
@@ -1024,4 +1040,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-02T16:19:36.56619704Z"
+generated: "2025-04-03T11:36:05.930028435Z"
