@@ -179,4 +179,4 @@ iamPolicyMembers:
     gcpProjectId: myprojectid
     # -- Keep the resource even after the kcc resource deletion.
     abandon: false
-  iamPolicyMembers: []
+  members: []

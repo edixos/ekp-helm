@@ -42,7 +42,7 @@ A Helm chart for Kubernetes
 | iamCustomRole.description | string | `"The description of the custom role resource"` | A human-readable description for the role |
 | iamCustomRole.permissions | list | `["compute.disks.create","compute.disks.createSnapshot","compute.disks.get","compute.snapshots.create","compute.snapshots.delete","compute.snapshots.get","compute.snapshots.useReadOnly","compute.zones.get"]` | custom role permissions |
 | iamCustomRole.title | string | `"velero"` | A human-readable title for the role |
-| iamPolicyMembers | object | `{"global":{"abandon":false,"cnrmNamespace":"","gcpProjectId":"myprojectid"},"iamPolicyMembers":[]}` | `tags.configConnector` must be set to `true` |
+| iamPolicyMembers | object | `{"global":{"abandon":false,"cnrmNamespace":"","gcpProjectId":"myprojectid"},"members":[]}` | `tags.configConnector` must be set to `true` |
 | iamPolicyMembers.global.abandon | bool | `false` | Keep the resource even after the kcc resource deletion. |
 | iamPolicyMembers.global.cnrmNamespace | string | nil | Allows to deploy in another namespace than the release one |
 | iamPolicyMembers.global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
