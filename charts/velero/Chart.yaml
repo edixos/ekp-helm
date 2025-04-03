@@ -8,8 +8,8 @@ dependencies:
   - name: velero
     version: 8.5.0
     repository: "https://vmware-tanzu.github.io/helm-charts"
-  - name: workload-identity
-    version: 0.1.0
+  - name: gcp-workload-identity
+    version: 0.1.1
     repository: "https://edixos.github.io/ekp-helm"
     alias: workloadIdentity
     tags:
