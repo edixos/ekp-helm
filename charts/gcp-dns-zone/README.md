@@ -16,9 +16,9 @@ A Helm chart for gcp-dns-zone resource
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | computeAddresses | list | `[]` | List of compute addresses to create |
-| dnsManagedZone | object | `{"dnsName":"tst1.poc.gcp.renault.com.","name":"tst1-poc-gcp-renault-com","privateVisibilityConfig":{"gkeClusters":[],"networks":[]},"visibility":"public"}` | DNS Managed zone configuration |
-| dnsManagedZone.dnsName | string | `"tst1.poc.gcp.renault.com."` | The name of DNS |
-| dnsManagedZone.name | string | `"tst1-poc-gcp-renault-com"` | The name of dnsManagedZone |
+| dnsManagedZone | object | `{"dnsName":"tst1.poc.gcp.edixos.com.","name":"tst1-poc-gcp-edixos-com","privateVisibilityConfig":{"gkeClusters":[],"networks":[]},"visibility":"public"}` | DNS Managed zone configuration |
+| dnsManagedZone.dnsName | string | `"tst1.poc.gcp.edixos.com."` | The name of DNS |
+| dnsManagedZone.name | string | `"tst1-poc-gcp-edixos-com"` | The name of dnsManagedZone |
 | dnsManagedZone.privateVisibilityConfig | object | `{"gkeClusters":[],"networks":[]}` | The configuration of private DNS zone |
 | dnsManagedZone.visibility | string | `"public"` | The visibility of the DNS zone |
 | dnsRecordSet | list | `[]` | DNS Records to create. Possible records: A, CNAME and NS |

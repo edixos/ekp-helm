@@ -18,9 +18,9 @@ global:
 # dnsManagedZone -- DNS Managed zone configuration
 dnsManagedZone:
   # dnsManagedZone.name -- The name of dnsManagedZone
-  name: tst1-poc-gcp-renault-com
+  name: tst1-poc-gcp-edixos-com
   # dnsManagedZone.dnsName -- The name of DNS
-  dnsName: tst1.poc.gcp.renault.com.
+  dnsName: tst1.poc.gcp.edixos.com.
   # dnsManagedZone.visibility -- The visibility of the DNS zone
   visibility: public
   # dnsManagedZone.privateVisibilityConfig -- The configuration of private DNS zone
@@ -38,8 +38,8 @@ dnsManagedZone:
 
 # dnsRecordSet -- DNS Records to create. Possible records: A, CNAME and NS
 dnsRecordSet: []
-  # - dnsRecordName: "*.tst1.poc.gcp.renault.com."
-  #   name: tst1-poc-gcp-renault-com
+  # - dnsRecordName: "*.tst1.poc.gcp.edixos.com."
+  #   name: tst1-poc-gcp-edixos-com
   #   type: A
   #   computeAddressRef: addr1
   # - dnsRecordName: "example.com"
