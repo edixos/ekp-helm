@@ -7,12 +7,12 @@ dependencies:
   version: 0.1.1
 - name: gcp-iam-policy-members
   repository: https://edixos.github.io/ekp-helm
-  version: 0.1.1
+  version: 0.1.2
 - name: gcp-iam-custom-role
   repository: https://edixos.github.io/ekp-helm
   version: 0.1.0
 - name: gcp-bucket
   repository: https://edixos.github.io/ekp-helm
   version: 0.1.0
-digest: sha256:7b8b462ff5bae5475c80569e670b7b3a7fad45876bede6bd9eeb8e010a1c7c95
-generated: "2025-04-03T09:13:53.784622492+01:00"
+digest: sha256:3ee3ee3c56460689742db3f11559b60dd1a1acf362428a28237a911448e1570e
+generated: "2025-04-03T11:30:19.167081779+01:00"

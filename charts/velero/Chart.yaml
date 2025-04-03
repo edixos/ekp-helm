@@ -15,7 +15,7 @@ dependencies:
     tags:
       - configConnector
   - name: gcp-iam-policy-members
-    version: 0.1.1
+    version: 0.1.2
     repository: "https://edixos.github.io/ekp-helm"
     alias: iamPolicyMembers
     tags:
