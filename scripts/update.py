@@ -6,43 +6,58 @@ from datetime import datetime
 from pathlib import Path
 
 
+# --- Helper: Run a shell command and capture output ---
 def run_command(cmd):
-    """Run a command and return stdout as a string, or raise an exception."""
+    """Run a command and return stdout as a string."""
     return subprocess.check_output(cmd, universal_newlines=True).strip()
 
 
-def get_latest_chart_version(helm_repo_name, chart_name):
+# --- Helper: Custom literal string to force block style in YAML ---
+class LiteralStr(str):
+    pass
+
+
+def literal_str_representer(dumper, data):
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+
+
+yaml.add_representer(LiteralStr, literal_str_representer, Dumper=yaml.SafeDumper)
+
+
+# --- Get upstream chart info (both version and appVersion) ---
+def get_latest_chart_info(helm_repo_name, chart_name):
     """
-    Run "helm show chart <helm_repo_name>/<chart_name>" to get the upstream chart info.
-    Return the version string.
+    Run "helm show chart <helm_repo_name>/<chart_name>" to get upstream chart info.
+    Returns a dict with at least "version" and optionally "appVersion".
     """
     try:
         output = run_command(["helm", "show", "chart", f"{helm_repo_name}/{chart_name}"])
         chart_info = yaml.safe_load(output)
-        return chart_info.get("version")
+        return chart_info
     except Exception as e:
         print(f"Error fetching chart info for {helm_repo_name}/{chart_name}: {e}")
         return None
 
 
+# --- Get default values as raw text (preserving comments) ---
 def get_default_values(helm_repo_name, chart_name, version):
     """
     Run "helm show values <helm_repo_name>/<chart_name> --version <version>" to get default values.
-    Return a dict.
+    Return the raw text output (which includes comments).
     """
     try:
         output = run_command(["helm", "show", "values", f"{helm_repo_name}/{chart_name}", "--version", version])
-        return yaml.safe_load(output)
+        return output
     except Exception as e:
         print(f"Error fetching default values for {helm_repo_name}/{chart_name} version {version}: {e}")
         return None
 
 
+# --- Look up the helm repository name locally given a repository URL ---
 def get_helm_repo_name(repo_url):
     """
     Look up the helm repository name (as added locally) that matches the given repository URL.
-    This function reads the output of 'helm repo list --output yaml' and returns the repo name
-    whose URL (after stripping trailing slashes) matches the provided repo_url.
+    Reads output of 'helm repo list --output yaml' and returns the repo name whose URL (after stripping trailing slashes) matches.
     """
     try:
         output = run_command(["helm", "repo", "list", "--output", "yaml"])
@@ -58,6 +73,7 @@ def get_helm_repo_name(repo_url):
         return None
 
 
+# --- Update a single chart ---
 def update_chart(chart_dir: Path):
     chart_yaml_path = chart_dir / "Chart.yaml"
     values_yaml_path = chart_dir / "values.yaml"
@@ -66,6 +82,7 @@ def update_chart(chart_dir: Path):
         chart_yaml = yaml.safe_load(f)
 
     updated = False
+    # Process dependencies in Chart.yaml
     dependencies = chart_yaml.get("dependencies", [])
     for dep in dependencies:
         dep_name = dep.get("name")
@@ -83,30 +100,39 @@ def update_chart(chart_dir: Path):
             continue
 
         print(f"Checking dependency {dep_name} (helm repo: {helm_repo_name}) ...")
-        latest_version = get_latest_chart_version(helm_repo_name, dep_name)
-        if not latest_version:
-            print(f"Could not get latest version for {dep_name}. Skipping.")
+        chart_info = get_latest_chart_info(helm_repo_name, dep_name)
+        if not chart_info:
+            print(f"Could not get upstream info for {dep_name}. Skipping.")
             continue
 
+        latest_version = chart_info.get("version")
+        latest_app_version = chart_info.get("appVersion")
         if latest_version != current_version:
             print(f"Updating {dep_name}: {current_version} -> {latest_version}")
             dep["version"] = latest_version
             updated = True
 
-            # Get upstream default values for the new version.
-            new_defaults = get_default_values(helm_repo_name, dep_name, latest_version)
-            if new_defaults is not None:
-                # Load existing values.yaml if exists; otherwise, start with an empty dict.
+            # Update top-level appVersion with upstream appVersion if available.
+            if latest_app_version:
+                print(f"Updating appVersion to {latest_app_version}")
+                chart_yaml["appVersion"] = latest_app_version
+
+            # Fetch upstream default values as raw text.
+            new_defaults_raw = get_default_values(helm_repo_name, dep_name, latest_version)
+            if new_defaults_raw is not None:
+                # Wrap the raw text in LiteralStr to dump in block style preserving comments.
+                new_defaults_literal = LiteralStr(new_defaults_raw)
+                # Load current values.yaml if it exists, otherwise start with an empty dict.
                 if values_yaml_path.exists():
                     with values_yaml_path.open("r") as vf:
                         values_yaml = yaml.safe_load(vf) or {}
                 else:
                     values_yaml = {}
 
-                # Update values.yaml under the key corresponding to the dependency alias.
-                values_yaml[dep_alias] = new_defaults
+                # Update the dependency's default values under the key 'dep_alias'
+                values_yaml[dep_alias] = new_defaults_literal
 
-                # Write updated values.yaml.
+                # Write updated values.yaml
                 with values_yaml_path.open("w") as vf:
                     yaml.dump(values_yaml, vf, default_flow_style=False)
             else:
@@ -125,6 +151,7 @@ def update_chart(chart_dir: Path):
     return updated
 
 
+# --- Process all charts in the charts directory ---
 def process_all_charts(charts_dir: Path):
     charts_updated = False
     for chart in charts_dir.iterdir():
@@ -135,6 +162,7 @@ def process_all_charts(charts_dir: Path):
     return charts_updated
 
 
+# --- Run post-update scripts ---
 def run_fix_lint(repo_root: Path):
     fix_lint_path = repo_root / "scripts" / "fix-lint.sh"
     if not fix_lint_path.exists():
@@ -158,6 +186,7 @@ def run_helm_docs(repo_root: Path):
         sys.exit(1)
 
 
+# --- Git commit and PR creation ---
 def commit_and_create_pr():
     try:
         status = subprocess.check_output(["git", "status", "--porcelain"], universal_newlines=True).strip()
@@ -181,7 +210,7 @@ def commit_and_create_pr():
 def main():
     # Determine the repository root relative to this script.
     script_dir = Path(__file__).resolve().parent
-    repo_root = script_dir.parent  # Assuming 'scripts' is a subdirectory of the repo root.
+    repo_root = script_dir.parent
     charts_dir = repo_root / "charts"
     if not charts_dir.is_dir():
         print(f"Error: charts directory '{charts_dir}' not found.")
