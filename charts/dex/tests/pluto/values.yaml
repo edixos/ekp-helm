@@ -135,3 +135,26 @@ dex:
           # authURL provides a way to user overwrite the authorization URL
           # from the .well-known/openid-configuration 'authorization_endpoint'.   
           # authURL: ""
+
+tags:
+  configConnector: true
+
+workloadIdentity:
+  global:
+    gsa:
+      create: true
+      name: wi-dex
+      project: "ekp-dev"
+
+    ksa:
+      namespace: "infra-dex"
+      name: wi-dex
+
+iamPolicyMembers:
+  members:
+    - name: "ekp-dex-groups-reader"
+      member: "serviceAccount:ekp-dex-groups-reader@ekp-dev.iam.gserviceaccount.com"
+      role: "roles/iam.serviceAccountTokenCreator"
+      resourceRef:
+        kind: Project
+        external: "projects/ekp-dev"

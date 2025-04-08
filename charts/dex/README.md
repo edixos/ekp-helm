@@ -1,6 +1,6 @@
 # dex
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.42.0](https://img.shields.io/badge/AppVersion-2.42.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.42.0](https://img.shields.io/badge/AppVersion-2.42.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,9 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.dexidp.io | dex | 0.22.0 |
+| https://charts.dexidp.io | dex(dex) | 0.22.0 |
+| https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-members) | 0.1.2 |
+| https://edixos.github.io/ekp-helm | workloadIdentity(gcp-workload-identity) | 0.1.1 |
 
 ## Maintainers
 
@@ -101,6 +103,17 @@ A Helm chart for Dex - OpenID Connect Identity (OIDC) and OAuth 2.0 Provider wit
 | dex.topologySpreadConstraints | list | `[]` | [TopologySpreadConstraints](https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/) configuration. See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling) for details. |
 | dex.volumeMounts | list | `[]` | Additional [volume mounts](https://kubernetes.io/docs/tasks/configure-pod-container/configure-volume-storage/). See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1) for details. |
 | dex.volumes | list | `[]` | Additional storage [volumes](https://kubernetes.io/docs/concepts/storage/volumes/). See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1) for details. |
+| iamPolicyMembers.members[0].member | string | `""` |  |
+| iamPolicyMembers.members[0].name | string | `"ekp-dex-groups-reader"` |  |
+| iamPolicyMembers.members[0].resourceRef.external | string | `""` |  |
+| iamPolicyMembers.members[0].resourceRef.kind | string | `"Project"` |  |
+| iamPolicyMembers.members[0].role | string | `"roles/iam.serviceAccountTokenCreator"` | Roles to apply to external-dns google service account |
+| tags.configConnector | bool | `false` | Enables Config Connector features |
+| workloadIdentity.global.gsa.create | bool | `true` |  |
+| workloadIdentity.global.gsa.name | string | `"wi-dex"` |  |
+| workloadIdentity.global.gsa.project | string | `""` |  |
+| workloadIdentity.global.ksa.name | string | `"default"` |  |
+| workloadIdentity.global.ksa.namespace | string | `""` |  |
 
 ## Installing the Chart
 
@@ -127,7 +140,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: dex
     path: ''
 
