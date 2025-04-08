@@ -340,3 +340,34 @@ dex:
     #    ports:
     #      - port: 636
     #        protocol: TCP
+
+tags:
+  # -- Enables Config Connector features
+  configConnector: false
+
+iamPolicyMembers:
+  members:
+    - name: "ekp-dex-groups-reader"
+      member: ""
+      # -- Roles to apply to external-dns google service account
+      role: "roles/iam.serviceAccountTokenCreator"
+      resourceRef:
+        kind: Project
+        external: ""
+
+workloadIdentity:
+  global:
+    # global.gsa -- Name of the Google Service Account
+    gsa:
+      # Creates the Google Service Account
+      create: true
+      # Name of the google service account
+      name: wi-dex
+      # Project Id hosting the google service account.
+      project: ""
+
+    ksa:
+      # global.ksa.namespace -- Kubernetes Service Account namespace. Overrides the Release Namespace
+      namespace: ""
+      # global.ksa.name -- Name of the Kubernetes Service Account
+      name: default

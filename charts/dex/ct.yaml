@@ -5,4 +5,5 @@ chart-dirs:
 helm-extra-args: --timeout=500
 chart-repos:
  - dex=https://charts.dexidp.io
+ - ekp-helm=https://edixos.github.io/ekp-helm
 check-version-increment: true
