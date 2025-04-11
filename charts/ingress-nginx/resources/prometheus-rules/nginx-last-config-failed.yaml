@@ -1,0 +1,11 @@
+groups:
+  - name: LastNginxIngressConfigFailed
+    rules:
+      - alert: LastNginxIngressConfigFailed
+        expr: nginx_ingress_controller_config_last_reload_successful{controller_class="nginx"} == 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: '[{{ $labels.namespace }}] Last {{ $labels.controller_class }} Ingress config failed'
+          message: 'The last config applied on {{ $labels.controller_class }} Ingress failed in namespace "{{ $labels.namespace }}". Please correct the configuration'

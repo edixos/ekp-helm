@@ -1,3 +1,8 @@
+---
+prometheus:
+  prometheusRules:
+    enabled: true
+
 ingressNginx:  
   nameOverride: "ingress-nginx"
   fullnameOverride: "ingress-nginx"

@@ -1,0 +1,45 @@
+---
+
+rule_files:
+  - ../../resources/prometheus-rules/nginx-failing-rate.yaml
+
+evaluation_interval: 1m
+
+tests:
+
+  # Test 1
+  - interval: 1m
+    input_series:
+      - series: 'nginx_ingress_controller_requests{container="controller", controller_class="nginx-internal", controller_namespace="kube-system", controller_pod="internal-lb-70740-nginx-ingress-controller-5766995d95-5h8n2", endpoint="metrics", exported_namespace="aic-68879", exported_service="aic-api", ingress="aic-api", instance="172.20.0.220:10254", job="internal-lb-70740-nginx-ingress-controller-metrics", namespace="kube-system", pod="internal-lb-70740-nginx-ingress-controller-5766995d95-5h8n2", service="internal-lb-70740-nginx-ingress-controller-metrics", status="200"}'
+        values: '100+1x35 135+0x60 135+1x50'
+      - series: 'nginx_ingress_controller_requests{container="controller", controller_class="nginx-internal", controller_namespace="kube-system", controller_pod="internal-lb-70740-nginx-ingress-controller-5766995d95-5h8n2", endpoint="metrics", exported_namespace="dws-70315", exported_service="dws-api-proxy", ingress="dws-api-proxy", instance="172.20.0.220:10254", job="internal-lb-70740-nginx-ingress-controller-metrics", namespace="kube-system", pod="internal-lb-70740-nginx-ingress-controller-5766995d95-5h8n2", service="internal-lb-70740-nginx-ingress-controller-metrics", status="502"}'
+        values: '0+0x35 10+1x60 70+0x50'
+      # The "instance:node_vmstat_pgmajfault:rate1m" corresponds to the rate per minute of the major faults in the memory pagination: these are errors that we saw on the gke nodes during the problem. if this rate exceeds 5 (it is generally below 5 on our clusters) and it coincides with the increase in http-5.x.x errors: this potentially corresponds to the bug encountered: https://github.com/kubernetes/ingress-nginx/issues/6896
+      - series: 'instance:node_vmstat_pgmajfault:rate1m{container="node-exporter", endpoint="metrics", instance="172.20.164.10:9100", job="node-exporter", namespace="monitoring", pod="prometheus-operator-prometheus-node-exporter-gwk9k", service="prometheus-operator-prometheus-node-exporter"}'
+        values: '1+0x35 8+1x60 2+0x50'
+    # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 1m
+        alertname: IncreasingNginxIngressFailingRate
+
+      # No alert :
+      - eval_time: 39m
+        alertname: IncreasingNginxIngressFailingRate
+
+      # Alert triggered :
+      - eval_time: 41m
+        alertname: IncreasingNginxIngressFailingRate
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            alertname: IncreasingNginxIngressFailingRate
+          exp_annotations:
+            summary: 'Service Nginx-Ingress-Controller has an increasing failing rate'
+            message: 'Nginx ingress controller has an increasing failing rate. Please see if there any errors on workers.'
+
+      # Alert stopped:
+      - eval_time: 2h
+        alertname: IncreasingNginxIngressFailingRate
+

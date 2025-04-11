@@ -1,0 +1,11 @@
+groups:
+  - name: IncreasingNginxIngressFailingRate
+    rules:
+      - alert: IncreasingNginxIngressFailingRate
+        expr: 100*(sum(nginx_ingress_controller_requests{status=~"5.+"})) / (sum(nginx_ingress_controller_requests{status=~"5.+"}) + sum(nginx_ingress_controller_requests{status=~"2.+"})) > 3 and sum(instance:node_vmstat_pgmajfault:rate1m) > 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Service Nginx-Ingress-Controller has an increasing failing rate'
+          message: 'Nginx ingress controller has an increasing failing rate. Please see if there any errors on workers.'
