@@ -1,0 +1,42 @@
+---
+
+rule_files:
+  - ../../resources/prometheus-rules/cert-expiry.yaml
+
+evaluation_interval: 1s
+
+tests:
+
+  # Test 1
+  - interval: 1s
+    input_series:
+      - series: 'nginx_ingress_controller_ssl_expire_time_seconds{class="nginx-internal", container="controller", endpoint="metrics", exported_namespace="kube-system", host="abc-api.dev1.applis.renault.fr", instance="172.20.134.11:10254", job="internal-lb-70740-nginx-ingress-controller-metrics", namespace="kube-system", pod="internal-lb-70740-nginx-ingress-controller-79844fb698-tlnlf", service="internal-lb-70740-nginx-ingress-controller-metrics"}'
+        values: '604920-1x180 7257600-1x10'
+
+    # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 60s
+        alertname: NGINXCertificateExpiry
+
+      # No alert :
+      - eval_time: 61s
+        alertname: NGINXCertificateExpiry
+
+      # Alert triggered :
+      - eval_time: 121s
+        alertname: NGINXCertificateExpiry
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            alertname: NGINXCertificateExpiry
+            host: abc-api.dev1.applis.renault.fr
+          exp_annotations:
+            summary: renew expiring certificates to avoid downtime
+            message: ssl certificate(s) will expire in less then a week
+
+      # Alert stopped:
+      - eval_time: 3600s
+        alertname: NGINXCertificateExpiry
+
