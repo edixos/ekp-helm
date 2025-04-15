@@ -10,7 +10,7 @@ spec:
     hooks: {}
     includedNamespaces:
 {{- range .Values.backups.namespaces }}
-      - {{ . }}
+      - {{ . | quote }}
 {{- end }}
-    ttl: {{ .Values.backups.ttl}}
+    ttl: {{ .Values.backups.ttl | quote }}
 {{- end }}

@@ -1,27 +1,16 @@
 global:
-  gcpProjectId: ekp-dev
-  cnrmNamespace: cnrm-system
+  gcpProjectId: "ekp-dev"
+  skipUnspecifiedFields: false
+  cnrmNamespace: "cnrm-system"
+  location: europe-west1
   abandon: true
-  location: europe-west1-b
-prometheus:
-  enabled: false
-  rules:
-    labels:
-      prometheus: prometheus-operator-prometheus
-backups:
-  enabled: true
-  namespaces:
-  - default
-  schedule: "0 12 * * *"
-  ttl: "168h0m0s"
+
+tags:
+  configConnector: true
+
 gcpbucket:
-  global:
-    cnrmNamespace: cnrm-system
-    location: europe-west1-b
-    abandon: true
-    skipUnspecifiedFields: false
-    gcpProjectId: "ekp-dev"
-  bucketName: "velero-bucket-ekp"
+  fullnameOverride: ekp-velero-bkp-bucket-test
+  bucketName: "ekp-velero-bkp-bucket-test"
   accessControl:
     uniformBucketLevelAccess: false
     publicAccessPrevention: inherited
@@ -29,51 +18,64 @@ gcpbucket:
     iamPolicy:
       - member: serviceAccount:wi-velero@ekp-dev.iam.gserviceaccount.com
         role: roles/storage.admin
-velero:
-  configuration:
-    backupStorageLocation:
-      - bucket: "velero-bucket-ekp"
-        config:
-          region: europe-west1-b
-          serviceAccount: wi-velero@ekp-dev.iam.gserviceaccount.com
-        name: default
-        provider: gcp
-    volumeSnapshotLocation:
-    - config:
-        project: ekp-dev
-        region: europe-west1-b
-      name: default
-      provider: gcp
-  credentials:
-    useSecret: false
-  serviceAccount:
-    server:
-      annotations:
-        iam.gke.io/gcp-service-account: wi-velero@ekp-dev.iam.gserviceaccount.com
-      create: true
-      name: wi-velero
-iamPolicyMembers:
-  members:
-  - member: serviceAccount:wi-velero@ekp-dev.iam.gserviceaccount.com
-    name: velero-gsa
-    resourceRef:
-      external: projects/ekp-dev
-      kind: Project
-    role: roles/storage.admin
-  - member: serviceAccount:wi-velero@ekp-dev.iam.gserviceaccount.com
-    name: velero-gsa
-    resourceRef:
-      external: projects/ekp-dev
-      kind: Project
-    role: roles/compute.storageAdmin
-tags:
-  configConnector: true
+
 workloadIdentity:
   global:
     gsa:
-      create: false
+      create: true
       name: wi-velero
       project: ekp-dev
     ksa:
       name: wi-velero
       namespace: infra-velero
+
+iamPolicyMembers:
+  members:
+  - member: serviceAccount:wi-velero@ekp-dev.iam.gserviceaccount.com
+    name: velero-gsa-storage-admin
+    resourceRef:
+      external: projects/ekp-dev
+      kind: Project
+    role: roles/storage.admin
+  - member: serviceAccount:wi-velero@ekp-dev.iam.gserviceaccount.com
+    name: velero-gsa-compute-admin
+    resourceRef:
+      external: projects/ekp-dev
+      kind: Project
+    role: roles/compute.storageAdmin
+
+velero:
+  credentials:
+    useSecret: false
+  serviceAccount:
+    server:
+      create: true
+      name: wi-velero
+      annotations:
+        iam.gke.io/gcp-service-account: wi-velero@ekp-dev.iam.gserviceaccount.com
+  configuration:
+    backupStorageLocation:
+    - name: default
+      provider: gcp
+      bucket: ekp-velero-bkp-bucket-test
+      config:
+        serviceAccount: "wi-velero@ekp-dev.iam.gserviceaccount.com"
+    volumeSnapshotLocation:
+    - name: default
+      provider: gcp
+      config:
+        region: europe-west1
+        project: ekp-dev
+
+backups:
+  enabled: true
+  namespaces:
+  - '*'
+  schedule: "0 12 * * *"
+  ttl: "168h0m0s"
+
+prometheus:
+  enabled: false
+  rules:
+    labels:
+      prometheus: ekp-operator-prometheus
