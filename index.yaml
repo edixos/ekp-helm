@@ -1038,6 +1038,51 @@ entries:
   velero:
   - apiVersion: v2
     appVersion: 1.15.2
+    created: "2025-04-15T15:19:21.059688962Z"
+    dependencies:
+    - name: velero
+      repository: https://vmware-tanzu.github.io/helm-charts
+      version: 8.7.2
+    - alias: workloadIdentity
+      name: gcp-workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    - alias: iamPolicyMembers
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.2
+    - alias: iamCustomRole
+      name: gcp-iam-custom-role
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.0
+    - alias: gcpbucket
+      name: gcp-bucket
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.0
+    description: A Helm chart for velero
+    digest: 43867c63a5a489b3d74510570e70dc2e073ed76432e2f501a9cded014f91f569
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: velero
+    type: application
+    urls:
+    - velero-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.15.2
     created: "2025-04-14T08:52:57.911925169Z"
     dependencies:
     - name: velero
@@ -1120,4 +1165,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-14T08:52:57.91197923Z"
+generated: "2025-04-15T15:19:21.059745578Z"
