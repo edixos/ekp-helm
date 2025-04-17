@@ -1,0 +1,32 @@
+groups:
+- name: argocd.controller.rules
+  rules:
+  - alert: ArgoCDControllerHighReconciliationTime
+    expr: |
+      histogram_quantile(0.9, sum(rate(argocd_app_reconcile_bucket[5m])) by (le)) > 30
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: "ArgoCD controller high reconciliation time"
+      description: "90% of application reconciliation operations are taking more than 30 seconds to complete"
+
+  - alert: ArgoCDRepoServerRequestErrors
+    expr: |
+      increase(argocd_git_request_total{status_code!~"2.*"}[15m]) > 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "ArgoCD repository server errors"
+      description: "There are Git request errors in ArgoCD repo server"
+
+  - alert: ArgoCDRedisDown
+    expr: |
+      absent(up{job=~".*argocd-redis.*"}) == 1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "ArgoCD Redis is down"
+      description: "ArgoCD Redis instance is down, which may affect the functionality of ArgoCD"

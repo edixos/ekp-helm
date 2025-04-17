@@ -1,0 +1,42 @@
+groups:
+- name: argocd.app.rules
+  rules:
+  - alert: ArgoCDSyncFailed
+    expr: |
+      increase(argocd_app_sync_total{phase="Error"}[15m]) > 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "ArgoCD application sync failed"
+      description: "Application {{ $labels.name }} in project {{ $labels.project }} has failed to sync"
+
+  - alert: ArgoCDAppOutOfSync
+    expr: |
+      argocd_app_info{sync_status!="Synced"} == 1
+    for: 30m
+    labels:
+      severity: warning
+    annotations:
+      summary: "ArgoCD application not synced"
+      description: "Application {{ $labels.name }} in project {{ $labels.project }} is not synchronized for more than 30 minutes"
+
+  - alert: ArgoCDAppHealthDegraded
+    expr: |
+      argocd_app_info{health_status="Degraded"} == 1
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: "ArgoCD application health degraded"
+      description: "Application {{ $labels.name }} in project {{ $labels.project }} has degraded health status"
+
+  - alert: ArgoCDAppMissing
+    expr: |
+      absent(argocd_app_info) == 1
+    for: 15m
+    labels:
+      severity: critical
+    annotations:
+      summary: "ArgoCD applications not reporting"
+      description: "ArgoCD has not reported any applications data for the past 15 minutes which may indicate that ArgoCD is down or not functioning properly"

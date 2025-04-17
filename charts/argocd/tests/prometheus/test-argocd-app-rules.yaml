@@ -1,0 +1,156 @@
+---
+rule_files:
+  - ../../resources/prometheus-rules/argocd-app-rules.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # Test for application health status transitions - SIMPLIFIED
+  - interval: 1m
+    input_series:
+      # App starts degraded immediately and stays that way for 25m
+      - series: 'argocd_app_info{namespace="infra-argocd", health_status="Degraded", name="app-prod", dest_server="https://kubernetes.default.svc", project="default"}'
+        values: '1+0x25 0+0x5'
+      - series: 'argocd_app_info{namespace="infra-argocd", health_status="Healthy", name="app-prod", dest_server="https://kubernetes.default.svc", project="default"}'
+        values: '0+0x25 1+0x5'
+
+    alert_rule_test:
+      # No alert before threshold
+      - eval_time: 10m
+        alertname: ArgoCDAppHealthDegraded
+      
+      # Alert triggers after 15m
+      - eval_time: 16m
+        alertname: ArgoCDAppHealthDegraded
+        exp_alerts:
+        - exp_labels:
+            severity: warning
+            name: app-prod
+            namespace: infra-argocd
+            project: default
+            dest_server: https://kubernetes.default.svc
+            health_status: Degraded
+          exp_annotations:
+            summary: "ArgoCD application health degraded"
+            description: "Application app-prod in project default has degraded health status"
+      
+      # Alert still active
+      - eval_time: 22m
+        alertname: ArgoCDAppHealthDegraded
+        exp_alerts:
+        - exp_labels:
+            severity: warning
+            name: app-prod
+            namespace: infra-argocd
+            project: default
+            dest_server: https://kubernetes.default.svc
+            health_status: Degraded
+          exp_annotations:
+            summary: "ArgoCD application health degraded"
+            description: "Application app-prod in project default has degraded health status"
+      
+      # Alert resolved when app becomes healthy again
+      - eval_time: 27m
+        alertname: ArgoCDAppHealthDegraded
+
+  # Test for application sync failures
+  - interval: 1m
+    input_series:
+      # App has no failures, then failures, then no failures again
+      - series: 'argocd_app_sync_total{namespace="infra-argocd", phase="Error", name="app-staging", dest_server="https://kubernetes.default.svc", project="default"}'
+        values: '0+0x5 1+1x15 0+0x20'  # No increases after t=20m
+      
+      # Background of successful syncs
+      - series: 'argocd_app_sync_total{namespace="infra-argocd", phase="Succeeded", name="app-staging", dest_server="https://kubernetes.default.svc", project="default"}'
+        values: '10+1x40'
+
+    alert_rule_test:
+      # No alert initially
+      - eval_time: 3m
+        alertname: ArgoCDSyncFailed
+      
+      # Alert triggered when sync failures occur
+      - eval_time: 12m
+        alertname: ArgoCDSyncFailed
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            name: app-staging
+            namespace: infra-argocd
+            project: default
+            dest_server: https://kubernetes.default.svc
+            phase: Error
+          exp_annotations:
+            summary: "ArgoCD application sync failed"
+            description: "Application app-staging in project default has failed to sync"
+      
+      # Alert should persist until 15m after last error (t=20m + 15m = t=35m)
+      - eval_time: 30m
+        alertname: ArgoCDSyncFailed
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            name: app-staging
+            namespace: infra-argocd
+            project: default
+            dest_server: https://kubernetes.default.svc
+            phase: Error
+          exp_annotations:
+            summary: "ArgoCD application sync failed"
+            description: "Application app-staging in project default has failed to sync"
+      
+      # Alert resolved after 15m window with no new errors
+      - eval_time: 37m
+        alertname: ArgoCDSyncFailed
+
+  # Test with multiple apps in different states simultaneously
+  - interval: 1m
+    input_series:
+      # App 1 always degraded
+      - series: 'argocd_app_info{namespace="infra-argocd", health_status="Degraded", name="critical-app", dest_server="https://kubernetes.default.svc", project="team-a"}'
+        values: '1+0x25'
+      
+      # App 2 becomes degraded later
+      - series: 'argocd_app_info{namespace="infra-argocd", health_status="Degraded", name="secondary-app", dest_server="https://kubernetes.default.svc", project="team-b"}'
+        values: '0+0x10 1+0x15'
+
+    alert_rule_test:
+      # First app already degraded for sufficient time
+      - eval_time: 16m
+        alertname: ArgoCDAppHealthDegraded
+        exp_alerts:
+        - exp_labels:
+            severity: warning
+            name: critical-app
+            namespace: infra-argocd
+            project: team-a
+            dest_server: https://kubernetes.default.svc
+            health_status: Degraded
+          exp_annotations:
+            summary: "ArgoCD application health degraded"
+            description: "Application critical-app in project team-a has degraded health status"
+      
+      # Both apps now degraded
+      - eval_time: 26m
+        alertname: ArgoCDAppHealthDegraded
+        exp_alerts:
+        - exp_labels:
+            severity: warning
+            name: critical-app
+            namespace: infra-argocd
+            project: team-a
+            dest_server: https://kubernetes.default.svc
+            health_status: Degraded
+          exp_annotations:
+            summary: "ArgoCD application health degraded"
+            description: "Application critical-app in project team-a has degraded health status"
+        - exp_labels:
+            severity: warning
+            name: secondary-app
+            namespace: infra-argocd
+            project: team-b
+            dest_server: https://kubernetes.default.svc
+            health_status: Degraded
+          exp_annotations:
+            summary: "ArgoCD application health degraded"
+            description: "Application secondary-app in project team-b has degraded health status"
