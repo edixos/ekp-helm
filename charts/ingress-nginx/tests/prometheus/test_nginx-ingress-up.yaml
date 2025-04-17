@@ -1,0 +1,48 @@
+---
+
+rule_files:
+  - ../../resources/prometheus-rules/nginx-ingress-up.yaml
+
+evaluation_interval: 1m
+
+tests:
+
+  # Test 1
+  - interval: 1m
+    input_series:
+      - series: 'kube_deployment_status_replicas_available{deployment="nginx-ingress-controller",endpoint="http",instance="10.44.5.9:8080",job="kube-state-metrics",namespace="infra-nginx-ingress",pod="stack-monitoring-kube-state-metrics-7cf7765967-jdwq2",service="stack-monitoring-kube-state-metrics"}'
+        values: '1+0x30 0+0x60 1+0x50'
+
+    # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 1m
+        alertname: AtLeastOneNginxIngressAvailable
+
+      # No alert :
+      - eval_time: 39m
+        alertname: AtLeastOneNginxIngressAvailable
+
+      # Alert triggered :
+      - eval_time: 41m
+        alertname: AtLeastOneNginxIngressAvailable
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            deployment: nginx-ingress-controller
+            endpoint: http
+            instance: "10.44.5.9:8080"
+            job: kube-state-metrics
+            namespace: infra-nginx-ingress
+            pod: stack-monitoring-kube-state-metrics-7cf7765967-jdwq2
+            service: stack-monitoring-kube-state-metrics
+            alertname: AtLeastOneNginxIngressAvailable
+          exp_annotations:
+            summary: '[nginx-ingress-controller] Service Nginx-Ingress is down'
+            message: 'None instance of nginx-ingress-controller available in namespace "infra-nginx-ingress".'
+
+      # Alert stopped:
+      - eval_time: 2h
+        alertname: AtLeastOneNginxIngressAvailable
+

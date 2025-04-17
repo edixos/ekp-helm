@@ -1,0 +1,11 @@
+groups:
+  - name: NGINXCertificateExpiry
+    rules:
+      - alert: NGINXCertificateExpiry
+        expr: (avg(nginx_ingress_controller_ssl_expire_time_seconds) by (host) - time()) < 604800
+        for: 1s
+        labels:
+          severity: critical
+        annotations:
+          message: ssl certificate(s) will expire in less then a week
+          summary: renew expiring certificates to avoid downtime
