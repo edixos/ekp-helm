@@ -1,3 +1,11 @@
+prometheus:
+  enabled: false
+  rules:
+    enabled: false 
+  serviceMonitor:
+    enabled: false
+  grafanaDashboard:
+    enabled: false
 
 dex:
   replicaCount: 1
