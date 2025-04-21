@@ -1,0 +1,60 @@
+name: Prometheus Rules CI
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  PROM_VERSION: 3.3.0
+
+jobs:
+  test-prometheus-rules:
+    name: Test Prometheus Rules
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Install Promtool
+        run: |
+          curl -LO https://github.com/prometheus/prometheus/releases/download/v${{ env.PROM_VERSION }}/prometheus-${{ env.PROM_VERSION }}.linux-amd64.tar.gz
+          tar -xvf prometheus-${{ env.PROM_VERSION }}.linux-amd64.tar.gz
+          sudo mv prometheus-${{ env.PROM_VERSION }}.linux-amd64/promtool /usr/local/bin/
+          promtool --version
+
+      - name: Get changed rule and test files
+        id: changed-files
+        run: |
+          echo "Finding changed rule and test files..."
+
+          CHANGED_RULES=$(git diff --name-only origin/main...HEAD | grep '^charts/.*/resources/prometheus-rules/.*\.yaml$' || true)
+          CHANGED_TESTS=$(git diff --name-only origin/main...HEAD | grep '^charts/.*/tests/prometheus/.*\.yaml$' || true)
+
+          echo "rules<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_RULES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          echo "tests<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_TESTS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Validate changed Prometheus rules
+        if: steps.changed-files.outputs.rules != ''
+        run: |
+          echo "${{ steps.changed-files.outputs.rules }}" | while read file; do
+            echo "Validating $file"
+            promtool check rules "$file"
+          done
+
+      - name: Run tests for changed Prometheus rule test files
+        if: steps.changed-files.outputs.tests != ''
+        run: |
+          echo "${{ steps.changed-files.outputs.tests }}" | while read test_file; do
+            echo "Running tests in: $test_file"
+            cd $(dirname "$test_file")
+            promtool test rules $(basename "$test_file")
+            cd - > /dev/null
+          done
