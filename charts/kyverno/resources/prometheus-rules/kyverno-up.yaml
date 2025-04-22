@@ -1,0 +1,20 @@
+groups:
+- name: kyverno.availability.rules
+  rules:
+  - alert: KyvernoDown
+    expr: absent(up{job="kyverno"} == 1)
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Kyverno is down"
+      description: "Kyverno has been down for more than 5 minutes."
+  
+  - alert: KyvernoHighRestarts
+    expr: increase(kube_pod_container_status_restarts_total{container="kyverno"}[15m]) >= 8
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Kyverno pods are restarting frequently"
+      description: "Kyverno pod {{ $labels.pod }} has restarted {{ printf \"%.0f\" $value }} times in the last 15 minutes."

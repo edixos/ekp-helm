@@ -1,0 +1,20 @@
+groups:
+- name: kyverno.violations.rules
+  rules:
+  - alert: KyvernoCriticalPolicyViolation
+    expr: increase(kyverno_policy_results_total{policy=~"require-.*-security|disallow-.*-privileges|restrict-.*-capabilities", status="fail"}[15m]) > 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Critical security policy violated"
+      description: "A critical security policy {{ $labels.policy }} has been violated."
+
+  - alert: KyvernoHighPolicyFailures
+    expr: sum(increase(kyverno_policy_results_total{status="fail"}[30m])) > 50
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High number of Kyverno policy failures"
+      description: "There have been more than 50 policy failures in the last 30 minutes."
