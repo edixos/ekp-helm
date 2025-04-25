@@ -1,0 +1,16 @@
+{{- $root := . }}
+{{- $files := .Files }}
+{{ range $path, $bytes := .Files.Glob "resources/grafana-dashboards/*.json" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eso-grafana-dashboards
+  namespace: {{ $.Release.Namespace | quote }}
+  labels:
+    app: eso-grafana
+    grafana_dashboard: "1"
+
+data:
+  {{ base $path }}: {{ $root.Files.Get $path | quote}}
+{{ end }}

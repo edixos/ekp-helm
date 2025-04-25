@@ -1,0 +1,14 @@
+groups:
+  - name: ESOAvailability
+    rules:
+    - alert: ESOUp
+      expr: |
+        sum(
+          up{job=~"eso-.*", namespace="infra-eso"} == 1
+        ) < 3
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "External Secrets Operator is down"
+        message: "No healthy ESO pods detected for at least 5 minutes."
