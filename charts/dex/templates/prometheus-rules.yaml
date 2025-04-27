@@ -1,0 +1,23 @@
+{{- if and .Values.prometheus.enabled .Values.prometheus.rules.enabled }}
+{{- $root := . }}
+{{- $files := .Files }}
+{{ range $path, $bytes := .Files.Glob "resources/prometheus-rules/*.yaml" }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  namespace: {{ $.Release.Namespace | quote }}
+  labels:
+{{ toYaml $.Values.prometheus.rules.labels | nindent 4}}
+    role: alert-rules
+  name: {{ base $path | replace ".yaml" ".rules" }}
+{{- if $.Values.global.enableArgocdAnnotations }}
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+{{- end }}
+spec:
+{{ with $root.Files.Get $path  }}
+    {{- . | indent 2 }}
+{{- end }}
+{{- end }}
+{{- end }}

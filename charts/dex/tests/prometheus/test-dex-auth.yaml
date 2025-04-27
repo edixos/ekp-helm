@@ -1,0 +1,74 @@
+rule_files:
+  - ../../resources/prometheus-rules/dex-auth.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - name: Dex auth failure rate above threshold
+    interval: 1m
+    input_series:
+      - series: 'http_requests_total{job="dex", handler="/auth", code="500"}'
+        values: "0+10x15"
+      - series: 'http_requests_total{job="dex", handler="/auth", code="302"}'
+        values: "0+50x15"
+      - series: 'http_requests_total{job="dex", handler="/callback", code="401"}'
+        values: "0+0x15"
+      - series: 'http_requests_total{job="dex", handler="/callback", code="302"}'
+        values: "0+0x15"
+
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: DexAuthFailureRate
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: "Dex has a high rate of failed authentication requests"
+              description: "More than 10% of authentication requests are failing with HTTP error codes."
+
+  - name: Dex high latency alert trigger
+    interval: 1m
+    input_series:      
+      - series: 'request_duration_seconds_bucket{job="dex", handler="/auth", le="0.1"}'
+        values: "0+100x5 0+50x10"
+      
+      - series: 'request_duration_seconds_bucket{job="dex", handler="/auth", le="0.5"}'
+        values: "0+100x5 0+60x10"
+      
+      - series: 'request_duration_seconds_bucket{job="dex", handler="/auth", le="1.0"}'
+        values: "0+100x5 0+70x10"
+      
+      - series: 'request_duration_seconds_bucket{job="dex", handler="/auth", le="2.0"}'
+        values: "0+100x5 0+80x10"
+      
+      - series: 'request_duration_seconds_bucket{job="dex", handler="/auth", le="5.0"}'
+        values: "0+100x5 0+90x10"
+      
+      - series: 'request_duration_seconds_bucket{job="dex", handler="/auth", le="+Inf"}'
+        values: "0+100x5 0+100x10"
+      
+      - series: 'request_duration_seconds_count{job="dex", handler="/auth"}'
+        values: "0+100x5 0+100x10"
+      
+      - series: 'request_duration_seconds_sum{job="dex", handler="/auth"}'
+        values: "0+10x5 0+300x10"
+      
+      - series: 'request_duration_seconds_bucket{job="dex", handler="/callback", le="0.1"}'
+        values: "0+100x15"
+      - series: 'request_duration_seconds_bucket{job="dex", handler="/callback", le="+Inf"}'
+        values: "0+100x15"
+      - series: 'request_duration_seconds_count{job="dex", handler="/callback"}'
+        values: "0+100x15"
+      - series: 'request_duration_seconds_sum{job="dex", handler="/callback"}'
+        values: "0+10x15"
+    
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: DexHighLatency
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              handler: "/auth"
+            exp_annotations:
+              summary: "Dex authentication latency is high"
+              description: "95th percentile of request duration for /auth is 5 seconds."

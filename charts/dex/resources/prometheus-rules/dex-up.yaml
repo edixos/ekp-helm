@@ -1,0 +1,11 @@
+groups:
+  - name: DexAvailability
+    rules:
+      - alert: DexDown
+        expr: absent(up{job="dex"} == 1)
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Dex is down"
+          description: "Dex service has been down for more than 5 minutes."

@@ -1,0 +1,19 @@
+rule_files:
+  - ../../resources/prometheus-rules/dex-up.yaml
+
+evaluation_interval: 1m
+
+tests:  
+  - interval: 1m
+    input_series:
+      # No series defined for 'up{job="dex"}' to test absence
+
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: DexDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+            exp_annotations:
+              summary: "Dex is down"
+              description: "Dex service has been down for more than 5 minutes."

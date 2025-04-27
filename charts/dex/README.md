@@ -1,6 +1,6 @@
 # dex
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.42.0](https://img.shields.io/badge/AppVersion-2.42.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.42.0](https://img.shields.io/badge/AppVersion-2.42.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -107,7 +107,12 @@ A Helm chart for Dex - OpenID Connect Identity (OIDC) and OAuth 2.0 Provider wit
 | iamPolicyMembers.members[0].name | string | `"ekp-dex-groups-reader"` |  |
 | iamPolicyMembers.members[0].resourceRef.external | string | `""` |  |
 | iamPolicyMembers.members[0].resourceRef.kind | string | `"Project"` |  |
-| iamPolicyMembers.members[0].role | string | `"roles/iam.serviceAccountTokenCreator"` | Roles to apply to external-dns google service account |
+| iamPolicyMembers.members[0].role | string | `"roles/iam.serviceAccountTokenCreator"` | Roles to apply to dex google service account |
+| prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
+| prometheus.grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
+| prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
+| prometheus.rules.enabled | bool | `true` | Enables prometheus operator rules |
+| prometheus.rules.labels | object | `{"prometheus":"prometheus-operator-prometheus"}` | Labels to affect to the Prometheus Rules |
 | tags.configConnector | bool | `false` | Enables Config Connector features |
 | workloadIdentity.global.gsa.create | bool | `true` |  |
 | workloadIdentity.global.gsa.name | string | `"wi-dex"` |  |
@@ -140,7 +145,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: dex
     path: ''
 
