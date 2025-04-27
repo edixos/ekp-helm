@@ -1,0 +1,50 @@
+---
+
+rule_files:
+  - ../../resources/prometheus-rules/nginx-last-config-failed.yaml
+
+evaluation_interval: 1m
+
+tests:
+
+  # Test 1
+  - interval: 1m
+    input_series:
+      - series: 'nginx_ingress_controller_config_last_reload_successful{controller_class="nginx",controller_namespace="infra-nginx-ingress",controller_pod="nginx-ingress-controller-659b845f5d-vvbr9",endpoint="metrics",instance="10.44.4.4:10254",job="nginx-ingress-controller-metrics",namespace="infra-nginx-ingress",pod="nginx-ingress-controller-659b845f5d-vvbr9",service="nginx-ingress-controller-metrics"}'
+        values: '1+0x30 0+0x60 1+0x50'
+
+    # Unit test for alerting rules.
+    alert_rule_test:
+
+      # No alert :
+      - eval_time: 1m
+        alertname: LastNginxIngressConfigFailed
+
+      # No alert :
+      - eval_time: 39m
+        alertname: LastNginxIngressConfigFailed
+
+      # Alert triggered :
+      - eval_time: 41m
+        alertname: LastNginxIngressConfigFailed
+        exp_alerts:
+        - exp_labels:
+            severity: critical
+            controller_class: nginx
+            controller_namespace: infra-nginx-ingress
+            controller_pod: nginx-ingress-controller-659b845f5d-vvbr9
+            endpoint: metrics
+            instance: "10.44.4.4:10254"
+            job: nginx-ingress-controller-metrics
+            namespace: infra-nginx-ingress
+            pod: nginx-ingress-controller-659b845f5d-vvbr9
+            service: nginx-ingress-controller-metrics
+            alertname: LastNginxIngressConfigFailed
+          exp_annotations:
+            summary: '[infra-nginx-ingress] Last nginx Ingress config failed'
+            message: 'The last config applied on nginx Ingress failed in namespace "infra-nginx-ingress". Please correct the configuration'
+
+      # Alert stopped:
+      - eval_time: 2h
+        alertname: LastNginxIngressConfigFailed
+

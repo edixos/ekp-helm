@@ -1,6 +1,6 @@
 # ingress-nginx
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.12.1](https://img.shields.io/badge/AppVersion-1.12.1-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.12.1](https://img.shields.io/badge/AppVersion-1.12.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -338,6 +338,12 @@ A Helm chart for Kubernetes
 | ingressNginx.serviceAccount.name | string | `""` |  |
 | ingressNginx.tcp | object | `{}` | TCP service key-value pairs # Ref: https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/exposing-tcp-udp-services.md # |
 | ingressNginx.udp | object | `{}` | UDP service key-value pairs # Ref: https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/exposing-tcp-udp-services.md # |
+| networkPolicyTemplate.enabled | bool | `false` | Enables Infra network policy templates |
+| networkPolicyTemplate.namespaceSelectors | object | `{"matchLabels":{"appli":"nginx-ingress","field.cattle.io/projectId":"infra-ingress-nginx"}}` | Label selector to match Infra Nginx Ingress namespace |
+| prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
+| prometheus.grafanaDashboard.enabled | bool | `false` | Enables Grafana dashboard config map |
+| prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | Label to apply to grafana dashboard config map. |
+| prometheus.rules.labels | object | `{"prometheus":"ekp-operator-prometheus"}` | Labels to affect to the Prometheus Rules |
 
 ## Installing the Chart
 
@@ -364,7 +370,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: ingress-nginx
     path: ''
     helm:

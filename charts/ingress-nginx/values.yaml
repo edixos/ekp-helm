@@ -1,3 +1,18 @@
+---
+prometheus:
+  # -- Enables Prometheus Operator monitoring
+  enabled: false
+  rules:
+    # -- Labels to affect to the Prometheus Rules
+    labels:
+      prometheus: ekp-operator-prometheus
+  grafanaDashboard:
+    # -- Enables Grafana dashboard config map
+    enabled: false
+    # -- Label to apply to grafana dashboard config map.
+    label:
+      grafana_dashboard: "1"
+
 # Default values for ingressNginx.
 ingressNginx:
   ## nginx configuration
@@ -1193,3 +1208,12 @@ ingressNginx:
   # This can be generated with: `openssl dhparam 4096 2> /dev/null | base64`
   ## Ref: https://github.com/kubernetes/ingress-nginx/tree/main/docs/examples/customization/ssl-dh-param
   dhParam: ""
+
+networkPolicyTemplate:
+  # -- Enables Infra network policy templates
+  enabled: false
+  # -- Label selector to match Infra Nginx Ingress namespace
+  namespaceSelectors:
+    matchLabels:
+      appli: nginx-ingress
+      field.cattle.io/projectId: infra-ingress-nginx

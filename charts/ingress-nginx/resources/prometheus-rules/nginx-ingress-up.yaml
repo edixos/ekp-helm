@@ -1,0 +1,11 @@
+groups:
+  - name: AtLeastOneNginxIngressAvailable
+    rules:
+      - alert: AtLeastOneNginxIngressAvailable
+        expr: kube_deployment_status_replicas_available{deployment="nginx-ingress-controller"} < 1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: '[{{ $labels.deployment }}] Service Nginx-Ingress is down'
+          message: 'None instance of {{ $labels.deployment }} available in namespace "{{ $labels.namespace }}".'
