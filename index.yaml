@@ -235,6 +235,41 @@ entries:
   dex:
   - apiVersion: v2
     appVersion: 2.42.0
+    created: "2025-04-27T16:30:51.765432748Z"
+    dependencies:
+    - alias: dex
+      name: dex
+      repository: https://charts.dexidp.io
+      version: 0.22.0
+    - alias: workloadIdentity
+      name: gcp-workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    - alias: iamPolicyMembers
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.2
+    description: A Helm chart for Dex - OpenID Connect Identity (OIDC) and OAuth 2.0
+      Provider with Pluggable Connectors
+    digest: 8d7c7fbd449e42e54fc989dea13559142a0e00c5029f3ad9c4afbf157fa45c7e
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: dex
+    type: application
+    urls:
+    - dex-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 2.42.0
     created: "2025-04-08T12:59:22.150264696Z"
     dependencies:
     - alias: dex
@@ -1203,4 +1238,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-27T16:29:49.116824307Z"
+generated: "2025-04-27T16:30:51.765521775Z"
