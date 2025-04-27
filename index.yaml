@@ -1052,6 +1052,27 @@ entries:
     version: 0.1.0
   kyverno:
   - apiVersion: v2
+    appVersion: 1.13.4
+    created: "2025-04-27T16:32:38.576988391Z"
+    dependencies:
+    - name: kyverno
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.3.7
+    description: A Helm chart for kyverno
+    digest: 044fdca4f0f85a66a64cc9c51bfaca5f6fd6e41985b8a02e4089da59a6228c8a
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: kyverno
+    type: application
+    urls:
+    - kyverno-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 1.16.0
     created: "2025-03-10T09:01:45.390066858Z"
     dependencies:
@@ -1238,4 +1259,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-27T16:30:51.765521775Z"
+generated: "2025-04-27T16:32:38.57702538Z"
