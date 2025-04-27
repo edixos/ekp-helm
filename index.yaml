@@ -42,6 +42,25 @@ entries:
   argocd:
   - apiVersion: v2
     appVersion: 2.14.4
+    created: "2025-04-27T16:29:49.116789983Z"
+    dependencies:
+    - alias: argocd
+      name: argo-cd
+      repository: https://argoproj.github.io/argo-helm
+      version: 7.8.8
+    description: A Helm chart for Kubernetes
+    digest: 97c4c35b6fac9782c8af46536579d97b53a15bbfa8b9586e18b090486d4a139f
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: argocd
+    type: application
+    urls:
+    - argocd-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 2.14.4
     created: "2025-03-07T11:58:22.538683314Z"
     dependencies:
     - alias: argocd
@@ -1184,4 +1203,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-27T16:29:03.565998052Z"
+generated: "2025-04-27T16:29:49.116824307Z"
