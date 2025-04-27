@@ -1,0 +1,43 @@
+---
+rule_files:
+  - ../../resources/prometheus-rules/kyverno-policy-failure.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - interval: 1m
+    input_series:
+      - series: 'kyverno_policy_results_total{namespace="kyverno", policy="require-non-root-security", status="fail"}'
+
+        values: '0x10 1 2 3 4 5'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: KyvernoCriticalPolicyViolation
+        exp_alerts: []
+      
+      - eval_time: 20m
+        alertname: KyvernoCriticalPolicyViolation
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              namespace: kyverno
+              policy: require-non-root-security
+              status: fail
+            exp_annotations:
+              summary: "Critical security policy violated"
+              description: 'A critical security policy require-non-root-security has been violated.'
+
+  - name: KyvernoHighPolicyFailures should fire when >50 failures in 30m
+    interval: 1m
+    input_series:
+      - series: 'kyverno_policy_results_total{namespace="kyverno", policy="require-labels", status="fail"}'
+        values: '0x5 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150'
+    alert_rule_test:
+      - eval_time: 35m
+        alertname: KyvernoHighPolicyFailures
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: "High number of Kyverno policy failures"
+              description: "There have been more than 50 policy failures in the last 30 minutes."

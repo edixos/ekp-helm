@@ -1,0 +1,51 @@
+---
+rule_files:
+  - ../../resources/prometheus-rules/kyverno-up.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # TEST1: Absence of Kyverno - no input series
+  - interval: 1m
+    input_series:
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: KyvernoDown
+        exp_alerts:
+          - exp_labels:
+              alertname: KyvernoDown
+              severity: critical
+            exp_annotations:
+              summary: "Kyverno is down"
+              description: "Kyverno has been down for more than 5 minutes."
+
+  # TEST2: Kyverno pod restarting - should trigger KyvernoHighRestarts
+  - name: KyvernoHighRestarts should fire when 8+ restarts in 15m
+    interval: 1m
+    input_series:
+      - series: 'kube_pod_container_status_restarts_total{namespace="kyverno", pod="kyverno-abc123", container="kyverno"}'
+        values: '0x5 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: KyvernoHighRestarts
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              namespace: kyverno
+              pod: kyverno-abc123
+              container: kyverno
+            exp_annotations:
+              summary: "Kyverno pods are restarting frequently"
+              description: 'Kyverno pod kyverno-abc123 has restarted 15 times in the last 15 minutes.'
+
+  # TEST3: Kyverno pod stable
+  - interval: 1m
+    input_series:
+      - series: 'kube_pod_container_status_restarts_total{container="kyverno", pod="kyverno-pod-2", namespace="infra-kyverno"}'
+        values: '0 0x8'
+      - series: 'up{job="kyverno"}'
+        values: '1 0x8' 
+    alert_rule_test:
+      - eval_time: 7m
+        alertname: KyvernoHighRestarts
+        exp_alerts: []
