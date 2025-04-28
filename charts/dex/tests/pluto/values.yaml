@@ -8,6 +8,7 @@ prometheus:
     enabled: false
 
 dex:
+  fullnameOverride: "dex"
   replicaCount: 1
 
   envVars:

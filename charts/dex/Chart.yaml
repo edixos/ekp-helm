@@ -2,7 +2,7 @@ apiVersion: v2
 name: dex
 description: A Helm chart for Dex - OpenID Connect Identity (OIDC) and OAuth 2.0 Provider with Pluggable Connectors
 type: application
-version: 0.1.2
+version: 0.1.3
 appVersion: "2.42.0"
 maintainers:
   - name: wiemaouadi
@@ -13,7 +13,7 @@ maintainers:
     url: https://github.com/smileisak
 dependencies:
   - name: dex
-    version: 0.22.0
+    version: 0.23.0
     repository: https://charts.dexidp.io
     alias: dex
   - name: gcp-workload-identity
