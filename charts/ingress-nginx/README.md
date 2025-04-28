@@ -338,8 +338,6 @@ A Helm chart for Kubernetes
 | ingressNginx.serviceAccount.name | string | `""` |  |
 | ingressNginx.tcp | object | `{}` | TCP service key-value pairs # Ref: https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/exposing-tcp-udp-services.md # |
 | ingressNginx.udp | object | `{}` | UDP service key-value pairs # Ref: https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/exposing-tcp-udp-services.md # |
-| networkPolicyTemplate.enabled | bool | `false` | Enables Infra network policy templates |
-| networkPolicyTemplate.namespaceSelectors | object | `{"matchLabels":{"appli":"nginx-ingress","field.cattle.io/projectId":"infra-ingress-nginx"}}` | Label selector to match Infra Nginx Ingress namespace |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `false` | Enables Grafana dashboard config map |
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | Label to apply to grafana dashboard config map. |
