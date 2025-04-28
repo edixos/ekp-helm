@@ -998,6 +998,25 @@ entries:
   ingress-nginx:
   - apiVersion: v2
     appVersion: 1.12.1
+    created: "2025-04-28T12:24:29.287785303Z"
+    dependencies:
+    - alias: ingressNginx
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 4.12.1
+    description: A Helm chart for Kubernetes
+    digest: 5afb611955152acc8de3b5e039fdbc07aba9faf0ef1a992e8002f4d3de174565
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: ingress-nginx
+    type: application
+    urls:
+    - ingress-nginx-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.12.1
     created: "2025-04-27T16:29:03.565935505Z"
     dependencies:
     - alias: ingressNginx
@@ -1259,4 +1278,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-27T16:32:38.57702538Z"
+generated: "2025-04-28T12:24:29.287851566Z"
