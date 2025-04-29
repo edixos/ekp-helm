@@ -1,0 +1,25 @@
+rule_files:
+  - ../../resources/prometheus-rules/eso-up.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - interval: 1m
+    input_series:
+      # ✅ ESOUp - simulate all services healthy
+      - series: 'up{job="eso-metrics", namespace="infra-eso"}'
+        values: '1 1 1 1 1'
+      - series: 'up{job="eso-cert-controller-metrics", namespace="infra-eso"}'
+        values: '0 0 0 0 0'
+      - series: 'up{job="eso-webhook", namespace="infra-eso"}'
+        values: '0 0 0 0 0'
+
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: ESOUp
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+            exp_annotations:
+              summary: "External Secrets Operator is down"
+              message: "No healthy ESO pods detected for at least 5 minutes."
