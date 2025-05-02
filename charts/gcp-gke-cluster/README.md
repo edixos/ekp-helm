@@ -45,6 +45,14 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
+| global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
+| global.abandon | bool | `true` | If true, Keep the GKE Cluster even after the kcc resource deletion. |
+| annotations | object | `{}` | Add annotations to the GKE Cluster. |
+| tags.networking | bool | `false` | Whether we want to create networking features like VPC, Subnetwork, etc. |
+| name | string | `"ekp-gke-cluster"` | Name of the GKE Cluster. |
+| description | string | `"EKP GKE Cluster"` | A text description of the GKE Cluster. Must be less than or equal to 256 UTF-8 bytes. |
+| removeDefaultNodePool | string | `"true"` | If set to true, the remove-default-node-pool directive removes the default node pool created during cluster creation. Also made as variable to import resources created using terraform. |
 | addonsConfig | object | `{"cloudrunConfig":{"disabled":true,"loadBalancerType":null},"configConnectorConfig":{"enabled":false},"dnsCacheConfig":{"enabled":false},"gcePersistentDiskCsiDriverConfig":{"enabled":false},"gcpFilestoreCsiDriverConfig":{"enabled":false},"gcsFuseCsiDriverConfig":{"enabled":false},"gkeBackupAgentConfig":{"enabled":false},"horizontalPodAutoscaling":{"disabled":true},"httpLoadBalancing":{"disabled":false},"istioConfig":{"auth":"AUTH_MUTUAL_TLS","disabled":true},"kalmConfig":{"enabled":false},"networkPolicyConfig":{"disabled":true}}` | Configuration for addons and optional features |
 | addonsConfig.cloudrunConfig | object | `{"disabled":true,"loadBalancerType":null}` | The status of the CloudRun addon |
 | addonsConfig.cloudrunConfig.disabled | bool | `true` | Disables Anthos Cloud Run. |
@@ -73,13 +81,12 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | addonsConfig.networkPolicyConfig | object | `{"disabled":true}` | Configuration for the Network Policy addon for the master. This must be enabled in order to enable network policy for the nodes. To enable this, you must also define a network_policy block, otherwise nothing will happen. It can only be disabled if the nodes already do not have network policies enabled. |
 | addonsConfig.networkPolicyConfig.disabled | bool | `true` | Whether the Network Policy addon is disabled. |
 | allowNetAdmin | bool | `false` | Enable NET_ADMIN for this cluster. |
-| annotations | object | `{}` | Add annotations to the GKE Cluster. |
 | authenticatorGroupsConfig | object | `{"securityGroup":null}` | Configuration for the Google Groups for GKE feature. |
 | authenticatorGroupsConfig.securityGroup | string | `nil` | The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com. |
-| bigquery-dataset | object | `{"bigqueryDataset":{"access":[],"description":"<to_set>","friendlyName":"<to_set>","location":"<to_set>","name":"<to_set>"},"enabled":false,"gcpProjectId":"<to_set>"}` | Enables Bigquery Dataset for billing GKE resources |
 | binaryAuthorization | object | `{"enabled":false,"evaluationMode":"EVALUATION_MODE_UNSPECIFIED"}` | Configuration for the Binary Authorization feature. |
 | binaryAuthorization.enabled | bool | `false` | DEPRECATED. Deprecated in favor of evaluation_mode. Enable Binary Authorization for this cluster. |
 | binaryAuthorization.evaluationMode | string | `"EVALUATION_MODE_UNSPECIFIED"` | Mode of operation for Binary Authorization policy evaluation. |
+| clusterAutoscaling.enabled | bool | `false` | Per-cluster configuration of Node Auto-Provisioning with Cluster Autoscaler to automatically adjust the size of the cluster and create/delete node pools based on the current needs of the cluster's workload. See the guide to using Node Auto-Provisioning for more details. |
 | clusterAutoscaling.autoProvisioningDefaults | object | `{"bootDiskKMSKeyRef":{"external":"","name":"","namespace":""},"diskSize":null,"imageType":null,"management":{"autoRepair":false,"autoUpgrade":false,"upgradeOptions":[{"autoUpgradeStartTime":null,"description":null}]},"minCpuPlatform":null,"oauthScodes":["https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/trace.append"],"serviceAccountRef":{"external":null,"name":null,"namespace":null},"shieldedInstanceConfig":{"enableIntegrityMonitoring":false,"enableSecureBoot":false},"upgradeSettings":{"blueGreenSettings":{"nodePoolSoakDuration":null,"standardRolloutPolicy":{"batchNodeCount":null,"batchPercentage":null,"batchSoakDuration":null}},"maxSurge":null,"maxUnavailable":null,"strategy":null}}` | Contains defaults for a node pool created by NAP. |
 | clusterAutoscaling.autoProvisioningDefaults.bootDiskKMSKeyRef | object | `{"external":"","name":"","namespace":""}` | The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. |
 | clusterAutoscaling.autoProvisioningDefaults.bootDiskKMSKeyRef.external | string | `""` | Allowed value: The `selfLink` field of a `KMSCryptoKey` resource. |
@@ -113,7 +120,6 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.maxUnavailable | string | `nil` | The maximum number of nodes that can be simultaneously unavailable during the upgrade process. |
 | clusterAutoscaling.autoProvisioningDefaults.upgradeSettings.strategy | string | `nil` | Update strategy of the node pool. |
 | clusterAutoscaling.autoscalingProfile | string | `"BALANCED"` | Configuration options for the Autoscaling profile feature, which lets you choose whether the cluster autoscaler should optimize for resource utilization or resource availability when deciding to remove nodes from a cluster. Can be BALANCED or OPTIMIZE_UTILIZATION. Defaults to BALANCED. |
-| clusterAutoscaling.enabled | bool | `false` | Per-cluster configuration of Node Auto-Provisioning with Cluster Autoscaler to automatically adjust the size of the cluster and create/delete node pools based on the current needs of the cluster's workload. See the guide to using Node Auto-Provisioning for more details. |
 | clusterAutoscaling.resourceLimits | object | `{}` | Resource Limits for CPU and Memory Contains information about amount of some resource in the cluster. For memory, value should be in GB. @defaults -- See in the values.yaml file for more information |
 | clusterIpv4Cidr | string | `nil` | Immutable. The IP address range of the Kubernetes pods in this cluster in CIDR notation (e.g. 10.96.0.0/14). Leave blank to have one automatically chosen or specify a /14 block in 10.0.0.0/8. This field will only work for routes-based clusters, where ip_allocation_policy is not defined. |
 | clusterTelemetry | string | `nil` | Telemetry integration for the cluster. Allowed: UNSPECIFIED, DISABLED, ENABLED, SYSTEM_ONLY. For more information: documentation [here](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters#type) |
@@ -128,7 +134,6 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | defaultMaxPodsPerNode | int | `0` | Immutable. The default maximum number of pods per node in this cluster. This doesn't work on "routes-based" clusters, clusters that don't have IP Aliasing enabled. |
 | defaultSnatStatus | object | `{"disabled":false}` | Whether the cluster disables default in-node sNAT rules. In-node sNAT rules will be disabled when defaultSnatStatus is disabled. |
 | defaultSnatStatus.disabled | bool | `false` | When disabled is set to false, default IP masquerade rules will be applied to the nodes to prevent sNAT on cluster internal traffic. |
-| description | string | `"EKP GKE Cluster"` | A text description of the GKE Cluster. Must be less than or equal to 256 UTF-8 bytes. |
 | enableAutopilot | bool | `false` | Immutable. Enable Autopilot for this cluster. |
 | enableBinaryAuthorization | bool | `false` | DEPRECATED. Deprecated in favor of binary_authorization. Enable Binary Authorization for this cluster. If enabled, all container images will be validated by Google Binary Authorization. |
 | enableFqdnNetworkPolicy | bool | `false` | Whether FQDN Network Policy is enabled on this cluster. |
@@ -143,18 +148,15 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | enableTpu | bool | `false` | Immutable. Whether to enable Cloud TPU resources in this cluster. |
 | gatewayApiConfig | object | `{"channel":"CHANNEL_STANDARD"}` | Configuration for GKE Gateway API controller. |
 | gatewayApiConfig.channel | string | `"CHANNEL_STANDARD"` | The Gateway API release channel to use for Gateway API. |
-| global.abandon | bool | `true` | If true, Keep the GKE Cluster even after the kcc resource deletion. |
-| global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
-| global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
 | identityServiceConfig | object | `{"enabled":false}` | Configuration for Identity Service which allows customers to use external identity providers with the K8S API. |
 | identityServiceConfig.enabled | bool | `false` | Whether to enable the Identity Service component. |
 | initialNodeCount | int | `0` | Initial number of nodes in the default node pool. Must be set if no custom node pools are defined. |
 | ipAllocationPolicy | object | `{"additionalPodRangesConfig":{"podRangeNames":[]},"clusterIpv4CidrBlock":null,"clusterSecondaryRangeName":null,"enabled":false,"podCidrOverprovisionConfig":{"disabled":false},"servicesIpv4CidrBlock":null,"servicesSecondaryRangeName":null,"stackType":null}` | Immutable. Configuration of cluster IP allocation for VPC-native clusters. Adding this block enables IP aliasing, making the cluster VPC-native instead of routes-based. |
+| ipAllocationPolicy.enabled | bool | `false` | Enables ipAllocationPolicy, allowing to specify pods and services secondary subnets name and CIDR |
 | ipAllocationPolicy.additionalPodRangesConfig | object | `{"podRangeNames":[]}` | AdditionalPodRangesConfig is the configuration for additional pod secondary ranges supporting the ClusterUpdate message. |
 | ipAllocationPolicy.additionalPodRangesConfig.podRangeNames | list | `[]` | Name for pod secondary ipv4 range which has the actual range defined ahead. |
 | ipAllocationPolicy.clusterIpv4CidrBlock | string | `nil` | Immutable. The IP address range for the cluster pod IPs. Set to blank to have a range chosen with the default size. Set to /netmask (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g. 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to use. |
 | ipAllocationPolicy.clusterSecondaryRangeName | string | `nil` | Immutable. The name of the existing secondary range in the cluster's subnetwork to use for pod IP addresses. Alternatively, cluster_ipv4_cidr_block can be used to automatically create a GKE-managed one. |
-| ipAllocationPolicy.enabled | bool | `false` | Enables ipAllocationPolicy, allowing to specify pods and services secondary subnets name and CIDR |
 | ipAllocationPolicy.podCidrOverprovisionConfig | object | `{"disabled":false}` | Immutable. Configuration for cluster level pod cidr overprovision. Default is disabled=false. |
 | ipAllocationPolicy.podCidrOverprovisionConfig.disabled | bool | `false` | Whether pod cidr overprovision is disabled. |
 | ipAllocationPolicy.servicesIpv4CidrBlock | string | `nil` | Immutable. The IP address range of the services IPs in this cluster. Set to blank to have a range chosen with the default size. Set to /netmask (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g. 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to use. |
@@ -207,7 +209,6 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | monitoringConfig.managedPrometheus | object | `{"enabled":false}` | Configuration for Google Cloud Managed Services for Prometheus. |
 | monitoringConfig.managedPrometheus.enabled | bool | `false` | Whether or not the managed collection is enabled. |
 | monitoringService | string | `"monitoring.googleapis.com/kubernetes"` | The monitoring service that the cluster should write metrics to. Automatically send metrics from pods in the cluster to the Google Cloud Monitoring API. VM metrics will be collected by Google Compute Engine regardless of this setting Available options include monitoring.googleapis.com(Legacy Stackdriver), monitoring.googleapis.com/kubernetes(Stackdriver Kubernetes Engine Monitoring), and none. Defaults to monitoring.googleapis.com/kubernetes. |
-| name | string | `"ekp-gke-cluster"` | Name of the GKE Cluster. |
 | networkPolicy | object | `{"enabled":false,"provider":null}` | Configuration options for the NetworkPolicy feature. |
 | networkPolicy.enabled | bool | `false` | Whether network policy is enabled on the cluster. |
 | networkPolicy.provider | string | `nil` | The selected network policy provider. Defaults to PROVIDER_UNSPECIFIED. |
@@ -215,35 +216,12 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | networkRef.external | string | `nil` | Allowed value: The `selfLink` field of a `ComputeNetwork` resource. |
 | networkRef.name | string | `nil` | Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names |
 | networkRef.namespace | string | `nil` | Namespace of the referent. More info: https://kubernetes.io/docs/concepts/over |
+| subnetworkRef | object | `{"external":null,"name":null,"namespace":null}` | Reference to a ComputeSubnetwork resource. |
+| subnetworkRef.external | string | `nil` | Allowed value: The `selfLink` field of a `ComputeSubnetwork` resource. |
+| subnetworkRef.name | string | `nil` | Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names |
+| subnetworkRef.namespace | string | `nil` | Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/ |
 | networkingMode | string | `"VPC_NATIVE"` | Networking mode for the cluster. Determines whether alias IPs or routes will be used for pod IPs. Options: "VPC_NATIVE" (default) or "ROUTES". |
 | nodeLocations | list | `[]` |  |
-| nodePools[0].autoscaling.enabled | bool | `true` | Enables nodePool autoscaling |
-| nodePools[0].autoscaling.maxNodeCount | int | 3 | Maximal node count. Default to 3 |
-| nodePools[0].autoscaling.minNodeCount | int | 1 | Minimal node count. Default to 1 |
-| nodePools[0].management | int | 1 | Number of nodes at initialization initialNodeCount: 1 |
-| nodePools[0].management.autoRepair | bool | `true` | Enables node pool autorepair |
-| nodePools[0].management.autoUpgrade | bool | `true` | Enables node pool auto upgrade |
-| nodePools[0].maxPodsPerNode | int | 110 | Max number of Pods per nodes |
-| nodePools[0].name | string | `"np1"` | Name of the node pool |
-| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.enabled | bool | `false` | Enables boot disk attached to each node in the node pool. Must provide a key |
-| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.external | string | `nil` | The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: https://cloud.google.com/compute/docs/disks/customer-managed-encryption |
-| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.kccManaged | bool | `false` | The KMS key was created by kubernetes Config Connector or not |
-| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.name | string | `nil` | Name of the KMS key config connector resource. Only when kccManaged=true |
-| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.namespace | string | `nil` | Namespace of the KMS key config connector resource. Only when kccManaged=true |
-| nodePools[0].nodeConfig.diskSize | int | 100 | Size of the nodes' disk |
-| nodePools[0].nodeConfig.diskType | string | pd-standard | Type of the nodes' disk |
-| nodePools[0].nodeConfig.guestAccelerator | list | See the values.yaml file for an example. | A list of hardware accelerators to be attached to each node. See https://cloud.google.com/compute/docs/gpus for more information about support for GPUs. |
-| nodePools[0].nodeConfig.imageType | string | `"COS_CONTAINERD"` | Type of Image used for the node pool instances |
-| nodePools[0].nodeConfig.labels | object | `{}` | Map of kubernetes labels to apply to nodes in the nodePool |
-| nodePools[0].nodeConfig.localSsdCount | intq | `nil` | The number of local SSD disks to be attached to the node. The limit for this value is dependent upon the maximum number of disks available on a machine per zone. See: https://cloud.google.com/compute/docs/disks/local-ssd for more information. |
-| nodePools[0].nodeConfig.machineType | string | n1-standard-1 | Type of the machine used for nodes |
-| nodePools[0].nodeConfig.metadata | object | `{}` | Map of metadata to apply to the nodes (key: string, value: string) |
-| nodePools[0].nodeConfig.oauthScopes | list | `["https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/trace.append"]` | The set of Google API scopes to be made available on all of the node VMs under the "default" service account. |
-| nodePools[0].nodeConfig.preemptible | bool | `false` | Configure the node pool with preemptible instances |
-| nodePools[0].nodeConfig.serviceAccount.create | bool | `true` | Create the serviceAccount and IamPolicyMembers associated through Config Connector |
-| nodePools[0].nodeConfig.serviceAccount.name | string | `"np1"` | Display name of the service Account used for the runner. If create=false, use the email of the Service Account |
-| nodePools[0].nodeConfig.tags | list | `[]` | Network tags to apply to the node pool. |
-| nodePools[0].nodeConfig.taints | list | See the values.yaml file for an example. | List of taints to apply to the node pool. Must contains the following : [{"effect": "<effect>", "key": "<key>", "value": "<value>"}] |
 | notificationConfig | object | `{"pubsub":{"enabled":false,"filter":{"eventType":[]},"topicRef":{"external":null,"name":null,"namespace":null}}}` | The notification config for sending cluster upgrade notifications. |
 | notificationConfig.pubsub | object | `{"enabled":false,"filter":{"eventType":[]},"topicRef":{"external":null,"name":null,"namespace":null}}` | Notification config for Cloud Pub/Sub. |
 | notificationConfig.pubsub.enabled | bool | `false` | Whether or not the notification config is enabled. |
@@ -256,9 +234,9 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | podSecurityPolicyConfig | object | `{"enabled":false}` | Configuration for the PodSecurityPolicy feature. |
 | podSecurityPolicyConfig.enabled | bool | `false` | Enable the PodSecurityPolicy controller for this cluster. If enabled, pods must be valid under a PodSecurityPolicy to be created. |
 | privateClusterConfig | object | `{"enablePrivateEndpoint":false,"enablePrivateNodes":false,"enabled":true,"masterGlobalAccessConfig":{"enabled":false},"masterIpv4CidrBlock":null,"privateEndpointSubnetworkRef":{"external":null,"name":null,"namespace":null}}` | Configuration for private clusters, clusters with private nodes. |
+| privateClusterConfig.enabled | bool | `true` | Enables private cluster |
 | privateClusterConfig.enablePrivateEndpoint | bool | `false` | When true, the cluster's private endpoint is used as the cluster endpoint and access through the public endpoint is disabled. When false, either endpoint can be used. |
 | privateClusterConfig.enablePrivateNodes | bool | `false` | Immutable. Enables the private cluster feature, creating a private endpoint on the cluster. In a private cluster, nodes only have RFC 1918 private addresses and communicate with the master's private endpoint via private networking. |
-| privateClusterConfig.enabled | bool | `true` | Enables private cluster |
 | privateClusterConfig.masterGlobalAccessConfig | object | `{"enabled":false}` | Controls cluster master global access settings. |
 | privateClusterConfig.masterGlobalAccessConfig.enabled | bool | `false` | Whether the cluster master is accessible globally or not. |
 | privateClusterConfig.masterIpv4CidrBlock | string | `nil` | Immutable. The IP range in CIDR notation to use for the hosted master network. This range will be used for assigning private IP addresses to the cluster master(s) and the ILB VIP. This range must not overlap with any other ranges in use within the cluster's network, and it must be a /28 subnet. See Private Cluster Limitations for more details. This field only applies to private clusters, when enable_private_nodes is true. |
@@ -269,7 +247,6 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | privateIpv6GoogleAccess | string | `nil` | The desired state of IPv6 connectivity to Google Services. By default, no private IPv6 access to or from Google Services (all access will be via IPv4). |
 | releaseChannel | object | `{"channel":null}` | Configuration options for the Release channel feature, which provide more control over automatic upgrades of your GKE clusters. Note that removing this field from your config will not unenroll it. Instead, use the "UNSPECIFIED" channel. |
 | releaseChannel.channel | string | `nil` | The selected release channel. Accepted values are: * UNSPECIFIED: Not set. * RAPID: Weekly upgrade cadence; Early testers and developers who requires new features. * REGULAR: Multiple per month upgrade cadence; Production users who need features not yet offered in the Stable channel. * STABLE: Every few months upgrade cadence; Production users who need stability above all else, and for whom frequent upgrades are too risky. |
-| removeDefaultNodePool | string | `"true"` | If set to true, the remove-default-node-pool directive removes the default node pool created during cluster creation. Also made as variable to import resources created using terraform. |
 | resourceID | string | `nil` | Immutable. Optional. The name of the resource. Used for creation and acquisition. When unset, the value of `metadata.name` is used as the default. |
 | resourceUsageExportConfig | object | `{"bigqueryDestination":{"datasetId":""},"enableNetworkEgressMetering":false,"enableResourceConsumptionMetering":false}` | Configuration for the ResourceUsageExportConfig feature. |
 | resourceUsageExportConfig.bigqueryDestination | object | `{"datasetId":""}` | Parameters for using BigQuery as the destination of resource usage export. |
@@ -278,16 +255,39 @@ A Helm chart to provision a GKE Cluster via Config Connector.
 | resourceUsageExportConfig.enableResourceConsumptionMetering | bool | `false` | Whether to enable resource consumption metering on this cluster. When enabled, a table will be created in the resource export BigQuery dataset to store resource consumption data. The resulting table can be joined with the resource usage table or with BigQuery billing export. Defaults to true. |
 | serviceExternalIpsConfig | object | `{"enabled":false}` | If set, and enabled=true, services with external ips field will not be blocked. |
 | serviceExternalIpsConfig.enabled | bool | `false` | When enabled, services with exterenal ips specified will be allowed. |
-| subnetworkRef | object | `{"external":null,"name":null,"namespace":null}` | Reference to a ComputeSubnetwork resource. |
-| subnetworkRef.external | string | `nil` | Allowed value: The `selfLink` field of a `ComputeSubnetwork` resource. |
-| subnetworkRef.name | string | `nil` | Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names |
-| subnetworkRef.namespace | string | `nil` | Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/ |
-| tags.networking | bool | `false` | Whether we want to create networking features like VPC, Subnetwork, etc. |
 | verticalPodAutoscaling | object | `{"enabled":false}` | Vertical Pod Autoscaling automatically adjusts the resources of pods controlled by it. |
 | verticalPodAutoscaling.enabled | bool | `false` | Enables vertical pod autoscaling. |
 | workloadIdentityConfig | object | `{"identityNamespace":null,"workloadPool":null}` | Configuration for the use of Kubernetes Service Accounts in GCP IAM policies. |
 | workloadIdentityConfig.identityNamespace | string | `nil` | DEPRECATED. This field will be removed in a future major release as it has been deprecated in the API. Use `workloadPool` instead; `workloadPool` field will supersede this field. Enables workload identity. |
 | workloadIdentityConfig.workloadPool | string | `nil` | The workload pool to attach all Kubernetes service accounts to. |
+| nodePools[0].name | string | `"np1"` | Name of the node pool |
+| nodePools[0].autoscaling.enabled | bool | `true` | Enables nodePool autoscaling |
+| nodePools[0].autoscaling.minNodeCount | int | 1 | Minimal node count. Default to 1 |
+| nodePools[0].autoscaling.maxNodeCount | int | 3 | Maximal node count. Default to 3 |
+| nodePools[0].management | int | 1 | Number of nodes at initialization initialNodeCount: 1 |
+| nodePools[0].management.autoRepair | bool | `true` | Enables node pool autorepair |
+| nodePools[0].management.autoUpgrade | bool | `true` | Enables node pool auto upgrade |
+| nodePools[0].maxPodsPerNode | int | 110 | Max number of Pods per nodes |
+| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.enabled | bool | `false` | Enables boot disk attached to each node in the node pool. Must provide a key |
+| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.kccManaged | bool | `false` | The KMS key was created by kubernetes Config Connector or not |
+| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.name | string | `nil` | Name of the KMS key config connector resource. Only when kccManaged=true |
+| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.namespace | string | `nil` | Namespace of the KMS key config connector resource. Only when kccManaged=true |
+| nodePools[0].nodeConfig.bootDiskKMSCryptoKey.external | string | `nil` | The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: https://cloud.google.com/compute/docs/disks/customer-managed-encryption |
+| nodePools[0].nodeConfig.diskSize | int | 100 | Size of the nodes' disk |
+| nodePools[0].nodeConfig.diskType | string | pd-standard | Type of the nodes' disk |
+| nodePools[0].nodeConfig.guestAccelerator | list | See the values.yaml file for an example. | A list of hardware accelerators to be attached to each node. See https://cloud.google.com/compute/docs/gpus for more information about support for GPUs. |
+| nodePools[0].nodeConfig.imageType | string | `"COS_CONTAINERD"` | Type of Image used for the node pool instances |
+| nodePools[0].nodeConfig.localSsdCount | intq | `nil` | The number of local SSD disks to be attached to the node. The limit for this value is dependent upon the maximum number of disks available on a machine per zone. See: https://cloud.google.com/compute/docs/disks/local-ssd for more information. |
+| nodePools[0].nodeConfig.machineType | string | n1-standard-1 | Type of the machine used for nodes |
+| nodePools[0].nodeConfig.metadata | object | `{}` | Map of metadata to apply to the nodes (key: string, value: string) |
+| nodePools[0].nodeConfig.oauthScopes | list | `["https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/trace.append"]` | The set of Google API scopes to be made available on all of the node VMs under the "default" service account. |
+| nodePools[0].nodeConfig.tags | list | `[]` | Network tags to apply to the node pool. |
+| nodePools[0].nodeConfig.serviceAccount.name | string | `"np1"` | Display name of the service Account used for the runner. If create=false, use the email of the Service Account |
+| nodePools[0].nodeConfig.serviceAccount.create | bool | `true` | Create the serviceAccount and IamPolicyMembers associated through Config Connector |
+| nodePools[0].nodeConfig.labels | object | `{}` | Map of kubernetes labels to apply to nodes in the nodePool |
+| nodePools[0].nodeConfig.taints | list | See the values.yaml file for an example. | List of taints to apply to the node pool. Must contains the following : [{"effect": "<effect>", "key": "<key>", "value": "<value>"}] |
+| nodePools[0].nodeConfig.preemptible | bool | `false` | Configure the node pool with preemptible instances |
+| bigquery-dataset | object | `{"bigqueryDataset":{"access":[],"description":"<to_set>","friendlyName":"<to_set>","location":"<to_set>","name":"<to_set>"},"enabled":false,"gcpProjectId":"<to_set>"}` | Enables Bigquery Dataset for billing GKE resources |
 
 ## GKE Immutable Fields
 

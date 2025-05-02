@@ -6,7 +6,7 @@ version: 0.1.2
 appVersion: "1.15.2"
 dependencies:
   - name: velero
-    version: 8.7.2
+    version: 0.1.2
     repository: "https://vmware-tanzu.github.io/helm-charts"
   - name: gcp-workload-identity
     version: 0.1.1
@@ -32,7 +32,6 @@ dependencies:
     alias: gcpbucket
     tags:
       - configConnector
-
 maintainers:
   - name: wiemaouadi
     email: wiem.aouadi3@gmail.com

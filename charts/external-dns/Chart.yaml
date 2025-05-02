@@ -9,7 +9,7 @@ maintainers:
     url: https://github.com/ilyasabdellaoui
 dependencies:
   - name: external-dns
-    version: 1.16.0
+    version: 0.1.1
     repository: "https://kubernetes-sigs.github.io/external-dns/"
     alias: externaldns
   - name: gcp-workload-identity

@@ -21,15 +21,15 @@ A Helm chart that Creates a Google Service Account and it's Key through Config C
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| annotations | object | `{}` | Add annotations to the resources |
-| description | string | `"Read the Bucket toto"` | A text description of the service account. Must be less than or equal to 256 UTF-8 bytes. |
-| displayName | string | `"My SA"` | The display name for the service account. Can be updated without creating a new resource. |
-| global.abandon | bool | `false` | Keep the GSA even after the kcc resource deletion |
 | global.cnrmNamespace | string | `nil | Allows to deploy in another namespace than the release one |
 | global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
+| global.abandon | bool | `false` | Keep the GSA even after the kcc resource deletion |
+| name | string | `"mysa"` | Name of the service account. Will be used for the sa email creation. |
+| displayName | string | `"My SA"` | The display name for the service account. Can be updated without creating a new resource. |
+| description | string | `"Read the Bucket toto"` | A text description of the service account. Must be less than or equal to 256 UTF-8 bytes. |
 | key.create | bool | `false` |  |
 | key.importAsSecret | bool | `false` |  |
-| name | string | `"mysa"` | Name of the service account. Will be used for the sa email creation. |
+| annotations | object | `{}` | Add annotations to the resources |
 
 ## Installing the Chart
 

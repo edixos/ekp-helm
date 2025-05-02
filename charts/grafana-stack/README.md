@@ -16,7 +16,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://grafana.github.io/helm-charts | grafana | 8.10.4 |
+| https://grafana.github.io/helm-charts | grafana | 0.1.1 |
 
 ## Maintainers
 
@@ -32,45 +32,45 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| dashboards.k8s.create | bool | `false` | Create grafana dashboards to monitor kubernetes cluster |
-| dashboards.labels | object | `{}` | Labels added to configmap dashboards |
+| nameOverride | string | `""` |  |
 | fullnameOverride | string | `""` |  |
+| prometheus.enabled | bool | `true` | Enables prometheus operator resources |
+| prometheus.serviceMonitor.enabled | bool | `true` | Enables prometheus operator service monitor |
+| prometheus.serviceMonitor.labels | object | `{"prometheus":"prometheus-operator-prometheus"}` | Map of labels to apply to the servicemonitor, used to select prometheus target |
+| prometheus.rules.labels | object | `{"prometheus":"prometheus-operator-prometheus"}` | Labels to affect to the Prometheus Rules, used to select prometheus target |
 | global.enableArgocdAnnotations | bool | `false` | Annotate Custom Resources with `argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true` for Argocd |
-| grafana."grafana.ini" | object | `{"auth":{"disable_login_form":true,"oauth_auto_login":true},"auth.basic":{"enabled":false},"metrics":{"enabled":true},"server":{"root_url":"https://grafana.changeme.com"},"users":{"allow_sign_up":false,"auto_assign_org_role":"editor"}}` | Grafana's primary configuration, see [grafana configuration documentation](https://grafana.com/docs/grafana/latest/administration/configuration/) |
-| grafana.dashboardProviders | object | `{"dashboardproviders.yaml":{"apiVersion":1,"providers":[{"disableDeletion":true,"editable":false,"folder":"Kubernetes","name":"Kubernetes","options":{"path":"/tmp/dashboards/k8s"},"orgId":1,"type":"file"},{"disableDeletion":true,"editable":false,"folder":"Grafana","name":"Grafana","options":{"path":"/tmp/dashboards/grafana"},"orgId":1,"type":"file"},{"disableDeletion":true,"editable":false,"folder":"Project","name":"Project","options":{"path":"/tmp/dashboards/project"},"orgId":1,"type":"file"}]}}` | Configure grafana dashboard providers, see [grafana documentation](https://grafana.com/docs/grafana/latest/administration/provisioning/#dashboards) |
-| grafana.datasources | object | `{"datasources.yaml":{"apiVersion":1,"datasources":[{"access":"proxy","name":"Prometheus","type":"prometheus","url":"http://prometheus-operated.infra-prometheus-operator:9090"}]}}` | Configure grafana datasource providers, see [grafana documentation](https://grafana.com/docs/grafana/latest/administration/provisioning/#data-sources) |
-| grafana.env.GF_AUTH_GENERIC_OAUTH_AUTH_URL | string | `""` | OAUTH auth url for OIDC integration |
-| grafana.env.GF_AUTH_GENERIC_OAUTH_CLIENT_ID | string | `"grafana-infra"` | Client ID for OIDC integration, see `grafanadexclient.client.id` |
-| grafana.env.GF_AUTH_GENERIC_OAUTH_ENABLED | bool | `true` | Enables OAUTH |
-| grafana.env.GF_AUTH_GENERIC_OAUTH_SCOPES | string | `"email openid"` | OAUTH scopes for OIDC integration |
-| grafana.env.GF_AUTH_GENERIC_OAUTH_TOKEN_URL | string | `""` | OAUTH token url for OIDC integration |
+| ingress.enabled | bool | `false` | Enables ingress for alertmanager |
+| ingress.annotations | object | `{"kubernetes.io/ingress.allow-http":"false","kubernetes.io/ingress.class":"nginx","kubernetes.io/tls-acme":"true"}` | Map of annotations to apply to the ingress |
+| ingress.host | string | `""` | FQDN of the grafana |
+| ingress.path | string | `"/"` | Path of the incoming request (/* or / if used with nginx) |
+| ingress.tls.secretName | string | `"grafana-tls"` | Name of the secret containing the certificates |
 | grafana.image.repository | string | `"grafana/grafana"` | Image repository |
 | grafana.image.sha | string | `""` | Image sha (optional) |
-| grafana.persistence.enabled | bool | `false` |  |
-| grafana.plugins | list | `["grafana-piechart-panel"]` | Plugins to be loaded along with Grafana |
-| grafana.priorityClassName | string | `""` | Priority class assigned to the Pods |
-| grafana.replicas | int | `1` | Number of instance of grafana |
-| grafana.resources | object | `{"limits":{"cpu":"1000m","memory":"500Mi"},"requests":{"cpu":"100m","memory":"200Mi"}}` | Add resources limits and request to grafana container. |
-| grafana.securityContext | object | `{"fsGroup":472,"runAsGroup":472,"runAsNonRoot":true,"runAsUser":472}` | [Security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) for grafana |
-| grafana.service.labels | object | `{"app.kubernetes.io/component":"grafana","app.kubernetes.io/name":"grafana-infra"}` | Custom labels to apply |
-| grafana.service.portName | string | `"http-grafana"` | Name of the service |
-| grafana.service.type | string | `"ClusterIP"` | Type of service for the grafana |
 | grafana.sidecar.dashboards.enabled | bool | `true` | Enables the cluster wide search for dashboards and adds/updates/deletes them in grafana |
 | grafana.sidecar.dashboards.folder | string | `"/tmp/dashboards"` | Folder in the pod that should hold the collected dashboards. This path will be mounted. |
 | grafana.sidecar.dashboards.label | string | `"grafana_dashboard"` | Label that config maps with dashboards should have to be added |
 | grafana.sidecar.dashboards.searchNamespace | string | `""` | If specified, the sidecar will search for dashboard config-maps inside this namespace. Otherwise the namespace in which the sidecar is running will be used. It's also possible to specify ALL to search in all namespaces |
 | grafana.sidecar.datasources.enabled | bool | `true` | Enables the cluster wide search for datasources and adds/updates/deletes them in grafana |
+| grafana.dashboardProviders | object | `{"dashboardproviders.yaml":{"apiVersion":1,"providers":[{"disableDeletion":true,"editable":false,"folder":"Kubernetes","name":"Kubernetes","options":{"path":"/tmp/dashboards/k8s"},"orgId":1,"type":"file"},{"disableDeletion":true,"editable":false,"folder":"Grafana","name":"Grafana","options":{"path":"/tmp/dashboards/grafana"},"orgId":1,"type":"file"},{"disableDeletion":true,"editable":false,"folder":"Project","name":"Project","options":{"path":"/tmp/dashboards/project"},"orgId":1,"type":"file"}]}}` | Configure grafana dashboard providers, see [grafana documentation](https://grafana.com/docs/grafana/latest/administration/provisioning/#dashboards) |
+| grafana.persistence.enabled | bool | `false` |  |
+| grafana.env.GF_AUTH_GENERIC_OAUTH_AUTH_URL | string | `""` | OAUTH auth url for OIDC integration |
+| grafana.env.GF_AUTH_GENERIC_OAUTH_ENABLED | bool | `true` | Enables OAUTH |
+| grafana.env.GF_AUTH_GENERIC_OAUTH_TOKEN_URL | string | `""` | OAUTH token url for OIDC integration |
+| grafana.env.GF_AUTH_GENERIC_OAUTH_SCOPES | string | `"email openid"` | OAUTH scopes for OIDC integration |
+| grafana.env.GF_AUTH_GENERIC_OAUTH_CLIENT_ID | string | `"grafana-infra"` | Client ID for OIDC integration, see `grafanadexclient.client.id` |
+| grafana.plugins | list | `["grafana-piechart-panel"]` | Plugins to be loaded along with Grafana |
+| grafana."grafana.ini" | object | `{"auth":{"disable_login_form":true,"oauth_auto_login":true},"auth.basic":{"enabled":false},"metrics":{"enabled":true},"server":{"root_url":"https://grafana.changeme.com"},"users":{"allow_sign_up":false,"auto_assign_org_role":"editor"}}` | Grafana's primary configuration, see [grafana configuration documentation](https://grafana.com/docs/grafana/latest/administration/configuration/) |
+| grafana.datasources | object | `{"datasources.yaml":{"apiVersion":1,"datasources":[{"access":"proxy","name":"Prometheus","type":"prometheus","url":"http://prometheus-operated.infra-prometheus-operator:9090"}]}}` | Configure grafana datasource providers, see [grafana documentation](https://grafana.com/docs/grafana/latest/administration/provisioning/#data-sources) |
+| grafana.replicas | int | `1` | Number of instance of grafana |
+| grafana.service.type | string | `"ClusterIP"` | Type of service for the grafana |
+| grafana.service.portName | string | `"http-grafana"` | Name of the service |
+| grafana.service.labels | object | `{"app.kubernetes.io/component":"grafana","app.kubernetes.io/name":"grafana-infra"}` | Custom labels to apply |
+| grafana.priorityClassName | string | `""` | Priority class assigned to the Pods |
+| grafana.securityContext | object | `{"fsGroup":472,"runAsGroup":472,"runAsNonRoot":true,"runAsUser":472}` | [Security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) for grafana |
+| grafana.resources | object | `{"limits":{"cpu":"1000m","memory":"500Mi"},"requests":{"cpu":"100m","memory":"200Mi"}}` | Add resources limits and request to grafana container. |
 | grafana.testFramework.enabled | bool | `false` |  |
-| ingress.annotations | object | `{"kubernetes.io/ingress.allow-http":"false","kubernetes.io/ingress.class":"nginx","kubernetes.io/tls-acme":"true"}` | Map of annotations to apply to the ingress |
-| ingress.enabled | bool | `false` | Enables ingress for alertmanager |
-| ingress.host | string | `""` | FQDN of the grafana |
-| ingress.path | string | `"/"` | Path of the incoming request (/* or / if used with nginx) |
-| ingress.tls.secretName | string | `"grafana-tls"` | Name of the secret containing the certificates |
-| nameOverride | string | `""` |  |
-| prometheus.enabled | bool | `true` | Enables prometheus operator resources |
-| prometheus.rules.labels | object | `{"prometheus":"prometheus-operator-prometheus"}` | Labels to affect to the Prometheus Rules, used to select prometheus target |
-| prometheus.serviceMonitor.enabled | bool | `true` | Enables prometheus operator service monitor |
-| prometheus.serviceMonitor.labels | object | `{"prometheus":"prometheus-operator-prometheus"}` | Map of labels to apply to the servicemonitor, used to select prometheus target |
+| dashboards.labels | object | `{}` | Labels added to configmap dashboards |
+| dashboards.k8s.create | bool | `false` | Create grafana dashboards to monitor kubernetes cluster |
 
 ## Installing the Chart
 

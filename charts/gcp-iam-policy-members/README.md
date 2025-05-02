@@ -22,9 +22,9 @@ A Helm chart that Creates GCP IAM Policy Memebers through Config Connector
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| global.abandon | bool | `false` | Keep the resource even after the kcc resource deletion |
-| global.cnrmNamespace | string | `""` | Allows to deploy in another namespace than the release one |
 | global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
+| global.cnrmNamespace | string | `""` | Allows to deploy in another namespace than the release one |
+| global.abandon | bool | `false` | Keep the resource even after the kcc resource deletion |
 | members | list | `[]` | List of IAM policy members to create |
 
 ## Installing the Chart

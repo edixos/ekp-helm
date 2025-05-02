@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.jetstack.io | certmanager(cert-manager) | 1.17.1 |
+| https://charts.jetstack.io | certmanager(cert-manager) | 0.1.2 |
 | https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-members) | 0.1.2 |
 | https://edixos.github.io/ekp-helm | workloadIdentity(gcp-workload-identity) | 0.1.1 |
 
@@ -30,146 +30,121 @@ A Helm chart for cert-manager
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| certmanager.acmesolver.image.pullPolicy | string | `"IfNotPresent"` |  |
-| certmanager.acmesolver.image.repository | string | `"quay.io/jetstack/cert-manager-acmesolver"` |  |
-| certmanager.affinity | object | `{}` |  |
+| global.gcpProjectId | string | `""` | Google Project ID of the Kubernetes Cluster hosting the service Account |
+| global.cnrmNamespace | string | `""` | Allows to deploy in another namespace than the release one |
+| global.abandon | bool | `false` | Activate abandon of the resources (If true, the GCP resources will be keep after deleting k8s resources) |
+| grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
+| grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
+| certmanager.global.imagePullSecrets | list | `[]` |  |
+| certmanager.global.commonLabels | object | `{}` |  |
+| certmanager.global.priorityClassName | string | `""` |  |
+| certmanager.global.rbac.create | bool | `true` |  |
+| certmanager.global.rbac.aggregateClusterRoles | bool | `true` |  |
+| certmanager.global.podSecurityPolicy.enabled | bool | `false` |  |
+| certmanager.global.podSecurityPolicy.useAppArmor | bool | `true` |  |
+| certmanager.global.logLevel | int | `2` |  |
+| certmanager.global.leaderElection.namespace | string | `"kube-system"` |  |
+| certmanager.crds.enabled | bool | `true` |  |
+| certmanager.crds.keep | bool | `true` |  |
+| certmanager.replicaCount | int | `1` |  |
+| certmanager.strategy | object | `{}` |  |
+| certmanager.podDisruptionBudget.enabled | bool | `false` |  |
+| certmanager.featureGates | string | `""` |  |
+| certmanager.maxConcurrentChallenges | int | `60` |  |
+| certmanager.image.repository | string | `"quay.io/jetstack/cert-manager-controller"` |  |
+| certmanager.image.pullPolicy | string | `"IfNotPresent"` |  |
+| certmanager.clusterResourceNamespace | string | `""` |  |
+| certmanager.namespace | string | `""` |  |
+| certmanager.nameOverride | string | `"cert-manager"` |  |
+| certmanager.fullnameOverride | string | `"cert-manager"` |  |
+| certmanager.serviceAccount.create | bool | `true` |  |
+| certmanager.serviceAccount.automountServiceAccountToken | bool | `true` |  |
+| certmanager.enableCertificateOwnerRef | bool | `false` |  |
+| certmanager.config | object | `{}` |  |
+| certmanager.dns01RecursiveNameservers | string | `""` |  |
+| certmanager.dns01RecursiveNameserversOnly | bool | `false` |  |
+| certmanager.disableAutoApproval | bool | `false` |  |
 | certmanager.approveSignerNames[0] | string | `"issuers.cert-manager.io/*"` |  |
 | certmanager.approveSignerNames[1] | string | `"clusterissuers.cert-manager.io/*"` |  |
-| certmanager.cainjector.affinity | object | `{}` |  |
-| certmanager.cainjector.config | object | `{}` |  |
-| certmanager.cainjector.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| certmanager.cainjector.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| certmanager.cainjector.containerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
-| certmanager.cainjector.enableServiceLinks | bool | `false` |  |
-| certmanager.cainjector.enabled | bool | `true` |  |
-| certmanager.cainjector.extraArgs | list | `[]` |  |
-| certmanager.cainjector.extraEnv | list | `[]` |  |
-| certmanager.cainjector.featureGates | string | `""` |  |
-| certmanager.cainjector.image.pullPolicy | string | `"IfNotPresent"` |  |
-| certmanager.cainjector.image.repository | string | `"quay.io/jetstack/cert-manager-cainjector"` |  |
-| certmanager.cainjector.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
-| certmanager.cainjector.podDisruptionBudget.enabled | bool | `false` |  |
-| certmanager.cainjector.podLabels | object | `{}` |  |
-| certmanager.cainjector.replicaCount | int | `1` |  |
-| certmanager.cainjector.resources | object | `{}` |  |
-| certmanager.cainjector.securityContext.runAsNonRoot | bool | `true` |  |
-| certmanager.cainjector.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| certmanager.cainjector.serviceAccount.automountServiceAccountToken | bool | `true` |  |
-| certmanager.cainjector.serviceAccount.create | bool | `true` |  |
-| certmanager.cainjector.serviceLabels | object | `{}` |  |
-| certmanager.cainjector.strategy | object | `{}` |  |
-| certmanager.cainjector.tolerations | list | `[]` |  |
-| certmanager.cainjector.topologySpreadConstraints | list | `[]` |  |
-| certmanager.cainjector.volumeMounts | list | `[]` |  |
-| certmanager.cainjector.volumes | list | `[]` |  |
-| certmanager.clusterResourceNamespace | string | `""` |  |
-| certmanager.config | object | `{}` |  |
+| certmanager.extraArgs | list | `[]` |  |
+| certmanager.extraEnv | list | `[]` |  |
+| certmanager.securityContext.runAsNonRoot | bool | `true` |  |
+| certmanager.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | certmanager.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | certmanager.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | certmanager.containerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
-| certmanager.crds.enabled | bool | `true` |  |
-| certmanager.crds.keep | bool | `true` |  |
-| certmanager.creator | string | `"helm"` |  |
-| certmanager.disableAutoApproval | bool | `false` |  |
-| certmanager.dns01RecursiveNameservers | string | `""` |  |
-| certmanager.dns01RecursiveNameserversOnly | bool | `false` |  |
-| certmanager.enableCertificateOwnerRef | bool | `false` |  |
-| certmanager.enableServiceLinks | bool | `false` |  |
-| certmanager.enabled | bool | `true` |  |
-| certmanager.extraArgs | list | `[]` |  |
-| certmanager.extraEnv | list | `[]` |  |
-| certmanager.extraObjects | list | `[]` |  |
-| certmanager.featureGates | string | `""` |  |
-| certmanager.fullnameOverride | string | `"cert-manager"` |  |
-| certmanager.global.commonLabels | object | `{}` |  |
-| certmanager.global.imagePullSecrets | list | `[]` |  |
-| certmanager.global.leaderElection.namespace | string | `"kube-system"` |  |
-| certmanager.global.logLevel | int | `2` |  |
-| certmanager.global.podSecurityPolicy.enabled | bool | `false` |  |
-| certmanager.global.podSecurityPolicy.useAppArmor | bool | `true` |  |
-| certmanager.global.priorityClassName | string | `""` |  |
-| certmanager.global.rbac.aggregateClusterRoles | bool | `true` |  |
-| certmanager.global.rbac.create | bool | `true` |  |
+| certmanager.volumes | list | `[]` |  |
+| certmanager.volumeMounts | list | `[]` |  |
+| certmanager.podLabels | object | `{}` |  |
 | certmanager.hostAliases | list | `[]` |  |
-| certmanager.image.pullPolicy | string | `"IfNotPresent"` |  |
-| certmanager.image.repository | string | `"quay.io/jetstack/cert-manager-controller"` |  |
+| certmanager.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | certmanager.ingressShim.defaultIssuerKind | string | `"ClusterIssuer"` |  |
 | certmanager.ingressShim.defaultIssuerName | string | `"letsencrypt-dns-prd"` |  |
+| certmanager.affinity | object | `{}` |  |
+| certmanager.tolerations | list | `[]` |  |
+| certmanager.topologySpreadConstraints | list | `[]` |  |
 | certmanager.livenessProbe.enabled | bool | `true` |  |
-| certmanager.livenessProbe.failureThreshold | int | `8` |  |
 | certmanager.livenessProbe.initialDelaySeconds | int | `10` |  |
 | certmanager.livenessProbe.periodSeconds | int | `10` |  |
-| certmanager.livenessProbe.successThreshold | int | `1` |  |
 | certmanager.livenessProbe.timeoutSeconds | int | `15` |  |
-| certmanager.maxConcurrentChallenges | int | `60` |  |
-| certmanager.nameOverride | string | `"cert-manager"` |  |
-| certmanager.namespace | string | `""` |  |
-| certmanager.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
-| certmanager.podDisruptionBudget.enabled | bool | `false` |  |
-| certmanager.podLabels | object | `{}` |  |
+| certmanager.livenessProbe.successThreshold | int | `1` |  |
+| certmanager.livenessProbe.failureThreshold | int | `8` |  |
+| certmanager.enableServiceLinks | bool | `false` |  |
 | certmanager.prometheus.enabled | bool | `false` |  |
 | certmanager.prometheus.servicemonitor.enabled | bool | `false` |  |
 | certmanager.prometheus.servicemonitor.prometheusInstance | string | `"prometheus-operator-prometheus"` |  |
-| certmanager.replicaCount | int | `1` |  |
 | certmanager.resources | object | `{"limits":{"cpu":"50m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}` | Requests and Limits to apply to the cert-manager pods |
-| certmanager.securityContext.runAsNonRoot | bool | `true` |  |
-| certmanager.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| certmanager.serviceAccount.automountServiceAccountToken | bool | `true` |  |
-| certmanager.serviceAccount.create | bool | `true` |  |
-| certmanager.startupapicheck.affinity | object | `{}` |  |
-| certmanager.startupapicheck.backoffLimit | int | `4` |  |
-| certmanager.startupapicheck.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| certmanager.startupapicheck.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| certmanager.startupapicheck.containerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
-| certmanager.startupapicheck.enableServiceLinks | bool | `false` |  |
-| certmanager.startupapicheck.enabled | bool | `true` |  |
-| certmanager.startupapicheck.extraArgs[0] | string | `"-v"` |  |
-| certmanager.startupapicheck.extraEnv | list | `[]` |  |
-| certmanager.startupapicheck.image.pullPolicy | string | `"IfNotPresent"` |  |
-| certmanager.startupapicheck.image.repository | string | `"quay.io/jetstack/cert-manager-startupapicheck"` |  |
-| certmanager.startupapicheck.jobAnnotations."helm.sh/hook" | string | `"post-install"` |  |
-| certmanager.startupapicheck.jobAnnotations."helm.sh/hook-delete-policy" | string | `"before-hook-creation,hook-succeeded"` |  |
-| certmanager.startupapicheck.jobAnnotations."helm.sh/hook-weight" | string | `"1"` |  |
-| certmanager.startupapicheck.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
-| certmanager.startupapicheck.podLabels | object | `{}` |  |
-| certmanager.startupapicheck.rbac.annotations."helm.sh/hook" | string | `"post-install"` |  |
-| certmanager.startupapicheck.rbac.annotations."helm.sh/hook-delete-policy" | string | `"before-hook-creation,hook-succeeded"` |  |
-| certmanager.startupapicheck.rbac.annotations."helm.sh/hook-weight" | string | `"-5"` |  |
-| certmanager.startupapicheck.resources | object | `{}` |  |
-| certmanager.startupapicheck.securityContext.runAsNonRoot | bool | `true` |  |
-| certmanager.startupapicheck.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| certmanager.startupapicheck.serviceAccount.annotations."helm.sh/hook" | string | `"post-install"` |  |
-| certmanager.startupapicheck.serviceAccount.annotations."helm.sh/hook-delete-policy" | string | `"before-hook-creation,hook-succeeded"` |  |
-| certmanager.startupapicheck.serviceAccount.annotations."helm.sh/hook-weight" | string | `"-5"` |  |
-| certmanager.startupapicheck.serviceAccount.automountServiceAccountToken | bool | `true` |  |
-| certmanager.startupapicheck.serviceAccount.create | bool | `true` |  |
-| certmanager.startupapicheck.timeout | string | `"1m"` |  |
-| certmanager.startupapicheck.tolerations | list | `[]` |  |
-| certmanager.startupapicheck.volumeMounts | list | `[]` |  |
-| certmanager.startupapicheck.volumes | list | `[]` |  |
-| certmanager.strategy | object | `{}` |  |
-| certmanager.tolerations | list | `[]` |  |
-| certmanager.topologySpreadConstraints | list | `[]` |  |
-| certmanager.volumeMounts | list | `[]` |  |
-| certmanager.volumes | list | `[]` |  |
-| certmanager.webhook.affinity | object | `{}` |  |
+| certmanager.webhook.replicaCount | int | `1` |  |
+| certmanager.webhook.timeoutSeconds | int | `30` |  |
 | certmanager.webhook.config | object | `{}` |  |
+| certmanager.webhook.strategy | object | `{}` |  |
+| certmanager.webhook.securityContext.fsGroup | int | `1001` | ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ |
+| certmanager.webhook.securityContext.runAsUser | int | `1001` |  |
+| certmanager.webhook.securityContext.runAsNonRoot | bool | `true` |  |
 | certmanager.webhook.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | certmanager.webhook.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | certmanager.webhook.containerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
-| certmanager.webhook.enableServiceLinks | bool | `false` |  |
+| certmanager.webhook.podDisruptionBudget.enabled | bool | `false` |  |
+| certmanager.webhook.validatingWebhookConfiguration.namespaceSelector.matchExpressions[0].key | string | `"cert-manager.io/disable-validation"` |  |
+| certmanager.webhook.validatingWebhookConfiguration.namespaceSelector.matchExpressions[0].operator | string | `"NotIn"` |  |
+| certmanager.webhook.validatingWebhookConfiguration.namespaceSelector.matchExpressions[0].values[0] | string | `"true"` |  |
+| certmanager.webhook.mutatingWebhookConfiguration.namespaceSelector | object | `{}` |  |
 | certmanager.webhook.extraArgs | list | `[]` |  |
 | certmanager.webhook.extraEnv | list | `[]` |  |
 | certmanager.webhook.featureGates | string | `""` |  |
-| certmanager.webhook.hostNetwork | bool | `false` |  |
-| certmanager.webhook.image.pullPolicy | string | `"IfNotPresent"` |  |
-| certmanager.webhook.image.repository | string | `"quay.io/jetstack/cert-manager-webhook"` |  |
+| certmanager.webhook.resources.requests.cpu | string | `"5m"` |  |
+| certmanager.webhook.resources.requests.memory | string | `"5Mi"` |  |
+| certmanager.webhook.resources.limits.cpu | string | `"150m"` |  |
+| certmanager.webhook.resources.limits.memory | string | `"32Mi"` |  |
 | certmanager.webhook.livenessProbe.failureThreshold | int | `3` |  |
 | certmanager.webhook.livenessProbe.initialDelaySeconds | int | `60` |  |
 | certmanager.webhook.livenessProbe.periodSeconds | int | `10` |  |
 | certmanager.webhook.livenessProbe.successThreshold | int | `1` |  |
 | certmanager.webhook.livenessProbe.timeoutSeconds | int | `1` |  |
-| certmanager.webhook.mutatingWebhookConfiguration.namespaceSelector | object | `{}` |  |
+| certmanager.webhook.readinessProbe.failureThreshold | int | `3` |  |
+| certmanager.webhook.readinessProbe.initialDelaySeconds | int | `5` |  |
+| certmanager.webhook.readinessProbe.periodSeconds | int | `5` |  |
+| certmanager.webhook.readinessProbe.successThreshold | int | `1` |  |
+| certmanager.webhook.readinessProbe.timeoutSeconds | int | `1` |  |
+| certmanager.webhook.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
+| certmanager.webhook.affinity | object | `{}` |  |
+| certmanager.webhook.tolerations | list | `[]` |  |
+| certmanager.webhook.topologySpreadConstraints | list | `[]` |  |
+| certmanager.webhook.podLabels | object | `{}` |  |
+| certmanager.webhook.serviceLabels | object | `{}` |  |
+| certmanager.webhook.serviceIPFamilyPolicy | string | `""` |  |
+| certmanager.webhook.serviceIPFamilies | list | `[]` |  |
+| certmanager.webhook.image.repository | string | `"quay.io/jetstack/cert-manager-webhook"` |  |
+| certmanager.webhook.image.pullPolicy | string | `"IfNotPresent"` |  |
+| certmanager.webhook.serviceAccount.create | bool | `true` |  |
+| certmanager.webhook.serviceAccount.name | string | `"cert-manager"` |  |
+| certmanager.webhook.serviceAccount.automountServiceAccountToken | bool | `true` |  |
+| certmanager.webhook.securePort | int | `10250` |  |
+| certmanager.webhook.hostNetwork | bool | `false` |  |
+| certmanager.webhook.serviceType | string | `"ClusterIP"` |  |
+| certmanager.webhook.url | object | `{}` |  |
+| certmanager.webhook.networkPolicy.enabled | bool | `false` |  |
+| certmanager.webhook.networkPolicy.ingress[0].from[0].ipBlock.cidr | string | `"0.0.0.0/0"` |  |
 | certmanager.webhook.networkPolicy.egress[0].ports[0].port | int | `80` |  |
 | certmanager.webhook.networkPolicy.egress[0].ports[0].protocol | string | `"TCP"` |  |
 | certmanager.webhook.networkPolicy.egress[0].ports[1].port | int | `443` |  |
@@ -181,62 +156,87 @@ A Helm chart for cert-manager
 | certmanager.webhook.networkPolicy.egress[0].ports[4].port | int | `6443` |  |
 | certmanager.webhook.networkPolicy.egress[0].ports[4].protocol | string | `"TCP"` |  |
 | certmanager.webhook.networkPolicy.egress[0].to[0].ipBlock.cidr | string | `"0.0.0.0/0"` |  |
-| certmanager.webhook.networkPolicy.enabled | bool | `false` |  |
-| certmanager.webhook.networkPolicy.ingress[0].from[0].ipBlock.cidr | string | `"0.0.0.0/0"` |  |
-| certmanager.webhook.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
-| certmanager.webhook.podDisruptionBudget.enabled | bool | `false` |  |
-| certmanager.webhook.podLabels | object | `{}` |  |
-| certmanager.webhook.readinessProbe.failureThreshold | int | `3` |  |
-| certmanager.webhook.readinessProbe.initialDelaySeconds | int | `5` |  |
-| certmanager.webhook.readinessProbe.periodSeconds | int | `5` |  |
-| certmanager.webhook.readinessProbe.successThreshold | int | `1` |  |
-| certmanager.webhook.readinessProbe.timeoutSeconds | int | `1` |  |
-| certmanager.webhook.replicaCount | int | `1` |  |
-| certmanager.webhook.resources.limits.cpu | string | `"150m"` |  |
-| certmanager.webhook.resources.limits.memory | string | `"32Mi"` |  |
-| certmanager.webhook.resources.requests.cpu | string | `"5m"` |  |
-| certmanager.webhook.resources.requests.memory | string | `"5Mi"` |  |
-| certmanager.webhook.securePort | int | `10250` |  |
-| certmanager.webhook.securityContext.fsGroup | int | `1001` | ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ |
-| certmanager.webhook.securityContext.runAsNonRoot | bool | `true` |  |
-| certmanager.webhook.securityContext.runAsUser | int | `1001` |  |
-| certmanager.webhook.serviceAccount.automountServiceAccountToken | bool | `true` |  |
-| certmanager.webhook.serviceAccount.create | bool | `true` |  |
-| certmanager.webhook.serviceAccount.name | string | `"cert-manager"` |  |
-| certmanager.webhook.serviceIPFamilies | list | `[]` |  |
-| certmanager.webhook.serviceIPFamilyPolicy | string | `""` |  |
-| certmanager.webhook.serviceLabels | object | `{}` |  |
-| certmanager.webhook.serviceType | string | `"ClusterIP"` |  |
-| certmanager.webhook.strategy | object | `{}` |  |
-| certmanager.webhook.timeoutSeconds | int | `30` |  |
-| certmanager.webhook.tolerations | list | `[]` |  |
-| certmanager.webhook.topologySpreadConstraints | list | `[]` |  |
-| certmanager.webhook.url | object | `{}` |  |
-| certmanager.webhook.validatingWebhookConfiguration.namespaceSelector.matchExpressions[0].key | string | `"cert-manager.io/disable-validation"` |  |
-| certmanager.webhook.validatingWebhookConfiguration.namespaceSelector.matchExpressions[0].operator | string | `"NotIn"` |  |
-| certmanager.webhook.validatingWebhookConfiguration.namespaceSelector.matchExpressions[0].values[0] | string | `"true"` |  |
-| certmanager.webhook.volumeMounts | list | `[]` |  |
 | certmanager.webhook.volumes | list | `[]` |  |
-| certs | list | Please look at the `values.yaml` file | Generate basic certificates |
-| global.abandon | bool | `false` | Activate abandon of the resources (If true, the GCP resources will be keep after deleting k8s resources) |
-| global.cnrmNamespace | string | `""` | Allows to deploy in another namespace than the release one |
-| global.gcpProjectId | string | `""` | Google Project ID of the Kubernetes Cluster hosting the service Account |
-| grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
-| grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
-| iamPolicyMembers.members[0].member | string | `""` |  |
-| iamPolicyMembers.members[0].name | string | `"cert-manager-gsa"` |  |
-| iamPolicyMembers.members[0].resourceRef.external | string | `""` |  |
-| iamPolicyMembers.members[0].resourceRef.kind | string | `"Project"` |  |
-| iamPolicyMembers.members[0].role | string | `"roles/dns.admin"` | Roles to apply to cert-manager google service account |
-| issuers | list | Please look at the `values.yaml` file | List of issuers to create. Please read the following [documentation](https://cert-manager.io/docs/concepts/issuer/) |
+| certmanager.webhook.volumeMounts | list | `[]` |  |
+| certmanager.webhook.enableServiceLinks | bool | `false` |  |
+| certmanager.cainjector.enabled | bool | `true` |  |
+| certmanager.cainjector.replicaCount | int | `1` |  |
+| certmanager.cainjector.config | object | `{}` |  |
+| certmanager.cainjector.strategy | object | `{}` |  |
+| certmanager.cainjector.securityContext.runAsNonRoot | bool | `true` |  |
+| certmanager.cainjector.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| certmanager.cainjector.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| certmanager.cainjector.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| certmanager.cainjector.containerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
+| certmanager.cainjector.podDisruptionBudget.enabled | bool | `false` |  |
+| certmanager.cainjector.extraArgs | list | `[]` |  |
+| certmanager.cainjector.extraEnv | list | `[]` |  |
+| certmanager.cainjector.featureGates | string | `""` |  |
+| certmanager.cainjector.resources | object | `{}` |  |
+| certmanager.cainjector.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
+| certmanager.cainjector.affinity | object | `{}` |  |
+| certmanager.cainjector.tolerations | list | `[]` |  |
+| certmanager.cainjector.topologySpreadConstraints | list | `[]` |  |
+| certmanager.cainjector.podLabels | object | `{}` |  |
+| certmanager.cainjector.serviceLabels | object | `{}` |  |
+| certmanager.cainjector.image.repository | string | `"quay.io/jetstack/cert-manager-cainjector"` |  |
+| certmanager.cainjector.image.pullPolicy | string | `"IfNotPresent"` |  |
+| certmanager.cainjector.serviceAccount.create | bool | `true` |  |
+| certmanager.cainjector.serviceAccount.automountServiceAccountToken | bool | `true` |  |
+| certmanager.cainjector.volumes | list | `[]` |  |
+| certmanager.cainjector.volumeMounts | list | `[]` |  |
+| certmanager.cainjector.enableServiceLinks | bool | `false` |  |
+| certmanager.acmesolver.image.repository | string | `"quay.io/jetstack/cert-manager-acmesolver"` |  |
+| certmanager.acmesolver.image.pullPolicy | string | `"IfNotPresent"` |  |
+| certmanager.startupapicheck.enabled | bool | `true` |  |
+| certmanager.startupapicheck.securityContext.runAsNonRoot | bool | `true` |  |
+| certmanager.startupapicheck.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| certmanager.startupapicheck.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| certmanager.startupapicheck.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| certmanager.startupapicheck.containerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
+| certmanager.startupapicheck.timeout | string | `"1m"` |  |
+| certmanager.startupapicheck.backoffLimit | int | `4` |  |
+| certmanager.startupapicheck.jobAnnotations."helm.sh/hook" | string | `"post-install"` |  |
+| certmanager.startupapicheck.jobAnnotations."helm.sh/hook-weight" | string | `"1"` |  |
+| certmanager.startupapicheck.jobAnnotations."helm.sh/hook-delete-policy" | string | `"before-hook-creation,hook-succeeded"` |  |
+| certmanager.startupapicheck.extraArgs[0] | string | `"-v"` |  |
+| certmanager.startupapicheck.extraEnv | list | `[]` |  |
+| certmanager.startupapicheck.resources | object | `{}` |  |
+| certmanager.startupapicheck.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
+| certmanager.startupapicheck.affinity | object | `{}` |  |
+| certmanager.startupapicheck.tolerations | list | `[]` |  |
+| certmanager.startupapicheck.podLabels | object | `{}` |  |
+| certmanager.startupapicheck.image.repository | string | `"quay.io/jetstack/cert-manager-startupapicheck"` |  |
+| certmanager.startupapicheck.image.pullPolicy | string | `"IfNotPresent"` |  |
+| certmanager.startupapicheck.rbac.annotations."helm.sh/hook" | string | `"post-install"` |  |
+| certmanager.startupapicheck.rbac.annotations."helm.sh/hook-weight" | string | `"-5"` |  |
+| certmanager.startupapicheck.rbac.annotations."helm.sh/hook-delete-policy" | string | `"before-hook-creation,hook-succeeded"` |  |
+| certmanager.startupapicheck.serviceAccount.create | bool | `true` |  |
+| certmanager.startupapicheck.serviceAccount.annotations."helm.sh/hook" | string | `"post-install"` |  |
+| certmanager.startupapicheck.serviceAccount.annotations."helm.sh/hook-weight" | string | `"-5"` |  |
+| certmanager.startupapicheck.serviceAccount.annotations."helm.sh/hook-delete-policy" | string | `"before-hook-creation,hook-succeeded"` |  |
+| certmanager.startupapicheck.serviceAccount.automountServiceAccountToken | bool | `true` |  |
+| certmanager.startupapicheck.volumes | list | `[]` |  |
+| certmanager.startupapicheck.volumeMounts | list | `[]` |  |
+| certmanager.startupapicheck.enableServiceLinks | bool | `false` |  |
+| certmanager.extraObjects | list | `[]` |  |
+| certmanager.creator | string | `"helm"` |  |
+| certmanager.enabled | bool | `true` |  |
 | prometheusRules.rules.enabled | bool | `false` | Enables prometheus operator rules for cert-manager |
 | prometheusRules.rules.labels | object | `{"prometheus":"prometheus-operator-prometheus"}` | Labels to affect to the Prometheus Rules |
+| issuers | list | Please look at the `values.yaml` file | List of issuers to create. Please read the following [documentation](https://cert-manager.io/docs/concepts/issuer/) |
+| certs | list | Please look at the `values.yaml` file | Generate basic certificates |
 | tags.configConnector | bool | `false` | Enables Config Connector features |
+| iamPolicyMembers.members[0].name | string | `"cert-manager-gsa"` |  |
+| iamPolicyMembers.members[0].member | string | `""` |  |
+| iamPolicyMembers.members[0].role | string | `"roles/dns.admin"` | Roles to apply to cert-manager google service account |
+| iamPolicyMembers.members[0].resourceRef.kind | string | `"Project"` |  |
+| iamPolicyMembers.members[0].resourceRef.external | string | `""` |  |
 | workloadIdentity.global.gsa.create | bool | `true` |  |
 | workloadIdentity.global.gsa.name | string | `"wi-k8s"` |  |
 | workloadIdentity.global.gsa.project | string | `""` |  |
-| workloadIdentity.global.ksa.name | string | `"default"` |  |
 | workloadIdentity.global.ksa.namespace | string | `""` |  |
+| workloadIdentity.global.ksa.name | string | `"default"` |  |
 
 ## Installing the Chart
 

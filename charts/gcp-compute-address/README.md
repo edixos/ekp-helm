@@ -21,24 +21,24 @@ A Helm chart to provision a Compute Address via Config Connector
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| address | string | `""` | Optional: The static external IP address represented by this resource.    Must be inside the specified subnetwork if defined. |
-| addressType | string | `"EXTERNAL"` | The type of address to reserve.    Valid options: "INTERNAL" or "EXTERNAL". Default: "EXTERNAL". |
-| annotations | object | `{}` | Add annotations to the Compute Address. |
-| description | string | `"Compute Address configuration for Google Compute Router"` | A text description of the Compute Address.    Must be less than or equal to 256 UTF-8 bytes. |
-| global.abandon | bool | `true` | If true, Keep the Compute Address even after the kcc resource deletion. |
 | global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
 | global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
+| global.abandon | bool | `true` | If true, Keep the Compute Address even after the kcc resource deletion. |
+| annotations | object | `{}` | Add annotations to the Compute Address. |
+| name | string | `"gcp-static-ip"` | Name of Compute Address |
+| address | string | `""` | Optional: The static external IP address represented by this resource.    Must be inside the specified subnetwork if defined. |
+| addressType | string | `"EXTERNAL"` | The type of address to reserve.    Valid options: "INTERNAL" or "EXTERNAL". Default: "EXTERNAL". |
+| description | string | `"Compute Address configuration for Google Compute Router"` | A text description of the Compute Address.    Must be less than or equal to 256 UTF-8 bytes. |
 | ipVersion | string | `"IPV4"` | The IP Version that will be used by this address.    Valid options: "IPV4", "IPV6". Default: "IPV4". |
 | ipv6EndpointType | string | `""` | The endpoint type for an IPv6 address.    Valid options: "VM", "NETLB". |
 | location | string | `"europe-west1-b"` | The geographical location for the Compute Address.    Specify a region (e.g., "us-central1") or "global" for global resources. |
-| name | string | `"gcp-static-ip"` | Name of Compute Address |
+| networkTier | string | `"STANDARD"` | The networking tier used for configuring this address.    Valid options: "PREMIUM", "STANDARD".    Should not be used with INTERNAL addresses. |
+| prefixLength | string | `nil` | The prefix length if the resource represents an IP range. |
+| purpose | string | `nil` | The purpose of this resource.    Valid options include:      "GCE_ENDPOINT", "SHARED_LOADBALANCER_VIP", "VPC_PEERING",      "IPSEC_INTERCONNECT", "PRIVATE_SERVICE_CONNECT" |
 | networkRef | object | `{"external":"","name":"","namespace":""}` | Optional: Network reference configuration.    Only applicable for INTERNAL addresses with VPC_PEERING or IPSEC_INTERCONNECT purposes. |
 | networkRef.external | string | `""` | The selfLink of the ComputeNetwork resource. |
 | networkRef.name | string | `""` | The name of the referent. |
 | networkRef.namespace | string | `""` | The namespace of the referent. |
-| networkTier | string | `"STANDARD"` | The networking tier used for configuring this address.    Valid options: "PREMIUM", "STANDARD".    Should not be used with INTERNAL addresses. |
-| prefixLength | string | `nil` | The prefix length if the resource represents an IP range. |
-| purpose | string | `nil` | The purpose of this resource.    Valid options include:      "GCE_ENDPOINT", "SHARED_LOADBALANCER_VIP", "VPC_PEERING",      "IPSEC_INTERCONNECT", "PRIVATE_SERVICE_CONNECT" |
 | subnetworkRef | object | `{"external":"","name":"","namespace":""}` | Optional: Subnetwork reference configuration.    Only applicable for INTERNAL addresses with GCE_ENDPOINT/DNS_RESOLVER purposes. |
 | subnetworkRef.external | string | `""` | The selfLink of the ComputeSubnetwork resource. |
 | subnetworkRef.name | string | `""` | The name of the referent. |

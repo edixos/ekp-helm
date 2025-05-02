@@ -27,21 +27,21 @@ A Helm chart to provision a Cloud NAT (ComputeRouterNAT) via Config Connector
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
+| global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
+| global.abandon | bool | `true` | If true, Keep the Cloud NAT even after the kcc resource deletion. |
 | annotations | object | `{}` | Add annotations to the Cloud NAT. |
+| name | string | `"ekp-cloud-nat"` | Name of the Compute Router. |
 | description | string | `"Cloud NAT configuration for Google Compute Router"` | A text description of the Cloud NAT. Must be less than or equal to 256 UTF-8 bytes. |
 | drainNatIps | list | `[]` | A list of IP resources to be drained. These IPs must be valid static external IPs that have been assigned to the NAT. |
 | enableDynamicPortAllocation | bool | `false` | Enable Dynamic Port Allocation. If minPortsPerVm is set, minPortsPerVm must be set to a power of two greater than or equal to 32. If minPortsPerVm is not set, a minimum of 32 ports will be allocated to a VM from this NAT config. If maxPortsPerVm is set, maxPortsPerVm must be set to a power of two greater than minPortsPerVm. If maxPortsPerVm is not set, a maximum of 65536 ports will be allocated to a VM from this NAT config. Mutually exclusive with enableEndpointIndependentMapping. |
 | enableEndpointIndependentMapping | bool | `true` | Specifies if endpoint independent mapping is enabled. This is enabled by default. For more information see the [official documentation](https://cloud.google.com/nat/docs/overview#specs-rfcs). |
-| global.abandon | bool | `true` | If true, Keep the Cloud NAT even after the kcc resource deletion. |
-| global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
-| global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
 | icmpIdleTimeoutSec | int | `30` | Timeout (in seconds) for ICMP connections. Defaults to 30s if not set. |
 | logConfig | object | `{"enable":false,"filter":"ALL"}` | Configuration for logging on NAT. |
 | logConfig.enable | bool | `false` | Indicates whether or not to export logs. |
 | logConfig.filter | string | `"ALL"` | Specifies the desired filtering of logs on this NAT. Possible values: ["ERRORS_ONLY", "TRANSLATIONS_ONLY", "ALL"]. |
 | maxPortsPerVm | int | `0` | Maximum number of ports allocated to a VM from this NAT. This field can only be set when enableDynamicPortAllocation is enabled. |
 | minPortsPerVm | int | `0` | Minimum number of ports allocated to a VM from this NAT. |
-| name | string | `"ekp-cloud-nat"` | Name of the Compute Router. |
 | natIpAllocateOption | string | `"AUTO_ONLY"` | How external IPs should be allocated for this NAT. Valid values are 'AUTO_ONLY' for only allowing NAT IPs allocated by Google Cloud Platform, or 'MANUAL_ONLY' for only user-allocated NAT IP addresses. Possible values: ["MANUAL_ONLY", "AUTO_ONLY"]. |
 | natIps | list | `[]` | NAT IPs. Only valid if natIpAllocateOption is set to MANUAL_ONLY. |
 | region | string | `"europe-west1"` | Immutable. Region where the router and NAT reside. |

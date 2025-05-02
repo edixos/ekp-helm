@@ -51,6 +51,12 @@ It will deploy the following GCP components:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
+| global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
+| global.deletion_policy | string | `"abandon"` | Keep the VPC even after the kcc resource deletion. |
+| bigqueryDataset.delete_contents_on_destroy | string | `"false"` |  |
+| bigqueryDataset.name | string | `"ekp-bigQueryDataset"` | name of the Dataset |
+| bigqueryDataset.namespace | string | `"cnrm-gcp-dev"` |  |
 | bigqueryDataset.access[0].dataset | object | `{}` |  |
 | bigqueryDataset.access[0].domain | string | `""` |  |
 | bigqueryDataset.access[0].groupByEmail | string | `""` |  |
@@ -63,20 +69,14 @@ It will deploy the following GCP components:
 | bigqueryDataset.defaultEncryptionConfiguration | object | `{}` |  |
 | bigqueryDataset.defaultPartitionExpirationMs | string | `""` |  |
 | bigqueryDataset.defaultTableExpirationMs | string | `""` |  |
-| bigqueryDataset.delete_contents_on_destroy | string | `"false"` |  |
 | bigqueryDataset.description | string | `""` | user defines defination |
 | bigqueryDataset.friendlyName | string | `""` | friendly defination |
 | bigqueryDataset.isCaseInsensitive | string | `""` |  |
 | bigqueryDataset.location | string | `""` | location of the dataset |
 | bigqueryDataset.maxTimeTravelHours | string | `""` |  |
-| bigqueryDataset.name | string | `"ekp-bigQueryDataset"` | name of the Dataset |
-| bigqueryDataset.namespace | string | `"cnrm-gcp-dev"` |  |
 | bigqueryDataset.projectRef | object | `{}` |  |
 | bigqueryDataset.resourceID | string | `""` |  |
 | bigqueryDataset.storageBillingModel | string | `""` |  |
-| global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
-| global.deletion_policy | string | `"abandon"` | Keep the VPC even after the kcc resource deletion. |
-| global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
 
 ## Installing the Chart
 

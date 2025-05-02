@@ -9,5 +9,5 @@ maintainers:
     url: https://github.com/ilyasabdellaoui
 dependencies:
   - name: grafana
-    version: 8.10.4
+    version: 0.1.1
     repository: https://grafana.github.io/helm-charts

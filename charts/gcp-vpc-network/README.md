@@ -21,21 +21,21 @@ A Helm chart that Creates a Google VPC Network through Config Connector
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| annotations | object | `{}` | Add annotations to the VPC Network. |
-| autoCreateSubnetworks | bool | `false` | Enable custom subnet creation. If false, the VPC Network will not create subnets. |
-| deleteDefaultRoutesOnCreate | bool | `false` | Keep the default routes on creation by default. If true, the VPC Network will delete the default routes. |
-| description | string | `"EKP VPC Network for infrastructure."` | A text description of the VPC Network. Must be less than or equal to 256 UTF-8 bytes. |
-| displayName | string | `"EKP VPC"` | The display name for the VPC Network. Can be updated without creating a new resource. |
-| enableUlaInternalIpv6 | bool | `false` | Enable ULA internal ipv6 on this network. |
-| global.abandon | bool | `false` | Keep the VPC even after the kcc resource deletion. |
 | global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
 | global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
-| internalIpv6Range | string | `""` | Internal IPv6 range for ULA internal ipv6. |
-| mtu | int | `1460` | Maximum Transmission Unit in bytes. |
+| global.abandon | bool | `false` | Keep the VPC even after the kcc resource deletion. |
 | name | string | `"ekp-vpc"` | Name of the VPC Network. |
+| displayName | string | `"EKP VPC"` | The display name for the VPC Network. Can be updated without creating a new resource. |
+| description | string | `"EKP VPC Network for infrastructure."` | A text description of the VPC Network. Must be less than or equal to 256 UTF-8 bytes. |
+| autoCreateSubnetworks | bool | `false` | Enable custom subnet creation. If false, the VPC Network will not create subnets. |
+| deleteDefaultRoutesOnCreate | bool | `false` | Keep the default routes on creation by default. If true, the VPC Network will delete the default routes. |
+| mtu | int | `1460` | Maximum Transmission Unit in bytes. |
+| routingMode | string | `"REGIONAL"` | Routing mode for the VPC Network. |
+| enableUlaInternalIpv6 | bool | `false` | Enable ULA internal ipv6 on this network. |
+| internalIpv6Range | string | `""` | Internal IPv6 range for ULA internal ipv6. |
 | networkFirewallPolicyEnforcementOrder | string | `"AFTER_CLASSIC_FIREWALL"` | The order that Firewall Rules and Firewall Policies are evaluated. Default value: "AFTER_CLASSIC_FIREWALL" Possible values: ["BEFORE_CLASSIC_FIREWALL", "AFTER_CLASSIC_FIREWALL"]. |
 | resourceID | string | `""` | Optional resource ID. |
-| routingMode | string | `"REGIONAL"` | Routing mode for the VPC Network. |
+| annotations | object | `{}` | Add annotations to the VPC Network. |
 
 ## Installing the Chart
 

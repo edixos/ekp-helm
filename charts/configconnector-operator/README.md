@@ -28,22 +28,22 @@ Deploys Config Connector Operator as described here https://cloud.google.com/con
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| commonAnnotations | object | `{}` | Annotations to add to all the resources |
-| fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"Always"` | Image pull Policy |
 | image.repository | string | `"gcr.io/gke-release/cnrm/operator"` | Image Repository |
+| image.pullPolicy | string | `"Always"` | Image pull Policy |
 | image.tag | string | `"3570282"` | Image tag |
 | imagePullSecrets | list | `[]` | List of image pull secrets |
-| isAutopilot | bool | `false` | Is the Cluster Autopilot |
 | nameOverride | string | `""` |  |
-| podAnnotations | object | `{}` | Annotations to add to to the Pod |
-| podSecurityContext | object | `{}` | security context to apply to the pod ([documentation](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)) |
-| rbac.create | bool | `true` | Create ClusterRole and ClusterRoleBinding |
-| resources | object | `{"limits":{"memory":"1Gi"},"requests":{"cpu":"100m","memory":"512Mi"}}` | Resources to apply to the configconnector container |
-| securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["all"]},"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | security context to apply to the container ([documentation](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)) |
-| serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| fullnameOverride | string | `""` |  |
+| isAutopilot | bool | `false` | Is the Cluster Autopilot |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
+| serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
+| rbac.create | bool | `true` | Create ClusterRole and ClusterRoleBinding |
+| podAnnotations | object | `{}` | Annotations to add to to the Pod |
+| commonAnnotations | object | `{}` | Annotations to add to all the resources |
+| podSecurityContext | object | `{}` | security context to apply to the pod ([documentation](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)) |
+| securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["all"]},"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | security context to apply to the container ([documentation](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)) |
+| resources | object | `{"limits":{"memory":"1Gi"},"requests":{"cpu":"100m","memory":"512Mi"}}` | Resources to apply to the configconnector container |
 
 ## Installing the Chart
 

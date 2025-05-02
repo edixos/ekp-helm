@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kyverno.github.io/kyverno/ | kyvernopolicies(kyverno-policies) | 3.3.4 |
+| https://kyverno.github.io/kyverno/ | kyvernopolicies(kyverno-policies) | 0.1.0 |
 
 ## Maintainers
 
@@ -28,26 +28,26 @@ A Helm chart for Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| kyvernopolicies.autogenControllers | string | `""` | Customize the target Pod controllers for the auto-generated rules. (Eg. `none`, `Deployment`, `DaemonSet,Deployment,StatefulSet`) For more info https://kyverno.io/docs/writing-policies/autogen/. |
-| kyvernopolicies.background | bool | `true` | Policies background mode |
-| kyvernopolicies.customLabels | object | `{}` | Additional labels. |
-| kyvernopolicies.customPolicies | list | `[]` | Additional custom policies to include. |
-| kyvernopolicies.failurePolicy | string | `"Fail"` | API server behavior if the webhook fails to respond ('Ignore', 'Fail') For more info: https://kyverno.io/docs/writing-policies/policy-settings/ |
+| kyvernopolicies.policyKind | string | `"ClusterPolicy"` | Policy kind (`ClusterPolicy`, `Policy`) Set to `Policy` if you need namespaced policies and not cluster policies |
+| kyvernopolicies.podSecurityStandard | string | `"baseline"` | Pod Security Standard profile (`baseline`, `restricted`, `privileged`, `custom`). For more info https://kyverno.io/policies/pod-security. |
+| kyvernopolicies.podSecuritySeverity | string | `"medium"` | Pod Security Standard (`low`, `medium`, `high`). |
+| kyvernopolicies.podSecurityPolicies | list | `[]` | Policies to include when `podSecurityStandard` is `custom`. |
 | kyvernopolicies.includeOtherPolicies | list | `[]` | Additional policies to include from `other`. |
 | kyvernopolicies.includeRestrictedPolicies | list | `[]` | Additional policies to include from `restricted`. |
-| kyvernopolicies.kyvernoVersion | string | `"autodetect"` | Kyverno version The default of "autodetect" will try to determine the currently installed version from the deployment |
-| kyvernopolicies.nameOverride | string | `nil` | Name override. |
-| kyvernopolicies.podSecurityPolicies | list | `[]` | Policies to include when `podSecurityStandard` is `custom`. |
-| kyvernopolicies.podSecuritySeverity | string | `"medium"` | Pod Security Standard (`low`, `medium`, `high`). |
-| kyvernopolicies.podSecurityStandard | string | `"baseline"` | Pod Security Standard profile (`baseline`, `restricted`, `privileged`, `custom`). For more info https://kyverno.io/policies/pod-security. |
-| kyvernopolicies.policyExclude | object | `{}` | Exclude resources from individual policies. Policies with multiple rules can have individual rules excluded by using the name of the rule as the key in the `policyExclude` map. |
-| kyvernopolicies.policyKind | string | `"ClusterPolicy"` | Policy kind (`ClusterPolicy`, `Policy`) Set to `Policy` if you need namespaced policies and not cluster policies |
-| kyvernopolicies.policyPreconditions | object | `{}` | Add preconditions to individual policies. Policies with multiple rules can have individual rules excluded by using the name of the rule as the key in the `policyPreconditions` map. |
-| kyvernopolicies.skipBackgroundRequests | bool | `nil` | SkipBackgroundRequests bypasses admission requests that are sent by the background controller |
-| kyvernopolicies.validationAllowExistingViolations | bool | `true` | Validate already existing resources. For more info https://kyverno.io/docs/writing-policies/validate. |
+| kyvernopolicies.customPolicies | list | `[]` | Additional custom policies to include. |
+| kyvernopolicies.failurePolicy | string | `"Fail"` | API server behavior if the webhook fails to respond ('Ignore', 'Fail') For more info: https://kyverno.io/docs/writing-policies/policy-settings/ |
 | kyvernopolicies.validationFailureAction | string | `"Audit"` | Validation failure action (`Audit`, `Enforce`). For more info https://kyverno.io/docs/writing-policies/validate. |
 | kyvernopolicies.validationFailureActionByPolicy | object | `{}` | Define validationFailureActionByPolicy for specific policies. Override the defined `validationFailureAction` with a individual validationFailureAction for individual Policies. |
 | kyvernopolicies.validationFailureActionOverrides | object | `{"all":[]}` | Define validationFailureActionOverrides for specific policies. The overrides for `all` will apply to all policies. |
+| kyvernopolicies.validationAllowExistingViolations | bool | `true` | Validate already existing resources. For more info https://kyverno.io/docs/writing-policies/validate. |
+| kyvernopolicies.policyExclude | object | `{}` | Exclude resources from individual policies. Policies with multiple rules can have individual rules excluded by using the name of the rule as the key in the `policyExclude` map. |
+| kyvernopolicies.policyPreconditions | object | `{}` | Add preconditions to individual policies. Policies with multiple rules can have individual rules excluded by using the name of the rule as the key in the `policyPreconditions` map. |
+| kyvernopolicies.autogenControllers | string | `""` | Customize the target Pod controllers for the auto-generated rules. (Eg. `none`, `Deployment`, `DaemonSet,Deployment,StatefulSet`) For more info https://kyverno.io/docs/writing-policies/autogen/. |
+| kyvernopolicies.nameOverride | string | `nil` | Name override. |
+| kyvernopolicies.customLabels | object | `{}` | Additional labels. |
+| kyvernopolicies.background | bool | `true` | Policies background mode |
+| kyvernopolicies.skipBackgroundRequests | bool | `nil` | SkipBackgroundRequests bypasses admission requests that are sent by the background controller |
+| kyvernopolicies.kyvernoVersion | string | `"autodetect"` | Kyverno version The default of "autodetect" will try to determine the currently installed version from the deployment |
 
 ## Installing the Chart
 

@@ -1,12 +1,12 @@
 dependencies:
 - name: dex
   repository: https://charts.dexidp.io
-  version: 0.23.0
+  version: 0.1.3
 - name: gcp-workload-identity
   repository: https://edixos.github.io/ekp-helm
   version: 0.1.1
 - name: gcp-iam-policy-members
   repository: https://edixos.github.io/ekp-helm
   version: 0.1.2
-digest: sha256:33de3c86abf097766978c659379862374f824ee040c17dd22afac6b98bf07c5c
-generated: "2025-04-28T15:46:20.243117+02:00"
+digest: sha256:c4b77d28e91d40800c5b8d74650e91f7cbf105be463dd11b2e2778c0e36d8dac
+generated: "2025-05-02T11:04:33.549608902Z"

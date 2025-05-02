@@ -20,11 +20,11 @@ Deploys Config Connector as described here https://cloud.google.com/config-conne
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| installationMode | string | `"namespaced"` | Config Connector installation Mode. Values in  ["cluster","namespaced"] Namespaced mode allows to deploy a config connector for specific namespace. Allowing a mapping 1 google projetc = 1 namespace |
 | authentication | object | `{"gsaEmail":null,"gsaKeySecretName":null,"type":"workloadIdentity"}` | **Only if installationMode=cluster** |
+| authentication.type | string | `"workloadIdentity"` | Type of authentication used by the KSA to connect to GCP. Values in ["key","workloadIdentity"] |
 | authentication.gsaEmail | string | `nil` | **Only if type=workloadIdentity**. GSA Email to map with config connector KSA |
 | authentication.gsaKeySecretName | string | `nil` | **Only if type=key**. Name of the secret containing the GSA key |
-| authentication.type | string | `"workloadIdentity"` | Type of authentication used by the KSA to connect to GCP. Values in ["key","workloadIdentity"] |
-| installationMode | string | `"namespaced"` | Config Connector installation Mode. Values in  ["cluster","namespaced"] Namespaced mode allows to deploy a config connector for specific namespace. Allowing a mapping 1 google projetc = 1 namespace |
 
 ## Installing the Chart
 

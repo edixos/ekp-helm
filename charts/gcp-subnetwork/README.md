@@ -23,14 +23,14 @@ Chart for compute-subnetwork resource with config connector
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| global.abandon | bool | `true` | Abandon resource if the manifests are deleted. Allow deleting a resource from config connector without deleting it from GCP |
 | global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
-| global.description | string | `""` | subNework description (use helm tpl) |
-| global.gcpProjectId | string | `"myprojectid"` | Project ID where to deploy the cluster |
+| global.abandon | bool | `true` | Abandon resource if the manifests are deleted. Allow deleting a resource from config connector without deleting it from GCP |
 | global.skipUnspecifiedFields | bool | `false` | This skips populating unspecified fields into the Kubernetes resource spec. |
+| global.gcpProjectId | string | `"myprojectid"` | Project ID where to deploy the cluster |
+| global.description | string | `""` | subNework description (use helm tpl) |
+| name | string | `"test-subnetwork"` | The name of the resource. |
 | ipCidrRange | string | `"10.3.192.0/23"` | The range of internal addresses that are owned by this subnetwork. Only IPv4 is supported. |
 | ipv6AccessType | string | `""` | The access type of IPv6 address this subnet holds. Possible values: ["EXTERNAL", "INTERNAL"]. |
-| name | string | `"test-subnetwork"` | The name of the resource. |
 | networkRef | object | `{}` | The network this subnet belongs to. Only networks that are in the distributed mode can have subnetworks. |
 | privateIpGoogleAccess | string | `""` | When enabled, VMs in this subnetwork without external IP addresses can access Google APIs and services by using Private Google Access. |
 | privateIpv6GoogleAccess | string | `nil` | The private IPv6 google access type for the VMs in this subnet. |

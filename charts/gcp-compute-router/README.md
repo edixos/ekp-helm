@@ -21,27 +21,27 @@ A Helm chart to provision a Google Compute Router via Config Connector
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
+| global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
+| global.abandon | bool | `true` | If true, Keep the Compute Router even after the kcc resource deletion. |
 | annotations | object | `{}` | Add annotations to the Compute Router. |
+| name | string | `"ekp-router"` | Name of the Compute Router. |
+| description | string | `"Compute Router for managing BGP routing"` | A text description of the Compute Router. Must be less than or equal to 256 UTF-8 bytes. |
+| region | string | `"europe-west1"` | Immutable. Region where the router resides. |
+| resourceID | string | `nil` | Immutable. Optional. The name of the resource. Used for creation and acquisition. When unset, the value of `metadata.name` is used as the default. |
+| encryptedInterconnectRouter | string | `nil` | Immutable. Indicates if a router is dedicated for use with encrypted VLAN attachments (interconnectAttachments). |
+| networkRef | object | `{"external":"","name":"","namespace":""}` | A reference to the network to which this router belongs. |
+| networkRef.external | string | `""` | Allowed value: The `selfLink` field of a `ComputeNetwork` resource. |
+| networkRef.name | string | `""` | Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names |
+| networkRef.namespace | string | `""` | Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/ |
 | bgp | object | `{"advertiseMode":"DEFAULT","advertisedGroups":[],"advertisedIpRanges":[{"description":null,"range":null}],"asn":null,"keepaliveInterval":20}` | BGP information specific to this router. |
+| bgp.asn | string | `nil` | Local BGP Autonomous System Number (ASN). Must be an RFC6996 private ASN, either 16-bit or 32-bit. The value will be fixed for this router resource. All VPN tunnels that link to this router will have the same local ASN. |
 | bgp.advertiseMode | string | `"DEFAULT"` | User-specified flag to indicate which mode to use for advertisement. Default value: "DEFAULT" Possible values: ["DEFAULT", "CUSTOM"]. |
 | bgp.advertisedGroups | list | `[]` | User-specified list of prefix groups to advertise in custom mode. This field can only be populated if advertiseMode is CUSTOM and is advertised to all peers of the router. These groups will be advertised in addition to any specified prefixes. Leave this field blank to advertise no custom groups. This enum field has the one valid value: ALL_SUBNETS. |
 | bgp.advertisedIpRanges | list | `[{"description":null,"range":null}]` | User-specified list of individual IP ranges to advertise in custom mode. This field can only be populated if advertiseMode is CUSTOM and is advertised to all peers of the router. These IP ranges will be advertised in addition to any specified groups. Leave this field blank to advertise no custom IP ranges. |
 | bgp.advertisedIpRanges[0] | object | `{"description":null,"range":null}` | User-specified description for the IP range. |
 | bgp.advertisedIpRanges[0].range | string | `nil` | The IP range to advertise. The value must be a CIDR-formatted string. |
-| bgp.asn | string | `nil` | Local BGP Autonomous System Number (ASN). Must be an RFC6996 private ASN, either 16-bit or 32-bit. The value will be fixed for this router resource. All VPN tunnels that link to this router will have the same local ASN. |
 | bgp.keepaliveInterval | int | `20` | The interval in seconds between BGP keepalive messages that are sent to the peer. Hold time is three times the interval at which keepalive messages are sent, and the hold time is the maximum number of seconds allowed to elapse between successive keepalive messages that BGP receives from a peer. BGP will use the smaller of either the local hold time value or the peer's hold time value as the hold time for the BGP connection between the two peers. If set, this value must be between 20 and 60. The default is 20. |
-| description | string | `"Compute Router for managing BGP routing"` | A text description of the Compute Router. Must be less than or equal to 256 UTF-8 bytes. |
-| encryptedInterconnectRouter | string | `nil` | Immutable. Indicates if a router is dedicated for use with encrypted VLAN attachments (interconnectAttachments). |
-| global.abandon | bool | `true` | If true, Keep the Compute Router even after the kcc resource deletion. |
-| global.cnrmNamespace | string | `nil` | Allows to deploy in another namespace than the release one |
-| global.gcpProjectId | string | `"myprojectid"` | Google Project ID |
-| name | string | `"ekp-router"` | Name of the Compute Router. |
-| networkRef | object | `{"external":"","name":"","namespace":""}` | A reference to the network to which this router belongs. |
-| networkRef.external | string | `""` | Allowed value: The `selfLink` field of a `ComputeNetwork` resource. |
-| networkRef.name | string | `""` | Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names |
-| networkRef.namespace | string | `""` | Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/ |
-| region | string | `"europe-west1"` | Immutable. Region where the router resides. |
-| resourceID | string | `nil` | Immutable. Optional. The name of the resource. Used for creation and acquisition. When unset, the value of `metadata.name` is used as the default. |
 
 ## Installing the Chart
 
