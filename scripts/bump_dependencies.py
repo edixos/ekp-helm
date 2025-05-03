@@ -25,7 +25,7 @@ class HelmChartUpdater:
         self.update_values = update_values
         self.chart_updates = []
         self.repo_cache = {}
-        self.branch_name = os.getenv('BRANCH_NAME', f"chore/bump-helm-deps-{datetime.now().strftime('%Y-%m-%d')}")
+        self.branch_name = f"chore/bump-helm-deps-{datetime.now().strftime('%Y-%m-%d')}"
         logger.info(f"Running with: dry_run={dry_run}, skip_pr={skip_pr}, update_values={update_values}")
         
     def run_command(self, cmd, cwd=None):
@@ -282,32 +282,33 @@ class HelmChartUpdater:
     
     def _commit_changes(self):
         if not self.chart_updates: return False
-        
-        updates = [f"{u['dependency']} ({u['from_version']} → {u['to_version']})" for u in self.chart_updates[:5]]
-        summary = ", ".join(updates)
-        if len(self.chart_updates) > 5: summary += f" and {len(self.chart_updates) - 5} more"
-
-        charts_dir = "./charts" 
-        changed_charts = set(u['chart'] for u in self.chart_updates)
-
-        for chart_name in changed_charts:
+        chart_updates = {}
+        for update in self.chart_updates:
+            chart_name = update['chart']
+            if chart_name not in chart_updates:
+                chart_updates[chart_name] = []
+            chart_updates[chart_name].append(update)
+        charts_dir = "./charts"
+        all_commits_succeeded = True
+        # Create a commit for each chart
+        for chart_name, updates in chart_updates.items():
             chart_path = os.path.join(charts_dir, chart_name)
             for filename in ["Chart.yaml", "values.yaml", "README.md"]:
-                 filepath = os.path.join(chart_path, filename)
-                 if os.path.exists(filepath): self.run_command(f'git add {filepath}')
+                filepath = os.path.join(chart_path, filename)
+                if os.path.exists(filepath): self.run_command(f'git add {filepath}')
             dep_dir = os.path.join(chart_path, "charts")
             if os.path.isdir(dep_dir): self.run_command(f'git add {dep_dir}')
             lock_file = os.path.join(chart_path, "Chart.lock")
             if os.path.exists(lock_file): self.run_command(f'git add {lock_file}')
+            # Create chart-specific commit message
+            deps = [f"{u['dependency']} ({u['from_version']} → {u['to_version']})" for u in updates]
+            commit_msg = f"chore(helm): update {chart_name} dependencies\n\nUpdates: {', '.join(deps)}"
+            # Commit changes for this chart
+            if self.run_command(f'git commit -m "{commit_msg}"') is None:
+                all_commits_succeeded = False
 
-        status_output = self.run_command('git status --porcelain')
-        if not status_output:
-            logger.warning("No changes staged")
-            return False
+        return all_commits_succeeded
 
-        commit_msg = f"chore: update helm dependencies\n\nUpdates: {summary}"
-        return self.run_command(f'git commit -m "{commit_msg}"') is not None
-    
     def _push_branch(self):
         return self.run_command(f'git push -u origin {self.branch_name}') is not None
 
@@ -326,6 +327,7 @@ def main():
             f.write(f"updated={str(updates_found).lower()}\n")
             if updates_found:
                 f.write(f"commit_message=chore: update helm dependencies\n")
+                f.write(f"branch={updater.branch_name}\n")
 
 if __name__ == "__main__":
     main()
