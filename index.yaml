@@ -3,6 +3,25 @@ entries:
   alertmanager:
   - apiVersion: v2
     appVersion: v0.27.0
+    created: "2025-05-04T18:17:58.995407867Z"
+    dependencies:
+    - alias: oidc
+      condition: oidc.enabled
+      name: oauth2-proxy
+      repository: https://oauth2-proxy.github.io/manifests
+      version: 7.12.12
+    description: Deploies Alertmanager through Prometheus-Operator
+    digest: 5552d1320b68897693438ed6b70f37df8762d09c8501cdf7b9ac79a7099503ce
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: alertmanager
+    urls:
+    - alertmanager-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: v0.27.0
     created: "2025-03-26T10:22:18.704525187Z"
     dependencies:
     - alias: oidc
@@ -40,6 +59,25 @@ entries:
     - alertmanager-0.1.0.tgz
     version: 0.1.0
   argocd:
+  - apiVersion: v2
+    appVersion: 2.14.4
+    created: "2025-05-04T18:17:59.219227062Z"
+    dependencies:
+    - alias: argocd
+      name: argo-cd
+      repository: https://argoproj.github.io/argo-helm
+      version: 7.9.0
+    description: A Helm chart for Kubernetes
+    digest: c2c93876ffe8f90aa978876cf40ede5bfb2c7cbb0a8cc5448f1d6f85f4c41b0f
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: argocd
+    type: application
+    urls:
+    - argocd-0.1.2.tgz
+    version: 0.1.2
   - apiVersion: v2
     appVersion: 2.14.4
     created: "2025-04-27T16:29:49.116789983Z"
@@ -97,6 +135,40 @@ entries:
     - bucket-0.1.0.tgz
     version: 0.1.0
   cert-manager:
+  - apiVersion: v2
+    appVersion: 1.17.1
+    created: "2025-05-04T18:17:59.469243103Z"
+    dependencies:
+    - alias: certmanager
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: v1.17.2
+    - alias: workloadIdentity
+      name: gcp-workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    - alias: iamPolicyMembers
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.2
+    description: A Helm chart for cert-manager
+    digest: 4a9d4435c9cb63af021c4a88d0d4ebbec51fea9f81952e2ca1919753740c1d98
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: cert-manager
+    type: application
+    urls:
+    - cert-manager-0.1.3.tgz
+    version: 0.1.3
   - apiVersion: v2
     appVersion: 1.17.1
     created: "2025-04-02T06:47:33.061774119Z"
@@ -381,6 +453,28 @@ entries:
   eso:
   - apiVersion: v2
     appVersion: 0.14.2
+    created: "2025-05-04T18:17:59.651291736Z"
+    dependencies:
+    - alias: eso
+      name: external-secrets
+      repository: https://charts.external-secrets.io
+      version: 0.16.1
+    description: A Helm chart ESO for Kubernetes
+    digest: f264ef980f9cba62cdfeab877c25aab13a14841385b886a0bb0f8369c987d140
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: eso
+    type: application
+    urls:
+    - eso-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 0.14.2
     created: "2025-04-29T07:58:57.422675547Z"
     dependencies:
     - alias: eso
@@ -424,6 +518,36 @@ entries:
     - eso-0.1.0.tgz
     version: 0.1.0
   external-dns:
+  - apiVersion: v2
+    appVersion: 0.16.1
+    created: "2025-05-04T18:17:59.850755158Z"
+    dependencies:
+    - alias: externaldns
+      name: external-dns
+      repository: https://kubernetes-sigs.github.io/external-dns/
+      version: 1.16.1
+    - alias: workloadIdentity
+      name: gcp-workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    - alias: iamPolicyMembers
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.2
+    description: Deploys external-dns and its monitoring
+    digest: 6e7f0b1fa27e7aa8d21b960db5394795c8cc0dae91db58610676e7f59bd383cf
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: external-dns
+    urls:
+    - external-dns-0.1.2.tgz
+    version: 0.1.2
   - apiVersion: v2
     appVersion: 0.16.1
     created: "2025-04-02T16:19:36.566149421Z"
@@ -1018,6 +1142,24 @@ entries:
   grafana-stack:
   - apiVersion: v2
     appVersion: 11.3.1
+    created: "2025-05-04T18:18:00.038051329Z"
+    dependencies:
+    - name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: 8.14.2
+    description: Deploys Grafana instance. Pre-configured values from [upstream grafana
+      chart](https://github.com/helm/charts/tree/master/stable/grafana)
+    digest: a83e2696e73aebe60dc891659b0367d4d94498e82df7a56815d49ac874e2cbfa
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: grafana-stack
+    urls:
+    - grafana-stack-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 11.3.1
     created: "2025-03-26T10:22:18.874221215Z"
     dependencies:
     - name: grafana
@@ -1053,6 +1195,25 @@ entries:
     - grafana-stack-0.1.0.tgz
     version: 0.1.0
   ingress-nginx:
+  - apiVersion: v2
+    appVersion: 1.12.1
+    created: "2025-05-04T18:18:00.291459159Z"
+    dependencies:
+    - alias: ingressNginx
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 4.12.2
+    description: A Helm chart for Kubernetes
+    digest: 5409f7f987571577fc9e672a49e25cbe5e323f3dec8afd52ca011da95129e31c
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: ingress-nginx
+    type: application
+    urls:
+    - ingress-nginx-0.1.3.tgz
+    version: 0.1.3
   - apiVersion: v2
     appVersion: 1.12.1
     created: "2025-04-28T12:24:29.287785303Z"
@@ -1113,6 +1274,21 @@ entries:
   kube-prometheus-stack:
   - apiVersion: v2
     appVersion: v0.80.1
+    created: "2025-05-04T18:18:00.574833579Z"
+    dependencies:
+    - alias: kubePrometheusStack
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 71.2.0
+    description: A Helm chart for Kubernetes
+    digest: 79cf7db2040cb4edaf59889f447bfadfe0385bf6af96137d70f7d2554fd24b70
+    name: kube-prometheus-stack
+    type: application
+    urls:
+    - kube-prometheus-stack-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: v0.80.1
     created: "2025-03-11T13:22:44.509591441Z"
     dependencies:
     - alias: kubePrometheusStack
@@ -1127,6 +1303,27 @@ entries:
     - kube-prometheus-stack-0.1.0.tgz
     version: 0.1.0
   kyverno:
+  - apiVersion: v2
+    appVersion: 1.13.4
+    created: "2025-05-04T18:18:00.802235672Z"
+    dependencies:
+    - name: kyverno
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.4.1
+    description: A Helm chart for kyverno
+    digest: 066a8419367b2bcae4a4672361834ab89b8f6214b6a9c3f2990db60e63bb3c15
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: kyverno
+    type: application
+    urls:
+    - kyverno-0.1.2.tgz
+    version: 0.1.2
   - apiVersion: v2
     appVersion: 1.13.4
     created: "2025-04-27T16:32:38.576988391Z"
@@ -1165,6 +1362,28 @@ entries:
   kyverno-policies:
   - apiVersion: v2
     appVersion: 1.13.4
+    created: "2025-05-04T18:18:00.99124Z"
+    dependencies:
+    - alias: kyvernopolicies
+      name: kyverno-policies
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.4.1
+    description: A Helm chart for Kubernetes
+    digest: 418cd7013c66a4f5a12cf4e0186b0c4771617b3f3d5c70b8df8e174777502638
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: kyverno-policies
+    type: application
+    urls:
+    - kyverno-policies-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.13.4
     created: "2025-03-11T08:09:15.806579408Z"
     dependencies:
     - alias: kyvernopolicies
@@ -1188,6 +1407,25 @@ entries:
   prometheus:
   - apiVersion: v2
     appVersion: v3.0.1
+    created: "2025-05-04T18:18:01.1891954Z"
+    dependencies:
+    - alias: oidc
+      condition: oidc.enabled
+      name: oauth2-proxy
+      repository: https://oauth2-proxy.github.io/manifests
+      version: 7.12.12
+    description: Deploys Prometheus through prometheus operator
+    digest: 450faaeffeeb3cd6978e10c26b7e75e9524a8352b9be9bf2ba6ac7bf9d2d2412
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: prometheus
+    urls:
+    - prometheus-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: v3.0.1
     created: "2025-03-26T07:45:50.565713928Z"
     dependencies:
     - alias: oidc
@@ -1206,6 +1444,51 @@ entries:
     - prometheus-0.1.0.tgz
     version: 0.1.0
   velero:
+  - apiVersion: v2
+    appVersion: 1.15.2
+    created: "2025-05-04T18:18:01.404819309Z"
+    dependencies:
+    - name: velero
+      repository: https://vmware-tanzu.github.io/helm-charts
+      version: 9.0.4
+    - alias: workloadIdentity
+      name: gcp-workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    - alias: iamPolicyMembers
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.2
+    - alias: iamCustomRole
+      name: gcp-iam-custom-role
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.0
+    - alias: gcpbucket
+      name: gcp-bucket
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.0
+    description: A Helm chart for velero
+    digest: 02335219061f02f4a750f0b2b26c9f9a8c938ffc0aeed19a0872597f310e3b4e
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: velero
+    type: application
+    urls:
+    - velero-0.1.3.tgz
+    version: 0.1.3
   - apiVersion: v2
     appVersion: 1.15.2
     created: "2025-04-15T15:19:21.059688962Z"
@@ -1335,4 +1618,4 @@ entries:
     urls:
     - workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-29T07:58:57.422739045Z"
+generated: "2025-05-04T18:18:01.404949322Z"
