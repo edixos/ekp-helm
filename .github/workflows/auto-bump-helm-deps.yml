@@ -84,13 +84,17 @@ jobs:
         run: |
           BRANCH="${{ steps.bump-dependencies.outputs.branch }}"
           PR_TITLE="chore(deps-bump): auto bumped helm dependencies"
-
+          
+          # Create a file with the PR body - convert URL-encoded newlines to actual newlines
+          PR_BODY="${{ steps.bump-dependencies.outputs.pr_body }}"
+          echo -e "$PR_BODY" > pr_body.md
+          
           TOKEN="${GITHUB_TOKEN}"
           unset GITHUB_TOKEN
           
-          # Authenticate and create PR
+          # Authenticate and create PR using file
           echo "$TOKEN" | gh auth login --with-token
-          PR_URL=$(gh pr create --title "$PR_TITLE" --body "${{ steps.bump-dependencies.outputs.pr_body }}" --base main --head "$BRANCH")
+          PR_URL=$(gh pr create --title "$PR_TITLE" --body-file pr_body.md --base main --head "$BRANCH")
           echo "Created PR: $PR_URL"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

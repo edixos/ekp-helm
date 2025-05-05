@@ -374,8 +374,9 @@ class HelmChartUpdater:
                 chart_updates[chart_name] = []
             chart_updates[chart_name].append(update)
         charts_dir = "./charts"
-        all_commits_succeeded = True
-        # Create a commit for each chart
+        all_commits_succeeded = True        
+        self.run_command('git reset -- etc/')
+        self.run_command('git checkout -- etc/ || true')
         for chart_name, updates in chart_updates.items():
             chart_path = os.path.join(charts_dir, chart_name)
             for filename in ["Chart.yaml", "values.yaml", "README.md"]:
@@ -385,13 +386,10 @@ class HelmChartUpdater:
             if os.path.isdir(dep_dir): self.run_command(f'git add {dep_dir}')
             lock_file = os.path.join(chart_path, "Chart.lock")
             if os.path.exists(lock_file): self.run_command(f'git add {lock_file}')
-            # Create chart-specific commit message
             deps = [f"{u['dependency']} ({u['from_version']} → {u['to_version']})" for u in updates]
             commit_msg = f"chore(helm): update {chart_name} dependencies\n\nUpdates: {', '.join(deps)}"
-            # Commit changes for this chart
             if self.run_command(f'git commit -m "{commit_msg}"') is None:
                 all_commits_succeeded = False
-
         return all_commits_succeeded
 
     def _push_branch(self):
