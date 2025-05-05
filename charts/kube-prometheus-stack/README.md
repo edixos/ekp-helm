@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.80.1](https://img.shields.io/badge/AppVersion-v0.80.1-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.80.1](https://img.shields.io/badge/AppVersion-v0.80.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 69.8.2 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 72.0.0 |
 
 ## Description
 
@@ -68,6 +68,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.alertmanagerSpec.securityContext.runAsNonRoot | bool | `true` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.securityContext.runAsUser | int | `1000` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| kubePrometheusStack.alertmanager.alertmanagerSpec.serviceName | string | `nil` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.storage | object | `{}` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.tlsConfig | object | `{}` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.tolerations | list | `[]` |  |
@@ -120,6 +121,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.ingressPerReplica.tlsSecretName | string | `""` |  |
 | kubePrometheusStack.alertmanager.ingressPerReplica.tlsSecretPerReplica.enabled | bool | `false` |  |
 | kubePrometheusStack.alertmanager.ingressPerReplica.tlsSecretPerReplica.prefix | string | `"alertmanager"` |  |
+| kubePrometheusStack.alertmanager.namespaceOverride | string | `""` |  |
 | kubePrometheusStack.alertmanager.networkPolicy.additionalIngress | list | `[]` | Additional custom ingress rules # |
 | kubePrometheusStack.alertmanager.networkPolicy.egress | object | `{"enabled":false,"rules":[]}` | Configure egress rules # |
 | kubePrometheusStack.alertmanager.networkPolicy.egress.enabled | bool | `false` | Enable egress rules. When enabled, policyTypes will include Egress # |
@@ -136,7 +138,8 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.podDisruptionBudget.enabled | bool | `false` |  |
 | kubePrometheusStack.alertmanager.podDisruptionBudget.maxUnavailable | string | `""` |  |
 | kubePrometheusStack.alertmanager.podDisruptionBudget.minAvailable | int | `1` |  |
-| kubePrometheusStack.alertmanager.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[]}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/references/spec/#gateway.networking.k8s.io%2fv1alpha2) |
+| kubePrometheusStack.alertmanager.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
+| kubePrometheusStack.alertmanager.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[]}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
 | kubePrometheusStack.alertmanager.route.main.apiVersion | string | `"gateway.networking.k8s.io/v1"` | Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1alpha2 |
 | kubePrometheusStack.alertmanager.route.main.enabled | bool | `false` | Enables or disables the route |
 | kubePrometheusStack.alertmanager.route.main.httpsRedirect | bool | `false` | create http route for redirect (https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/#http-to-https-redirects) # Take care that you only enable this on the http listener of the gateway to avoid an infinite redirect. # matches, filters and additionalRules will be ignored if this is set to true. Be are |
@@ -145,6 +148,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.service.additionalPorts | list | `[]` |  |
 | kubePrometheusStack.alertmanager.service.annotations | object | `{}` |  |
 | kubePrometheusStack.alertmanager.service.clusterIP | string | `""` |  |
+| kubePrometheusStack.alertmanager.service.enabled | bool | `true` |  |
 | kubePrometheusStack.alertmanager.service.externalIPs | list | `[]` |  |
 | kubePrometheusStack.alertmanager.service.externalTrafficPolicy | string | `"Cluster"` |  |
 | kubePrometheusStack.alertmanager.service.ipDualStack.enabled | bool | `false` |  |
@@ -364,7 +368,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.defaultRules.rules.prometheusOperator | bool | `true` |  |
 | kubePrometheusStack.defaultRules.rules.windows | bool | `true` |  |
 | kubePrometheusStack.defaultRules.runbookUrl | string | `"https://runbooks.prometheus-operator.dev/runbooks"` |  |
-| kubePrometheusStack.extraManifests | list | `[]` |  |
+| kubePrometheusStack.extraManifests | string | `nil` |  |
 | kubePrometheusStack.fullnameOverride | string | `""` |  |
 | kubePrometheusStack.global.imagePullSecrets | list | `[]` |  |
 | kubePrometheusStack.global.imageRegistry | string | `""` |  |
@@ -430,6 +434,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.grafana.sidecar.datasources.label | string | `"grafana_datasource"` |  |
 | kubePrometheusStack.grafana.sidecar.datasources.labelValue | string | `"1"` |  |
 | kubePrometheusStack.grafana.sidecar.datasources.name | string | `"Prometheus"` |  |
+| kubePrometheusStack.grafana.sidecar.datasources.prometheusServiceName | string | `"prometheus-operated"` |  |
 | kubePrometheusStack.grafana.sidecar.datasources.uid | string | `"prometheus"` |  |
 | kubePrometheusStack.kube-state-metrics.namespaceOverride | string | `""` |  |
 | kubePrometheusStack.kube-state-metrics.prometheus.monitor.enabled | bool | `true` |  |
@@ -457,7 +462,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeApiServer.serviceMonitor.labelNameLengthLimit | int | `0` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.labelValueLengthLimit | int | `0` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.metricRelabelings[0].action | string | `"drop"` |  |
-| kubePrometheusStack.kubeApiServer.serviceMonitor.metricRelabelings[0].regex | string | `"(etcd_request|apiserver_request_slo|apiserver_request_sli|apiserver_request)_duration_seconds_bucket;(0\\.15|0\\.2|0\\.3|0\\.35|0\\.4|0\\.45|0\\.6|0\\.7|0\\.8|0\\.9|1\\.25|1\\.5|1\\.75|2|3|3\\.5|4|4\\.5|6|7|8|9|15|20|30|40|45|50)(\\.0)?"` |  |
+| kubePrometheusStack.kubeApiServer.serviceMonitor.metricRelabelings[0].regex | string | `"(etcd_request|apiserver_request_slo|apiserver_request_sli|apiserver_request)_duration_seconds_bucket;(0\\.15|0\\.2|0\\.3|0\\.35|0\\.4|0\\.45|0\\.6|0\\.7|0\\.8|0\\.9|1\\.25|1\\.5|1\\.75|2|3|3\\.5|4|4\\.5|6|7|8|9|15|20|40|45|50)(\\.0)?"` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.metricRelabelings[0].sourceLabels[0] | string | `"__name__"` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.metricRelabelings[0].sourceLabels[1] | string | `"le"` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.proxyUrl | string | `""` |  |
@@ -739,6 +744,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.podDisruptionBudget.enabled | bool | `false` |  |
 | kubePrometheusStack.prometheus.podDisruptionBudget.maxUnavailable | string | `""` |  |
 | kubePrometheusStack.prometheus.podDisruptionBudget.minAvailable | int | `1` |  |
+| kubePrometheusStack.prometheus.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
 | kubePrometheusStack.prometheus.podSecurityPolicy.allowedCapabilities | list | `[]` |  |
 | kubePrometheusStack.prometheus.podSecurityPolicy.allowedHostPaths | list | `[]` |  |
 | kubePrometheusStack.prometheus.podSecurityPolicy.volumes | list | `[]` |  |
@@ -784,7 +790,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.repository | string | `"prometheus/prometheus"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.2.1"` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.3.1"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.listenLocal | bool | `false` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.logFormat | string | `"logfmt"` |  |
@@ -844,6 +850,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.serviceMonitorNamespaceSelector | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.serviceMonitorSelector | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues | bool | `true` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.serviceName | string | `nil` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.shards | int | `1` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.storageSpec | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.thanos | object | `{}` |  |
@@ -856,7 +863,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.volumes | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.walCompression | bool | `true` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.web | object | `{}` |  |
-| kubePrometheusStack.prometheus.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[]}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/references/spec/#gateway.networking.k8s.io%2fv1alpha2) |
+| kubePrometheusStack.prometheus.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[]}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
 | kubePrometheusStack.prometheus.route.main.apiVersion | string | `"gateway.networking.k8s.io/v1"` | Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1alpha2 |
 | kubePrometheusStack.prometheus.route.main.enabled | bool | `false` | Enables or disables the route |
 | kubePrometheusStack.prometheus.route.main.httpsRedirect | bool | `false` | create http route for redirect (https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/#http-to-https-redirects) # Take care that you only enable this on the http listener of the gateway to avoid an infinite redirect. # matches, filters and additionalRules will be ignored if this is set to true. Be are |
@@ -864,6 +871,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.service.additionalPorts | list | `[]` |  |
 | kubePrometheusStack.prometheus.service.annotations | object | `{}` |  |
 | kubePrometheusStack.prometheus.service.clusterIP | string | `""` |  |
+| kubePrometheusStack.prometheus.service.enabled | bool | `true` |  |
 | kubePrometheusStack.prometheus.service.externalIPs | list | `[]` |  |
 | kubePrometheusStack.prometheus.service.externalTrafficPolicy | string | `"Cluster"` |  |
 | kubePrometheusStack.prometheus.service.ipDualStack.enabled | bool | `false` |  |
@@ -959,6 +967,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.thanosServiceMonitor.metricRelabelings | list | `[]` |  |
 | kubePrometheusStack.prometheus.thanosServiceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.prometheus.thanosServiceMonitor.scheme | string | `""` |  |
+| kubePrometheusStack.prometheus.thanosServiceMonitor.scrapeProtocols | list | `[]` |  |
 | kubePrometheusStack.prometheus.thanosServiceMonitor.tlsConfig | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.annotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.caBundle | string | `""` |  |
@@ -993,7 +1002,10 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.livenessProbe.timeoutSeconds | int | `1` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.nodeSelector | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podAnnotations | object | `{}` |  |
-| kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podDisruptionBudget | object | `{}` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podDisruptionBudget.enabled | bool | `false` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podDisruptionBudget.maxUnavailable | string | `""` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podDisruptionBudget.minAvailable | int | `1` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podLabels | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.readinessProbe.enabled | bool | `true` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.readinessProbe.failureThreshold | int | `3` |  |
@@ -1045,7 +1057,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.registry | string | `"registry.k8s.io"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.repository | string | `"ingress-nginx/kube-webhook-certgen"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"v1.5.1"` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"v1.5.3"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.nodeSelector | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.priorityClassName | string | `""` |  |
@@ -1106,6 +1118,10 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.networkPolicy.flavor | string | `"kubernetes"` |  |
 | kubePrometheusStack.prometheusOperator.nodeSelector | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.podAnnotations | object | `{}` |  |
+| kubePrometheusStack.prometheusOperator.podDisruptionBudget.enabled | bool | `false` |  |
+| kubePrometheusStack.prometheusOperator.podDisruptionBudget.maxUnavailable | string | `""` |  |
+| kubePrometheusStack.prometheusOperator.podDisruptionBudget.minAvailable | int | `1` |  |
+| kubePrometheusStack.prometheusOperator.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
 | kubePrometheusStack.prometheusOperator.podLabels | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.prometheusConfigReloader.enableProbe | bool | `false` |  |
 | kubePrometheusStack.prometheusOperator.prometheusConfigReloader.image.registry | string | `"quay.io"` |  |
@@ -1164,7 +1180,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.thanosImage.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.prometheusOperator.thanosImage.repository | string | `"thanos/thanos"` |  |
 | kubePrometheusStack.prometheusOperator.thanosImage.sha | string | `""` |  |
-| kubePrometheusStack.prometheusOperator.thanosImage.tag | string | `"v0.37.2"` |  |
+| kubePrometheusStack.prometheusOperator.thanosImage.tag | string | `"v0.38.0"` |  |
 | kubePrometheusStack.prometheusOperator.thanosRulerInstanceNamespaces | list | `[]` |  |
 | kubePrometheusStack.prometheusOperator.thanosRulerInstanceSelector | string | `""` |  |
 | kubePrometheusStack.prometheusOperator.tls.enabled | bool | `true` |  |
@@ -1189,7 +1205,8 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.podDisruptionBudget.enabled | bool | `false` |  |
 | kubePrometheusStack.thanosRuler.podDisruptionBudget.maxUnavailable | string | `""` |  |
 | kubePrometheusStack.thanosRuler.podDisruptionBudget.minAvailable | int | `1` |  |
-| kubePrometheusStack.thanosRuler.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[]}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/references/spec/#gateway.networking.k8s.io%2fv1alpha2) |
+| kubePrometheusStack.thanosRuler.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
+| kubePrometheusStack.thanosRuler.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[]}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
 | kubePrometheusStack.thanosRuler.route.main.apiVersion | string | `"gateway.networking.k8s.io/v1"` | Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1alpha2 |
 | kubePrometheusStack.thanosRuler.route.main.enabled | bool | `false` | Enables or disables the route |
 | kubePrometheusStack.thanosRuler.route.main.httpsRedirect | bool | `false` | create http route for redirect (https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/#http-to-https-redirects) # Take care that you only enable this on the http listener of the gateway to avoid an infinite redirect. # matches, filters and additionalRules will be ignored if this is set to true. Be are |
@@ -1197,6 +1214,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.service.additionalPorts | list | `[]` |  |
 | kubePrometheusStack.thanosRuler.service.annotations | object | `{}` |  |
 | kubePrometheusStack.thanosRuler.service.clusterIP | string | `""` |  |
+| kubePrometheusStack.thanosRuler.service.enabled | bool | `true` |  |
 | kubePrometheusStack.thanosRuler.service.externalIPs | list | `[]` |  |
 | kubePrometheusStack.thanosRuler.service.externalTrafficPolicy | string | `"Cluster"` |  |
 | kubePrometheusStack.thanosRuler.service.ipDualStack.enabled | bool | `false` |  |
@@ -1242,7 +1260,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.image.repository | string | `"thanos/thanos"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.thanosRuler.thanosRulerSpec.image.tag | string | `"v0.37.2"` |  |
+| kubePrometheusStack.thanosRuler.thanosRulerSpec.image.tag | string | `"v0.38.0"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.labels | object | `{}` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.listenLocal | bool | `false` |  |
@@ -1272,6 +1290,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.securityContext.runAsNonRoot | bool | `true` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.securityContext.runAsUser | int | `1000` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| kubePrometheusStack.thanosRuler.thanosRulerSpec.serviceName | string | `nil` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.storage | object | `{}` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.tolerations | list | `[]` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.topologySpreadConstraints | list | `[]` |  |
@@ -1305,7 +1324,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: kube-prometheus-stack
     path: ''
     helm:
