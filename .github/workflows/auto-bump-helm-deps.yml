@@ -62,7 +62,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install semver ruamel.yaml yamllint requests textwrap3
+          pip install semver ruamel.yaml yamllint requests
 
       - name: Run bump-dependencies script
         id: bump-dependencies
