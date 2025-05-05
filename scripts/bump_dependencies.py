@@ -375,6 +375,7 @@ class HelmChartUpdater:
             chart_updates[chart_name].append(update)
         charts_dir = "./charts"
         all_commits_succeeded = True        
+        self.run_command('git rm CHANGELOG.md')
         self.run_command('git reset -- etc/')
         self.run_command('git checkout -- etc/ || true')
         for chart_name, updates in chart_updates.items():
