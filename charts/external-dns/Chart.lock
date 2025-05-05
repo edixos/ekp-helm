@@ -1,12 +1,12 @@
 dependencies:
 - name: external-dns
   repository: https://kubernetes-sigs.github.io/external-dns/
-  version: 1.16.0
+  version: 1.16.1
 - name: gcp-workload-identity
   repository: https://edixos.github.io/ekp-helm
   version: 0.1.1
 - name: gcp-iam-policy-members
   repository: https://edixos.github.io/ekp-helm
   version: 0.1.2
-digest: sha256:54063aee4e5adceb533cf58ac8b8c23a0e96a6e834ba98519eb29d11c836e4f1
-generated: "2025-04-02T16:12:41.935822029Z"
+digest: sha256:983fa487a4fbdb1615c611aaceec07323324b113cc023f529f43e250f03ab1d5
+generated: "2025-05-05T13:41:35.789578184Z"
