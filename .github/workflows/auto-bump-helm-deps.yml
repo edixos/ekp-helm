@@ -3,6 +3,9 @@ name: Auto Bump Helm Dependencies
 on:
   schedule:
     - cron: "0 0 * * *"
+  push:
+    branches:
+      - feat/ekp-renovate
 permissions:
   contents: write
   pull-requests: write
@@ -59,27 +62,27 @@ jobs:
           UPDATE_VALUES: "true"
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install GitHub CLI
-        run: |
-          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-          sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-          sudo apt update
-          sudo apt install gh -y
+      # - name: Install GitHub CLI
+      #   run: |
+      #     type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+      #     curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+      #     sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+      #     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+      #     sudo apt update
+      #     sudo apt install gh -y
 
-      - name: Create Pull Request using GitHub CLI
-        if: steps.bump-dependencies.outputs.updated == 'true'
-        run: |
-          BRANCH="${{ steps.bump-dependencies.outputs.branch }}"
-          PR_TITLE="chore(deps-bump): auto bumped helm dependencies"
+      # - name: Create Pull Request using GitHub CLI
+      #   if: steps.bump-dependencies.outputs.updated == 'true'
+      #   run: |
+      #     BRANCH="${{ steps.bump-dependencies.outputs.branch }}"
+      #     PR_TITLE="chore(deps-bump): auto bumped helm dependencies"
 
-          TOKEN="${GITHUB_TOKEN}"
-          unset GITHUB_TOKEN
+      #     TOKEN="${GITHUB_TOKEN}"
+      #     unset GITHUB_TOKEN
           
-          # Authenticate and create PR
-          echo "$TOKEN" | gh auth login --with-token
-          PR_URL=$(gh pr create --title "$PR_TITLE" --body "${{ steps.bump-dependencies.outputs.pr_body }}" --base main --head "$BRANCH")
-          echo "Created PR: $PR_URL"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     # Authenticate and create PR
+      #     echo "$TOKEN" | gh auth login --with-token
+      #     PR_URL=$(gh pr create --title "$PR_TITLE" --body "${{ steps.bump-dependencies.outputs.pr_body }}" --base main --head "$BRANCH")
+      #     echo "Created PR: $PR_URL"
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

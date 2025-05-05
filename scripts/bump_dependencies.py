@@ -154,54 +154,52 @@ class HelmChartUpdater:
     # STEP 6: Update values.yaml with upstream defaults
     def _update_dependency_values(self, chart_path, updated_deps):
         values_path = os.path.join(chart_path, 'values.yaml')
-        
         if not os.path.exists(values_path):
             with open(values_path, 'w') as f:
                 f.write("# Default values\n")
-        
         try:
             with open(values_path, 'r') as f:
-                original_content = f.read()
-            
-            with open(values_path, 'r') as f:
-                values_data = yaml.load(f) or {}
-                
+                lines = f.readlines()
             for dep in updated_deps:
                 formatted_values = self._get_upstream_values(dep['repo_name'], dep['name'], dep['version'], dep['alias'])
-                if not formatted_values: continue
-                    
-                merged_content = original_content
-                try:
-                    alias_pattern = re.compile(f"^{re.escape(dep['alias'])}:.*?(?=^\\S|$)", re.DOTALL | re.MULTILINE)
-                    replacement = f"{dep['alias']}:\n{formatted_values}"
-                    merged_content = alias_pattern.sub(lambda m: replacement, merged_content)
-                except Exception:
-                    lines = original_content.split('\n')
-                    alias_found = False
-                    alias_start = -1
-                    alias_end = -1
-                    
-                    for i, line in enumerate(lines):
-                        if line.strip() == f"{dep['alias']}:" and not alias_found:
-                            alias_start = i
-                            alias_found = True
-                        elif alias_found and line and not line.startswith(' ') and alias_end == -1:
-                            alias_end = i
-                            break
-                    
-                    if alias_found and alias_end == -1:
-                        alias_end = len(lines)
-                    
-                    if alias_found:
-                        new_lines = lines[:alias_start] + [f"{dep['alias']}:"] + formatted_values.split('\n') + lines[alias_end:]
-                        merged_content = '\n'.join(new_lines)
-                    else:
-                        merged_content += f"\n{dep['alias']}:\n{formatted_values}"
-                
+                if not formatted_values: 
+                    continue
+                alias = dep['alias']
+                alias_line_index = -1
+                end_index = -1
+                indentation = None
+                for i, line in enumerate(lines):
+                    stripped_line = line.rstrip()
+                    if stripped_line == f"{alias}:" or stripped_line.startswith(f"{alias}:"):
+                        alias_line_index = i
+                        if i+1 < len(lines) and lines[i+1].strip() and lines[i+1][0].isspace():
+                            indentation = len(lines[i+1]) - len(lines[i+1].lstrip())
+                        break                
+                if alias_line_index >= 0 and indentation is not None:
+                    end_index = len(lines)
+                    for i in range(alias_line_index + 1, len(lines)):
+                        if not lines[i].strip():
+                            continue
+                        if not lines[i].startswith(' ' * indentation):
+                            end_index = i
+                            break                
+                new_content = []
+                if alias_line_index >= 0:
+                    new_content.extend(lines[:alias_line_index+1])
+                    for value_line in formatted_values.split('\n'):
+                        new_content.append(f"{value_line}\n")
+                    new_content.extend(lines[end_index:])
+                else:
+                    new_content = lines
+                    if new_content and new_content[-1].strip():
+                        new_content.append('\n')
+                    new_content.append(f"{alias}:\n")
+                    for value_line in formatted_values.split('\n'):
+                        new_content.append(f"{value_line}\n")                
                 with open(values_path, 'w') as f:
-                    f.write(merged_content)
+                    f.writelines(new_content)                
+                lines = new_content
                 logger.info(f"Updated values for {dep['alias']}")
-            
         except Exception as e:
             logger.error(f"Error updating values.yaml: {str(e)}")
 
@@ -209,7 +207,15 @@ class HelmChartUpdater:
         try:
             output = self.run_command(f"helm show values {repo_name}/{chart_name} --version {version}")
             if not output: return ""
-            return '\n'.join([f"  {line}" for line in output.split('\n') if line.strip() or output.split('\n').index(line) > 0])
+            lines = output.split('\n')
+            formatted_lines = []
+            start_idx = 1 if lines and not lines[0].strip() else 0
+            for i, line in enumerate(lines[start_idx:], start=start_idx):
+                if line.strip():
+                    formatted_lines.append(f"  {line}")
+                else:
+                    formatted_lines.append("")
+            return '\n'.join(formatted_lines)
         except Exception as e:
             logger.error(f"Error formatting upstream values for {chart_name}: {str(e)}")
             return ""
