@@ -1,6 +1,6 @@
 # external-dns
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: 0.16.1](https://img.shields.io/badge/AppVersion-0.16.1-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![AppVersion: 0.16.1](https://img.shields.io/badge/AppVersion-0.16.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@
 |------------|------|---------|
 | https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-members) | 0.1.2 |
 | https://edixos.github.io/ekp-helm | workloadIdentity(gcp-workload-identity) | 0.1.1 |
-| https://kubernetes-sigs.github.io/external-dns/ | externaldns(external-dns) | 1.16.0 |
+| https://kubernetes-sigs.github.io/external-dns/ | externaldns(external-dns) | 1.16.1 |
 
 ## Maintainers
 
@@ -30,13 +30,14 @@ Deploys external-dns and its monitoring
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | externaldns.affinity | object | `{}` | Affinity settings for `Pod` [scheduling](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/). If an explicit label selector is not provided for pod affinity or pod anti-affinity one will be created from the pod selector labels. |
-| externaldns.automountServiceAccountToken | bool | `nil` | Set this to `false` to [opt out of API credential automounting](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#opt-out-of-api-credential-automounting) for the `Pod`. |
+| externaldns.automountServiceAccountToken | bool | `true` | Set this to `false` to [opt out of API credential automounting](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#opt-out-of-api-credential-automounting) for the `Pod`. |
 | externaldns.commonLabels | object | `{}` | Labels to add to all chart resources. |
 | externaldns.deploymentAnnotations | object | `{}` | Annotations to add to the `Deployment`. |
 | externaldns.deploymentStrategy | object | `{"type":"Recreate"}` | [Deployment Strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy). |
 | externaldns.dnsConfig | object | `nil` | [DNS config](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config) for the pod, if not set the default will be used. |
 | externaldns.dnsPolicy | string | `nil` | [DNS policy](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy) for the pod, if not set the default will be used. |
 | externaldns.domainFilters | list | `[]` | Limit possible target zones by domain suffixes. |
+| externaldns.enabled | bool | `nil` | No effect - reserved for use in sub-charting. |
 | externaldns.env | list | `[]` | [Environment variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/) for the `external-dns` container. |
 | externaldns.excludeDomains | list | `[]` | Intentionally exclude domains from being managed. |
 | externaldns.extraArgs | list | `[]` | Extra arguments to provide to _ExternalDNS_. |
@@ -93,7 +94,7 @@ Deploys external-dns and its monitoring
 | externaldns.service.ipFamilyPolicy | string | `nil` | Service IP family policy. |
 | externaldns.service.port | int | `7979` | Service HTTP port. |
 | externaldns.serviceAccount.annotations | object | `{}` | Annotations to add to the service account. Templates are allowed in both the key and the value. Example: `example.com/annotation/{{ .Values.nameOverride }}: {{ .Values.nameOverride }}` |
-| externaldns.serviceAccount.automountServiceAccountToken | string | `nil` | Set this to `false` to [opt out of API credential automounting](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#opt-out-of-api-credential-automounting) for the `ServiceAccount`. |
+| externaldns.serviceAccount.automountServiceAccountToken | bool | `true` | Set this to `false` to [opt out of API credential automounting](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#opt-out-of-api-credential-automounting) for the `ServiceAccount`. |
 | externaldns.serviceAccount.create | bool | `true` | If `true`, create a new `ServiceAccount`. |
 | externaldns.serviceAccount.labels | object | `{}` | Labels to add to the service account. |
 | externaldns.serviceAccount.name | string | `nil` | If this is set and `serviceAccount.create` is `true` this will be used for the created `ServiceAccount` name, if set and `serviceAccount.create` is `false` then this will define an existing `ServiceAccount` to use. |
@@ -163,7 +164,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: external-dns
     path: ''
     helm:
