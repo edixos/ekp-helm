@@ -85,9 +85,8 @@ jobs:
           BRANCH="${{ steps.bump-dependencies.outputs.branch }}"
           PR_TITLE="chore(deps-bump): auto bumped helm dependencies"
           
-          # Create a file with the PR body - convert URL-encoded newlines to actual newlines
-          PR_BODY="${{ steps.bump-dependencies.outputs.pr_body }}"
-          echo -e "$PR_BODY" > pr_body.md
+          # Create a PR body file directly from the script output
+          echo "${{ steps.bump-dependencies.outputs.pr_body }}" | sed 's/%0A/\n/g' | sed 's/%25/%/g' > pr_body.md
           
           TOKEN="${GITHUB_TOKEN}"
           unset GITHUB_TOKEN
