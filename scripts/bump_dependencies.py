@@ -84,7 +84,11 @@ class HelmChartUpdater:
             
             if self.update_values and updated_deps:
                 self._update_dependency_values(chart_path, updated_deps)
-            self._run_chart_tools(chart_path, chart_name)
+            
+            if not self._run_chart_tools(chart_path, chart_name):
+                logger.warning(f"Chart {chart_name} failed linting, will not be committed")
+                return False
+            
         return chart_updated
 
     # STEP 4: Check and update each dependency
@@ -233,7 +237,8 @@ class HelmChartUpdater:
     def _run_chart_tools(self, chart_path, chart_name):
         self._run_fix_lint(chart_path, chart_name)
         self._run_helm_docs(chart_path, chart_name)
-        self._run_helm_lint(chart_path, chart_name)
+        lint_success = self._run_helm_lint(chart_path, chart_name)
+        return lint_success
 
     def _run_fix_lint(self, chart_path, chart_name):
         fix_lint_script = "./scripts/fix-lint.sh"
@@ -273,8 +278,11 @@ class HelmChartUpdater:
         ct_cmd = f"ct lint --charts {rel_chart_path} {config_param} {lint_param}"
         if self.run_command(ct_cmd, cwd=chart_dir):
             logger.info(f"Linting completed for {chart_name}")
+            return True
         else:
-            logger.warning(f"Linting had issues for {chart_name}, but continuing workflow")
+            logger.warning(f"Linting failed for {chart_name}, skipping this chart")
+            self.chart_updates = [update for update in self.chart_updates if update['chart'] != chart_name]
+            return False
 
     def generate_pr_body(self):
         """Generate a detailed PR body with tables showing version changes."""
