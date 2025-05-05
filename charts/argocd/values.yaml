@@ -750,8 +750,9 @@ argocd:
     #    image: alpine:3
     #    command: [sh, -c]
     #    args:
-    #      - wget -qO kubelogin.zip https://github.com/Azure/kubelogin/releases/download/v0.0.25/kubelogin-linux-amd64.zip &&
-    #        unzip kubelogin.zip && mv bin/linux_amd64/kubelogin /custom-tools/
+    #      - wget -qO /custom-tools/kubelogin.zip https://github.com/Azure/kubelogin/releases/download/v0.2.7/kubelogin-linux-amd64.zip &&
+    #        mkdir /custom-tools/tmp && unzip -d /custom-tools/tmp /custom-tools/kubelogin.zip  &&
+    #        mv /custom-tools/tmp/bin/linux_amd64/kubelogin /custom-tools/ && rm -rf custom-tools/tmp && rm /custom-tools/kubelogin.zip
     #    volumeMounts:
     #      - mountPath: /custom-tools
     #        name: custom-tools
@@ -1046,7 +1047,7 @@ argocd:
       # -- Dex image repository
       repository: ghcr.io/dexidp/dex
       # -- Dex image tag
-      tag: v2.42.0
+      tag: v2.42.1
       # -- Dex imagePullPolicy
       # @default -- `""` (defaults to global.image.imagePullPolicy)
       imagePullPolicy: ""
@@ -1271,12 +1272,13 @@ argocd:
       #   maxSurge: 25%
       #   maxUnavailable: 25%
 
+    # DEPRECATED - Use configs.params to override
     # -- Dex log format. Either `text` or `json`
     # @default -- `""` (defaults to global.logging.format)
-    logFormat: ""
+    # logFormat: ""
     # -- Dex log level. One of: `debug`, `info`, `warn`, `error`
     # @default -- `""` (defaults to global.logging.level)
-    logLevel: ""
+    # logLevel: ""
 
   ## Redis
   redis:
@@ -1310,7 +1312,8 @@ argocd:
       # -- Redis repository
       repository: public.ecr.aws/docker/library/redis
       # -- Redis tag
-      tag: 7.4.2-alpine
+      ## Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis
+      tag: 7.2.8-alpine
       # -- Redis image pull policy
       # @default -- `""` (defaults to global.image.imagePullPolicy)
       imagePullPolicy: ""
@@ -1324,9 +1327,9 @@ argocd:
       ## Prometheus redis-exporter image
       image:
         # -- Repository to use for the redis-exporter
-        repository: public.ecr.aws/bitnami/redis-exporter
+        repository: ghcr.io/oliver006/redis_exporter
         # -- Tag to use for the redis-exporter
-        tag: 1.67.0
+        tag: v1.70.0
         # -- Image pull policy for the redis-exporter
         # @default -- `""` (defaults to global.image.imagePullPolicy)
         imagePullPolicy: ""
@@ -1596,15 +1599,16 @@ argocd:
       # -- Redis repository
       repository: public.ecr.aws/docker/library/redis
       # -- Redis tag
-      tag: 7.4.2-alpine
+      ## Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis
+      tag: 7.2.8-alpine
     ## Prometheus redis-exporter sidecar
     exporter:
       # -- Enable Prometheus redis-exporter sidecar
       enabled: false
       # -- Repository to use for the redis-exporter
-      image: public.ecr.aws/bitnami/redis-exporter
+      image: ghcr.io/oliver006/redis_exporter
       # -- Tag to use for the redis-exporter
-      tag: 1.58.0
+      tag: v1.69.0
     persistentVolume:
       # -- Configures persistence on Redis nodes
       enabled: false
@@ -1950,8 +1954,9 @@ argocd:
     #    image: alpine:3
     #    command: [sh, -c]
     #    args:
-    #      - wget -qO kubelogin.zip https://github.com/Azure/kubelogin/releases/download/v0.0.25/kubelogin-linux-amd64.zip &&
-    #        unzip kubelogin.zip && mv bin/linux_amd64/kubelogin /custom-tools/
+    #      - wget -qO /custom-tools/kubelogin.zip https://github.com/Azure/kubelogin/releases/download/v0.2.7/kubelogin-linux-amd64.zip &&
+    #        mkdir /custom-tools/tmp && unzip -d /custom-tools/tmp /custom-tools/kubelogin.zip  &&
+    #        mv /custom-tools/tmp/bin/linux_amd64/kubelogin /custom-tools/ && rm -rf custom-tools/tmp && rm /custom-tools/kubelogin.zip
     #    volumeMounts:
     #      - mountPath: /custom-tools
     #        name: custom-tools
@@ -3255,12 +3260,13 @@ argocd:
     # @default -- `[]` (defaults to global.imagePullSecrets)
     imagePullSecrets: []
 
+    # DEPRECATED - Use configs.params to override
     # -- Notifications controller log format. Either `text` or `json`
     # @default -- `""` (defaults to global.logging.format)
-    logFormat: ""
+    # logFormat: ""
     # -- Notifications controller log level. One of: `debug`, `info`, `warn`, `error`
     # @default -- `""` (defaults to global.logging.level)
-    logLevel: ""
+    # logLevel: ""
 
     # -- Extra arguments to provide to the notifications controller
     extraArgs: []
