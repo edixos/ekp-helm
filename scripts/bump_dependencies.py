@@ -406,7 +406,7 @@ class HelmChartUpdater:
         """Create or update a GitHub issue for a chart that failed linting."""
         if self.dry_run:
             logger.info(f"DRY RUN: Would create/update GitHub issue for failed chart {chart_name}")
-            return        
+            return
         github_token = os.getenv('GH_TOKEN') or os.getenv('GITHUB_TOKEN')
         if not github_token:
             logger.error("Neither GH_TOKEN nor GITHUB_TOKEN environment variables are set, cannot create issue")
@@ -424,73 +424,69 @@ class HelmChartUpdater:
             else:
                 owner = "edixos"
                 repo = "ekp-helm"                
-            search_url = f"https://api.github.com/search/issues"
             headers = {
                 "Authorization": f"token {github_token}",
                 "Accept": "application/vnd.github.v3+json"
             }
             search_params = {
                 "q": f"repo:{owner}/{repo} is:issue is:open in:title Chart linting failed: {chart_name}"
-            }            
-            search_response = requests.get(search_url, headers=headers, params=search_params)
-            search_response.raise_for_status()
-            existing_issues = search_response.json().get("items", [])            
-            title = f"Chart linting failed: {chart_name}"            
-            body_template = """
-## Chart Linting Failed
-
-The Helm chart **{chart_name}** failed linting during the automated dependency update process.
-
-### Error Details
-```
-{error_message}
-```
-
-This issue was automatically created by the dependency update workflow.
-Please investigate and fix the issue to ensure the chart can be properly updated in the future.
-"""
-            body = textwrap.dedent(body_template).strip().format(
-                chart_name=chart_name,
-                error_message=error_message
+            }
+            search_response = requests.get(
+                "https://api.github.com/search/issues",
+                headers=headers,
+                params=search_params
             )
+            search_response.raise_for_status()
+            existing_issues = search_response.json().get("items", [])                
+            title = f"Chart linting failed: {chart_name}"            
+            body = textwrap.dedent(f"""
+            ## Chart Linting Failed
+
+            The Helm chart **{chart_name}** failed linting during the automated dependency update process.
+
+            ### Error Details
+            ```yaml
+            {error_message}
+            ```
+
+            This issue was automatically created by the dependency update workflow.
+            Please investigate and fix the issue to ensure the chart can be properly updated in the future.
+            """).strip()
+            
+            comment_body = textwrap.dedent(f"""
+            ### ⚠️ New Failure Detected on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+            ```yaml
+            {error_message}
+            ```
+
+            The chart failed checking again in the latest automation run.
+            """).strip()
+
             if existing_issues:
                 issue = existing_issues[0]
                 issue_number = issue["number"]
-                issue_url = issue["html_url"]                
-                comment_body = """
-### ⚠️ New Failure Detected on {timestamp}
-
-```
-{error_message}
-```
-
-The chart failed checking again in the latest automation run.
-"""
-                formatted_comment = textwrap.dedent(comment_body).strip().format(
-                    timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                    error_message=error_message
-                )
+                issue_url = issue["html_url"]
+                
                 comment_url = f"https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}/comments"
-                comment_data = {"body": formatted_comment}
-                response = requests.post(comment_url, headers=headers, json=comment_data)
-                response.raise_for_status()
-                logger.info(f"Updated existing GitHub issue #{issue_number} for chart {chart_name}: {issue_url}")
-                return issue_url
+                requests.post(
+                    comment_url,
+                    headers=headers,
+                    json={"body": comment_body}
+                ).raise_for_status()
+                logger.info(f"Updated existing issue #{issue_number}: {issue_url}")
             else:
-                url = f"https://api.github.com/repos/{owner}/{repo}/issues"
-                data = {
-                    "title": title,
-                    "body": body,
-                    "labels": ["bug", "helm-chart", "automation"]
-                }
-                response = requests.post(url, headers=headers, json=data)
+                issue_url = f"https://api.github.com/repos/{owner}/{repo}/issues"
+                response = requests.post(
+                    issue_url,
+                    headers=headers,
+                    json={"title": title, "body": body}
+                )
                 response.raise_for_status()
-                issue_number = response.json().get("number")
-                issue_url = response.json().get("html_url")
-                logger.info(f"Created GitHub issue #{issue_number} for chart {chart_name}: {issue_url}")
-                return issue_url
+                issue_data = response.json()
+                logger.info(f"Created new issue #{issue_data['number']}: {issue_data['html_url']}")
         except Exception as e:
-            logger.error(f"Failed to create/update GitHub issue for {chart_name}: {str(e)}")
+            logger.error(f"Failed to create/update GitHub issue: {str(e)}")
             return None
 
     def generate_pr_body(self):
