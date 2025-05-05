@@ -233,13 +233,19 @@ class HelmChartUpdater:
     def _run_chart_tools(self, chart_path, chart_name):
         self._run_fix_lint(chart_path, chart_name)
         self._run_helm_docs(chart_path, chart_name)
-    
+        self._run_helm_lint(chart_path, chart_name)
+
     def _run_fix_lint(self, chart_path, chart_name):
         fix_lint_script = "./scripts/fix-lint.sh"
         if os.path.exists(fix_lint_script):
-            pattern = f"{chart_path}/*.yaml"
-            if self.run_command(f"bash {fix_lint_script} --auto --pattern '{pattern}'"):
-                logger.info(f"Linting completed for {chart_name}")
+            values_path = os.path.join(chart_path, "values.yaml")
+            if os.path.exists(values_path):
+                if self.run_command(f"bash {fix_lint_script} {values_path}"):
+                    logger.info(f"Fixed lint for {chart_name}")
+                else:
+                    logger.warning(f"Failed to fix lint for {chart_name}")
+            else:
+                logger.warning(f"No values.yaml found for {chart_name}")
 
     def _run_helm_docs(self, chart_path, chart_name):
         logger.info(f"Running helm-docs for {chart_name}")        
@@ -249,7 +255,27 @@ class HelmChartUpdater:
                 logger.info(f"README.md exists at {readme_path}")
             else:
                 logger.warning(f"README.md was not created at {readme_path}")
-    
+
+    def _run_helm_lint(self, chart_path, chart_name):
+        chart_dir = os.path.dirname(os.path.dirname(chart_path))
+        rel_chart_path = os.path.relpath(chart_path, chart_dir)                
+        global_ct_config = os.path.join(chart_dir, ".github/configs/ct.yaml")
+        global_lint_config = os.path.join(chart_dir, ".github/configs/lintconf.yaml")
+        local_ct_config = os.path.join(chart_path, "ct.yaml")        
+        config_param = ""
+        if os.path.exists(global_ct_config):
+            config_param = f"--config {os.path.relpath(global_ct_config, chart_dir)}"
+        elif os.path.exists(local_ct_config):
+            config_param = f"--config {os.path.relpath(local_ct_config, chart_dir)}"        
+        lint_param = ""
+        if os.path.exists(global_lint_config):
+            lint_param = f"--lint-conf {os.path.relpath(global_lint_config, chart_dir)}"        
+        ct_cmd = f"ct lint --charts {rel_chart_path} {config_param} {lint_param}"
+        if self.run_command(ct_cmd, cwd=chart_dir):
+            logger.info(f"Linting completed for {chart_name}")
+        else:
+            logger.warning(f"Linting had issues for {chart_name}, but continuing workflow")
+
     def generate_pr_body(self):
         """Generate a detailed PR body with tables showing version changes."""
         if not self.chart_updates:
@@ -329,8 +355,15 @@ class HelmChartUpdater:
         self.run_command('git config --global user.email "actions@github.com"')
     
     def _create_branch(self):
+        current_branch = self.run_command('git branch --show-current')
+        if current_branch == "main":
+            return self.run_command(f'git checkout -b {self.branch_name}') is not None        
+        self.run_command('git add -A')
+        self.run_command('git stash')        
         self.run_command('git checkout main')
-        return self.run_command(f'git checkout -b {self.branch_name}') is not None
+        result = self.run_command(f'git checkout -b {self.branch_name}') is not None        
+        self.run_command('git stash pop')
+        return result
     
     def _commit_changes(self):
         if not self.chart_updates: return False

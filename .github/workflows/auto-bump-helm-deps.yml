@@ -13,6 +13,10 @@ permissions:
 jobs:
   bump-helm-deps:
     runs-on: ubuntu-latest
+    env:
+      DRY_RUN: "false"
+      SKIP_PR: "false"
+      UPDATE_VALUES: "true"
 
     steps:
       - name: Checkout code
@@ -37,6 +41,13 @@ jobs:
           chmod +x helm-docs
           sudo mv helm-docs /usr/local/bin/helm-docs
 
+      - name: Install chart-testing
+        run: |
+          CT_VERSION="3.12.0"
+          curl -L "https://github.com/helm/chart-testing/releases/download/v${CT_VERSION}/chart-testing_${CT_VERSION}_linux_amd64.tar.gz" | tar -xz
+          chmod +x ct
+          sudo mv ct /usr/local/bin/ct
+
       - name: Add our Helm repo
         run: |
           helm repo add ekp-helm https://edixos.github.io/ekp-helm
@@ -57,32 +68,29 @@ jobs:
         run: |
           python scripts/bump_dependencies.py
         env:
-          DRY_RUN: "false"
-          SKIP_PR: "true"
-          UPDATE_VALUES: "true"
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Install GitHub CLI
-      #   run: |
-      #     type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
-      #     curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-      #     sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-      #     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-      #     sudo apt update
-      #     sudo apt install gh -y
+      - name: Install GitHub CLI
+        run: |
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
 
-      # - name: Create Pull Request using GitHub CLI
-      #   if: steps.bump-dependencies.outputs.updated == 'true'
-      #   run: |
-      #     BRANCH="${{ steps.bump-dependencies.outputs.branch }}"
-      #     PR_TITLE="chore(deps-bump): auto bumped helm dependencies"
+      - name: Create Pull Request using GitHub CLI
+        if: steps.bump-dependencies.outputs.updated == 'true' && ${{ env.SKIP_PR == 'false' && env.DRY_RUN == 'false' }}
+        run: |
+          BRANCH="${{ steps.bump-dependencies.outputs.branch }}"
+          PR_TITLE="chore(deps-bump): auto bumped helm dependencies"
 
-      #     TOKEN="${GITHUB_TOKEN}"
-      #     unset GITHUB_TOKEN
+          TOKEN="${GITHUB_TOKEN}"
+          unset GITHUB_TOKEN
           
-      #     # Authenticate and create PR
-      #     echo "$TOKEN" | gh auth login --with-token
-      #     PR_URL=$(gh pr create --title "$PR_TITLE" --body "${{ steps.bump-dependencies.outputs.pr_body }}" --base main --head "$BRANCH")
-      #     echo "Created PR: $PR_URL"
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Authenticate and create PR
+          echo "$TOKEN" | gh auth login --with-token
+          PR_URL=$(gh pr create --title "$PR_TITLE" --body "${{ steps.bump-dependencies.outputs.pr_body }}" --base main --head "$BRANCH")
+          echo "Created PR: $PR_URL"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
