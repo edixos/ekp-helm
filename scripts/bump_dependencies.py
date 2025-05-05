@@ -375,7 +375,11 @@ class HelmChartUpdater:
             chart_updates[chart_name].append(update)
         charts_dir = "./charts"
         all_commits_succeeded = True        
-        self.run_command('git rm CHANGELOG.md')
+        if os.path.exists('CHANGELOG.md'):
+            os.remove('CHANGELOG.md')
+        self.run_command('git rm -f --cached CHANGELOG.md 2>/dev/null || true')
+        self.run_command('touch .gitignore')
+        self.run_command('echo "CHANGELOG.md" >> .gitignore')
         self.run_command('git reset -- etc/')
         self.run_command('git checkout -- etc/ || true')
         for chart_name, updates in chart_updates.items():
@@ -391,6 +395,7 @@ class HelmChartUpdater:
             commit_msg = f"chore(helm): update {chart_name} dependencies\n\nUpdates: {', '.join(deps)}"
             if self.run_command(f'git commit -m "{commit_msg}"') is None:
                 all_commits_succeeded = False
+        self.run_command("git checkout -- .gitignore || true")
         return all_commits_succeeded
 
     def _push_branch(self):
