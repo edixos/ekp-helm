@@ -5,6 +5,7 @@ import re
 import sys
 import json
 import logging
+import requests
 import semver
 import subprocess
 from datetime import datetime
@@ -276,13 +277,84 @@ class HelmChartUpdater:
         if os.path.exists(global_lint_config):
             lint_param = f"--lint-conf {os.path.relpath(global_lint_config, chart_dir)}"        
         ct_cmd = f"ct lint --charts {rel_chart_path} {config_param} {lint_param}"
-        if self.run_command(ct_cmd, cwd=chart_dir):
+        try:
+            result = subprocess.run(ct_cmd, cwd=chart_dir, check=True, 
+                                capture_output=True, text=True, shell=isinstance(ct_cmd, str))
             logger.info(f"Linting completed for {chart_name}")
             return True
-        else:
+        except subprocess.CalledProcessError as e:
+            error_message = e.stderr or e.stdout
             logger.warning(f"Linting failed for {chart_name}, skipping this chart")
-            self.chart_updates = [update for update in self.chart_updates if update['chart'] != chart_name]
+            logger.warning(f"Error: {error_message}")            
+            self.chart_updates = [update for update in self.chart_updates if update['chart'] != chart_name]            
+            self.create_github_issue(chart_name, error_message)
             return False
+
+    def create_github_issue(self, chart_name, error_message):
+        """Create a GitHub issue for a chart that failed linting."""
+        if self.dry_run:
+            logger.info(f"DRY RUN: Would create GitHub issue for failed chart {chart_name}")
+            return
+        
+        github_token = os.getenv('GITHUB_TOKEN')
+        if not github_token:
+            logger.error("GITHUB_TOKEN environment variable not set, cannot create issue")
+            return
+        
+        try:
+            # Parse the repo URL to determine owner and repo name
+            remote_url = self.run_command("git config --get remote.origin.url")
+            if remote_url:
+                if remote_url.startswith('git@github.com:'):
+                    remote_url = remote_url.replace('git@github.com:', '')
+                elif remote_url.startswith('https://github.com/'):
+                    remote_url = remote_url.replace('https://github.com/', '')
+                if remote_url.endswith('.git'):
+                    remote_url = remote_url[:-4]
+                
+                owner, repo = remote_url.split('/')
+            else:
+                owner = "edixos"
+                repo = "ekp-helm"
+            
+            # Create issue title and body
+            title = f"Chart linting failed: {chart_name}"
+            body = f"""## Chart Linting Failed
+
+    The Helm chart **{chart_name}** failed linting during the automated dependency update process.
+
+    ### Error Details
+    ```
+    {error_message}
+    ```
+
+    This issue was automatically created by the dependency update workflow.
+    Please investigate and fix the issue to ensure the chart can be properly updated in the future.
+    """
+            
+            # Create the GitHub issue
+            url = f"https://api.github.com/repos/{owner}/{repo}/issues"
+            headers = {
+                "Authorization": f"token {github_token}",
+                "Accept": "application/vnd.github.v3+json"
+            }
+            data = {
+                "title": title,
+                "body": body,
+                "labels": ["bug", "helm-chart", "automation"]
+            }
+            
+            response = requests.post(url, headers=headers, json=data)
+            response.raise_for_status()
+            issue_number = response.json().get("number")
+            issue_url = response.json().get("html_url")
+            
+            logger.info(f"Created GitHub issue #{issue_number} for chart {chart_name}: {issue_url}")
+            return issue_url
+        
+        except Exception as e:
+            logger.error(f"Failed to create GitHub issue for {chart_name}: {str(e)}")
+            return None
 
     def generate_pr_body(self):
         """Generate a detailed PR body with tables showing version changes."""
