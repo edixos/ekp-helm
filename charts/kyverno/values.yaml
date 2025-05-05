@@ -42,6 +42,7 @@ kyverno:
       # This value is expected to be one large string of CA certificates
       # Individual controller values will override this global value
       data: ~
+
       # -- Global value to set single volume to be mounted for CA certificates for all deployments.
       # Not used when `.Values.global.caCertificates.data` is defined
       # Individual  controller values will override this global value
@@ -50,6 +51,7 @@ kyverno:
       # hostPath:
       #   path: /etc/pki/tls/ca-certificates.crt
       #   type: File
+
     # -- Additional container environment variables to apply to all containers and init containers
     extraEnvVars: []
     # Example setting proxy
@@ -82,6 +84,13 @@ kyverno:
     # determine the api version automatically.
     podDisruptionBudget: ~
 
+  rbac:
+    roles:
+      # -- Aggregate ClusterRoles to Kubernetes default user-facing roles. For more information, see [User-facing roles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles)
+      aggregate:
+        admin: true
+        view: true
+
   # CRDs configuration
   crds:
 
@@ -99,14 +108,24 @@ kyverno:
         policies: true
         policyexceptions: true
         updaterequests: true
+        validatingpolicies: true
+
+      # -- Install CRDs in group `policies.kyverno.io`
+      policies:
+        validatingpolicies: true
+        policyexceptions: true
+        imagevalidatingpolicies: true
+
       # -- Install CRDs in group `reports.kyverno.io`
       reports:
         clusterephemeralreports: true
         ephemeralreports: true
+
       # -- Install CRDs in group `wgpolicyk8s.io`
       wgpolicyk8s:
         clusterpolicyreports: true
         policyreports: true
+
     # -- Additional CRDs annotations
     annotations: {}
       # argocd.argoproj.io/sync-options: Replace=true
@@ -129,10 +148,11 @@ kyverno:
         - policies.kyverno.io
         - policyexceptions.kyverno.io
         - updaterequests.kyverno.io
+
       image:
         # -- (string) Image registry
         registry: ~
-        defaultRegistry: ghcr.io
+        defaultRegistry: reg.kyverno.io
         # -- (string) Image repository
         repository: kyverno/kyverno-cli
         # -- (string) Image tag
@@ -182,6 +202,16 @@ kyverno:
             - ALL
         seccompProfile:
           type: RuntimeDefault
+
+      podResources:
+        # -- Pod resource limits
+        limits:
+          cpu: 100m
+          memory: 256Mi
+        # -- Pod resource requests
+        requests:
+          cpu: 10m
+          memory: 64Mi
 
   # Configuration
   config:
@@ -349,10 +379,12 @@ kyverno:
       #     matchExpressions:
       #     - key: webhooks.kyverno.io/exclude
       #       operator: DoesNotExist
+
     # -- Defines annotations to set on webhook configurations.
     webhookAnnotations:
       # Example to disable admission enforcer on AKS:
       'admissions.enforcer/disabled': 'true'
+
     # -- Defines labels to set on webhook configurations.
     webhookLabels: {}
       # Example to adopt webhook resources in ArgoCD:
@@ -424,6 +456,7 @@ kyverno:
         disabledLabelDimensions: ["resource_namespace"]
       kyverno_cleanup_controller_deletedobjects_total:
         disabledLabelDimensions: ["resource_namespace", "policy_namespace"]
+
   # -- Image pull secrets for image verification policies, this will define the `--imagePullSecrets` argument
   imagePullSecrets: {}
     # regcred:
@@ -434,14 +467,17 @@ kyverno:
     #   registry: bar.example.com
     #   username: barbaz
     #   password: secret2
+
   # -- Existing Image pull secrets for image verification policies, this will define the `--imagePullSecrets` argument
   existingImagePullSecrets: []
     # - test-registry
     # - other-test-registry
+
   # Tests configuration
   test:
     # -- Sleep time before running test
     sleep: 20
+
     image:
       # -- (string) Image registry
       registry: ~
@@ -467,6 +503,7 @@ kyverno:
       requests:
         cpu: 10m
         memory: 64Mi
+
     # -- Security context for the test containers
     securityContext:
       runAsUser: 65534
@@ -499,7 +536,7 @@ kyverno:
       repository: bitnami/kubectl
       # -- Image tag
       # Defaults to `latest` if omitted
-      tag: '1.30.2'
+      tag: '1.32.3'
       # -- (string) Image pull policy
       # Defaults to image.pullPolicy if omitted
       pullPolicy: ~
@@ -545,6 +582,16 @@ kyverno:
       seccompProfile:
         type: RuntimeDefault
 
+    resources:
+      # -- Pod resource limits
+      limits:
+        cpu: 100m
+        memory: 256Mi
+      # -- Pod resource requests
+      requests:
+        cpu: 10m
+        memory: 64Mi
+
   policyReportsCleanup:
     # -- Create a helm post-upgrade hook to cleanup the old policy reports.
     enabled: true
@@ -556,7 +603,7 @@ kyverno:
       repository: bitnami/kubectl
       # -- Image tag
       # Defaults to `latest` if omitted
-      tag: '1.30.2'
+      tag: '1.32.3'
       # -- (string) Image pull policy
       # Defaults to image.pullPolicy if omitted
       pullPolicy: ~
@@ -603,6 +650,16 @@ kyverno:
       seccompProfile:
         type: RuntimeDefault
 
+    resources:
+      # -- Pod resource limits
+      limits:
+        cpu: 100m
+        memory: 256Mi
+      # -- Pod resource requests
+      requests:
+        cpu: 10m
+        memory: 64Mi
+
   grafana:
     # -- Enable grafana dashboard creation.
     enabled: false
@@ -629,6 +686,7 @@ kyverno:
       allowCrossNamespaceImport: true
       matchLabels:
         dashboards: "grafana"
+
   # Features configuration
   features:
     admissionReports:
@@ -733,6 +791,21 @@ kyverno:
 
   # Admission controller configuration
   admissionController:
+    autoscaling:
+      # -- Enable horizontal pod autoscaling
+      enabled: false
+
+      # -- Minimum number of pods
+      minReplicas: 1
+
+      # -- Maximum number of pods
+      maxReplicas: 10
+
+      # -- Target CPU utilization percentage
+      targetCPUUtilizationPercentage: 80
+
+      # -- Configurable scaling behavior
+      behavior: {}
 
     # -- Overrides features defined at the root level
     featuresOverride:
@@ -763,6 +836,7 @@ kyverno:
         # This was introduced to avoid breaking change in the chart but should ideally be moved in `clusterRole.extraResources`.
         # @default -- See [values.yaml](values.yaml)
         extraResources: []
+
       clusterRole:
         # -- Extra resource permissions to add in the cluster role
         extraResources: []
@@ -815,6 +889,7 @@ kyverno:
     # This will help ensure Kyverno stability in busy clusters.
     # Ref: https://kubernetes.io/docs/concepts/cluster-administration/flow-control/
     apiPriorityAndFairness: false
+
     # -- Priority level configuration.
     # The block is directly forwarded into the priorityLevelConfiguration, so you can use whatever specification you want.
     # ref: https://kubernetes.io/docs/concepts/cluster-administration/flow-control/#prioritylevelconfiguration
@@ -827,18 +902,29 @@ kyverno:
           queuing:
             queueLengthLimit: 50
           type: Queue
+
     # -- Change `hostNetwork` to `true` when you want the pod to share its host's network namespace.
     # Useful for situations like when you end up dealing with a custom CNI over Amazon EKS.
     # Update the `dnsPolicy` accordingly as well to suit the host network mode.
     hostNetwork: false
+
     # -- admissionController webhook server port
     # in case you are using hostNetwork: true, you might want to change the port the webhookServer is listening to
     webhookServer:
       port: 9443
+
     # -- `dnsPolicy` determines the manner in which DNS resolution happens in the cluster.
     # In case of `hostNetwork: true`, usually, the `dnsPolicy` is suitable to be `ClusterFirstWithHostNet`.
     # For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy.
     dnsPolicy: ClusterFirst
+
+    # -- `dnsConfig` allows to specify DNS configuration for the pod.
+    # For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config.
+    dnsConfig: {}
+      # options:
+      #   - name: ndots
+      #     value: "2"
+
     # -- Startup probe.
     # The block is directly forwarded into the deployment, so you can use whatever startupProbes configuration you want.
     # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
@@ -851,6 +937,7 @@ kyverno:
       failureThreshold: 20
       initialDelaySeconds: 2
       periodSeconds: 6
+
     # -- Liveness probe.
     # The block is directly forwarded into the deployment, so you can use whatever livenessProbe configuration you want.
     # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
@@ -865,6 +952,7 @@ kyverno:
       timeoutSeconds: 5
       failureThreshold: 2
       successThreshold: 1
+
     # -- Readiness Probe.
     # The block is directly forwarded into the deployment, so you can use whatever readinessProbe configuration you want.
     # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
@@ -890,6 +978,7 @@ kyverno:
       # -- Pod antiAffinities toggle.
       # Enabled by default but can be disabled if you want to schedule pods to the same node.
       enabled: true
+
     # -- Pod anti affinity constraints.
     # @default -- See [values.yaml](values.yaml)
     podAntiAffinity:
@@ -955,7 +1044,7 @@ kyverno:
       image:
         # -- Image registry
         registry: ~
-        defaultRegistry: ghcr.io
+        defaultRegistry: reg.kyverno.io
         # -- Image repository
         repository: kyverno/kyvernopre
         # -- (string) Image tag
@@ -964,6 +1053,7 @@ kyverno:
         # -- (string) Image pull policy
         # If missing, defaults to image.pullPolicy
         pullPolicy: ~
+
       resources:
         # -- Pod resource limits
         limits:
@@ -973,6 +1063,7 @@ kyverno:
         requests:
           cpu: 10m
           memory: 64Mi
+
       # -- Container security context
       securityContext:
         runAsNonRoot: true
@@ -1000,7 +1091,7 @@ kyverno:
       image:
         # -- Image registry
         registry: ~
-        defaultRegistry: ghcr.io
+        defaultRegistry: reg.kyverno.io
         # -- Image repository
         repository: kyverno/kyverno
         # -- (string) Image tag
@@ -1008,6 +1099,7 @@ kyverno:
         tag: ~
         # -- Image pull policy
         pullPolicy: IfNotPresent
+
       resources:
         # -- Pod resource limits
         limits:
@@ -1016,6 +1108,7 @@ kyverno:
         requests:
           cpu: 100m
           memory: 128Mi
+
       # -- Container security context
       securityContext:
         runAsNonRoot: true
@@ -1037,16 +1130,19 @@ kyverno:
       # extraEnvVars:
       # - name: HTTPS_PROXY
       #   value: 'https://proxy.example.com:3128'
+
     # -- Array of extra init containers
     extraInitContainers: []
       # - name: init-container
       #   image: busybox
       #   command: ['sh', '-c', 'echo Hello']
+
     # -- Array of extra containers to run alongside kyverno
     extraContainers: []
       # - name: myapp-container
       #   image: busybox
       #   command: ['sh', '-c', 'echo Hello && sleep 3600']
+
     service:
       # -- Service port.
       port: 443
@@ -1057,6 +1153,7 @@ kyverno:
       nodePort:
       # -- Service annotations.
       annotations: {}
+
     metricsService:
       # -- Create service.
       create: true
@@ -1070,12 +1167,14 @@ kyverno:
       nodePort:
       # -- Service annotations.
       annotations: {}
+
     networkPolicy:
       # -- When true, use a NetworkPolicy to allow ingress to the webhook
       # This is useful on clusters using Calico and/or native k8s network policies in a default-deny setup.
       enabled: false
       # -- A list of valid from selectors according to https://kubernetes.io/docs/concepts/services-networking/network-policies.
       ingressFrom: []
+
     serviceMonitor:
       # -- Create a `ServiceMonitor` to collect Prometheus metrics.
       enabled: false
@@ -1095,6 +1194,7 @@ kyverno:
       relabelings: []
       # -- MetricRelabelConfigs to apply to samples before ingestion.
       metricRelabelings: []
+
     tracing:
       # -- Enable tracing
       enabled: false
@@ -1104,6 +1204,7 @@ kyverno:
       port:
       # -- Traces receiver credentials
       creds: ''
+
     metering:
       # -- Disable metrics export
       disabled: false
@@ -1115,6 +1216,7 @@ kyverno:
       collector: ''
       # -- Otel collector credentials
       creds: ''
+
     profiling:
       # -- Enable profiling
       enabled: false
@@ -1190,6 +1292,7 @@ kyverno:
               - update
               - patch
               - delete
+
       clusterRole:
         # -- Extra resource permissions to add in the cluster role
         extraResources: []
@@ -1202,10 +1305,11 @@ kyverno:
         #     - update
         #     - delete
         #     - patch
+
     image:
       # -- Image registry
       registry: ~
-      defaultRegistry: ghcr.io
+      defaultRegistry: reg.kyverno.io
       # -- Image repository
       repository: kyverno/background-controller
       # -- Image tag
@@ -1254,10 +1358,18 @@ kyverno:
     # Useful for situations like when you end up dealing with a custom CNI over Amazon EKS.
     # Update the `dnsPolicy` accordingly as well to suit the host network mode.
     hostNetwork: false
+
     # -- `dnsPolicy` determines the manner in which DNS resolution happens in the cluster.
     # In case of `hostNetwork: true`, usually, the `dnsPolicy` is suitable to be `ClusterFirstWithHostNet`.
     # For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy.
     dnsPolicy: ClusterFirst
+
+    # -- `dnsConfig` allows to specify DNS configuration for the pod.
+    # For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config.
+    dnsConfig: {}
+      # options:
+      #   - name: ndots
+      #     value: "2"
 
     # -- Extra arguments passed to the container on the command line
     extraArgs: {}
@@ -1268,6 +1380,7 @@ kyverno:
     # extraEnvVars:
     # - name: HTTPS_PROXY
     #   value: 'https://proxy.example.com:3128'
+
     resources:
       # -- Pod resource limits
       limits:
@@ -1287,6 +1400,7 @@ kyverno:
       # -- Pod antiAffinities toggle.
       # Enabled by default but can be disabled if you want to schedule pods to the same node.
       enabled: true
+
     # -- Pod anti affinity constraints.
     # @default -- See [values.yaml](values.yaml)
     podAntiAffinity:
@@ -1324,6 +1438,7 @@ kyverno:
           - ALL
       seccompProfile:
         type: RuntimeDefault
+
     podDisruptionBudget:
       # -- Enable PodDisruptionBudget.
       # Will always be enabled if replicas > 1. This non-declarative behavior should ideally be avoided, but changing it now would be breaking.
@@ -1334,6 +1449,7 @@ kyverno:
       # -- Configures the maximum unavailable pods for disruptions.
       # Cannot be used if `minAvailable` is set.
       maxUnavailable:
+
     caCertificates:
       # -- CA certificates to use with Kyverno deployments
       # This value is expected to be one large string of CA certificates
@@ -1345,6 +1461,7 @@ kyverno:
       # hostPath:
       #   path: /etc/pki/tls/ca-certificates.crt
       #   type: File
+
     metricsService:
       # -- Create service.
       create: true
@@ -1387,6 +1504,7 @@ kyverno:
       relabelings: []
       # -- MetricRelabelConfigs to apply to samples before ingestion.
       metricRelabelings: []
+
     tracing:
       # -- Enable tracing
       enabled: false
@@ -1396,6 +1514,7 @@ kyverno:
       port:
       # -- Traces receiver credentials
       creds: ''
+
     metering:
       # -- Disable metrics export
       disabled: false
@@ -1407,10 +1526,12 @@ kyverno:
       collector: ''
       # -- Otel collector credentials
       creds: ''
+
     # -- backgroundController server port
     # in case you are using hostNetwork: true, you might want to change the port the backgroundController is listening to
     server:
       port: 9443
+
     profiling:
       # -- Enable profiling
       enabled: false
@@ -1462,7 +1583,7 @@ kyverno:
     image:
       # -- Image registry
       registry: ~
-      defaultRegistry: ghcr.io
+      defaultRegistry: reg.kyverno.io
       # -- Image repository
       repository: kyverno/cleanup-controller
       # -- (string) Image tag
@@ -1511,6 +1632,7 @@ kyverno:
     # Useful for situations like when you end up dealing with a custom CNI over Amazon EKS.
     # Update the `dnsPolicy` accordingly as well to suit the host network mode.
     hostNetwork: false
+
     # -- cleanupController server port
     # in case you are using hostNetwork: true, you might want to change the port the cleanupController is listening to
     server:
@@ -1519,10 +1641,18 @@ kyverno:
     # in case you are using hostNetwork: true, you might want to change the port the webhookServer is listening to
     webhookServer:
       port: 9443
+
     # -- `dnsPolicy` determines the manner in which DNS resolution happens in the cluster.
     # In case of `hostNetwork: true`, usually, the `dnsPolicy` is suitable to be `ClusterFirstWithHostNet`.
     # For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy.
     dnsPolicy: ClusterFirst
+
+    # -- `dnsConfig` allows to specify DNS configuration for the pod.
+    # For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config.
+    dnsConfig: {}
+      # options:
+      #   - name: ndots
+      #     value: "2"
 
     # -- Extra arguments passed to the container on the command line
     extraArgs: {}
@@ -1533,6 +1663,7 @@ kyverno:
     # extraEnvVars:
     # - name: HTTPS_PROXY
     #   value: 'https://proxy.example.com:3128'
+
     resources:
       # -- Pod resource limits
       limits:
@@ -1541,6 +1672,7 @@ kyverno:
       requests:
         cpu: 100m
         memory: 64Mi
+
     # -- Startup probe.
     # The block is directly forwarded into the deployment, so you can use whatever startupProbes configuration you want.
     # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
@@ -1553,6 +1685,7 @@ kyverno:
       failureThreshold: 20
       initialDelaySeconds: 2
       periodSeconds: 6
+
     # -- Liveness probe.
     # The block is directly forwarded into the deployment, so you can use whatever livenessProbe configuration you want.
     # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
@@ -1567,6 +1700,7 @@ kyverno:
       timeoutSeconds: 5
       failureThreshold: 2
       successThreshold: 1
+
     # -- Readiness Probe.
     # The block is directly forwarded into the deployment, so you can use whatever readinessProbe configuration you want.
     # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
@@ -1592,6 +1726,7 @@ kyverno:
       # -- Pod antiAffinities toggle.
       # Enabled by default but can be disabled if you want to schedule pods to the same node.
       enabled: true
+
     # -- Pod anti affinity constraints.
     # @default -- See [values.yaml](values.yaml)
     podAntiAffinity:
@@ -1629,6 +1764,7 @@ kyverno:
           - ALL
       seccompProfile:
         type: RuntimeDefault
+
     podDisruptionBudget:
       # -- Enable PodDisruptionBudget.
       # Will always be enabled if replicas > 1. This non-declarative behavior should ideally be avoided, but changing it now would be breaking.
@@ -1639,6 +1775,7 @@ kyverno:
       # -- Configures the maximum unavailable pods for disruptions.
       # Cannot be used if `minAvailable` is set.
       maxUnavailable:
+
     service:
       # -- Service port.
       port: 443
@@ -1649,6 +1786,7 @@ kyverno:
       nodePort:
       # -- Service annotations.
       annotations: {}
+
     metricsService:
       # -- Create service.
       create: true
@@ -1691,6 +1829,7 @@ kyverno:
       relabelings: []
       # -- MetricRelabelConfigs to apply to samples before ingestion.
       metricRelabelings: []
+
     tracing:
       # -- Enable tracing
       enabled: false
@@ -1700,6 +1839,7 @@ kyverno:
       port:
       # -- Traces receiver credentials
       creds: ''
+
     metering:
       # -- Disable metrics export
       disabled: false
@@ -1711,6 +1851,7 @@ kyverno:
       collector: ''
       # -- Otel collector credentials
       creds: ''
+
     profiling:
       # -- Enable profiling
       enabled: false
@@ -1754,6 +1895,7 @@ kyverno:
         # This was introduced to avoid breaking change in the chart but should ideally be moved in `clusterRole.extraResources`.
         # @default -- See [values.yaml](values.yaml)
         extraResources: []
+
       clusterRole:
         # -- Extra resource permissions to add in the cluster role
         extraResources: []
@@ -1761,10 +1903,11 @@ kyverno:
         #     - ''
         #   resources:
         #     - pods
+
     image:
       # -- Image registry
       registry: ~
-      defaultRegistry: ghcr.io
+      defaultRegistry: reg.kyverno.io
       # -- Image repository
       repository: kyverno/reports-controller
       # -- (string) Image tag
@@ -1813,6 +1956,7 @@ kyverno:
     # This will help ensure Kyverno reports stability in busy clusters.
     # Ref: https://kubernetes.io/docs/concepts/cluster-administration/flow-control/
     apiPriorityAndFairness: false
+
     # -- Priority level configuration.
     # The block is directly forwarded into the priorityLevelConfiguration, so you can use whatever specification you want.
     # ref: https://kubernetes.io/docs/concepts/cluster-administration/flow-control/#prioritylevelconfiguration
@@ -1825,14 +1969,23 @@ kyverno:
           queuing:
             queueLengthLimit: 50
           type: Queue
+
     # -- Change `hostNetwork` to `true` when you want the pod to share its host's network namespace.
     # Useful for situations like when you end up dealing with a custom CNI over Amazon EKS.
     # Update the `dnsPolicy` accordingly as well to suit the host network mode.
     hostNetwork: false
+
     # -- `dnsPolicy` determines the manner in which DNS resolution happens in the cluster.
     # In case of `hostNetwork: true`, usually, the `dnsPolicy` is suitable to be `ClusterFirstWithHostNet`.
     # For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy.
     dnsPolicy: ClusterFirst
+
+    # -- `dnsConfig` allows to specify DNS configuration for the pod.
+    # For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config.
+    dnsConfig: {}
+      # options:
+      #   - name: ndots
+      #     value: "2"
 
     # -- Extra arguments passed to the container on the command line
     extraArgs: {}
@@ -1843,6 +1996,7 @@ kyverno:
     # extraEnvVars:
     # - name: HTTPS_PROXY
     #   value: 'https://proxy.example.com:3128'
+
     resources:
       # -- Pod resource limits
       limits:
@@ -1862,6 +2016,7 @@ kyverno:
       # -- Pod antiAffinities toggle.
       # Enabled by default but can be disabled if you want to schedule pods to the same node.
       enabled: true
+
     # -- Pod anti affinity constraints.
     # @default -- See [values.yaml](values.yaml)
     podAntiAffinity:
@@ -1899,6 +2054,7 @@ kyverno:
           - ALL
       seccompProfile:
         type: RuntimeDefault
+
     podDisruptionBudget:
       # -- Enable PodDisruptionBudget.
       # Will always be enabled if replicas > 1. This non-declarative behavior should ideally be avoided, but changing it now would be breaking.
@@ -1972,6 +2128,7 @@ kyverno:
       relabelings: []
       # -- MetricRelabelConfigs to apply to samples before ingestion.
       metricRelabelings: []
+
     tracing:
       # -- Enable tracing
       enabled: false
@@ -1981,6 +2138,7 @@ kyverno:
       port: ~
       # -- (string) Traces receiver credentials
       creds: ~
+
     metering:
       # -- Disable metrics export
       disabled: false
@@ -1992,10 +2150,12 @@ kyverno:
       collector: ~
       # -- (string) Otel collector credentials
       creds: ~
+
     # -- reportsController server port
     # in case you are using hostNetwork: true, you might want to change the port the reportsController is listening to
     server:
       port: 9443
+
     profiling:
       # -- Enable profiling
       enabled: false
@@ -2006,5 +2166,6 @@ kyverno:
       # -- Service node port.
       # Only used if `type` is `NodePort`.
       nodePort:
+
     # -- Enable sanity check for reports CRDs
     sanityChecks: true
