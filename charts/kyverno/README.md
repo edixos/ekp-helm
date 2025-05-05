@@ -1,6 +1,6 @@
 # kyverno
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.13.4](https://img.shields.io/badge/AppVersion-1.13.4-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.13.4](https://img.shields.io/badge/AppVersion-1.13.4-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kyverno.github.io/kyverno/ | kyverno | 3.3.7 |
+| https://kyverno.github.io/kyverno/ | kyverno | 3.4.1 |
 
 ## Maintainers
 
@@ -31,11 +31,16 @@ A Helm chart for kyverno
 | kyverno.admissionController.annotations | object | `{}` | Deployment annotations. |
 | kyverno.admissionController.antiAffinity.enabled | bool | `true` | Pod antiAffinities toggle. Enabled by default but can be disabled if you want to schedule pods to the same node. |
 | kyverno.admissionController.apiPriorityAndFairness | bool | `false` | Change `apiPriorityAndFairness` to `true` if you want to insulate the API calls made by Kyverno admission controller activities. This will help ensure Kyverno stability in busy clusters. Ref: https://kubernetes.io/docs/concepts/cluster-administration/flow-control/ |
+| kyverno.admissionController.autoscaling.behavior | object | `{}` | Configurable scaling behavior |
+| kyverno.admissionController.autoscaling.enabled | bool | `false` | Enable horizontal pod autoscaling |
+| kyverno.admissionController.autoscaling.maxReplicas | int | `10` | Maximum number of pods |
+| kyverno.admissionController.autoscaling.minReplicas | int | `1` | Minimum number of pods |
+| kyverno.admissionController.autoscaling.targetCPUUtilizationPercentage | int | `80` | Target CPU utilization percentage |
 | kyverno.admissionController.caCertificates.data | string | `nil` | CA certificates to use with Kyverno deployments This value is expected to be one large string of CA certificates |
 | kyverno.admissionController.caCertificates.volume | object | `{}` | Volume to be mounted for CA certificates Not used when `.Values.admissionController.caCertificates.data` is defined |
 | kyverno.admissionController.container.extraArgs | object | `{}` | Additional container args. |
 | kyverno.admissionController.container.extraEnvVars | list | `[]` | Additional container environment variables. |
-| kyverno.admissionController.container.image.defaultRegistry | string | `"ghcr.io"` |  |
+| kyverno.admissionController.container.image.defaultRegistry | string | `"reg.kyverno.io"` |  |
 | kyverno.admissionController.container.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | kyverno.admissionController.container.image.registry | string | `nil` | Image registry |
 | kyverno.admissionController.container.image.repository | string | `"kyverno/kyverno"` | Image repository |
@@ -44,6 +49,7 @@ A Helm chart for kyverno
 | kyverno.admissionController.container.resources.requests | object | `{"cpu":"100m","memory":"128Mi"}` | Pod resource requests |
 | kyverno.admissionController.container.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Container security context |
 | kyverno.admissionController.createSelfSignedCert | bool | `false` | Create self-signed certificates at deployment time. The certificates won't be automatically renewed if this is set to `true`. |
+| kyverno.admissionController.dnsConfig | object | `{}` | `dnsConfig` allows to specify DNS configuration for the pod. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config. |
 | kyverno.admissionController.dnsPolicy | string | `"ClusterFirst"` | `dnsPolicy` determines the manner in which DNS resolution happens in the cluster. In case of `hostNetwork: true`, usually, the `dnsPolicy` is suitable to be `ClusterFirstWithHostNet`. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy. |
 | kyverno.admissionController.extraContainers | list | `[]` | Array of extra containers to run alongside kyverno |
 | kyverno.admissionController.extraInitContainers | list | `[]` | Array of extra init containers |
@@ -53,7 +59,7 @@ A Helm chart for kyverno
 | kyverno.admissionController.imagePullSecrets | list | `[]` | Image pull secrets |
 | kyverno.admissionController.initContainer.extraArgs | object | `{}` | Additional container args. |
 | kyverno.admissionController.initContainer.extraEnvVars | list | `[]` | Additional container environment variables. |
-| kyverno.admissionController.initContainer.image.defaultRegistry | string | `"ghcr.io"` |  |
+| kyverno.admissionController.initContainer.image.defaultRegistry | string | `"reg.kyverno.io"` |  |
 | kyverno.admissionController.initContainer.image.pullPolicy | string | `nil` | Image pull policy If missing, defaults to image.pullPolicy |
 | kyverno.admissionController.initContainer.image.registry | string | `nil` | Image registry |
 | kyverno.admissionController.initContainer.image.repository | string | `"kyverno/kyvernopre"` | Image repository |
@@ -130,13 +136,14 @@ A Helm chart for kyverno
 | kyverno.backgroundController.antiAffinity.enabled | bool | `true` | Pod antiAffinities toggle. Enabled by default but can be disabled if you want to schedule pods to the same node. |
 | kyverno.backgroundController.caCertificates.data | string | `nil` | CA certificates to use with Kyverno deployments This value is expected to be one large string of CA certificates |
 | kyverno.backgroundController.caCertificates.volume | object | `{}` | Volume to be mounted for CA certificates Not used when `.Values.backgroundController.caCertificates.data` is defined |
+| kyverno.backgroundController.dnsConfig | object | `{}` | `dnsConfig` allows to specify DNS configuration for the pod. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config. |
 | kyverno.backgroundController.dnsPolicy | string | `"ClusterFirst"` | `dnsPolicy` determines the manner in which DNS resolution happens in the cluster. In case of `hostNetwork: true`, usually, the `dnsPolicy` is suitable to be `ClusterFirstWithHostNet`. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy. |
 | kyverno.backgroundController.enabled | bool | `true` | Enable background controller. |
 | kyverno.backgroundController.extraArgs | object | `{}` | Extra arguments passed to the container on the command line |
 | kyverno.backgroundController.extraEnvVars | list | `[]` | Additional container environment variables. |
 | kyverno.backgroundController.featuresOverride | object | `{}` | Overrides features defined at the root level |
 | kyverno.backgroundController.hostNetwork | bool | `false` | Change `hostNetwork` to `true` when you want the pod to share its host's network namespace. Useful for situations like when you end up dealing with a custom CNI over Amazon EKS. Update the `dnsPolicy` accordingly as well to suit the host network mode. |
-| kyverno.backgroundController.image.defaultRegistry | string | `"ghcr.io"` |  |
+| kyverno.backgroundController.image.defaultRegistry | string | `"reg.kyverno.io"` |  |
 | kyverno.backgroundController.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | kyverno.backgroundController.image.registry | string | `nil` | Image registry |
 | kyverno.backgroundController.image.repository | string | `"kyverno/background-controller"` | Image repository |
@@ -202,13 +209,14 @@ A Helm chart for kyverno
 | kyverno.cleanupController.annotations | object | `{}` | Deployment annotations. |
 | kyverno.cleanupController.antiAffinity.enabled | bool | `true` | Pod antiAffinities toggle. Enabled by default but can be disabled if you want to schedule pods to the same node. |
 | kyverno.cleanupController.createSelfSignedCert | bool | `false` | Create self-signed certificates at deployment time. The certificates won't be automatically renewed if this is set to `true`. |
+| kyverno.cleanupController.dnsConfig | object | `{}` | `dnsConfig` allows to specify DNS configuration for the pod. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config. |
 | kyverno.cleanupController.dnsPolicy | string | `"ClusterFirst"` | `dnsPolicy` determines the manner in which DNS resolution happens in the cluster. In case of `hostNetwork: true`, usually, the `dnsPolicy` is suitable to be `ClusterFirstWithHostNet`. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy. |
 | kyverno.cleanupController.enabled | bool | `true` | Enable cleanup controller. |
 | kyverno.cleanupController.extraArgs | object | `{}` | Extra arguments passed to the container on the command line |
 | kyverno.cleanupController.extraEnvVars | list | `[]` | Additional container environment variables. |
 | kyverno.cleanupController.featuresOverride | object | `{}` | Overrides features defined at the root level |
 | kyverno.cleanupController.hostNetwork | bool | `false` | Change `hostNetwork` to `true` when you want the pod to share its host's network namespace. Useful for situations like when you end up dealing with a custom CNI over Amazon EKS. Update the `dnsPolicy` accordingly as well to suit the host network mode. |
-| kyverno.cleanupController.image.defaultRegistry | string | `"ghcr.io"` |  |
+| kyverno.cleanupController.image.defaultRegistry | string | `"reg.kyverno.io"` |  |
 | kyverno.cleanupController.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | kyverno.cleanupController.image.registry | string | `nil` | Image registry |
 | kyverno.cleanupController.image.repository | string | `"kyverno/cleanup-controller"` | Image repository |
@@ -300,12 +308,13 @@ A Helm chart for kyverno
 | kyverno.config.webhooks | object | `{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kube-system"]}]}}` | Defines the `namespaceSelector`/`objectSelector` in the webhook configurations. The Kyverno namespace is excluded if `excludeKyvernoNamespace` is `true` (default) |
 | kyverno.crds.annotations | object | `{}` | Additional CRDs annotations |
 | kyverno.crds.customLabels | object | `{}` | Additional CRDs labels |
-| kyverno.crds.groups.kyverno | object | `{"cleanuppolicies":true,"clustercleanuppolicies":true,"clusterpolicies":true,"globalcontextentries":true,"policies":true,"policyexceptions":true,"updaterequests":true}` | Install CRDs in group `kyverno.io` |
+| kyverno.crds.groups.kyverno | object | `{"cleanuppolicies":true,"clustercleanuppolicies":true,"clusterpolicies":true,"globalcontextentries":true,"policies":true,"policyexceptions":true,"updaterequests":true,"validatingpolicies":true}` | Install CRDs in group `kyverno.io` |
+| kyverno.crds.groups.policies | object | `{"imagevalidatingpolicies":true,"policyexceptions":true,"validatingpolicies":true}` | Install CRDs in group `policies.kyverno.io` |
 | kyverno.crds.groups.reports | object | `{"clusterephemeralreports":true,"ephemeralreports":true}` | Install CRDs in group `reports.kyverno.io` |
 | kyverno.crds.groups.wgpolicyk8s | object | `{"clusterpolicyreports":true,"policyreports":true}` | Install CRDs in group `wgpolicyk8s.io` |
 | kyverno.crds.install | bool | `true` | Whether to have Helm install the Kyverno CRDs, if the CRDs are not installed by Helm, they must be added before policies can be created |
 | kyverno.crds.migration.enabled | bool | `true` | Enable CRDs migration using helm post upgrade hook |
-| kyverno.crds.migration.image.defaultRegistry | string | `"ghcr.io"` |  |
+| kyverno.crds.migration.image.defaultRegistry | string | `"reg.kyverno.io"` |  |
 | kyverno.crds.migration.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | kyverno.crds.migration.image.registry | string | `nil` | Image registry |
 | kyverno.crds.migration.image.repository | string | `"kyverno/kyverno-cli"` | Image repository |
@@ -317,6 +326,8 @@ A Helm chart for kyverno
 | kyverno.crds.migration.podAnnotations | object | `{}` | Pod annotations. |
 | kyverno.crds.migration.podAntiAffinity | object | `{}` | Pod anti affinity constraints. |
 | kyverno.crds.migration.podLabels | object | `{}` | Pod labels. |
+| kyverno.crds.migration.podResources.limits | object | `{"cpu":"100m","memory":"256Mi"}` | Pod resource limits |
+| kyverno.crds.migration.podResources.requests | object | `{"cpu":"10m","memory":"64Mi"}` | Pod resource requests |
 | kyverno.crds.migration.podSecurityContext | object | `{}` | Security context for the pod |
 | kyverno.crds.migration.resources | list | `["cleanuppolicies.kyverno.io","clustercleanuppolicies.kyverno.io","clusterpolicies.kyverno.io","globalcontextentries.kyverno.io","policies.kyverno.io","policyexceptions.kyverno.io","updaterequests.kyverno.io"]` | Resources to migrate |
 | kyverno.crds.migration.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the hook containers |
@@ -387,7 +398,7 @@ A Helm chart for kyverno
 | kyverno.policyReportsCleanup.image.pullPolicy | string | `nil` | Image pull policy Defaults to image.pullPolicy if omitted |
 | kyverno.policyReportsCleanup.image.registry | string | `nil` | Image registry |
 | kyverno.policyReportsCleanup.image.repository | string | `"bitnami/kubectl"` | Image repository |
-| kyverno.policyReportsCleanup.image.tag | string | `"1.30.2"` | Image tag Defaults to `latest` if omitted |
+| kyverno.policyReportsCleanup.image.tag | string | `"1.32.3"` | Image tag Defaults to `latest` if omitted |
 | kyverno.policyReportsCleanup.imagePullSecrets | list | `[]` | Image pull secrets |
 | kyverno.policyReportsCleanup.nodeAffinity | object | `{}` | Node affinity constraints. |
 | kyverno.policyReportsCleanup.nodeSelector | object | `{}` | Node labels for pod assignment |
@@ -396,20 +407,24 @@ A Helm chart for kyverno
 | kyverno.policyReportsCleanup.podAntiAffinity | object | `{}` | Pod anti affinity constraints. |
 | kyverno.policyReportsCleanup.podLabels | object | `{}` | Pod labels. |
 | kyverno.policyReportsCleanup.podSecurityContext | object | `{}` | Security context for the pod |
+| kyverno.policyReportsCleanup.resources.limits | object | `{"cpu":"100m","memory":"256Mi"}` | Pod resource limits |
+| kyverno.policyReportsCleanup.resources.requests | object | `{"cpu":"10m","memory":"64Mi"}` | Pod resource requests |
 | kyverno.policyReportsCleanup.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the hook containers |
 | kyverno.policyReportsCleanup.tolerations | list | `[]` | List of node taints to tolerate |
+| kyverno.rbac.roles.aggregate | object | `{"admin":true,"view":true}` | Aggregate ClusterRoles to Kubernetes default user-facing roles. For more information, see [User-facing roles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles) |
 | kyverno.reportsController.annotations | object | `{}` | Deployment annotations. |
 | kyverno.reportsController.antiAffinity.enabled | bool | `true` | Pod antiAffinities toggle. Enabled by default but can be disabled if you want to schedule pods to the same node. |
 | kyverno.reportsController.apiPriorityAndFairness | bool | `false` | Change `apiPriorityAndFairness` to `true` if you want to insulate the API calls made by Kyverno reports controller activities. This will help ensure Kyverno reports stability in busy clusters. Ref: https://kubernetes.io/docs/concepts/cluster-administration/flow-control/ |
 | kyverno.reportsController.caCertificates.data | string | `nil` | CA certificates to use with Kyverno deployments This value is expected to be one large string of CA certificates |
 | kyverno.reportsController.caCertificates.volume | object | `{}` | Volume to be mounted for CA certificates Not used when `.Values.reportsController.caCertificates.data` is defined |
+| kyverno.reportsController.dnsConfig | object | `{}` | `dnsConfig` allows to specify DNS configuration for the pod. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config. |
 | kyverno.reportsController.dnsPolicy | string | `"ClusterFirst"` | `dnsPolicy` determines the manner in which DNS resolution happens in the cluster. In case of `hostNetwork: true`, usually, the `dnsPolicy` is suitable to be `ClusterFirstWithHostNet`. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy. |
 | kyverno.reportsController.enabled | bool | `true` | Enable reports controller. |
 | kyverno.reportsController.extraArgs | object | `{}` | Extra arguments passed to the container on the command line |
 | kyverno.reportsController.extraEnvVars | list | `[]` | Additional container environment variables. |
 | kyverno.reportsController.featuresOverride | object | `{}` | Overrides features defined at the root level |
 | kyverno.reportsController.hostNetwork | bool | `false` | Change `hostNetwork` to `true` when you want the pod to share its host's network namespace. Useful for situations like when you end up dealing with a custom CNI over Amazon EKS. Update the `dnsPolicy` accordingly as well to suit the host network mode. |
-| kyverno.reportsController.image.defaultRegistry | string | `"ghcr.io"` |  |
+| kyverno.reportsController.image.defaultRegistry | string | `"reg.kyverno.io"` |  |
 | kyverno.reportsController.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | kyverno.reportsController.image.registry | string | `nil` | Image registry |
 | kyverno.reportsController.image.repository | string | `"kyverno/reports-controller"` | Image repository |
@@ -491,7 +506,7 @@ A Helm chart for kyverno
 | kyverno.webhooksCleanup.image.pullPolicy | string | `nil` | Image pull policy Defaults to image.pullPolicy if omitted |
 | kyverno.webhooksCleanup.image.registry | string | `nil` | Image registry |
 | kyverno.webhooksCleanup.image.repository | string | `"bitnami/kubectl"` | Image repository |
-| kyverno.webhooksCleanup.image.tag | string | `"1.30.2"` | Image tag Defaults to `latest` if omitted |
+| kyverno.webhooksCleanup.image.tag | string | `"1.32.3"` | Image tag Defaults to `latest` if omitted |
 | kyverno.webhooksCleanup.imagePullSecrets | list | `[]` | Image pull secrets |
 | kyverno.webhooksCleanup.nodeAffinity | object | `{}` | Node affinity constraints. |
 | kyverno.webhooksCleanup.nodeSelector | object | `{}` | Node labels for pod assignment |
@@ -500,6 +515,8 @@ A Helm chart for kyverno
 | kyverno.webhooksCleanup.podAntiAffinity | object | `{}` | Pod anti affinity constraints. |
 | kyverno.webhooksCleanup.podLabels | object | `{}` | Pod labels. |
 | kyverno.webhooksCleanup.podSecurityContext | object | `{}` | Security context for the pod |
+| kyverno.webhooksCleanup.resources.limits | object | `{"cpu":"100m","memory":"256Mi"}` | Pod resource limits |
+| kyverno.webhooksCleanup.resources.requests | object | `{"cpu":"10m","memory":"64Mi"}` | Pod resource requests |
 | kyverno.webhooksCleanup.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the hook containers |
 | kyverno.webhooksCleanup.tolerations | list | `[]` | List of node taints to tolerate |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
@@ -533,7 +550,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: kyverno
     path: ''
     helm:
