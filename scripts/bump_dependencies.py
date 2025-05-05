@@ -308,7 +308,25 @@ class HelmChartUpdater:
         try:
             volume_name = f"pluto-{chart_name.replace('/', '-')}"            
             render_cmd = f"docker run --rm -v {os.path.abspath(chart_path)}:/apps -v {volume_name}:/pluto alpine/helm:3.17 template {chart_name} /apps -f /apps/tests/pluto/values.yaml --output-dir /pluto"
-            self.run_command(render_cmd)            
+            result = self.run_command(render_cmd)
+            if result is None:
+                logger.warning(f"Helm template rendering failed for {chart_name}, skipping this chart")
+                self.chart_updates = [update for update in self.chart_updates if update['chart'] != chart_name]
+                try:
+                    cmd_result = subprocess.run(render_cmd, shell=True, capture_output=True, text=True)
+                    error_message = cmd_result.stderr or cmd_result.stdout
+                except Exception:
+                    error_message = "Failed to render Helm templates for Pluto check"
+                self.create_github_issue(
+                    chart_name,
+                    f"Helm template rendering failed for Pluto check:\n\n```\n{error_message}\n```"
+                )
+                try:
+                    self.run_command(f"docker volume rm {volume_name}")
+                except:
+                    pass
+                
+                return False                
             pluto_cmd = f"docker run --rm -v {volume_name}:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /data -o yaml --ignore-deprecations -t \"k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0\" -o wide"
             result = subprocess.run(pluto_cmd, shell=True, check=True, capture_output=True, text=True)            
             self.run_command(f"docker volume rm {volume_name}")            
