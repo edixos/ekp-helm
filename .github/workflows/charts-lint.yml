@@ -4,6 +4,10 @@ on:
   pull_request:
     branches:
       - main
+  workflow_run:
+    workflows: ["Auto Bump Helm Dependencies"]
+    types:
+      - completed
       
 jobs:
   lint:
