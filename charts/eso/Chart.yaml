@@ -6,7 +6,7 @@ version: 0.1.2
 appVersion: "0.14.2"
 dependencies:
   - name: external-secrets
-    version: 0.14.2
+    version: 0.16.1
     repository: https://charts.external-secrets.io
     alias: eso
 maintainers:
