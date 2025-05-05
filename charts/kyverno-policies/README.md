@@ -1,6 +1,6 @@
 # kyverno-policies
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.13.4](https://img.shields.io/badge/AppVersion-1.13.4-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.13.4](https://img.shields.io/badge/AppVersion-1.13.4-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kyverno.github.io/kyverno/ | kyvernopolicies(kyverno-policies) | 3.3.4 |
+| https://kyverno.github.io/kyverno/ | kyvernopolicies(kyverno-policies) | 3.4.1 |
 
 ## Maintainers
 
@@ -35,6 +35,7 @@ A Helm chart for Kubernetes
 | kyvernopolicies.failurePolicy | string | `"Fail"` | API server behavior if the webhook fails to respond ('Ignore', 'Fail') For more info: https://kyverno.io/docs/writing-policies/policy-settings/ |
 | kyvernopolicies.includeOtherPolicies | list | `[]` | Additional policies to include from `other`. |
 | kyvernopolicies.includeRestrictedPolicies | list | `[]` | Additional policies to include from `restricted`. |
+| kyvernopolicies.kubeVersionOverride | string | `nil` | Kubernetes version override Override default value of kubeVersion set by release team taken from Chart.yaml with custom value. Ideally range of versions no more than two prior (ex., 1.28-1.31), must be enclosed in quotes. |
 | kyvernopolicies.kyvernoVersion | string | `"autodetect"` | Kyverno version The default of "autodetect" will try to determine the currently installed version from the deployment |
 | kyvernopolicies.nameOverride | string | `nil` | Name override. |
 | kyvernopolicies.podSecurityPolicies | list | `[]` | Policies to include when `podSecurityStandard` is `custom`. |
@@ -74,7 +75,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: kyverno-policies
     path: ''
     helm:
