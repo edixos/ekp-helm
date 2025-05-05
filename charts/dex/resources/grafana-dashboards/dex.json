@@ -368,7 +368,7 @@
   "templating": {
     "list": [
       {
-        "allValue": null,
+        "allValue": ".*",
         "current": {
           "text": "infra-dex",
           "value": "infra-dex"
