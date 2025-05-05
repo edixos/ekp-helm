@@ -15,6 +15,20 @@ prometheus:
       grafana_dashboard: "1"
 
 eso:
+  global:
+    nodeSelector: {}
+    tolerations: []
+    topologySpreadConstraints: []
+    affinity: {}
+    compatibility:
+      openshift:
+        # -- Manages the securityContext properties to make them compatible with OpenShift.
+        # Possible values:
+        # auto - Apply configurations if it is detected that OpenShift is the target platform.
+        # force - Always apply configurations.
+        # disabled - No modification applied.
+        adaptSecurityContext: auto
+
   replicaCount: 1
 
   bitwarden-sdk-server:
@@ -44,12 +58,14 @@ eso:
     createClusterSecretStore: true
     # -- If true, create CRDs for Cluster Generator.
     createClusterGenerator: true
+    # -- If true, create CRDs for Cluster Push Secret.
+    createClusterPushSecret: true
     # -- If true, create CRDs for Push Secret.
     createPushSecret: true
     annotations: {}
     conversion:
-      # -- If webhook is set to false this also needs to be set to false otherwise the kubeapi will be hammered because the conversion is looking for a webhook endpoint.
-      enabled: true
+      # -- Conversion is disabled by default as we stopped supporting v1alpha1.
+      enabled: false
 
   imagePullSecrets: []
   nameOverride: ""
@@ -79,8 +95,14 @@ eso:
   # and implicitly disable cluster stores and cluster external secrets
   scopedRBAC: false
 
+  # -- If true the OpenShift finalizer permissions will be added to RBAC
+  openshiftFinalizers: true
+
   # -- if true, the operator will process cluster external secret. Else, it will ignore them.
   processClusterExternalSecret: true
+
+  # -- if true, the operator will process cluster push secret. Else, it will ignore them.
+  processClusterPushSecret: true
 
   # -- if true, the operator will process cluster store. Else, it will ignore them.
   processClusterStore: true
@@ -245,7 +267,9 @@ eso:
   hostNetwork: false
 
   webhook:
-    # -- Specifies whether a webhook deployment be created.
+    # -- Annotations to place on validating webhook configuration.
+    annotations: {}
+    # -- Specifies whether a webhook deployment be created. If set to false, crds.conversion.enabled should also be set to false otherwise the kubeapi will be hammered because the conversion is looking for a webhook endpoint.
     create: true
     # -- Specifices the time to check if the cert is valid
     certCheckInterval: "5m"
@@ -320,8 +344,8 @@ eso:
         duration: "8760h"
         # -- Set the revisionHistoryLimit on the Certificate. See
         # https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec
-        # Defaults to nil.
-        revisionHistoryLimit: ""
+        # Defaults to 0 (ignored).
+        revisionHistoryLimit: 0
         # -- How long before the currently issued certificate’s expiry
         # cert-manager should renew the certificate. See
         # https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec
