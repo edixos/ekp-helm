@@ -290,15 +290,97 @@ class HelmChartUpdater:
             self.create_github_issue(chart_name, error_message)
             return False
 
+    def _run_pluto_check(self, chart_path, chart_name):
+        """Run Pluto to check for deprecated API versions"""
+        logger.info(f"Running Pluto checks for {chart_name}")
+        try:
+            volume_name = f"pluto-{chart_name.replace('/', '-')}"            
+            render_cmd = f"docker run --rm -v {os.path.abspath(chart_path)}:/apps -v {volume_name}:/pluto alpine/helm:3.17 template {chart_name} /apps -f /apps/tests/pluto/values.yaml --output-dir /pluto"
+            self.run_command(render_cmd)            
+            pluto_cmd = f"docker run --rm -v {volume_name}:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /data -o yaml --ignore-deprecations -t \"k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0\" -o wide"
+            result = subprocess.run(pluto_cmd, shell=True, check=True, capture_output=True, text=True)            
+            self.run_command(f"docker volume rm {volume_name}")            
+            if "Deprecated APIs:" in result.stdout and "No deprecated resource" not in result.stdout:
+                logger.warning(f"Pluto found deprecated APIs in {chart_name}")                
+                self.chart_updates = [update for update in self.chart_updates if update['chart'] != chart_name]                
+                self.create_github_issue(
+                    chart_name,
+                    f"Pluto detected deprecated Kubernetes APIs:\n\n```\n{result.stdout}\n```"
+                )
+                return False
+            logger.info(f"Pluto checks passed for {chart_name}")
+            return True
+        except subprocess.CalledProcessError as e:
+            error_message = e.stderr or e.stdout
+            logger.warning(f"Pluto checks failed for {chart_name}, skipping this chart")
+            logger.warning(f"Error: {error_message}")            
+            try:
+                volume_name = f"pluto-{chart_name.replace('/', '-')}"
+                self.run_command(f"docker volume rm {volume_name}")
+            except:
+                pass            
+            self.chart_updates = [update for update in self.chart_updates if update['chart'] != chart_name]            
+            self.create_github_issue(
+                chart_name,
+                f"Pluto checks failed:\n\n```\n{error_message}\n```"
+            )
+            return False
+
+    def _check_prometheus_rules(self, chart_path, chart_name):
+        """Check Prometheus rules for validity"""
+        rules_dir = os.path.join(chart_path, "resources/prometheus-rules")
+        if not os.path.exists(rules_dir) or not os.listdir(rules_dir):
+            logger.info(f"No Prometheus rules found for {chart_name}, skipping check")
+            return True
+        logger.info(f"Checking Prometheus rules for {chart_name}")
+        try:
+            cmd = f"docker run --rm --entrypoint /bin/sh -v {os.path.abspath(chart_path)}:/workdir -w /workdir prom/prometheus -c -- \"promtool check rules resources/prometheus-rules/*\""
+            result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+            logger.info(f"Prometheus rules check passed for {chart_name}")
+            return True
+        except subprocess.CalledProcessError as e:
+            error_message = e.stderr or e.stdout
+            logger.warning(f"Prometheus rules check failed for {chart_name}, skipping this chart")
+            logger.warning(f"Error: {error_message}")
+            self.chart_updates = [update for update in self.chart_updates if update['chart'] != chart_name]            
+            self.create_github_issue(
+                chart_name, 
+                f"Prometheus rules check failed:\n\n```\n{error_message}\n```"
+            )
+            return False
+
+    def _test_prometheus_rules(self, chart_path, chart_name):
+        """Run tests for Prometheus rules"""
+        tests_dir = os.path.join(chart_path, "tests/prometheus")
+        if not os.path.exists(tests_dir) or not os.listdir(tests_dir):
+            logger.info(f"No Prometheus tests found for {chart_name}, skipping tests")
+            return True
+        logger.info(f"Testing Prometheus rules for {chart_name}")
+        try:
+            cmd = f"docker run --rm --entrypoint /bin/sh -v {os.path.abspath(chart_path)}:/workdir -w /workdir prom/prometheus -c -- \"promtool test rules tests/prometheus/*\""
+            result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+            logger.info(f"Prometheus tests passed for {chart_name}")
+            return True
+        except subprocess.CalledProcessError as e:
+            error_message = e.stderr or e.stdout
+            logger.warning(f"Prometheus tests failed for {chart_name}, skipping this chart")
+            logger.warning(f"Error: {error_message}")            
+            self.chart_updates = [update for update in self.chart_updates if update['chart'] != chart_name]            
+            self.create_github_issue(
+                chart_name, 
+                f"Prometheus rule tests failed:\n\n```\n{error_message}\n```"
+            )
+            return False
+
     def create_github_issue(self, chart_name, error_message):
         """Create a GitHub issue for a chart that failed linting."""
         if self.dry_run:
             logger.info(f"DRY RUN: Would create GitHub issue for failed chart {chart_name}")
             return
         
-        github_token = os.getenv('GITHUB_TOKEN')
-        if not github_token:
-            logger.error("GITHUB_TOKEN environment variable not set, cannot create issue")
+        GH_TOKEN = os.getenv('GH_TOKEN')
+        if not GH_TOKEN:
+            logger.error("GH_TOKEN environment variable not set, cannot create issue")
             return
         
         try:
@@ -335,7 +417,7 @@ class HelmChartUpdater:
             # Create the GitHub issue
             url = f"https://api.github.com/repos/{owner}/{repo}/issues"
             headers = {
-                "Authorization": f"token {github_token}",
+                "Authorization": f"token {GH_TOKEN}",
                 "Accept": "application/vnd.github.v3+json"
             }
             data = {
