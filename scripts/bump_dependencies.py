@@ -8,6 +8,7 @@ import logging
 import requests
 import semver
 import subprocess
+import textwrap
 from datetime import datetime
 from ruamel.yaml import YAML
 
@@ -237,9 +238,20 @@ class HelmChartUpdater:
     
     def _run_chart_tools(self, chart_path, chart_name):
         self._run_fix_lint(chart_path, chart_name)
-        self._run_helm_docs(chart_path, chart_name)
-        lint_success = self._run_helm_lint(chart_path, chart_name)
-        return lint_success
+        self._run_helm_docs(chart_path, chart_name)        
+        lint_success = self._run_helm_lint(chart_path, chart_name)        
+        if not lint_success:
+            return False
+        prom_rules_success = self._check_prometheus_rules(chart_path, chart_name)
+        if not prom_rules_success:
+            return False
+        prom_tests_success = self._test_prometheus_rules(chart_path, chart_name)
+        if not prom_tests_success:
+            return False
+        pluto_success = self._run_pluto_check(chart_path, chart_name)
+        if not pluto_success:
+            return False        
+        return True
 
     def _run_fix_lint(self, chart_path, chart_name):
         fix_lint_script = "./scripts/fix-lint.sh"
@@ -373,18 +385,15 @@ class HelmChartUpdater:
             return False
 
     def create_github_issue(self, chart_name, error_message):
-        """Create a GitHub issue for a chart that failed linting."""
+        """Create or update a GitHub issue for a chart that failed linting."""
         if self.dry_run:
-            logger.info(f"DRY RUN: Would create GitHub issue for failed chart {chart_name}")
+            logger.info(f"DRY RUN: Would create/update GitHub issue for failed chart {chart_name}")
+            return        
+        github_token = os.getenv('GH_TOKEN') or os.getenv('GITHUB_TOKEN')
+        if not github_token:
+            logger.error("Neither GH_TOKEN nor GITHUB_TOKEN environment variables are set, cannot create issue")
             return
-        
-        GH_TOKEN = os.getenv('GH_TOKEN')
-        if not GH_TOKEN:
-            logger.error("GH_TOKEN environment variable not set, cannot create issue")
-            return
-        
         try:
-            # Parse the repo URL to determine owner and repo name
             remote_url = self.run_command("git config --get remote.origin.url")
             if remote_url:
                 if remote_url.startswith('git@github.com:'):
@@ -392,50 +401,78 @@ class HelmChartUpdater:
                 elif remote_url.startswith('https://github.com/'):
                     remote_url = remote_url.replace('https://github.com/', '')
                 if remote_url.endswith('.git'):
-                    remote_url = remote_url[:-4]
-                
+                    remote_url = remote_url[:-4]  
                 owner, repo = remote_url.split('/')
             else:
                 owner = "edixos"
-                repo = "ekp-helm"
-            
-            # Create issue title and body
-            title = f"Chart linting failed: {chart_name}"
-            body = f"""## Chart Linting Failed
-
-    The Helm chart **{chart_name}** failed linting during the automated dependency update process.
-
-    ### Error Details
-    ```
-    {error_message}
-    ```
-
-    This issue was automatically created by the dependency update workflow.
-    Please investigate and fix the issue to ensure the chart can be properly updated in the future.
-    """
-            
-            # Create the GitHub issue
-            url = f"https://api.github.com/repos/{owner}/{repo}/issues"
+                repo = "ekp-helm"                
+            search_url = f"https://api.github.com/search/issues"
             headers = {
-                "Authorization": f"token {GH_TOKEN}",
+                "Authorization": f"token {github_token}",
                 "Accept": "application/vnd.github.v3+json"
             }
-            data = {
-                "title": title,
-                "body": body,
-                "labels": ["bug", "helm-chart", "automation"]
-            }
-            
-            response = requests.post(url, headers=headers, json=data)
-            response.raise_for_status()
-            issue_number = response.json().get("number")
-            issue_url = response.json().get("html_url")
-            
-            logger.info(f"Created GitHub issue #{issue_number} for chart {chart_name}: {issue_url}")
-            return issue_url
-        
+            search_params = {
+                "q": f"repo:{owner}/{repo} is:issue is:open in:title Chart linting failed: {chart_name}"
+            }            
+            search_response = requests.get(search_url, headers=headers, params=search_params)
+            search_response.raise_for_status()
+            existing_issues = search_response.json().get("items", [])            
+            title = f"Chart linting failed: {chart_name}"            
+            body_template = """
+## Chart Linting Failed
+
+The Helm chart **{chart_name}** failed linting during the automated dependency update process.
+
+### Error Details
+```
+{error_message}
+```
+
+This issue was automatically created by the dependency update workflow.
+Please investigate and fix the issue to ensure the chart can be properly updated in the future.
+"""
+            body = textwrap.dedent(body_template).strip().format(
+                chart_name=chart_name,
+                error_message=error_message
+            )
+            if existing_issues:
+                issue = existing_issues[0]
+                issue_number = issue["number"]
+                issue_url = issue["html_url"]                
+                comment_body = """
+### ⚠️ New Failure Detected on {timestamp}
+
+```
+{error_message}
+```
+
+The chart failed checking again in the latest automation run.
+"""
+                formatted_comment = textwrap.dedent(comment_body).strip().format(
+                    timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    error_message=error_message
+                )
+                comment_url = f"https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}/comments"
+                comment_data = {"body": formatted_comment}
+                response = requests.post(comment_url, headers=headers, json=comment_data)
+                response.raise_for_status()
+                logger.info(f"Updated existing GitHub issue #{issue_number} for chart {chart_name}: {issue_url}")
+                return issue_url
+            else:
+                url = f"https://api.github.com/repos/{owner}/{repo}/issues"
+                data = {
+                    "title": title,
+                    "body": body,
+                    "labels": ["bug", "helm-chart", "automation"]
+                }
+                response = requests.post(url, headers=headers, json=data)
+                response.raise_for_status()
+                issue_number = response.json().get("number")
+                issue_url = response.json().get("html_url")
+                logger.info(f"Created GitHub issue #{issue_number} for chart {chart_name}: {issue_url}")
+                return issue_url
         except Exception as e:
-            logger.error(f"Failed to create GitHub issue for {chart_name}: {str(e)}")
+            logger.error(f"Failed to create/update GitHub issue for {chart_name}: {str(e)}")
             return None
 
     def generate_pr_body(self):
