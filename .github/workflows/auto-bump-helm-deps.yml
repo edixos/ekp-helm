@@ -1,0 +1,88 @@
+name: Auto Bump Helm Dependencies
+
+on:
+  schedule:
+    - cron: "0 10 * * 3"
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  bump-helm-deps:
+    runs-on: ubuntu-latest
+    env:
+      DRY_RUN: "false"
+      SKIP_PR: "false"
+      UPDATE_VALUES: "true"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install helm-docs
+        run: |
+          HELM_DOCS_VERSION="1.14.2"
+          curl -L "https://github.com/norwoodj/helm-docs/releases/download/v${HELM_DOCS_VERSION}/helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz" | tar -xz
+          chmod +x helm-docs
+          sudo mv helm-docs /usr/local/bin/helm-docs
+
+      - name: Install chart-testing
+        run: |
+          CT_VERSION="3.12.0"
+          curl -L "https://github.com/helm/chart-testing/releases/download/v${CT_VERSION}/chart-testing_${CT_VERSION}_linux_amd64.tar.gz" | tar -xz
+          chmod +x ct
+          sudo mv ct /usr/local/bin/ct
+
+      - name: Add our Helm repo
+        run: |
+          helm repo add ekp-helm https://edixos.github.io/ekp-helm
+          helm repo update
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install semver ruamel.yaml yamllint requests
+
+      - name: Run bump-dependencies script
+        id: bump-dependencies
+        run: |
+          python scripts/bump_dependencies.py
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install GitHub CLI
+        run: |
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
+
+      - name: Create Pull Request using GitHub CLI
+        if: steps.bump-dependencies.outputs.updated == 'true' && ${{ env.SKIP_PR == 'false' && env.DRY_RUN == 'false' }}
+        run: |
+          BRANCH="${{ steps.bump-dependencies.outputs.branch }}"
+          PR_TITLE="chore(deps-bump): auto bumped helm dependencies"
+          
+          # Create a PR body file directly from the script output
+          echo "${{ steps.bump-dependencies.outputs.pr_body }}" | sed 's/%0A/\n/g' | sed 's/%25/%/g' > pr_body.md
+          
+          TOKEN="${GITHUB_TOKEN}"
+          unset GITHUB_TOKEN
+          
+          # Authenticate and create PR using file
+          echo "$TOKEN" | gh auth login --with-token
+          PR_URL=$(gh pr create --title "$PR_TITLE" --body-file pr_body.md --base main --head "$BRANCH")
+          echo "Created PR: $PR_URL"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
