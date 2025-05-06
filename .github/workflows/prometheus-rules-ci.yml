@@ -3,6 +3,10 @@ on:
   pull_request:
     branches:
       - main
+  workflow_run:
+    workflows: ["Auto Bump Helm Dependencies"]
+    types:
+      - completed
 
 env:
   PROM_VERSION: 3.3.0
