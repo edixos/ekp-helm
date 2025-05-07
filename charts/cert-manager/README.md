@@ -1,6 +1,6 @@
 # cert-manager
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.17.1](https://img.shields.io/badge/AppVersion-1.17.1-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.17.1](https://img.shields.io/badge/AppVersion-1.17.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.jetstack.io | certmanager(cert-manager) | 1.17.1 |
+| https://charts.jetstack.io | certmanager(cert-manager) | v1.17.2 |
 | https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-members) | 0.1.2 |
 | https://edixos.github.io/ekp-helm | workloadIdentity(gcp-workload-identity) | 0.1.1 |
 
@@ -67,7 +67,7 @@ A Helm chart for cert-manager
 | certmanager.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | certmanager.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | certmanager.containerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
-| certmanager.crds.enabled | bool | `true` |  |
+| certmanager.crds.enabled | bool | `false` |  |
 | certmanager.crds.keep | bool | `true` |  |
 | certmanager.creator | string | `"helm"` |  |
 | certmanager.disableAutoApproval | bool | `false` |  |
@@ -80,7 +80,6 @@ A Helm chart for cert-manager
 | certmanager.extraEnv | list | `[]` |  |
 | certmanager.extraObjects | list | `[]` |  |
 | certmanager.featureGates | string | `""` |  |
-| certmanager.fullnameOverride | string | `"cert-manager"` |  |
 | certmanager.global.commonLabels | object | `{}` |  |
 | certmanager.global.imagePullSecrets | list | `[]` |  |
 | certmanager.global.leaderElection.namespace | string | `"kube-system"` |  |
@@ -93,8 +92,8 @@ A Helm chart for cert-manager
 | certmanager.hostAliases | list | `[]` |  |
 | certmanager.image.pullPolicy | string | `"IfNotPresent"` |  |
 | certmanager.image.repository | string | `"quay.io/jetstack/cert-manager-controller"` |  |
-| certmanager.ingressShim.defaultIssuerKind | string | `"ClusterIssuer"` |  |
-| certmanager.ingressShim.defaultIssuerName | string | `"letsencrypt-dns-prd"` |  |
+| certmanager.ingressShim | object | `{}` |  |
+| certmanager.installCRDs | bool | `false` |  |
 | certmanager.livenessProbe.enabled | bool | `true` |  |
 | certmanager.livenessProbe.failureThreshold | int | `8` |  |
 | certmanager.livenessProbe.initialDelaySeconds | int | `10` |  |
@@ -102,16 +101,32 @@ A Helm chart for cert-manager
 | certmanager.livenessProbe.successThreshold | int | `1` |  |
 | certmanager.livenessProbe.timeoutSeconds | int | `15` |  |
 | certmanager.maxConcurrentChallenges | int | `60` |  |
-| certmanager.nameOverride | string | `"cert-manager"` |  |
 | certmanager.namespace | string | `""` |  |
 | certmanager.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | certmanager.podDisruptionBudget.enabled | bool | `false` |  |
 | certmanager.podLabels | object | `{}` |  |
-| certmanager.prometheus.enabled | bool | `false` |  |
+| certmanager.prometheus.enabled | bool | `true` |  |
+| certmanager.prometheus.podmonitor.annotations | object | `{}` |  |
+| certmanager.prometheus.podmonitor.enabled | bool | `false` |  |
+| certmanager.prometheus.podmonitor.endpointAdditionalProperties | object | `{}` |  |
+| certmanager.prometheus.podmonitor.honorLabels | bool | `false` |  |
+| certmanager.prometheus.podmonitor.interval | string | `"60s"` |  |
+| certmanager.prometheus.podmonitor.labels | object | `{}` |  |
+| certmanager.prometheus.podmonitor.path | string | `"/metrics"` |  |
+| certmanager.prometheus.podmonitor.prometheusInstance | string | `"default"` |  |
+| certmanager.prometheus.podmonitor.scrapeTimeout | string | `"30s"` |  |
+| certmanager.prometheus.servicemonitor.annotations | object | `{}` |  |
 | certmanager.prometheus.servicemonitor.enabled | bool | `false` |  |
-| certmanager.prometheus.servicemonitor.prometheusInstance | string | `"prometheus-operator-prometheus"` |  |
+| certmanager.prometheus.servicemonitor.endpointAdditionalProperties | object | `{}` |  |
+| certmanager.prometheus.servicemonitor.honorLabels | bool | `false` |  |
+| certmanager.prometheus.servicemonitor.interval | string | `"60s"` |  |
+| certmanager.prometheus.servicemonitor.labels | object | `{}` |  |
+| certmanager.prometheus.servicemonitor.path | string | `"/metrics"` |  |
+| certmanager.prometheus.servicemonitor.prometheusInstance | string | `"default"` |  |
+| certmanager.prometheus.servicemonitor.scrapeTimeout | string | `"30s"` |  |
+| certmanager.prometheus.servicemonitor.targetPort | int | `9402` |  |
 | certmanager.replicaCount | int | `1` |  |
-| certmanager.resources | object | `{"limits":{"cpu":"50m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}` | Requests and Limits to apply to the cert-manager pods |
+| certmanager.resources | object | `{}` |  |
 | certmanager.securityContext.runAsNonRoot | bool | `true` |  |
 | certmanager.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | certmanager.serviceAccount.automountServiceAccountToken | bool | `true` |  |
@@ -192,17 +207,12 @@ A Helm chart for cert-manager
 | certmanager.webhook.readinessProbe.successThreshold | int | `1` |  |
 | certmanager.webhook.readinessProbe.timeoutSeconds | int | `1` |  |
 | certmanager.webhook.replicaCount | int | `1` |  |
-| certmanager.webhook.resources.limits.cpu | string | `"150m"` |  |
-| certmanager.webhook.resources.limits.memory | string | `"32Mi"` |  |
-| certmanager.webhook.resources.requests.cpu | string | `"5m"` |  |
-| certmanager.webhook.resources.requests.memory | string | `"5Mi"` |  |
+| certmanager.webhook.resources | object | `{}` |  |
 | certmanager.webhook.securePort | int | `10250` |  |
-| certmanager.webhook.securityContext.fsGroup | int | `1001` | ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ |
 | certmanager.webhook.securityContext.runAsNonRoot | bool | `true` |  |
-| certmanager.webhook.securityContext.runAsUser | int | `1001` |  |
+| certmanager.webhook.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | certmanager.webhook.serviceAccount.automountServiceAccountToken | bool | `true` |  |
 | certmanager.webhook.serviceAccount.create | bool | `true` |  |
-| certmanager.webhook.serviceAccount.name | string | `"cert-manager"` |  |
 | certmanager.webhook.serviceIPFamilies | list | `[]` |  |
 | certmanager.webhook.serviceIPFamilyPolicy | string | `""` |  |
 | certmanager.webhook.serviceLabels | object | `{}` |  |
@@ -263,7 +273,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: cert-manager
     path: ''
     helm:

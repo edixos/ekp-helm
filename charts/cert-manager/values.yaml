@@ -86,12 +86,12 @@ certmanager:
 
   # This option is equivalent to setting crds.enabled=true and crds.keep=true.
   # Deprecated: use crds.enabled and crds.keep instead.
-  # installCRDs: false
+  installCRDs: false
 
   crds:
     # This option decides if the CRDs should be installed
     # as part of the Helm installation.
-    enabled: true
+    enabled: false
 
     # This option makes it so that the "helm.sh/resource-policy": keep
     # annotation is added to the CRD. This will prevent Helm from uninstalling
@@ -185,18 +185,18 @@ certmanager:
   # This is helpful when installing cert manager as a chart dependency (sub chart).
   namespace: ""
 
+  # Override the "cert-manager.fullname" value. This value is used as part of
+  # most of the names of the resources created by this Helm chart.
+  # +docs:property
+  # fullnameOverride: "my-cert-manager"
+
   # Override the "cert-manager.name" value, which is used to annotate some of
   # the resources that are created by this Chart (using "app.kubernetes.io/name").
   # NOTE: There are some inconsistencies in the Helm chart when it comes to
   # these annotations (some resources use eg. "cainjector.name" which resolves
   # to the value "cainjector").
   # +docs:property
-  nameOverride: "cert-manager"
-
-  # Override the "cert-manager.fullname" value. This value is used as part of
-  # most of the names of the resources created by this Helm chart.
-  # +docs:property
-  fullnameOverride: "cert-manager"
+  # nameOverride: "my-cert-manager"
 
   serviceAccount:
     # Specifies whether a service account should be created.
@@ -326,6 +326,8 @@ certmanager:
   #    cpu: 10m
   #    memory: 32Mi
   #
+  # For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+  resources: {}
 
   # Pod Security Context.
   # For more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
@@ -420,13 +422,15 @@ certmanager:
     kubernetes.io/os: linux
 
   # +docs:ignore
-  ingressShim:
+  ingressShim: {}
+
     # Optional default issuer to use for ingress resources.
     # +docs:property=ingressShim.defaultIssuerName
-    defaultIssuerKind: "ClusterIssuer"
+    # defaultIssuerName: ""
+
     # Optional default issuer kind to use for ingress resources.
     # +docs:property=ingressShim.defaultIssuerKind
-    defaultIssuerName: "letsencrypt-dns-prd"
+    # defaultIssuerKind: ""
 
     # Optional default issuer group to use for ingress resources.
     # +docs:property=ingressShim.defaultIssuerGroup
@@ -517,7 +521,7 @@ certmanager:
     # cert-manager-webhook Deployments.
     # Note that you can not enable both PodMonitor and ServiceMonitor as they are
     # mutually exclusive. Enabling both will result in an error.
-    enabled: false
+    enabled: true
 
     servicemonitor:
       # Create a ServiceMonitor to add cert-manager to Prometheus.
@@ -531,110 +535,101 @@ certmanager:
       # Specifies the `prometheus` label on the created ServiceMonitor. This is
       # used when different Prometheus instances have label selectors matching
       # different ServiceMonitors.
-      prometheusInstance: prometheus-operator-prometheus
+      prometheusInstance: default
 
-    #   # The target port to set on the ServiceMonitor. This must match the port that the
-    #   # cert-manager controller is listening on for metrics.
-    #   targetPort: 9402
+      # The target port to set on the ServiceMonitor. This must match the port that the
+      # cert-manager controller is listening on for metrics.
+      targetPort: 9402
 
-    #   # The path to scrape for metrics.
-    #   path: /metrics
+      # The path to scrape for metrics.
+      path: /metrics
 
-    #   # The interval to scrape metrics.
-    #   interval: 60s
+      # The interval to scrape metrics.
+      interval: 60s
 
-    #   # The timeout before a metrics scrape fails.
-    #   scrapeTimeout: 30s
+      # The timeout before a metrics scrape fails.
+      scrapeTimeout: 30s
 
-    #   # Additional labels to add to the ServiceMonitor.
-    #   labels: {}
+      # Additional labels to add to the ServiceMonitor.
+      labels: {}
 
-    #   # Additional annotations to add to the ServiceMonitor.
-    #   annotations: {}
+      # Additional annotations to add to the ServiceMonitor.
+      annotations: {}
 
-    #   # Keep labels from scraped data, overriding server-side labels.
-    #   honorLabels: false
+      # Keep labels from scraped data, overriding server-side labels.
+      honorLabels: false
 
-    #   # EndpointAdditionalProperties allows setting additional properties on the
-    #   # endpoint such as relabelings, metricRelabelings etc.
-    #   #
-    #   # For example:
-    #   #  endpointAdditionalProperties:
-    #   #   relabelings:
-    #   #   - action: replace
-    #   #     sourceLabels:
-    #   #     - __meta_kubernetes_pod_node_name
-    #   #     targetLabel: instance
-    #   #
-    #   # +docs:property
-    #   endpointAdditionalProperties: {}
+      # EndpointAdditionalProperties allows setting additional properties on the
+      # endpoint such as relabelings, metricRelabelings etc.
+      #
+      # For example:
+      #  endpointAdditionalProperties:
+      #   relabelings:
+      #   - action: replace
+      #     sourceLabels:
+      #     - __meta_kubernetes_pod_node_name
+      #     targetLabel: instance
+      #
+      # +docs:property
+      endpointAdditionalProperties: {}
 
-    # # Note that you can not enable both PodMonitor and ServiceMonitor as they are mutually exclusive. Enabling both will result in an error.
-    # podmonitor:
-    #   # Create a PodMonitor to add cert-manager to Prometheus.
-    #   enabled: false
+    # Note that you can not enable both PodMonitor and ServiceMonitor as they are mutually exclusive. Enabling both will result in an error.
+    podmonitor:
+      # Create a PodMonitor to add cert-manager to Prometheus.
+      enabled: false
 
-    #   # The namespace that the pod monitor should live in, defaults
-    #   # to the cert-manager namespace.
-    #   # +docs:property
-    #   # namespace: cert-manager
+      # The namespace that the pod monitor should live in, defaults
+      # to the cert-manager namespace.
+      # +docs:property
+      # namespace: cert-manager
 
-    #   # Specifies the `prometheus` label on the created PodMonitor. This is
-    #   # used when different Prometheus instances have label selectors matching
-    #   # different PodMonitors.
-    #   prometheusInstance: default
+      # Specifies the `prometheus` label on the created PodMonitor. This is
+      # used when different Prometheus instances have label selectors matching
+      # different PodMonitors.
+      prometheusInstance: default
 
-    #   # The path to scrape for metrics.
-    #   path: /metrics
+      # The path to scrape for metrics.
+      path: /metrics
 
-    #   # The interval to scrape metrics.
-    #   interval: 60s
+      # The interval to scrape metrics.
+      interval: 60s
 
-    #   # The timeout before a metrics scrape fails.
-    #   scrapeTimeout: 30s
+      # The timeout before a metrics scrape fails.
+      scrapeTimeout: 30s
 
-    #   # Additional labels to add to the PodMonitor.
-    #   labels: {}
+      # Additional labels to add to the PodMonitor.
+      labels: {}
 
-    #   # Additional annotations to add to the PodMonitor.
-    #   annotations: {}
+      # Additional annotations to add to the PodMonitor.
+      annotations: {}
 
-    #   # Keep labels from scraped data, overriding server-side labels.
-    #   honorLabels: false
+      # Keep labels from scraped data, overriding server-side labels.
+      honorLabels: false
 
-    #   # EndpointAdditionalProperties allows setting additional properties on the
-    #   # endpoint such as relabelings, metricRelabelings etc.
-    #   #
-    #   # For example:
-    #   #  endpointAdditionalProperties:
-    #   #   relabelings:
-    #   #   - action: replace
-    #   #     sourceLabels:
-    #   #     - __meta_kubernetes_pod_node_name
-    #   #     targetLabel: instance
-    #   #   # Configure the PodMonitor for TLS connections
-    #   #   # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls
-    #   #   scheme: https
-    #   #   tlsConfig:
-    #   #     serverName: cert-manager-metrics
-    #   #     ca:
-    #   #       secret:
-    #   #         name: cert-manager-metrics-ca
-    #   #         key: "tls.crt"
-    #   #
-    #   # +docs:property
-    #   endpointAdditionalProperties: {}
+      # EndpointAdditionalProperties allows setting additional properties on the
+      # endpoint such as relabelings, metricRelabelings etc.
+      #
+      # For example:
+      #  endpointAdditionalProperties:
+      #   relabelings:
+      #   - action: replace
+      #     sourceLabels:
+      #     - __meta_kubernetes_pod_node_name
+      #     targetLabel: instance
+      #   # Configure the PodMonitor for TLS connections
+      #   # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls
+      #   scheme: https
+      #   tlsConfig:
+      #     serverName: cert-manager-metrics
+      #     ca:
+      #       secret:
+      #         name: cert-manager-metrics-ca
+      #         key: "tls.crt"
+      #
+      # +docs:property
+      endpointAdditionalProperties: {}
 
   # +docs:section=Webhook
-
-  # -- Requests and Limits to apply to the cert-manager pods
-  resources:
-    requests:
-      cpu: 10m
-      memory: 32Mi
-    limits:
-      cpu: 50m
-      memory: 64Mi
 
   webhook:
     # Number of replicas of the cert-manager webhook to run.
@@ -704,10 +699,9 @@ certmanager:
     # For more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
     # +docs:property
     securityContext:
-      # -- ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-      fsGroup: 1001
-      runAsUser: 1001
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
 
     # Container Security Context to be set on the webhook component container.
     # For more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
@@ -810,13 +804,7 @@ certmanager:
     #    memory: 32Mi
     #
     # For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
-    resources:
-      requests:
-        cpu: 5m
-        memory: 5Mi
-      limits:
-        cpu: 150m
-        memory: 32Mi
+    resources: {}
 
     # Liveness probe values.
     # For more information, see [Container probes](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes).
@@ -927,7 +915,7 @@ certmanager:
       # The name of the service account to use.
       # If not set and create is true, a name is generated using the fullname template.
       # +docs:property
-      name: cert-manager
+      # name: ""
 
       # Optional additional annotations to add to the webhook's Service Account.
       # +docs:property
@@ -1492,7 +1480,6 @@ certmanager:
   # for more info.
   # +docs:hidden
   enabled: true
-
 prometheusRules:
   rules:
     # -- Enables prometheus operator rules for cert-manager
