@@ -1,6 +1,6 @@
 # grafana-stack
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: 11.3.1](https://img.shields.io/badge/AppVersion-11.3.1-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![AppVersion: 11.3.1](https://img.shields.io/badge/AppVersion-11.3.1-informational?style=flat-square)
 
 ----
 
@@ -16,7 +16,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://grafana.github.io/helm-charts | grafana | 8.10.4 |
+| https://grafana.github.io/helm-charts | grafana | 9.0.0 |
 
 ## Maintainers
 
@@ -36,31 +36,355 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | dashboards.labels | object | `{}` | Labels added to configmap dashboards |
 | fullnameOverride | string | `""` |  |
 | global.enableArgocdAnnotations | bool | `false` | Annotate Custom Resources with `argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true` for Argocd |
-| grafana."grafana.ini" | object | `{"auth":{"disable_login_form":true,"oauth_auto_login":true},"auth.basic":{"enabled":false},"metrics":{"enabled":true},"server":{"root_url":"https://grafana.changeme.com"},"users":{"allow_sign_up":false,"auto_assign_org_role":"editor"}}` | Grafana's primary configuration, see [grafana configuration documentation](https://grafana.com/docs/grafana/latest/administration/configuration/) |
-| grafana.dashboardProviders | object | `{"dashboardproviders.yaml":{"apiVersion":1,"providers":[{"disableDeletion":true,"editable":false,"folder":"Kubernetes","name":"Kubernetes","options":{"path":"/tmp/dashboards/k8s"},"orgId":1,"type":"file"},{"disableDeletion":true,"editable":false,"folder":"Grafana","name":"Grafana","options":{"path":"/tmp/dashboards/grafana"},"orgId":1,"type":"file"},{"disableDeletion":true,"editable":false,"folder":"Project","name":"Project","options":{"path":"/tmp/dashboards/project"},"orgId":1,"type":"file"}]}}` | Configure grafana dashboard providers, see [grafana documentation](https://grafana.com/docs/grafana/latest/administration/provisioning/#dashboards) |
-| grafana.datasources | object | `{"datasources.yaml":{"apiVersion":1,"datasources":[{"access":"proxy","name":"Prometheus","type":"prometheus","url":"http://prometheus-operated.infra-prometheus-operator:9090"}]}}` | Configure grafana datasource providers, see [grafana documentation](https://grafana.com/docs/grafana/latest/administration/provisioning/#data-sources) |
-| grafana.env.GF_AUTH_GENERIC_OAUTH_AUTH_URL | string | `""` | OAUTH auth url for OIDC integration |
-| grafana.env.GF_AUTH_GENERIC_OAUTH_CLIENT_ID | string | `"grafana-infra"` | Client ID for OIDC integration, see `grafanadexclient.client.id` |
-| grafana.env.GF_AUTH_GENERIC_OAUTH_ENABLED | bool | `true` | Enables OAUTH |
-| grafana.env.GF_AUTH_GENERIC_OAUTH_SCOPES | string | `"email openid"` | OAUTH scopes for OIDC integration |
-| grafana.env.GF_AUTH_GENERIC_OAUTH_TOKEN_URL | string | `""` | OAUTH token url for OIDC integration |
-| grafana.image.repository | string | `"grafana/grafana"` | Image repository |
-| grafana.image.sha | string | `""` | Image sha (optional) |
+| grafana."grafana.ini".analytics.check_for_updates | bool | `true` |  |
+| grafana."grafana.ini".grafana_net.url | string | `"https://grafana.net"` |  |
+| grafana."grafana.ini".log.mode | string | `"console"` |  |
+| grafana."grafana.ini".paths.data | string | `"/var/lib/grafana/"` |  |
+| grafana."grafana.ini".paths.logs | string | `"/var/log/grafana"` |  |
+| grafana."grafana.ini".paths.plugins | string | `"/var/lib/grafana/plugins"` |  |
+| grafana."grafana.ini".paths.provisioning | string | `"/etc/grafana/provisioning"` |  |
+| grafana."grafana.ini".server.domain | string | `"{{ if (and .Values.ingress.enabled .Values.ingress.hosts) }}{{ tpl (.Values.ingress.hosts | first) . }}{{ else }}''{{ end }}"` |  |
+| grafana.admin.existingSecret | string | `""` |  |
+| grafana.admin.passwordKey | string | `"admin-password"` |  |
+| grafana.admin.userKey | string | `"admin-user"` |  |
+| grafana.adminUser | string | `"admin"` |  |
+| grafana.affinity | object | `{}` |  |
+| grafana.alerting | object | `{}` |  |
+| grafana.assertNoLeakedSecrets | bool | `true` |  |
+| grafana.automountServiceAccountToken | bool | `true` |  |
+| grafana.autoscaling.behavior | object | `{}` |  |
+| grafana.autoscaling.enabled | bool | `false` |  |
+| grafana.autoscaling.maxReplicas | int | `5` |  |
+| grafana.autoscaling.minReplicas | int | `1` |  |
+| grafana.autoscaling.targetCPU | string | `"60"` |  |
+| grafana.autoscaling.targetMemory | string | `""` |  |
+| grafana.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| grafana.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| grafana.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| grafana.createConfigmap | bool | `true` |  |
+| grafana.dashboardProviders | object | `{}` |  |
+| grafana.dashboards | object | `{}` |  |
+| grafana.dashboardsConfigMaps | object | `{}` |  |
+| grafana.datasources | object | `{}` |  |
+| grafana.defaultCurlOptions | string | `"-skf"` |  |
+| grafana.deploymentStrategy.type | string | `"RollingUpdate"` |  |
+| grafana.dnsConfig | object | `{}` |  |
+| grafana.dnsPolicy | string | `nil` |  |
+| grafana.downloadDashboards.env | object | `{}` |  |
+| grafana.downloadDashboards.envFromSecret | string | `""` |  |
+| grafana.downloadDashboards.envValueFrom | object | `{}` |  |
+| grafana.downloadDashboards.resources | object | `{}` |  |
+| grafana.downloadDashboards.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| grafana.downloadDashboards.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| grafana.downloadDashboards.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| grafana.downloadDashboardsImage.pullPolicy | string | `"IfNotPresent"` |  |
+| grafana.downloadDashboardsImage.registry | string | `"docker.io"` | The Docker registry |
+| grafana.downloadDashboardsImage.repository | string | `"curlimages/curl"` |  |
+| grafana.downloadDashboardsImage.sha | string | `""` |  |
+| grafana.downloadDashboardsImage.tag | string | `"8.9.1"` |  |
+| grafana.enableKubeBackwardCompatibility | bool | `false` |  |
+| grafana.enableServiceLinks | bool | `true` |  |
+| grafana.env | object | `{}` |  |
+| grafana.envFromConfigMaps | list | `[]` |  |
+| grafana.envFromSecret | string | `""` |  |
+| grafana.envFromSecrets | list | `[]` |  |
+| grafana.envRenderSecret | object | `{}` |  |
+| grafana.envValueFrom | object | `{}` |  |
+| grafana.extraConfigmapMounts | list | `[]` |  |
+| grafana.extraContainerVolumes | list | `[]` |  |
+| grafana.extraContainers | string | `""` |  |
+| grafana.extraEmptyDirMounts | list | `[]` |  |
+| grafana.extraExposePorts | list | `[]` |  |
+| grafana.extraInitContainers | list | `[]` |  |
+| grafana.extraLabels | object | `{}` |  |
+| grafana.extraObjects | list | `[]` |  |
+| grafana.extraSecretMounts | list | `[]` |  |
+| grafana.extraVolumeMounts | list | `[]` |  |
+| grafana.extraVolumes | list | `[]` |  |
+| grafana.global.imagePullSecrets | list | `[]` |  |
+| grafana.global.imageRegistry | string | `nil` | Overrides the Docker registry globally for all images |
+| grafana.gossipPortName | string | `"gossip"` |  |
+| grafana.headlessService | bool | `false` |  |
+| grafana.hostAliases | list | `[]` |  |
+| grafana.image.pullPolicy | string | `"IfNotPresent"` |  |
+| grafana.image.pullSecrets | list | `[]` |  |
+| grafana.image.registry | string | `"docker.io"` | The Docker registry |
+| grafana.image.repository | string | `"grafana/grafana"` | Docker image repository |
+| grafana.image.sha | string | `""` |  |
+| grafana.image.tag | string | `""` |  |
+| grafana.imageRenderer.affinity | object | `{}` |  |
+| grafana.imageRenderer.automountServiceAccountToken | bool | `false` |  |
+| grafana.imageRenderer.autoscaling.behavior | object | `{}` |  |
+| grafana.imageRenderer.autoscaling.enabled | bool | `false` |  |
+| grafana.imageRenderer.autoscaling.maxReplicas | int | `5` |  |
+| grafana.imageRenderer.autoscaling.minReplicas | int | `1` |  |
+| grafana.imageRenderer.autoscaling.targetCPU | string | `"60"` |  |
+| grafana.imageRenderer.autoscaling.targetMemory | string | `""` |  |
+| grafana.imageRenderer.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| grafana.imageRenderer.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| grafana.imageRenderer.containerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
+| grafana.imageRenderer.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| grafana.imageRenderer.deploymentStrategy | object | `{}` |  |
+| grafana.imageRenderer.enabled | bool | `false` |  |
+| grafana.imageRenderer.env.HTTP_HOST | string | `"0.0.0.0"` |  |
+| grafana.imageRenderer.env.XDG_CACHE_HOME | string | `"/tmp/.chromium"` |  |
+| grafana.imageRenderer.env.XDG_CONFIG_HOME | string | `"/tmp/.chromium"` |  |
+| grafana.imageRenderer.envValueFrom | object | `{}` |  |
+| grafana.imageRenderer.extraConfigmapMounts | list | `[]` |  |
+| grafana.imageRenderer.extraSecretMounts | list | `[]` |  |
+| grafana.imageRenderer.extraVolumeMounts | list | `[]` |  |
+| grafana.imageRenderer.extraVolumes | list | `[]` |  |
+| grafana.imageRenderer.grafanaProtocol | string | `"http"` |  |
+| grafana.imageRenderer.grafanaSubPath | string | `""` |  |
+| grafana.imageRenderer.hostAliases | list | `[]` |  |
+| grafana.imageRenderer.image.pullPolicy | string | `"Always"` |  |
+| grafana.imageRenderer.image.pullSecrets | list | `[]` |  |
+| grafana.imageRenderer.image.registry | string | `"docker.io"` | The Docker registry |
+| grafana.imageRenderer.image.repository | string | `"grafana/grafana-image-renderer"` |  |
+| grafana.imageRenderer.image.sha | string | `""` |  |
+| grafana.imageRenderer.image.tag | string | `"latest"` |  |
+| grafana.imageRenderer.networkPolicy.extraIngressSelectors | list | `[]` |  |
+| grafana.imageRenderer.networkPolicy.limitEgress | bool | `false` |  |
+| grafana.imageRenderer.networkPolicy.limitIngress | bool | `true` |  |
+| grafana.imageRenderer.nodeSelector | object | `{}` |  |
+| grafana.imageRenderer.podAnnotations | object | `{}` |  |
+| grafana.imageRenderer.podPortName | string | `"http"` |  |
+| grafana.imageRenderer.priorityClassName | string | `""` |  |
+| grafana.imageRenderer.renderingCallbackURL | string | `""` |  |
+| grafana.imageRenderer.replicas | int | `1` |  |
+| grafana.imageRenderer.resources | object | `{}` |  |
+| grafana.imageRenderer.revisionHistoryLimit | int | `10` |  |
+| grafana.imageRenderer.securityContext | object | `{}` |  |
+| grafana.imageRenderer.serverURL | string | `""` |  |
+| grafana.imageRenderer.service.appProtocol | string | `""` |  |
+| grafana.imageRenderer.service.enabled | bool | `true` |  |
+| grafana.imageRenderer.service.port | int | `8081` |  |
+| grafana.imageRenderer.service.portName | string | `"http"` |  |
+| grafana.imageRenderer.service.targetPort | int | `8081` |  |
+| grafana.imageRenderer.serviceAccountName | string | `""` |  |
+| grafana.imageRenderer.serviceMonitor.enabled | bool | `false` |  |
+| grafana.imageRenderer.serviceMonitor.interval | string | `"1m"` |  |
+| grafana.imageRenderer.serviceMonitor.labels | object | `{}` |  |
+| grafana.imageRenderer.serviceMonitor.path | string | `"/metrics"` |  |
+| grafana.imageRenderer.serviceMonitor.relabelings | list | `[]` |  |
+| grafana.imageRenderer.serviceMonitor.scheme | string | `"http"` |  |
+| grafana.imageRenderer.serviceMonitor.scrapeTimeout | string | `"30s"` |  |
+| grafana.imageRenderer.serviceMonitor.targetLabels | list | `[]` |  |
+| grafana.imageRenderer.serviceMonitor.tlsConfig | object | `{}` |  |
+| grafana.imageRenderer.tolerations | list | `[]` |  |
+| grafana.ingress.annotations | object | `{}` |  |
+| grafana.ingress.enabled | bool | `false` |  |
+| grafana.ingress.extraPaths | list | `[]` |  |
+| grafana.ingress.hosts[0] | string | `"chart-example.local"` |  |
+| grafana.ingress.labels | object | `{}` |  |
+| grafana.ingress.path | string | `"/"` |  |
+| grafana.ingress.pathType | string | `"Prefix"` |  |
+| grafana.ingress.tls | list | `[]` |  |
+| grafana.initChownData.enabled | bool | `true` |  |
+| grafana.initChownData.image.pullPolicy | string | `"IfNotPresent"` |  |
+| grafana.initChownData.image.registry | string | `"docker.io"` | The Docker registry |
+| grafana.initChownData.image.repository | string | `"library/busybox"` |  |
+| grafana.initChownData.image.sha | string | `""` |  |
+| grafana.initChownData.image.tag | string | `"1.31.1"` |  |
+| grafana.initChownData.resources | object | `{}` |  |
+| grafana.initChownData.securityContext.capabilities.add[0] | string | `"CHOWN"` |  |
+| grafana.initChownData.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| grafana.initChownData.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| grafana.initChownData.securityContext.runAsNonRoot | bool | `false` |  |
+| grafana.initChownData.securityContext.runAsUser | int | `0` |  |
+| grafana.initChownData.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| grafana.ldap.config | string | `""` |  |
+| grafana.ldap.enabled | bool | `false` |  |
+| grafana.ldap.existingSecret | string | `""` |  |
+| grafana.lifecycleHooks | object | `{}` |  |
+| grafana.livenessProbe.failureThreshold | int | `10` |  |
+| grafana.livenessProbe.httpGet.path | string | `"/api/health"` |  |
+| grafana.livenessProbe.httpGet.port | int | `3000` |  |
+| grafana.livenessProbe.initialDelaySeconds | int | `60` |  |
+| grafana.livenessProbe.timeoutSeconds | int | `30` |  |
+| grafana.namespaceOverride | string | `""` |  |
+| grafana.networkPolicy.allowExternal | bool | `true` |  |
+| grafana.networkPolicy.egress.blockDNSResolution | bool | `false` |  |
+| grafana.networkPolicy.egress.enabled | bool | `false` |  |
+| grafana.networkPolicy.egress.ports | list | `[]` |  |
+| grafana.networkPolicy.egress.to | list | `[]` |  |
+| grafana.networkPolicy.enabled | bool | `false` |  |
+| grafana.networkPolicy.explicitNamespacesSelector | object | `{}` |  |
+| grafana.networkPolicy.ingress | bool | `true` |  |
+| grafana.nodeSelector | object | `{}` |  |
+| grafana.notifiers | object | `{}` |  |
+| grafana.persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| grafana.persistence.disableWarning | bool | `false` |  |
 | grafana.persistence.enabled | bool | `false` |  |
-| grafana.plugins | list | `["grafana-piechart-panel"]` | Plugins to be loaded along with Grafana |
-| grafana.priorityClassName | string | `""` | Priority class assigned to the Pods |
-| grafana.replicas | int | `1` | Number of instance of grafana |
-| grafana.resources | object | `{"limits":{"cpu":"1000m","memory":"500Mi"},"requests":{"cpu":"100m","memory":"200Mi"}}` | Add resources limits and request to grafana container. |
-| grafana.securityContext | object | `{"fsGroup":472,"runAsGroup":472,"runAsNonRoot":true,"runAsUser":472}` | [Security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) for grafana |
-| grafana.service.labels | object | `{"app.kubernetes.io/component":"grafana","app.kubernetes.io/name":"grafana-infra"}` | Custom labels to apply |
-| grafana.service.portName | string | `"http-grafana"` | Name of the service |
-| grafana.service.type | string | `"ClusterIP"` | Type of service for the grafana |
-| grafana.sidecar.dashboards.enabled | bool | `true` | Enables the cluster wide search for dashboards and adds/updates/deletes them in grafana |
-| grafana.sidecar.dashboards.folder | string | `"/tmp/dashboards"` | Folder in the pod that should hold the collected dashboards. This path will be mounted. |
-| grafana.sidecar.dashboards.label | string | `"grafana_dashboard"` | Label that config maps with dashboards should have to be added |
-| grafana.sidecar.dashboards.searchNamespace | string | `""` | If specified, the sidecar will search for dashboard config-maps inside this namespace. Otherwise the namespace in which the sidecar is running will be used. It's also possible to specify ALL to search in all namespaces |
-| grafana.sidecar.datasources.enabled | bool | `true` | Enables the cluster wide search for datasources and adds/updates/deletes them in grafana |
-| grafana.testFramework.enabled | bool | `false` |  |
+| grafana.persistence.extraPvcLabels | object | `{}` |  |
+| grafana.persistence.finalizers[0] | string | `"kubernetes.io/pvc-protection"` |  |
+| grafana.persistence.inMemory.enabled | bool | `false` |  |
+| grafana.persistence.lookupVolumeName | bool | `true` |  |
+| grafana.persistence.size | string | `"10Gi"` |  |
+| grafana.persistence.type | string | `"pvc"` |  |
+| grafana.persistence.volumeName | string | `""` |  |
+| grafana.plugins | list | `[]` |  |
+| grafana.podDisruptionBudget | object | `{}` |  |
+| grafana.podPortName | string | `"grafana"` |  |
+| grafana.rbac.create | bool | `true` |  |
+| grafana.rbac.extraClusterRoleRules | list | `[]` |  |
+| grafana.rbac.extraRoleRules | list | `[]` |  |
+| grafana.rbac.namespaced | bool | `false` |  |
+| grafana.rbac.pspEnabled | bool | `false` |  |
+| grafana.rbac.pspUseAppArmor | bool | `false` |  |
+| grafana.readinessProbe.httpGet.path | string | `"/api/health"` |  |
+| grafana.readinessProbe.httpGet.port | int | `3000` |  |
+| grafana.replicas | int | `1` |  |
+| grafana.resources | object | `{}` |  |
+| grafana.revisionHistoryLimit | int | `10` |  |
+| grafana.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[]}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/references/spec/#gateway.networking.k8s.io%2fv1alpha2) |
+| grafana.route.main.apiVersion | string | `"gateway.networking.k8s.io/v1"` | Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1alpha2 |
+| grafana.route.main.enabled | bool | `false` | Enables or disables the route |
+| grafana.route.main.kind | string | `"HTTPRoute"` | Set the route kind Valid options are GRPCRoute, HTTPRoute, TCPRoute, TLSRoute, UDPRoute |
+| grafana.securityContext.fsGroup | int | `472` |  |
+| grafana.securityContext.runAsGroup | int | `472` |  |
+| grafana.securityContext.runAsNonRoot | bool | `true` |  |
+| grafana.securityContext.runAsUser | int | `472` |  |
+| grafana.service.annotations | object | `{}` |  |
+| grafana.service.appProtocol | string | `""` |  |
+| grafana.service.enabled | bool | `true` |  |
+| grafana.service.ipFamilies | list | `[]` |  |
+| grafana.service.ipFamilyPolicy | string | `""` |  |
+| grafana.service.labels | object | `{}` |  |
+| grafana.service.loadBalancerClass | string | `""` |  |
+| grafana.service.loadBalancerIP | string | `""` |  |
+| grafana.service.loadBalancerSourceRanges | list | `[]` |  |
+| grafana.service.port | int | `80` |  |
+| grafana.service.portName | string | `"service"` |  |
+| grafana.service.sessionAffinity | string | `""` |  |
+| grafana.service.targetPort | int | `3000` |  |
+| grafana.service.type | string | `"ClusterIP"` |  |
+| grafana.serviceAccount.automountServiceAccountToken | bool | `false` |  |
+| grafana.serviceAccount.create | bool | `true` |  |
+| grafana.serviceAccount.labels | object | `{}` |  |
+| grafana.serviceAccount.name | string | `nil` |  |
+| grafana.serviceAccount.nameTest | string | `nil` |  |
+| grafana.serviceMonitor.basicAuth | object | `{}` |  |
+| grafana.serviceMonitor.enabled | bool | `false` |  |
+| grafana.serviceMonitor.interval | string | `"30s"` |  |
+| grafana.serviceMonitor.labels | object | `{}` |  |
+| grafana.serviceMonitor.metricRelabelings | list | `[]` |  |
+| grafana.serviceMonitor.path | string | `"/metrics"` |  |
+| grafana.serviceMonitor.relabelings | list | `[]` |  |
+| grafana.serviceMonitor.scheme | string | `"http"` |  |
+| grafana.serviceMonitor.scrapeTimeout | string | `"30s"` |  |
+| grafana.serviceMonitor.targetLabels | list | `[]` |  |
+| grafana.serviceMonitor.tlsConfig | object | `{}` |  |
+| grafana.shareProcessNamespace | bool | `false` |  |
+| grafana.sidecar.alerts.enabled | bool | `false` |  |
+| grafana.sidecar.alerts.env | object | `{}` |  |
+| grafana.sidecar.alerts.extraMounts | list | `[]` |  |
+| grafana.sidecar.alerts.initAlerts | bool | `false` |  |
+| grafana.sidecar.alerts.label | string | `"grafana_alert"` |  |
+| grafana.sidecar.alerts.labelValue | string | `""` |  |
+| grafana.sidecar.alerts.reloadURL | string | `"http://localhost:3000/api/admin/provisioning/alerting/reload"` |  |
+| grafana.sidecar.alerts.resource | string | `"both"` |  |
+| grafana.sidecar.alerts.resourceName | string | `""` |  |
+| grafana.sidecar.alerts.script | string | `nil` |  |
+| grafana.sidecar.alerts.searchNamespace | string | `nil` |  |
+| grafana.sidecar.alerts.sizeLimit | object | `{}` |  |
+| grafana.sidecar.alerts.skipReload | bool | `false` |  |
+| grafana.sidecar.alerts.watchMethod | string | `"WATCH"` |  |
+| grafana.sidecar.dashboards.SCProvider | bool | `true` |  |
+| grafana.sidecar.dashboards.defaultFolderName | string | `nil` |  |
+| grafana.sidecar.dashboards.enabled | bool | `false` |  |
+| grafana.sidecar.dashboards.env | object | `{}` |  |
+| grafana.sidecar.dashboards.envValueFrom | object | `{}` |  |
+| grafana.sidecar.dashboards.extraMounts | list | `[]` |  |
+| grafana.sidecar.dashboards.folder | string | `"/tmp/dashboards"` |  |
+| grafana.sidecar.dashboards.folderAnnotation | string | `nil` |  |
+| grafana.sidecar.dashboards.label | string | `"grafana_dashboard"` |  |
+| grafana.sidecar.dashboards.labelValue | string | `""` |  |
+| grafana.sidecar.dashboards.provider.allowUiUpdates | bool | `false` |  |
+| grafana.sidecar.dashboards.provider.disableDelete | bool | `false` |  |
+| grafana.sidecar.dashboards.provider.folder | string | `""` |  |
+| grafana.sidecar.dashboards.provider.folderUid | string | `""` |  |
+| grafana.sidecar.dashboards.provider.foldersFromFilesStructure | bool | `false` |  |
+| grafana.sidecar.dashboards.provider.name | string | `"sidecarProvider"` |  |
+| grafana.sidecar.dashboards.provider.orgid | int | `1` |  |
+| grafana.sidecar.dashboards.provider.type | string | `"file"` |  |
+| grafana.sidecar.dashboards.reloadURL | string | `"http://localhost:3000/api/admin/provisioning/dashboards/reload"` |  |
+| grafana.sidecar.dashboards.resource | string | `"both"` |  |
+| grafana.sidecar.dashboards.resourceName | string | `""` |  |
+| grafana.sidecar.dashboards.script | string | `nil` |  |
+| grafana.sidecar.dashboards.searchNamespace | string | `nil` |  |
+| grafana.sidecar.dashboards.sizeLimit | object | `{}` |  |
+| grafana.sidecar.dashboards.skipReload | bool | `false` |  |
+| grafana.sidecar.dashboards.watchMethod | string | `"WATCH"` |  |
+| grafana.sidecar.datasources.enabled | bool | `false` |  |
+| grafana.sidecar.datasources.env | object | `{}` |  |
+| grafana.sidecar.datasources.envValueFrom | object | `{}` |  |
+| grafana.sidecar.datasources.extraMounts | list | `[]` |  |
+| grafana.sidecar.datasources.initDatasources | bool | `false` |  |
+| grafana.sidecar.datasources.label | string | `"grafana_datasource"` |  |
+| grafana.sidecar.datasources.labelValue | string | `""` |  |
+| grafana.sidecar.datasources.reloadURL | string | `"http://localhost:3000/api/admin/provisioning/datasources/reload"` |  |
+| grafana.sidecar.datasources.resource | string | `"both"` |  |
+| grafana.sidecar.datasources.resourceName | string | `""` |  |
+| grafana.sidecar.datasources.script | string | `nil` |  |
+| grafana.sidecar.datasources.searchNamespace | string | `nil` |  |
+| grafana.sidecar.datasources.sizeLimit | object | `{}` |  |
+| grafana.sidecar.datasources.skipReload | bool | `false` |  |
+| grafana.sidecar.datasources.watchMethod | string | `"WATCH"` |  |
+| grafana.sidecar.enableUniqueFilenames | bool | `false` |  |
+| grafana.sidecar.image.registry | string | `"quay.io"` | The Docker registry |
+| grafana.sidecar.image.repository | string | `"kiwigrid/k8s-sidecar"` |  |
+| grafana.sidecar.image.sha | string | `""` |  |
+| grafana.sidecar.image.tag | string | `"1.30.0"` |  |
+| grafana.sidecar.imagePullPolicy | string | `"IfNotPresent"` |  |
+| grafana.sidecar.livenessProbe | object | `{}` |  |
+| grafana.sidecar.notifiers.enabled | bool | `false` |  |
+| grafana.sidecar.notifiers.env | object | `{}` |  |
+| grafana.sidecar.notifiers.extraMounts | list | `[]` |  |
+| grafana.sidecar.notifiers.initNotifiers | bool | `false` |  |
+| grafana.sidecar.notifiers.label | string | `"grafana_notifier"` |  |
+| grafana.sidecar.notifiers.labelValue | string | `""` |  |
+| grafana.sidecar.notifiers.reloadURL | string | `"http://localhost:3000/api/admin/provisioning/notifications/reload"` |  |
+| grafana.sidecar.notifiers.resource | string | `"both"` |  |
+| grafana.sidecar.notifiers.resourceName | string | `""` |  |
+| grafana.sidecar.notifiers.script | string | `nil` |  |
+| grafana.sidecar.notifiers.searchNamespace | string | `nil` |  |
+| grafana.sidecar.notifiers.sizeLimit | object | `{}` |  |
+| grafana.sidecar.notifiers.skipReload | bool | `false` |  |
+| grafana.sidecar.notifiers.watchMethod | string | `"WATCH"` |  |
+| grafana.sidecar.plugins.enabled | bool | `false` |  |
+| grafana.sidecar.plugins.env | object | `{}` |  |
+| grafana.sidecar.plugins.extraMounts | list | `[]` |  |
+| grafana.sidecar.plugins.initPlugins | bool | `false` |  |
+| grafana.sidecar.plugins.label | string | `"grafana_plugin"` |  |
+| grafana.sidecar.plugins.labelValue | string | `""` |  |
+| grafana.sidecar.plugins.reloadURL | string | `"http://localhost:3000/api/admin/provisioning/plugins/reload"` |  |
+| grafana.sidecar.plugins.resource | string | `"both"` |  |
+| grafana.sidecar.plugins.resourceName | string | `""` |  |
+| grafana.sidecar.plugins.script | string | `nil` |  |
+| grafana.sidecar.plugins.searchNamespace | string | `nil` |  |
+| grafana.sidecar.plugins.sizeLimit | object | `{}` |  |
+| grafana.sidecar.plugins.skipReload | bool | `false` |  |
+| grafana.sidecar.plugins.watchMethod | string | `"WATCH"` |  |
+| grafana.sidecar.readinessProbe | object | `{}` |  |
+| grafana.sidecar.resources | object | `{}` |  |
+| grafana.sidecar.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| grafana.sidecar.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| grafana.sidecar.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| grafana.smtp.existingSecret | string | `""` |  |
+| grafana.smtp.passwordKey | string | `"password"` |  |
+| grafana.smtp.userKey | string | `"user"` |  |
+| grafana.testFramework.containerSecurityContext | object | `{}` |  |
+| grafana.testFramework.enabled | bool | `true` |  |
+| grafana.testFramework.image.registry | string | `"docker.io"` | The Docker registry |
+| grafana.testFramework.image.repository | string | `"bats/bats"` |  |
+| grafana.testFramework.image.tag | string | `"v1.4.1"` |  |
+| grafana.testFramework.imagePullPolicy | string | `"IfNotPresent"` |  |
+| grafana.testFramework.resources | object | `{}` |  |
+| grafana.testFramework.securityContext | object | `{}` |  |
+| grafana.tolerations | list | `[]` |  |
+| grafana.topologySpreadConstraints | list | `[]` |  |
+| grafana.useStatefulSet | bool | `false` |  |
 | ingress.annotations | object | `{"kubernetes.io/ingress.allow-http":"false","kubernetes.io/ingress.class":"nginx","kubernetes.io/tls-acme":"true"}` | Map of annotations to apply to the ingress |
 | ingress.enabled | bool | `false` | Enables ingress for alertmanager |
 | ingress.host | string | `""` | FQDN of the grafana |
@@ -97,7 +421,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: grafana-stack
     path: ''
 
