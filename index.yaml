@@ -488,6 +488,28 @@ entries:
   eso:
   - apiVersion: v2
     appVersion: 0.14.2
+    created: "2025-05-07T10:29:59.606487248Z"
+    dependencies:
+    - alias: eso
+      name: external-secrets
+      repository: https://charts.external-secrets.io
+      version: 0.16.1
+    description: A Helm chart ESO for Kubernetes
+    digest: 784f2725824b74f27c7a9c33251405b9cbcafedf941ab5e390bfc9836d91dc88
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: eso
+    type: application
+    urls:
+    - eso-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 0.14.2
     created: "2025-05-05T07:36:24.913299097Z"
     dependencies:
     - alias: eso
@@ -1653,4 +1675,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2025-05-05T10:23:13.877270778Z"
+generated: "2025-05-07T10:30:00.829340495Z"
