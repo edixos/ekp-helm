@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.14.4](https://img.shields.io/badge/AppVersion-2.14.4-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.14.4](https://img.shields.io/badge/AppVersion-2.14.4-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 7.8.8 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 8.0.0 |
 
 ## Maintainers
 
@@ -188,6 +188,15 @@ A Helm chart for Kubernetes
 | argocd.configs.cm."application.instanceLabelKey" | string | `"argocd.argoproj.io/instance"` | The name of tracking label used by Argo CD for resource pruning |
 | argocd.configs.cm."application.sync.impersonation.enabled" | bool | `false` | Enable control of the service account used for the sync operation (alpha) # Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/app-sync-using-impersonation/ |
 | argocd.configs.cm."exec.enabled" | bool | `false` | Enable exec feature in Argo UI # Ref: https://argo-cd.readthedocs.io/en/latest/operator-manual/rbac/#exec-resource |
+| argocd.configs.cm."resource.customizations.ignoreResourceUpdates.ConfigMap" | string | See [values.yaml] | Ignore the cluster-autoscaler status |
+| argocd.configs.cm."resource.customizations.ignoreResourceUpdates.Endpoints" | string | See [values.yaml] | Ignores update if Endpoints is not excluded globally |
+| argocd.configs.cm."resource.customizations.ignoreResourceUpdates.all" | string | See [values.yaml] | Ignoring status for all resources. An update will still be sent if the status update causes the health to change. |
+| argocd.configs.cm."resource.customizations.ignoreResourceUpdates.apps_ReplicaSet" | string | See [values.yaml] | Ignore the common scaling annotations |
+| argocd.configs.cm."resource.customizations.ignoreResourceUpdates.argoproj.io_Application" | string | See [values.yaml] | Some Application fields are generated and not related to the application updates itself # The Application itself is already watched by the controller lister, but this configuration is applied for apps of apps |
+| argocd.configs.cm."resource.customizations.ignoreResourceUpdates.argoproj.io_Rollout" | string | See [values.yaml] | Ignore Argo Rollouts generated fields |
+| argocd.configs.cm."resource.customizations.ignoreResourceUpdates.autoscaling_HorizontalPodAutoscaler" | string | See [values.yaml] | Legacy annotations used on HPA autoscaling/v1 |
+| argocd.configs.cm."resource.customizations.ignoreResourceUpdates.discovery.k8s.io_EndpointSlice" | string | See [values.yaml] | Ignores update if EndpointSlice is not excluded globally |
+| argocd.configs.cm."resource.exclusions" | string | See [values.yaml] | Resource Exclusion/Inclusion |
 | argocd.configs.cm."server.rbac.log.enforce.enable" | bool | `false` | Enable logs RBAC enforcement # Ref: https://argo-cd.readthedocs.io/en/latest/operator-manual/upgrading/2.3-2.4/#enable-logs-rbac-enforcement |
 | argocd.configs.cm."statusbadge.enabled" | bool | `false` | Enable Status Badge # Ref: https://argo-cd.readthedocs.io/en/stable/user-guide/status-badge/ |
 | argocd.configs.cm."timeout.hard.reconciliation" | string | `"0s"` | Timeout to refresh application data as well as target manifests cache |
@@ -361,7 +370,7 @@ A Helm chart for Kubernetes
 | argocd.dex.extraContainers | list | `[]` | Additional containers to be added to the dex pod # Note: Supports use of custom Helm templates |
 | argocd.dex.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Dex imagePullPolicy |
 | argocd.dex.image.repository | string | `"ghcr.io/dexidp/dex"` | Dex image repository |
-| argocd.dex.image.tag | string | `"v2.42.0"` | Dex image tag |
+| argocd.dex.image.tag | string | `"v2.42.1"` | Dex image tag |
 | argocd.dex.imagePullSecrets | list | `[]` (defaults to global.imagePullSecrets) | Secrets with credentials to pull images from a private registry |
 | argocd.dex.initContainers | list | `[]` | Init containers to add to the dex pod # Note: Supports use of custom Helm templates |
 | argocd.dex.initImage.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Argo CD init image imagePullPolicy |
@@ -377,8 +386,6 @@ A Helm chart for Kubernetes
 | argocd.dex.livenessProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
 | argocd.dex.livenessProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
 | argocd.dex.livenessProbe.timeoutSeconds | int | `1` | Number of seconds after which the [probe] times out |
-| argocd.dex.logFormat | string | `""` (defaults to global.logging.format) | Dex log format. Either `text` or `json` |
-| argocd.dex.logLevel | string | `""` (defaults to global.logging.level) | Dex log level. One of: `debug`, `info`, `warn`, `error` |
 | argocd.dex.metrics.enabled | bool | `false` | Deploy metrics service |
 | argocd.dex.metrics.service.annotations | object | `{}` | Metrics service annotations |
 | argocd.dex.metrics.service.labels | object | `{}` | Metrics service labels |
@@ -501,8 +508,6 @@ A Helm chart for Kubernetes
 | argocd.notifications.livenessProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
 | argocd.notifications.livenessProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
 | argocd.notifications.livenessProbe.timeoutSeconds | int | `1` | Number of seconds after which the [probe] times out |
-| argocd.notifications.logFormat | string | `""` (defaults to global.logging.format) | Notifications controller log format. Either `text` or `json` |
-| argocd.notifications.logLevel | string | `""` (defaults to global.logging.level) | Notifications controller log level. One of: `debug`, `info`, `warn`, `error` |
 | argocd.notifications.metrics.enabled | bool | `false` | Enables prometheus metrics server |
 | argocd.notifications.metrics.port | int | `9001` | Metrics port |
 | argocd.notifications.metrics.service.annotations | object | `{}` | Metrics service annotations |
@@ -562,8 +567,8 @@ A Helm chart for Kubernetes
 | argocd.redis-ha.enabled | bool | `false` | Enables the Redis HA subchart and disables the custom Redis single node deployment |
 | argocd.redis-ha.existingSecret | string | `"argocd-redis"` | Existing Secret to use for redis-ha authentication. By default the redis-secret-init Job is generating this Secret. |
 | argocd.redis-ha.exporter.enabled | bool | `false` | Enable Prometheus redis-exporter sidecar |
-| argocd.redis-ha.exporter.image | string | `"public.ecr.aws/bitnami/redis-exporter"` | Repository to use for the redis-exporter |
-| argocd.redis-ha.exporter.tag | string | `"1.58.0"` | Tag to use for the redis-exporter |
+| argocd.redis-ha.exporter.image | string | `"ghcr.io/oliver006/redis_exporter"` | Repository to use for the redis-exporter |
+| argocd.redis-ha.exporter.tag | string | `"v1.69.0"` | Tag to use for the redis-exporter |
 | argocd.redis-ha.haproxy.additionalAffinities | object | `{}` | Additional affinities to add to the haproxy pods. |
 | argocd.redis-ha.haproxy.affinity | string | `""` | Assign custom [affinity] rules to the haproxy pods. |
 | argocd.redis-ha.haproxy.containerSecurityContext | object | See [values.yaml] | HAProxy container-level security context |
@@ -574,7 +579,7 @@ A Helm chart for Kubernetes
 | argocd.redis-ha.haproxy.tolerations | list | `[]` | [Tolerations] for use with node taints for haproxy pods. |
 | argocd.redis-ha.hardAntiAffinity | bool | `true` | Whether the Redis server pods should be forced to run on separate nodes. |
 | argocd.redis-ha.image.repository | string | `"public.ecr.aws/docker/library/redis"` | Redis repository |
-| argocd.redis-ha.image.tag | string | `"7.4.2-alpine"` | Redis tag |
+| argocd.redis-ha.image.tag | string | `"7.2.8-alpine"` | Redis tag # Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis |
 | argocd.redis-ha.persistentVolume.enabled | bool | `false` | Configures persistence on Redis nodes |
 | argocd.redis-ha.redis.config | object | See [values.yaml] | Any valid redis config options in this section will be applied to each server (see `redis-ha` chart) |
 | argocd.redis-ha.redis.config.save | string | `'""'` | Will save the DB if both the given number of seconds and the given number of write operations against the DB occurred. `""`  is disabled |
@@ -600,8 +605,8 @@ A Helm chart for Kubernetes
 | argocd.redis.exporter.enabled | bool | `false` | Enable Prometheus redis-exporter sidecar |
 | argocd.redis.exporter.env | list | `[]` | Environment variables to pass to the Redis exporter |
 | argocd.redis.exporter.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for the redis-exporter |
-| argocd.redis.exporter.image.repository | string | `"public.ecr.aws/bitnami/redis-exporter"` | Repository to use for the redis-exporter |
-| argocd.redis.exporter.image.tag | string | `"1.67.0"` | Tag to use for the redis-exporter |
+| argocd.redis.exporter.image.repository | string | `"ghcr.io/oliver006/redis_exporter"` | Repository to use for the redis-exporter |
+| argocd.redis.exporter.image.tag | string | `"v1.71.0"` | Tag to use for the redis-exporter |
 | argocd.redis.exporter.livenessProbe.enabled | bool | `false` | Enable Kubernetes liveness probe for Redis exporter |
 | argocd.redis.exporter.livenessProbe.failureThreshold | int | `5` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
 | argocd.redis.exporter.livenessProbe.initialDelaySeconds | int | `30` | Number of seconds after the container has started before [probe] is initiated |
@@ -619,7 +624,7 @@ A Helm chart for Kubernetes
 | argocd.redis.extraContainers | list | `[]` | Additional containers to be added to the redis pod # Note: Supports use of custom Helm templates |
 | argocd.redis.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Redis image pull policy |
 | argocd.redis.image.repository | string | `"public.ecr.aws/docker/library/redis"` | Redis repository |
-| argocd.redis.image.tag | string | `"7.4.2-alpine"` | Redis tag |
+| argocd.redis.image.tag | string | `"7.2.8-alpine"` | Redis tag # Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis |
 | argocd.redis.imagePullSecrets | list | `[]` (defaults to global.imagePullSecrets) | Secrets with credentials to pull images from a private registry |
 | argocd.redis.initContainers | list | `[]` | Init containers to add to the redis pod # Note: Supports use of custom Helm templates |
 | argocd.redis.livenessProbe.enabled | bool | `false` | Enable Kubernetes liveness probe for Redis server |
@@ -984,7 +989,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: argocd
     path: ''
     helm:
