@@ -1,6 +1,6 @@
 # eso
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.14.2](https://img.shields.io/badge/AppVersion-0.14.2-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.14.2](https://img.shields.io/badge/AppVersion-0.14.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.external-secrets.io | eso(external-secrets) | 0.14.2 |
+| https://charts.external-secrets.io | eso(external-secrets) | 0.16.1 |
 
 ## Maintainers
 
@@ -81,9 +81,10 @@ A Helm chart ESO for Kubernetes
 | eso.concurrent | int | `1` | Specifies the number of concurrent ExternalSecret Reconciles external-secret executes at a time. |
 | eso.controllerClass | string | `""` | If set external secrets will filter matching Secret Stores with the appropriate controller values. |
 | eso.crds.annotations | object | `{}` |  |
-| eso.crds.conversion.enabled | bool | `true` | If webhook is set to false this also needs to be set to false otherwise the kubeapi will be hammered because the conversion is looking for a webhook endpoint. |
+| eso.crds.conversion.enabled | bool | `false` | Conversion is disabled by default as we stopped supporting v1alpha1. |
 | eso.crds.createClusterExternalSecret | bool | `true` | If true, create CRDs for Cluster External Secret. |
 | eso.crds.createClusterGenerator | bool | `true` | If true, create CRDs for Cluster Generator. |
+| eso.crds.createClusterPushSecret | bool | `true` | If true, create CRDs for Cluster Push Secret. |
 | eso.crds.createClusterSecretStore | bool | `true` | If true, create CRDs for Cluster Secret Store. |
 | eso.crds.createPushSecret | bool | `true` | If true, create CRDs for Push Secret. |
 | eso.createOperator | bool | `true` | Specifies whether an external secret operator deployment be created. |
@@ -98,6 +99,11 @@ A Helm chart ESO for Kubernetes
 | eso.extraVolumeMounts | list | `[]` |  |
 | eso.extraVolumes | list | `[]` |  |
 | eso.fullnameOverride | string | `""` |  |
+| eso.global.affinity | object | `{}` |  |
+| eso.global.compatibility.openshift.adaptSecurityContext | string | `"auto"` | Manages the securityContext properties to make them compatible with OpenShift. Possible values: auto - Apply configurations if it is detected that OpenShift is the target platform. force - Always apply configurations. disabled - No modification applied. |
+| eso.global.nodeSelector | object | `{}` |  |
+| eso.global.tolerations | list | `[]` |  |
+| eso.global.topologySpreadConstraints | list | `[]` |  |
 | eso.hostNetwork | bool | `false` | Run the controller on the host network |
 | eso.image.flavour | string | `""` | The flavour of tag you want to use There are different image flavours available, like distroless and ubi. Please see GitHub release notes for image tags for these flavors. By default, the distroless image is used. |
 | eso.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -114,6 +120,7 @@ A Helm chart ESO for Kubernetes
 | eso.nameOverride | string | `""` |  |
 | eso.namespaceOverride | string | `""` |  |
 | eso.nodeSelector | object | `{}` |  |
+| eso.openshiftFinalizers | bool | `true` | If true the OpenShift finalizer permissions will be added to RBAC |
 | eso.podAnnotations | object | `{}` | Annotations to add to Pod |
 | eso.podDisruptionBudget | object | `{"enabled":false,"minAvailable":1}` | Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/ |
 | eso.podLabels | object | `{}` |  |
@@ -121,6 +128,7 @@ A Helm chart ESO for Kubernetes
 | eso.podSpecExtra | object | `{}` | Any extra pod spec on the deployment |
 | eso.priorityClassName | string | `""` | Pod priority class name. |
 | eso.processClusterExternalSecret | bool | `true` | if true, the operator will process cluster external secret. Else, it will ignore them. |
+| eso.processClusterPushSecret | bool | `true` | if true, the operator will process cluster push secret. Else, it will ignore them. |
 | eso.processClusterStore | bool | `true` | if true, the operator will process cluster store. Else, it will ignore them. |
 | eso.processPushSecret | bool | `true` | if true, the operator will process push secret. Else, it will ignore them. |
 | eso.rbac.create | bool | `true` | Specifies whether role and rolebinding resources should be created. |
@@ -155,6 +163,7 @@ A Helm chart ESO for Kubernetes
 | eso.tolerations | list | `[]` |  |
 | eso.topologySpreadConstraints | list | `[]` |  |
 | eso.webhook.affinity | object | `{}` |  |
+| eso.webhook.annotations | object | `{}` | Annotations to place on validating webhook configuration. |
 | eso.webhook.certCheckInterval | string | `"5m"` | Specifices the time to check if the cert is valid |
 | eso.webhook.certDir | string | `"/tmp/certs"` |  |
 | eso.webhook.certManager.addInjectorAnnotations | bool | `true` | Automatically add the cert-manager.io/inject-ca-from annotation to the webhooks and CRDs. As long as you have the cert-manager CA Injector enabled, this will automatically setup your webhook's CA to the one used by cert-manager. See https://cert-manager.io/docs/concepts/ca-injector |
@@ -163,9 +172,9 @@ A Helm chart ESO for Kubernetes
 | eso.webhook.certManager.cert.duration | string | `"8760h"` | Set the requested duration (i.e. lifetime) of the Certificate. See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec One year by default. |
 | eso.webhook.certManager.cert.issuerRef | object | `{"group":"cert-manager.io","kind":"Issuer","name":"my-issuer"}` | For the Certificate created by this chart, setup the issuer. See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.IssuerSpec |
 | eso.webhook.certManager.cert.renewBefore | string | `""` | How long before the currently issued certificate’s expiry cert-manager should renew the certificate. See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec Note that renewBefore should be greater than .webhook.lookaheadInterval since the webhook will check this far in advance that the certificate is valid. |
-| eso.webhook.certManager.cert.revisionHistoryLimit | string | `""` | Set the revisionHistoryLimit on the Certificate. See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec Defaults to nil. |
+| eso.webhook.certManager.cert.revisionHistoryLimit | int | `0` | Set the revisionHistoryLimit on the Certificate. See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec Defaults to 0 (ignored). |
 | eso.webhook.certManager.enabled | bool | `false` | Enabling cert-manager support will disable the built in secret and switch to using cert-manager (installed separately) to automatically issue and renew the webhook certificate. This chart does not install cert-manager for you, See https://cert-manager.io/docs/ |
-| eso.webhook.create | bool | `true` | Specifies whether a webhook deployment be created. |
+| eso.webhook.create | bool | `true` | Specifies whether a webhook deployment be created. If set to false, crds.conversion.enabled should also be set to false otherwise the kubeapi will be hammered because the conversion is looking for a webhook endpoint. |
 | eso.webhook.deploymentAnnotations | object | `{}` | Annotations to add to Deployment |
 | eso.webhook.extraArgs | object | `{}` |  |
 | eso.webhook.extraEnv | list | `[]` |  |
@@ -251,7 +260,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: eso
     path: ''
 
