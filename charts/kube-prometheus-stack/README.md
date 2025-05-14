@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.80.1](https://img.shields.io/badge/AppVersion-v0.80.1-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.80.1](https://img.shields.io/badge/AppVersion-v0.80.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 72.0.1 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 72.3.1 |
 
 ## Description
 
@@ -395,6 +395,11 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.grafana.ingress.path | string | `"/"` |  |
 | kubePrometheusStack.grafana.ingress.tls | list | `[]` |  |
 | kubePrometheusStack.grafana.namespaceOverride | string | `""` |  |
+| kubePrometheusStack.grafana.operator.annotations | object | `{}` |  |
+| kubePrometheusStack.grafana.operator.dashboardsConfigMapRefEnabled | bool | `false` |  |
+| kubePrometheusStack.grafana.operator.folder | string | `"General"` |  |
+| kubePrometheusStack.grafana.operator.matchLabels | object | `{}` |  |
+| kubePrometheusStack.grafana.operator.resyncPeriod | string | `"10m"` |  |
 | kubePrometheusStack.grafana.prune | bool | `false` |  |
 | kubePrometheusStack.grafana.rbac.pspEnabled | bool | `false` |  |
 | kubePrometheusStack.grafana.service.ipFamilies | list | `[]` |  |
@@ -1324,7 +1329,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: kube-prometheus-stack
     path: ''
     helm:
