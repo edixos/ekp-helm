@@ -1,6 +1,6 @@
 # eso
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.14.2](https://img.shields.io/badge/AppVersion-0.14.2-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.14.2](https://img.shields.io/badge/AppVersion-0.14.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.external-secrets.io | eso(external-secrets) | 0.16.1 |
+| https://charts.external-secrets.io | eso(external-secrets) | 0.16.2 |
 
 ## Maintainers
 
@@ -104,6 +104,10 @@ A Helm chart ESO for Kubernetes
 | eso.global.nodeSelector | object | `{}` |  |
 | eso.global.tolerations | list | `[]` |  |
 | eso.global.topologySpreadConstraints | list | `[]` |  |
+| eso.grafanaDashboard.annotations | object | `{}` | Annotations that ConfigMaps can have to get configured in Grafana, See: sidecar.dashboards.folderAnnotation for specifying the dashboard folder. https://github.com/grafana/helm-charts/tree/main/charts/grafana |
+| eso.grafanaDashboard.enabled | bool | `false` | If true creates a Grafana dashboard. |
+| eso.grafanaDashboard.sidecarLabel | string | `"grafana_dashboard"` | Label that ConfigMaps should have to be loaded as dashboards. |
+| eso.grafanaDashboard.sidecarLabelValue | string | `"1"` | Label value that ConfigMaps should have to be loaded as dashboards. |
 | eso.hostNetwork | bool | `false` | Run the controller on the host network |
 | eso.image.flavour | string | `""` | The flavour of tag you want to use There are different image flavours available, like distroless and ubi. Please see GitHub release notes for image tags for these flavors. By default, the distroless image is used. |
 | eso.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -131,6 +135,8 @@ A Helm chart ESO for Kubernetes
 | eso.processClusterPushSecret | bool | `true` | if true, the operator will process cluster push secret. Else, it will ignore them. |
 | eso.processClusterStore | bool | `true` | if true, the operator will process cluster store. Else, it will ignore them. |
 | eso.processPushSecret | bool | `true` | if true, the operator will process push secret. Else, it will ignore them. |
+| eso.rbac.aggregateToEdit | bool | `true` | Specifies whether permissions are aggregated to the edit ClusterRole |
+| eso.rbac.aggregateToView | bool | `true` | Specifies whether permissions are aggregated to the view ClusterRole |
 | eso.rbac.create | bool | `true` | Specifies whether role and rolebinding resources should be created. |
 | eso.rbac.servicebindings.create | bool | `true` | Specifies whether a clusterrole to give servicebindings read access should be created. |
 | eso.replicaCount | int | `1` |  |
@@ -260,7 +266,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: eso
     path: ''
 
