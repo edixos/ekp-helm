@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.80.1](https://img.shields.io/badge/AppVersion-v0.80.1-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.80.1](https://img.shields.io/badge/AppVersion-v0.80.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 72.3.1 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 72.5.2 |
 
 ## Description
 
@@ -795,7 +795,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.repository | string | `"prometheus/prometheus"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.3.1"` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.4.0"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.listenLocal | bool | `false` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.logFormat | string | `"logfmt"` |  |
@@ -1329,7 +1329,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: kube-prometheus-stack
     path: ''
     helm:
