@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.14.4](https://img.shields.io/badge/AppVersion-2.14.4-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.14.4](https://img.shields.io/badge/AppVersion-2.14.4-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 8.0.1 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 8.0.6 |
 
 ## Maintainers
 
@@ -370,7 +370,7 @@ A Helm chart for Kubernetes
 | argocd.dex.extraContainers | list | `[]` | Additional containers to be added to the dex pod # Note: Supports use of custom Helm templates |
 | argocd.dex.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Dex imagePullPolicy |
 | argocd.dex.image.repository | string | `"ghcr.io/dexidp/dex"` | Dex image repository |
-| argocd.dex.image.tag | string | `"v2.42.1"` | Dex image tag |
+| argocd.dex.image.tag | string | `"v2.43.0"` | Dex image tag |
 | argocd.dex.imagePullSecrets | list | `[]` (defaults to global.imagePullSecrets) | Secrets with credentials to pull images from a private registry |
 | argocd.dex.initContainers | list | `[]` | Init containers to add to the dex pod # Note: Supports use of custom Helm templates |
 | argocd.dex.initImage.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Argo CD init image imagePullPolicy |
@@ -606,7 +606,7 @@ A Helm chart for Kubernetes
 | argocd.redis.exporter.env | list | `[]` | Environment variables to pass to the Redis exporter |
 | argocd.redis.exporter.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for the redis-exporter |
 | argocd.redis.exporter.image.repository | string | `"ghcr.io/oliver006/redis_exporter"` | Repository to use for the redis-exporter |
-| argocd.redis.exporter.image.tag | string | `"v1.71.0"` | Tag to use for the redis-exporter |
+| argocd.redis.exporter.image.tag | string | `"v1.72.1"` | Tag to use for the redis-exporter |
 | argocd.redis.exporter.livenessProbe.enabled | bool | `false` | Enable Kubernetes liveness probe for Redis exporter |
 | argocd.redis.exporter.livenessProbe.failureThreshold | int | `5` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
 | argocd.redis.exporter.livenessProbe.initialDelaySeconds | int | `30` | Number of seconds after the container has started before [probe] is initiated |
@@ -989,7 +989,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: argocd
     path: ''
     helm:
