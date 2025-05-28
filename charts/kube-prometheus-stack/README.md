@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.80.1](https://img.shields.io/badge/AppVersion-v0.80.1-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.80.1](https://img.shields.io/badge/AppVersion-v0.80.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 72.3.1 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 72.6.3 |
 
 ## Description
 
@@ -136,7 +136,6 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.networkPolicy.monitoringRules.prometheus | bool | `true` | Enable ingress from Prometheus # |
 | kubePrometheusStack.alertmanager.networkPolicy.policyTypes | list | `["Ingress"]` | Define policy types. If egress is enabled, both Ingress and Egress will be used Valid values are ["Ingress"] or ["Ingress", "Egress"] # |
 | kubePrometheusStack.alertmanager.podDisruptionBudget.enabled | bool | `false` |  |
-| kubePrometheusStack.alertmanager.podDisruptionBudget.maxUnavailable | string | `""` |  |
 | kubePrometheusStack.alertmanager.podDisruptionBudget.minAvailable | int | `1` |  |
 | kubePrometheusStack.alertmanager.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
 | kubePrometheusStack.alertmanager.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[]}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
@@ -747,7 +746,6 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.networkPolicy.enabled | bool | `false` |  |
 | kubePrometheusStack.prometheus.networkPolicy.flavor | string | `"kubernetes"` |  |
 | kubePrometheusStack.prometheus.podDisruptionBudget.enabled | bool | `false` |  |
-| kubePrometheusStack.prometheus.podDisruptionBudget.maxUnavailable | string | `""` |  |
 | kubePrometheusStack.prometheus.podDisruptionBudget.minAvailable | int | `1` |  |
 | kubePrometheusStack.prometheus.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
 | kubePrometheusStack.prometheus.podSecurityPolicy.allowedCapabilities | list | `[]` |  |
@@ -795,7 +793,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.repository | string | `"prometheus/prometheus"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.3.1"` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.4.0"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.listenLocal | bool | `false` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.logFormat | string | `"logfmt"` |  |
@@ -1008,7 +1006,6 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.nodeSelector | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podDisruptionBudget.enabled | bool | `false` |  |
-| kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podDisruptionBudget.maxUnavailable | string | `""` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podDisruptionBudget.minAvailable | int | `1` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podLabels | object | `{}` |  |
@@ -1124,7 +1121,6 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.nodeSelector | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.podDisruptionBudget.enabled | bool | `false` |  |
-| kubePrometheusStack.prometheusOperator.podDisruptionBudget.maxUnavailable | string | `""` |  |
 | kubePrometheusStack.prometheusOperator.podDisruptionBudget.minAvailable | int | `1` |  |
 | kubePrometheusStack.prometheusOperator.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
 | kubePrometheusStack.prometheusOperator.podLabels | object | `{}` |  |
@@ -1208,7 +1204,6 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.ingress.paths | list | `[]` |  |
 | kubePrometheusStack.thanosRuler.ingress.tls | list | `[]` |  |
 | kubePrometheusStack.thanosRuler.podDisruptionBudget.enabled | bool | `false` |  |
-| kubePrometheusStack.thanosRuler.podDisruptionBudget.maxUnavailable | string | `""` |  |
 | kubePrometheusStack.thanosRuler.podDisruptionBudget.minAvailable | int | `1` |  |
 | kubePrometheusStack.thanosRuler.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
 | kubePrometheusStack.thanosRuler.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[]}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
@@ -1329,7 +1324,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: kube-prometheus-stack
     path: ''
     helm:
