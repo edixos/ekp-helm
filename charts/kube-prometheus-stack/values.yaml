@@ -334,16 +334,6 @@ kubePrometheusStack:
       ## Create ClusterRoles that extend the existing view, edit and admin ClusterRoles to interact with prometheus-operator CRDs
       ## Ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles
       createAggregateClusterRoles: false
-      pspEnabled: false
-      pspAnnotations: {}
-        ## Specify pod annotations
-        ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#apparmor
-        ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#seccomp
-        ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#sysctl
-        ##
-        # seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
-        # seccomp.security.alpha.kubernetes.io/defaultProfileName: 'docker/default'
-        # apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
 
     ## Global image registry to use if it needs to be overridden for some specific use cases (e.g local registries, custom images, ...)
     ##
@@ -501,7 +491,7 @@ kubePrometheusStack:
     podDisruptionBudget:
       enabled: false
       minAvailable: 1
-      maxUnavailable: ""
+      # maxUnavailable: ""
       unhealthyPodEvictionPolicy: AlwaysAllow
 
     ## Alertmanager configuration directives
@@ -597,9 +587,7 @@ kubePrometheusStack:
     ingress:
       enabled: false
 
-      # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
-      # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
-      # ingressClassName: nginx
+      ingressClassName: ""
 
       annotations: {}
 
@@ -685,9 +673,7 @@ kubePrometheusStack:
     ingressPerReplica:
       enabled: false
 
-      # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
-      # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
-      # ingressClassName: nginx
+      ingressClassName: ""
 
       annotations: {}
       labels: {}
@@ -1174,15 +1160,15 @@ kubePrometheusStack:
       clusterAdvertiseAddress: false
 
       ## clusterGossipInterval determines interval between gossip attempts.
-      ## Needs to be specified as GoDuration, a time duration that can be parsed by Go’s time.ParseDuration() (e.g. 45ms, 30s, 1m, 1h20m15s)
+      ## Needs to be specified as GoDuration, a time duration that can be parsed by Go's time.ParseDuration() (e.g. 45ms, 30s, 1m, 1h20m15s)
       clusterGossipInterval: ""
 
       ## clusterPeerTimeout determines timeout for cluster peering.
-      ## Needs to be specified as GoDuration, a time duration that can be parsed by Go’s time.ParseDuration() (e.g. 45ms, 30s, 1m, 1h20m15s)
+      ## Needs to be specified as GoDuration, a time duration that can be parsed by Go's time.ParseDuration() (e.g. 45ms, 30s, 1m, 1h20m15s)
       clusterPeerTimeout: ""
 
       ## clusterPushpullInterval determines interval between pushpull attempts.
-      ## Needs to be specified as GoDuration, a time duration that can be parsed by Go’s time.ParseDuration() (e.g. 45ms, 30s, 1m, 1h20m15s)
+      ## Needs to be specified as GoDuration, a time duration that can be parsed by Go's time.ParseDuration() (e.g. 45ms, 30s, 1m, 1h20m15s)
       clusterPushpullInterval: ""
 
       ## clusterLabel defines the identifier that uniquely identifies the Alertmanager cluster.
@@ -2670,6 +2656,7 @@ kubePrometheusStack:
 
       namespaceSelector: {}
       objectSelector: {}
+      matchConditions: {}
 
       mutatingWebhookConfiguration:
         annotations: {}
@@ -2694,7 +2681,7 @@ kubePrometheusStack:
         podDisruptionBudget:
           enabled: false
           minAvailable: 1
-          maxUnavailable: ""
+          # maxUnavailable: ""
           unhealthyPodEvictionPolicy: AlwaysAllow
 
         ## Number of old replicasets to retain ##
@@ -3096,7 +3083,7 @@ kubePrometheusStack:
     podDisruptionBudget:
       enabled: false
       minAvailable: 1
-      maxUnavailable: ""
+      # maxUnavailable: ""
       unhealthyPodEvictionPolicy: AlwaysAllow
 
     ## Assign a PriorityClassName to pods if set
@@ -3640,16 +3627,14 @@ kubePrometheusStack:
     podDisruptionBudget:
       enabled: false
       minAvailable: 1
-      maxUnavailable: ""
+      # maxUnavailable: ""
       unhealthyPodEvictionPolicy: AlwaysAllow
 
     # Ingress exposes thanos sidecar outside the cluster
     thanosIngress:
       enabled: false
 
-      # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
-      # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
-      # ingressClassName: nginx
+      ingressClassName: ""
 
       annotations: {}
       labels: {}
@@ -3697,9 +3682,7 @@ kubePrometheusStack:
     ingress:
       enabled: false
 
-      # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
-      # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
-      # ingressClassName: nginx
+      ingressClassName: ""
 
       annotations: {}
       labels: {}
@@ -3778,9 +3761,7 @@ kubePrometheusStack:
     ingressPerReplica:
       enabled: false
 
-      # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
-      # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
-      # ingressClassName: nginx
+      ingressClassName: ""
 
       annotations: {}
       labels: {}
@@ -3815,13 +3796,6 @@ kubePrometheusStack:
         ## {{ tlsSecretPerReplica.prefix }}-{{ $replicaNumber }}
         ##
         prefix: "prometheus"
-
-    ## Configure additional options for default pod security policy for Prometheus
-    ## ref: https://kubernetes.io/docs/concepts/security/pod-security-policy/
-    podSecurityPolicy:
-      allowedCapabilities: []
-      allowedHostPaths: []
-      volumes: []
 
     serviceMonitor:
       ## If true, create a serviceMonitor for prometheus
@@ -3907,9 +3881,9 @@ kubePrometheusStack:
       disableCompaction: false
 
       ## AutomountServiceAccountToken indicates whether a service account token should be automatically mounted in the pod,
-      ## If the field isn’t set, the operator mounts the service account token by default.
+      ## If the field isn't set, the operator mounts the service account token by default.
       ## Warning: be aware that by default, Prometheus requires the service account token for Kubernetes service discovery,
-      ## It is possible to use strategic merge patch to project the service account token into the ‘prometheus’ container.
+      ## It is possible to use strategic merge patch to project the service account token into the 'prometheus' container.
       automountServiceAccountToken: true
 
       ## APIServerConfig
@@ -3947,6 +3921,11 @@ kubePrometheusStack:
       #   tlsConfig:
       #     caFile: /etc/prometheus/secrets/istio.default/root-cert.pem
       #     certFile: /etc/prometheus/secrets/istio.default/cert-chain.pem
+
+      ## PodTargetLabels are appended to the `spec.podTargetLabels` field of all PodMonitor and ServiceMonitor objects.
+      ##
+      podTargetLabels: []
+      # - customlabel
 
       ## Interval between consecutive evaluations.
       ##
@@ -3991,7 +3970,7 @@ kubePrometheusStack:
       image:
         registry: quay.io
         repository: prometheus/prometheus
-        tag: v3.3.1
+        tag: v3.4.1
         sha: ""
 
       ## Tolerations for use with node taints
@@ -4615,7 +4594,7 @@ kubePrometheusStack:
       hostNetwork: false
 
       # HostAlias holds the mapping between IP and hostnames that will be injected
-      # as an entry in the pod’s hosts file.
+      # as an entry in the pod's hosts file.
       hostAliases: []
       #  - ip: 10.10.0.100
       #    hostnames:
@@ -4627,7 +4606,7 @@ kubePrometheusStack:
       tracingConfig: {}
 
       ## Defines the service discovery role used to discover targets from ServiceMonitor objects and Alertmanager endpoints.
-      ## If set, the value should be either “Endpoints” or “EndpointSlice”. If unset, the operator assumes the “Endpoints” role.
+      ## If set, the value should be either "Endpoints" or "EndpointSlice". If unset, the operator assumes the "Endpoints" role.
       serviceDiscoveryRole: ""
 
       ## Additional configuration which is not covered by the properties above. (passed through tpl)
@@ -4863,15 +4842,13 @@ kubePrometheusStack:
     podDisruptionBudget:
       enabled: false
       minAvailable: 1
-      maxUnavailable: ""
+      # maxUnavailable: ""
       unhealthyPodEvictionPolicy: AlwaysAllow
 
     ingress:
       enabled: false
 
-      # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
-      # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
-      # ingressClassName: nginx
+      ingressClassName: ""
 
       annotations: {}
 
