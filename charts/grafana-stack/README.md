@@ -1,6 +1,6 @@
 # grafana-stack
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![AppVersion: 11.3.1](https://img.shields.io/badge/AppVersion-11.3.1-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![AppVersion: 11.3.1](https://img.shields.io/badge/AppVersion-11.3.1-informational?style=flat-square)
 
 ----
 
@@ -16,7 +16,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://grafana.github.io/helm-charts | grafana | 9.0.0 |
+| https://grafana.github.io/helm-charts | grafana | 9.2.2 |
 
 ## Maintainers
 
@@ -278,6 +278,7 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.shareProcessNamespace | bool | `false` |  |
 | grafana.sidecar.alerts.enabled | bool | `false` |  |
 | grafana.sidecar.alerts.env | object | `{}` |  |
+| grafana.sidecar.alerts.envValueFrom | object | `{}` |  |
 | grafana.sidecar.alerts.extraMounts | list | `[]` |  |
 | grafana.sidecar.alerts.initAlerts | bool | `false` |  |
 | grafana.sidecar.alerts.label | string | `"grafana_alert"` |  |
@@ -421,7 +422,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: grafana-stack
     path: ''
 
