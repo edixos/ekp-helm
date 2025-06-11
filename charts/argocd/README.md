@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.14.4](https://img.shields.io/badge/AppVersion-2.14.4-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.14.4](https://img.shields.io/badge/AppVersion-2.14.4-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 8.0.1 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 8.0.17 |
 
 ## Maintainers
 
@@ -220,6 +220,7 @@ A Helm chart for Kubernetes
 | argocd.configs.params."controller.self.heal.timeout.seconds" | int | `5` | Specifies timeout between application self heal attempts |
 | argocd.configs.params."controller.status.processors" | int | `20` | Number of application status processors |
 | argocd.configs.params."controller.sync.timeout.seconds" | int | `0` | Specifies the timeout after which a sync would be terminated. 0 means no timeout |
+| argocd.configs.params."hydrator.enabled" | bool | `false` | Enable the hydrator feature (hydrator is in Alpha phase) |
 | argocd.configs.params."otlp.address" | string | `""` | Open-Telemetry collector address: (e.g. "otel-collector:4317") |
 | argocd.configs.params."reposerver.parallelism.limit" | int | `0` | Limit on number of concurrent manifests generate requests. Any value less the 1 means no limit. |
 | argocd.configs.params."server.basehref" | string | `"/"` | Value for base href in index.html. Used if Argo CD is running behind reverse proxy under subpath different from / |
@@ -370,7 +371,7 @@ A Helm chart for Kubernetes
 | argocd.dex.extraContainers | list | `[]` | Additional containers to be added to the dex pod # Note: Supports use of custom Helm templates |
 | argocd.dex.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Dex imagePullPolicy |
 | argocd.dex.image.repository | string | `"ghcr.io/dexidp/dex"` | Dex image repository |
-| argocd.dex.image.tag | string | `"v2.42.1"` | Dex image tag |
+| argocd.dex.image.tag | string | `"v2.43.1"` | Dex image tag |
 | argocd.dex.imagePullSecrets | list | `[]` (defaults to global.imagePullSecrets) | Secrets with credentials to pull images from a private registry |
 | argocd.dex.initContainers | list | `[]` | Init containers to add to the dex pod # Note: Supports use of custom Helm templates |
 | argocd.dex.initImage.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Argo CD init image imagePullPolicy |
@@ -436,7 +437,7 @@ A Helm chart for Kubernetes
 | argocd.dex.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to dex # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
 | argocd.dex.volumeMounts | list | `[]` | Additional volumeMounts to the dex main container |
 | argocd.dex.volumes | list | `[]` | Additional volumes to the dex pod |
-| argocd.externalRedis.existingSecret | string | `""` | The name of an existing secret with Redis (must contain key `redis-password`) and Sentinel credentials. When it's set, the `externalRedis.password` parameter is ignored |
+| argocd.externalRedis.existingSecret | string | `""` | The name of an existing secret with Redis (must contain key `redis-password`. And should contain `redis-username` if username is not `default`) and Sentinel credentials. When it's set, the `externalRedis.username` and `externalRedis.password` parameters are ignored |
 | argocd.externalRedis.host | string | `""` | External Redis server host |
 | argocd.externalRedis.password | string | `""` | External Redis password |
 | argocd.externalRedis.port | int | `6379` | External Redis server port |
@@ -574,11 +575,12 @@ A Helm chart for Kubernetes
 | argocd.redis-ha.haproxy.containerSecurityContext | object | See [values.yaml] | HAProxy container-level security context |
 | argocd.redis-ha.haproxy.enabled | bool | `true` | Enabled HAProxy LoadBalancing/Proxy |
 | argocd.redis-ha.haproxy.hardAntiAffinity | bool | `true` | Whether the haproxy pods should be forced to run on separate nodes. |
+| argocd.redis-ha.haproxy.image.repository | string | `"ecr-public.aws.com/docker/library/haproxy"` | HAProxy Image Repository |
 | argocd.redis-ha.haproxy.labels | object | `{"app.kubernetes.io/name":"argocd-redis-ha-haproxy"}` | Custom labels for the haproxy pod. This is relevant for Argo CD CLI. |
 | argocd.redis-ha.haproxy.metrics.enabled | bool | `true` | HAProxy enable prometheus metric scraping |
 | argocd.redis-ha.haproxy.tolerations | list | `[]` | [Tolerations] for use with node taints for haproxy pods. |
 | argocd.redis-ha.hardAntiAffinity | bool | `true` | Whether the Redis server pods should be forced to run on separate nodes. |
-| argocd.redis-ha.image.repository | string | `"public.ecr.aws/docker/library/redis"` | Redis repository |
+| argocd.redis-ha.image.repository | string | `"ecr-public.aws.com/docker/library/redis"` | Redis repository |
 | argocd.redis-ha.image.tag | string | `"7.2.8-alpine"` | Redis tag # Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis |
 | argocd.redis-ha.persistentVolume.enabled | bool | `false` | Configures persistence on Redis nodes |
 | argocd.redis-ha.redis.config | object | See [values.yaml] | Any valid redis config options in this section will be applied to each server (see `redis-ha` chart) |
@@ -606,7 +608,7 @@ A Helm chart for Kubernetes
 | argocd.redis.exporter.env | list | `[]` | Environment variables to pass to the Redis exporter |
 | argocd.redis.exporter.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for the redis-exporter |
 | argocd.redis.exporter.image.repository | string | `"ghcr.io/oliver006/redis_exporter"` | Repository to use for the redis-exporter |
-| argocd.redis.exporter.image.tag | string | `"v1.71.0"` | Tag to use for the redis-exporter |
+| argocd.redis.exporter.image.tag | string | `"v1.74.0"` | Tag to use for the redis-exporter |
 | argocd.redis.exporter.livenessProbe.enabled | bool | `false` | Enable Kubernetes liveness probe for Redis exporter |
 | argocd.redis.exporter.livenessProbe.failureThreshold | int | `5` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
 | argocd.redis.exporter.livenessProbe.initialDelaySeconds | int | `30` | Number of seconds after the container has started before [probe] is initiated |
@@ -623,7 +625,7 @@ A Helm chart for Kubernetes
 | argocd.redis.extraArgs | list | `[]` | Additional command line arguments to pass to redis-server |
 | argocd.redis.extraContainers | list | `[]` | Additional containers to be added to the redis pod # Note: Supports use of custom Helm templates |
 | argocd.redis.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Redis image pull policy |
-| argocd.redis.image.repository | string | `"public.ecr.aws/docker/library/redis"` | Redis repository |
+| argocd.redis.image.repository | string | `"ecr-public.aws.com/docker/library/redis"` | Redis repository |
 | argocd.redis.image.tag | string | `"7.2.8-alpine"` | Redis tag # Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis |
 | argocd.redis.imagePullSecrets | list | `[]` (defaults to global.imagePullSecrets) | Secrets with credentials to pull images from a private registry |
 | argocd.redis.initContainers | list | `[]` | Init containers to add to the redis pod # Note: Supports use of custom Helm templates |
@@ -989,7 +991,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: argocd
     path: ''
     helm:
