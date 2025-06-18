@@ -1,12 +1,12 @@
 dependencies:
 - name: cert-manager
   repository: https://charts.jetstack.io
-  version: v1.17.2
+  version: v1.18.0
 - name: gcp-workload-identity
   repository: https://edixos.github.io/ekp-helm
   version: 0.1.1
 - name: gcp-iam-policy-members
   repository: https://edixos.github.io/ekp-helm
   version: 0.1.2
-digest: sha256:332d9476ee0ae270e6ab49c0a8474c4a9ded472b0198920ab2f457119509c2f8
-generated: "2025-05-07T10:23:12.154607043Z"
+digest: sha256:3bc7234077ec45ee89dda449becd0840b348bb3e53e19b790a24d846adc81e17
+generated: "2025-06-18T10:23:10.335147327Z"

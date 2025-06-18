@@ -1,6 +1,6 @@
 # kyverno-policies
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.13.4](https://img.shields.io/badge/AppVersion-1.13.4-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.13.4](https://img.shields.io/badge/AppVersion-1.13.4-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kyverno.github.io/kyverno/ | kyvernopolicies(kyverno-policies) | 3.4.1 |
+| https://kyverno.github.io/kyverno/ | kyvernopolicies(kyverno-policies) | 3.4.2 |
 
 ## Maintainers
 
@@ -30,6 +30,7 @@ A Helm chart for Kubernetes
 |-----|------|---------|-------------|
 | kyvernopolicies.autogenControllers | string | `""` | Customize the target Pod controllers for the auto-generated rules. (Eg. `none`, `Deployment`, `DaemonSet,Deployment,StatefulSet`) For more info https://kyverno.io/docs/writing-policies/autogen/. |
 | kyvernopolicies.background | bool | `true` | Policies background mode |
+| kyvernopolicies.customAnnotations | object | `{}` | Additional Annotations. |
 | kyvernopolicies.customLabels | object | `{}` | Additional labels. |
 | kyvernopolicies.customPolicies | list | `[]` | Additional custom policies to include. |
 | kyvernopolicies.failurePolicy | string | `"Fail"` | API server behavior if the webhook fails to respond ('Ignore', 'Fail') For more info: https://kyverno.io/docs/writing-policies/policy-settings/ |
@@ -45,7 +46,7 @@ A Helm chart for Kubernetes
 | kyvernopolicies.policyKind | string | `"ClusterPolicy"` | Policy kind (`ClusterPolicy`, `Policy`) Set to `Policy` if you need namespaced policies and not cluster policies |
 | kyvernopolicies.policyPreconditions | object | `{}` | Add preconditions to individual policies. Policies with multiple rules can have individual rules excluded by using the name of the rule as the key in the `policyPreconditions` map. |
 | kyvernopolicies.skipBackgroundRequests | bool | `nil` | SkipBackgroundRequests bypasses admission requests that are sent by the background controller |
-| kyvernopolicies.validationAllowExistingViolations | bool | `true` | Validate already existing resources. For more info https://kyverno.io/docs/writing-policies/validate. |
+| kyvernopolicies.validationAllowExistingViolations | bool | `true` | Validate already existing resources. For more info https://kyverno.io/docs/policy-types/. |
 | kyvernopolicies.validationFailureAction | string | `"Audit"` | Validation failure action (`Audit`, `Enforce`). For more info https://kyverno.io/docs/writing-policies/validate. |
 | kyvernopolicies.validationFailureActionByPolicy | object | `{}` | Define validationFailureActionByPolicy for specific policies. Override the defined `validationFailureAction` with a individual validationFailureAction for individual Policies. |
 | kyvernopolicies.validationFailureActionOverrides | object | `{"all":[]}` | Define validationFailureActionOverrides for specific policies. The overrides for `all` will apply to all policies. |
@@ -75,7 +76,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: kyverno-policies
     path: ''
     helm:
