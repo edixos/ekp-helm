@@ -98,6 +98,9 @@ argocd:
     # -- Annotations for the all deployed Deployments
     deploymentAnnotations: {}
 
+    # -- Labels for the all deployed Deployments
+    deploymentLabels: {}
+
     # -- Annotations for the all deployed pods
     podAnnotations: {}
 
@@ -438,6 +441,8 @@ argocd:
       server.enable.gzip: true
       # -- Enable proxy extension feature. (proxy extension is in Alpha phase)
       server.enable.proxy.extension: false
+      # -- Enable the hydrator feature (hydrator is in Alpha phase)
+      hydrator.enabled: false
       # -- Set X-Frame-Options header in HTTP responses to value. To disable, set to "".
       server.x.frame.options: sameorigin
 
@@ -906,6 +911,9 @@ argocd:
     # -- Annotations for the application controller Deployment
     deploymentAnnotations: {}
 
+    # -- Labels for the application controller Deployment
+    deploymentLabels: {}
+
     # -- Annotations to be added to application controller pods
     podAnnotations: {}
 
@@ -1172,7 +1180,7 @@ argocd:
       # -- Dex image repository
       repository: ghcr.io/dexidp/dex
       # -- Dex image tag
-      tag: v2.42.1
+      tag: v2.43.1
       # -- Dex imagePullPolicy
       # @default -- `""` (defaults to global.image.imagePullPolicy)
       imagePullPolicy: ""
@@ -1253,6 +1261,9 @@ argocd:
 
     # -- Annotations to be added to the Dex server Deployment
     deploymentAnnotations: {}
+
+    # -- Labels for the Dex server Deployment
+    deploymentLabels: {}
 
     # -- Annotations to be added to the Dex server pods
     podAnnotations: {}
@@ -1435,7 +1446,7 @@ argocd:
     ## Redis image
     image:
       # -- Redis repository
-      repository: public.ecr.aws/docker/library/redis
+      repository: ecr-public.aws.com/docker/library/redis
       # -- Redis tag
       ## Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis
       tag: 7.2.8-alpine
@@ -1454,7 +1465,7 @@ argocd:
         # -- Repository to use for the redis-exporter
         repository: ghcr.io/oliver006/redis_exporter
         # -- Tag to use for the redis-exporter
-        tag: v1.71.0
+        tag: v1.74.0
         # -- Image pull policy for the redis-exporter
         # @default -- `""` (defaults to global.image.imagePullPolicy)
         imagePullPolicy: ""
@@ -1574,6 +1585,9 @@ argocd:
 
     # -- Annotations to be added to the Redis server Deployment
     deploymentAnnotations: {}
+
+    # -- Labels for the Redis server Deployment
+    deploymentLabels: {}
 
     # -- Annotations to be added to the Redis server pods
     podAnnotations: {}
@@ -1722,7 +1736,7 @@ argocd:
     ## Redis image
     image:
       # -- Redis repository
-      repository: public.ecr.aws/docker/library/redis
+      repository: ecr-public.aws.com/docker/library/redis
       # -- Redis tag
       ## Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis
       tag: 7.2.8-alpine
@@ -1754,6 +1768,9 @@ argocd:
       # --  Custom labels for the haproxy pod. This is relevant for Argo CD CLI.
       labels:
         app.kubernetes.io/name: argocd-redis-ha-haproxy
+      image:
+        # -- HAProxy Image Repository
+        repository: ecr-public.aws.com/docker/library/haproxy
       metrics:
         # -- HAProxy enable prometheus metric scraping
         enabled: true
@@ -1818,8 +1835,8 @@ argocd:
     password: ""
     # -- External Redis server port
     port: 6379
-    # -- The name of an existing secret with Redis (must contain key `redis-password`) and Sentinel credentials.
-    # When it's set, the `externalRedis.password` parameter is ignored
+    # -- The name of an existing secret with Redis (must contain key `redis-password`. And should contain `redis-username` if username is not `default`) and Sentinel credentials.
+    # When it's set, the `externalRedis.username` and `externalRedis.password` parameters are ignored
     existingSecret: ""
     # -- External Redis Secret annotations
     secretAnnotations: {}
@@ -2106,6 +2123,9 @@ argocd:
 
     # -- Annotations to be added to server Deployment
     deploymentAnnotations: {}
+
+    # -- Labels for the server Deployment
+    deploymentLabels: {}
 
     # -- Annotations to be added to server pods
     podAnnotations: {}
@@ -2755,6 +2775,9 @@ argocd:
     # -- Annotations to be added to repo server Deployment
     deploymentAnnotations: {}
 
+    # -- Labels for the repo server Deployment
+    deploymentLabels: {}
+
     # -- Annotations to be added to repo server pods
     podAnnotations: {}
 
@@ -2885,6 +2908,8 @@ argocd:
       port: 8081
       # -- Repo server service port name
       portName: tcp-repo-server
+      # -- Traffic distribution preference for the repo server service. If the field is not set, the implementation will apply its default routing strategy.
+      trafficDistribution: ""
 
     ## Repo server metrics service configuration
     metrics:
@@ -3124,6 +3149,9 @@ argocd:
 
     # -- Annotations to be added to ApplicationSet controller Deployment
     deploymentAnnotations: {}
+
+    # -- Labels for the ApplicationSet controller Deployment
+    deploymentLabels: {}
 
     # -- Annotations for the ApplicationSet controller pods
     podAnnotations: {}
@@ -3506,6 +3534,9 @@ argocd:
 
     # -- Annotations to be applied to the notifications controller Deployment
     deploymentAnnotations: {}
+
+    # -- Labels for the notifications controller Deployment
+    deploymentLabels: {}
 
     # -- Annotations to be applied to the notifications controller Pods
     podAnnotations: {}
@@ -3989,6 +4020,9 @@ argocd:
 
     # -- Annotations to be added to commit server Deployment
     deploymentAnnotations: {}
+
+    # -- Labels for the commit server Deployment
+    deploymentLabels: {}
 
     # -- Annotations for the commit server pods
     podAnnotations: {}
