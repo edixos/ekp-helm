@@ -1,6 +1,6 @@
 # velero
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.15.2](https://img.shields.io/badge/AppVersion-1.15.2-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.15.2](https://img.shields.io/badge/AppVersion-1.15.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@
 | https://edixos.github.io/ekp-helm | iamCustomRole(gcp-iam-custom-role) | 0.1.0 |
 | https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-members) | 0.1.2 |
 | https://edixos.github.io/ekp-helm | workloadIdentity(gcp-workload-identity) | 0.1.1 |
-| https://vmware-tanzu.github.io/helm-charts | velero | 9.1.2 |
+| https://vmware-tanzu.github.io/helm-charts | velero | 10.0.8 |
 
 ## Maintainers
 
@@ -53,20 +53,21 @@ A Helm chart for velero
 | velero.configMaps | object | `{}` |  |
 | velero.configuration.backupStorageLocation[0].accessMode | string | `"ReadWrite"` |  |
 | velero.configuration.backupStorageLocation[0].annotations | object | `{}` |  |
-| velero.configuration.backupStorageLocation[0].bucket | string | `nil` |  |
+| velero.configuration.backupStorageLocation[0].bucket | string | `""` |  |
 | velero.configuration.backupStorageLocation[0].caCert | string | `nil` |  |
 | velero.configuration.backupStorageLocation[0].config | object | `{}` |  |
 | velero.configuration.backupStorageLocation[0].credential.key | string | `nil` |  |
 | velero.configuration.backupStorageLocation[0].credential.name | string | `nil` |  |
-| velero.configuration.backupStorageLocation[0].default | string | `nil` |  |
+| velero.configuration.backupStorageLocation[0].default | bool | `false` |  |
 | velero.configuration.backupStorageLocation[0].name | string | `nil` |  |
 | velero.configuration.backupStorageLocation[0].prefix | string | `nil` |  |
-| velero.configuration.backupStorageLocation[0].provider | string | `nil` |  |
+| velero.configuration.backupStorageLocation[0].provider | string | `""` |  |
 | velero.configuration.backupStorageLocation[0].validationFrequency | string | `nil` |  |
 | velero.configuration.backupSyncPeriod | string | `nil` |  |
 | velero.configuration.clientBurst | string | `nil` |  |
 | velero.configuration.clientPageSize | string | `nil` |  |
 | velero.configuration.clientQPS | string | `nil` |  |
+| velero.configuration.dataMoverPrepareTimeout | string | `nil` |  |
 | velero.configuration.defaultBackupStorageLocation | string | `nil` |  |
 | velero.configuration.defaultBackupTTL | string | `nil` |  |
 | velero.configuration.defaultItemOperationTimeout | string | `nil` |  |
@@ -77,7 +78,7 @@ A Helm chart for velero
 | velero.configuration.disableControllers | string | `nil` |  |
 | velero.configuration.disableInformerCache | bool | `false` |  |
 | velero.configuration.extraArgs | list | `[]` |  |
-| velero.configuration.extraEnvVars | object | `{}` |  |
+| velero.configuration.extraEnvVars | list | `[]` |  |
 | velero.configuration.features | string | `nil` |  |
 | velero.configuration.fsBackupTimeout | string | `nil` |  |
 | velero.configuration.garbageCollectionFrequency | string | `nil` |  |
@@ -101,7 +102,7 @@ A Helm chart for velero
 | velero.configuration.volumeSnapshotLocation[0].credential.key | string | `nil` |  |
 | velero.configuration.volumeSnapshotLocation[0].credential.name | string | `nil` |  |
 | velero.configuration.volumeSnapshotLocation[0].name | string | `nil` |  |
-| velero.configuration.volumeSnapshotLocation[0].provider | string | `nil` |  |
+| velero.configuration.volumeSnapshotLocation[0].provider | string | `""` |  |
 | velero.containerSecurityContext | object | `{}` |  |
 | velero.credentials.existingSecret | string | `nil` |  |
 | velero.credentials.extraEnvVars | object | `{}` |  |
@@ -116,10 +117,11 @@ A Helm chart for velero
 | velero.extraVolumeMounts | list | `[]` |  |
 | velero.extraVolumes | list | `[]` |  |
 | velero.fullnameOverride | string | `""` |  |
+| velero.hostAliases | list | `[]` |  |
 | velero.image.imagePullSecrets | list | `[]` |  |
 | velero.image.pullPolicy | string | `"IfNotPresent"` |  |
 | velero.image.repository | string | `"velero/velero"` |  |
-| velero.image.tag | string | `"v1.16.0"` |  |
+| velero.image.tag | string | `"v1.16.1"` |  |
 | velero.initContainers | string | `nil` |  |
 | velero.kubectl.annotations | object | `{}` |  |
 | velero.kubectl.containerSecurityContext | object | `{}` |  |
@@ -153,7 +155,11 @@ A Helm chart for velero
 | velero.metrics.scrapeInterval | string | `"30s"` |  |
 | velero.metrics.scrapeTimeout | string | `"10s"` |  |
 | velero.metrics.service.annotations | object | `{}` |  |
+| velero.metrics.service.externalTrafficPolicy | string | `""` |  |
+| velero.metrics.service.internalTrafficPolicy | string | `""` |  |
 | velero.metrics.service.labels | object | `{}` |  |
+| velero.metrics.service.nodePort | string | `nil` |  |
+| velero.metrics.service.type | string | `"ClusterIP"` |  |
 | velero.metrics.serviceMonitor.additionalLabels | object | `{}` |  |
 | velero.metrics.serviceMonitor.annotations | object | `{}` |  |
 | velero.metrics.serviceMonitor.autodetect | bool | `true` |  |
@@ -166,9 +172,10 @@ A Helm chart for velero
 | velero.nodeAgent.dnsConfig | object | `{}` |  |
 | velero.nodeAgent.dnsPolicy | string | `"ClusterFirst"` |  |
 | velero.nodeAgent.extraArgs | list | `[]` |  |
-| velero.nodeAgent.extraEnvVars | object | `{}` |  |
+| velero.nodeAgent.extraEnvVars | list | `[]` |  |
 | velero.nodeAgent.extraVolumeMounts | list | `[]` |  |
 | velero.nodeAgent.extraVolumes | list | `[]` |  |
+| velero.nodeAgent.hostAliases | list | `[]` |  |
 | velero.nodeAgent.labels | object | `{}` |  |
 | velero.nodeAgent.lifecycle | object | `{}` |  |
 | velero.nodeAgent.nodeSelector | object | `{}` |  |
@@ -213,7 +220,7 @@ A Helm chart for velero
 | velero.tolerations | list | `[]` |  |
 | velero.upgradeCRDs | bool | `true` |  |
 | velero.upgradeCRDsJob.automountServiceAccountToken | bool | `true` |  |
-| velero.upgradeCRDsJob.extraEnvVars | object | `{}` |  |
+| velero.upgradeCRDsJob.extraEnvVars | list | `[]` |  |
 | velero.upgradeCRDsJob.extraVolumeMounts | list | `[]` |  |
 | velero.upgradeCRDsJob.extraVolumes | list | `[]` |  |
 | velero.upgradeJobResources | object | `{}` |  |
@@ -244,7 +251,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: velero
     path: ''
     helm:
