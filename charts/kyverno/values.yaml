@@ -37,6 +37,9 @@ kyverno:
     # -- Resync period for informers
     resyncPeriod: 15m
 
+    # -- Enable/Disable custom resource watcher to invalidate cache
+    crdWatcher: false
+
     caCertificates:
       # -- Global CA certificates to use with Kyverno deployments
       # This value is expected to be one large string of CA certificates
@@ -96,6 +99,10 @@ kyverno:
 
     # -- Whether to have Helm install the Kyverno CRDs, if the CRDs are not installed by Helm, they must be added before policies can be created
     install: true
+
+    reportsServer:
+        # -- Kyverno reports-server is used in your cluster
+      enabled: false
 
     groups:
 
@@ -375,10 +382,10 @@ kyverno:
           values:
             - kube-system
       # Exclude objects
-      # - objectSelector:
-      #     matchExpressions:
-      #     - key: webhooks.kyverno.io/exclude
-      #       operator: DoesNotExist
+      # objectSelector:
+      #   matchExpressions:
+      #   - key: webhooks.kyverno.io/exclude
+      #     operator: DoesNotExist
 
     # -- Defines annotations to set on webhook configurations.
     webhookAnnotations:
@@ -727,6 +734,9 @@ kyverno:
     configMapCaching:
       # -- Enables the feature
       enabled: true
+    controllerRuntimeMetrics:
+      # -- Bind address for controller-runtime metrics (use "0" to disable it)
+      bindAddress: ":8080"
     deferredLoading:
       # -- Enables the feature
       enabled: true
@@ -861,6 +871,9 @@ kyverno:
 
     # -- Resync period for informers
     resyncPeriod: 15m
+
+    # -- Enable/Disable custom resource watcher to invalidate cache
+    crdWatcher: false
 
     # -- Additional labels to add to each pod
     podLabels: {}
