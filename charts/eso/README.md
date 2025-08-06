@@ -1,6 +1,6 @@
 # eso
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.14.2](https://img.shields.io/badge/AppVersion-0.14.2-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.14.2](https://img.shields.io/badge/AppVersion-0.14.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.external-secrets.io | eso(external-secrets) | 0.16.2 |
+| https://charts.external-secrets.io | eso(external-secrets) | 0.19.0 |
 
 ## Maintainers
 
@@ -30,11 +30,13 @@ A Helm chart ESO for Kubernetes
 |-----|------|---------|-------------|
 | eso.affinity | object | `{}` |  |
 | eso.bitwarden-sdk-server.enabled | bool | `false` |  |
+| eso.bitwarden-sdk-server.namespaceOverride | string | `""` |  |
 | eso.certController.affinity | object | `{}` |  |
 | eso.certController.create | bool | `true` | Specifies whether a certificate controller deployment be created. |
 | eso.certController.deploymentAnnotations | object | `{}` | Annotations to add to Deployment |
 | eso.certController.extraArgs | object | `{}` |  |
 | eso.certController.extraEnv | list | `[]` |  |
+| eso.certController.extraInitContainers | list | `[]` |  |
 | eso.certController.extraVolumeMounts | list | `[]` |  |
 | eso.certController.extraVolumes | list | `[]` |  |
 | eso.certController.fullnameOverride | string | `""` |  |
@@ -95,6 +97,7 @@ A Helm chart ESO for Kubernetes
 | eso.extraArgs | object | `{}` |  |
 | eso.extraContainers | list | `[]` |  |
 | eso.extraEnv | list | `[]` |  |
+| eso.extraInitContainers | list | `[]` |  |
 | eso.extraObjects | list | `[]` |  |
 | eso.extraVolumeMounts | list | `[]` |  |
 | eso.extraVolumes | list | `[]` |  |
@@ -184,6 +187,7 @@ A Helm chart ESO for Kubernetes
 | eso.webhook.deploymentAnnotations | object | `{}` | Annotations to add to Deployment |
 | eso.webhook.extraArgs | object | `{}` |  |
 | eso.webhook.extraEnv | list | `[]` |  |
+| eso.webhook.extraInitContainers | list | `[]` |  |
 | eso.webhook.extraVolumeMounts | list | `[]` |  |
 | eso.webhook.extraVolumes | list | `[]` |  |
 | eso.webhook.failurePolicy | string | `"Fail"` | Specifies whether validating webhooks should be created with failurePolicy: Fail or Ignore |
@@ -266,7 +270,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: eso
     path: ''
 
