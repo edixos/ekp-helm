@@ -1,6 +1,6 @@
 # kyverno
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.13.4](https://img.shields.io/badge/AppVersion-1.13.4-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.13.4](https://img.shields.io/badge/AppVersion-1.13.4-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kyverno.github.io/kyverno/ | kyverno | 3.4.1 |
+| https://kyverno.github.io/kyverno/ | kyverno | 3.5.0 |
 
 ## Maintainers
 
@@ -48,6 +48,7 @@ A Helm chart for kyverno
 | kyverno.admissionController.container.resources.limits | object | `{"memory":"384Mi"}` | Pod resource limits |
 | kyverno.admissionController.container.resources.requests | object | `{"cpu":"100m","memory":"128Mi"}` | Pod resource requests |
 | kyverno.admissionController.container.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Container security context |
+| kyverno.admissionController.crdWatcher | bool | `false` | Enable/Disable custom resource watcher to invalidate cache |
 | kyverno.admissionController.createSelfSignedCert | bool | `false` | Create self-signed certificates at deployment time. The certificates won't be automatically renewed if this is set to `true`. |
 | kyverno.admissionController.dnsConfig | object | `{}` | `dnsConfig` allows to specify DNS configuration for the pod. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config. |
 | kyverno.admissionController.dnsPolicy | string | `"ClusterFirst"` | `dnsPolicy` determines the manner in which DNS resolution happens in the cluster. In case of `hostNetwork: true`, usually, the `dnsPolicy` is suitable to be `ClusterFirstWithHostNet`. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy. |
@@ -77,6 +78,7 @@ A Helm chart for kyverno
 | kyverno.admissionController.metricsService.create | bool | `true` | Create service. |
 | kyverno.admissionController.metricsService.nodePort | string | `nil` | Service node port. Only used if `type` is `NodePort`. |
 | kyverno.admissionController.metricsService.port | int | `8000` | Service port. Kyverno's metrics server will be exposed at this port. |
+| kyverno.admissionController.metricsService.trafficDistribution | string | `nil` | Service traffic distribution policy. Set to `PreferClose` to route traffic to nearby endpoints, reducing latency and cross-zone costs. |
 | kyverno.admissionController.metricsService.type | string | `"ClusterIP"` | Service type. |
 | kyverno.admissionController.networkPolicy.enabled | bool | `false` | When true, use a NetworkPolicy to allow ingress to the webhook This is useful on clusters using Calico and/or native k8s network policies in a default-deny setup. |
 | kyverno.admissionController.networkPolicy.ingressFrom | list | `[]` | A list of valid from selectors according to https://kubernetes.io/docs/concepts/services-networking/network-policies. |
@@ -88,6 +90,7 @@ A Helm chart for kyverno
 | kyverno.admissionController.podDisruptionBudget.enabled | bool | `false` | Enable PodDisruptionBudget. Will always be enabled if replicas > 1. This non-declarative behavior should ideally be avoided, but changing it now would be breaking. |
 | kyverno.admissionController.podDisruptionBudget.maxUnavailable | string | `nil` | Configures the maximum unavailable pods for disruptions. Cannot be used if `minAvailable` is set. |
 | kyverno.admissionController.podDisruptionBudget.minAvailable | int | `1` | Configures the minimum available pods for disruptions. Cannot be used if `maxUnavailable` is set. |
+| kyverno.admissionController.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `nil` | Unhealty pod eviction policy to be used. Possible values are `IfHealthyBudget` or `AlwaysAllow`. |
 | kyverno.admissionController.podLabels | object | `{}` | Additional labels to add to each pod |
 | kyverno.admissionController.podSecurityContext | object | `{}` | Security context for the pod |
 | kyverno.admissionController.priorityClassName | string | `""` | Optional priority class |
@@ -101,6 +104,7 @@ A Helm chart for kyverno
 | kyverno.admissionController.rbac.create | bool | `true` | Create RBAC resources |
 | kyverno.admissionController.rbac.createViewRoleBinding | bool | `true` | Create rolebinding to view role |
 | kyverno.admissionController.rbac.serviceAccount.annotations | object | `{}` | Annotations for the ServiceAccount |
+| kyverno.admissionController.rbac.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
 | kyverno.admissionController.rbac.serviceAccount.name | string | `nil` | The ServiceAccount name |
 | kyverno.admissionController.rbac.viewRoleName | string | `"view"` | The view role to use in the rolebinding |
 | kyverno.admissionController.readinessProbe | object | See [values.yaml](values.yaml) | Readiness Probe. The block is directly forwarded into the deployment, so you can use whatever readinessProbe configuration you want. ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/ |
@@ -110,7 +114,9 @@ A Helm chart for kyverno
 | kyverno.admissionController.service.annotations | object | `{}` | Service annotations. |
 | kyverno.admissionController.service.nodePort | string | `nil` | Service node port. Only used if `type` is `NodePort`. |
 | kyverno.admissionController.service.port | int | `443` | Service port. |
+| kyverno.admissionController.service.trafficDistribution | string | `nil` | Service traffic distribution policy. Set to `PreferClose` to route traffic to nearby endpoints, reducing latency and cross-zone costs. |
 | kyverno.admissionController.service.type | string | `"ClusterIP"` | Service type. |
+| kyverno.admissionController.serviceMonitor.additionalAnnotations | object | `{}` | Additional annotations |
 | kyverno.admissionController.serviceMonitor.additionalLabels | object | `{}` | Additional labels |
 | kyverno.admissionController.serviceMonitor.enabled | bool | `false` | Create a `ServiceMonitor` to collect Prometheus metrics. |
 | kyverno.admissionController.serviceMonitor.interval | string | `"30s"` | Interval to scrape metrics |
@@ -158,6 +164,7 @@ A Helm chart for kyverno
 | kyverno.backgroundController.metricsService.create | bool | `true` | Create service. |
 | kyverno.backgroundController.metricsService.nodePort | string | `nil` | Service node port. Only used if `metricsService.type` is `NodePort`. |
 | kyverno.backgroundController.metricsService.port | int | `8000` | Service port. Metrics server will be exposed at this port. |
+| kyverno.backgroundController.metricsService.trafficDistribution | string | `nil` | Service traffic distribution policy. Set to `PreferClose` to route traffic to nearby endpoints, reducing latency and cross-zone costs. |
 | kyverno.backgroundController.metricsService.type | string | `"ClusterIP"` | Service type. |
 | kyverno.backgroundController.networkPolicy.enabled | bool | `false` | When true, use a NetworkPolicy to allow ingress to the webhook This is useful on clusters using Calico and/or native k8s network policies in a default-deny setup. |
 | kyverno.backgroundController.networkPolicy.ingressFrom | list | `[]` | A list of valid from selectors according to https://kubernetes.io/docs/concepts/services-networking/network-policies. |
@@ -169,6 +176,7 @@ A Helm chart for kyverno
 | kyverno.backgroundController.podDisruptionBudget.enabled | bool | `false` | Enable PodDisruptionBudget. Will always be enabled if replicas > 1. This non-declarative behavior should ideally be avoided, but changing it now would be breaking. |
 | kyverno.backgroundController.podDisruptionBudget.maxUnavailable | string | `nil` | Configures the maximum unavailable pods for disruptions. Cannot be used if `minAvailable` is set. |
 | kyverno.backgroundController.podDisruptionBudget.minAvailable | int | `1` | Configures the minimum available pods for disruptions. Cannot be used if `maxUnavailable` is set. |
+| kyverno.backgroundController.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `nil` | Unhealty pod eviction policy to be used. Possible values are `IfHealthyBudget` or `AlwaysAllow`. |
 | kyverno.backgroundController.podLabels | object | `{}` | Additional labels to add to each pod |
 | kyverno.backgroundController.podSecurityContext | object | `{}` | Security context for the pod |
 | kyverno.backgroundController.priorityClassName | string | `""` | Optional priority class |
@@ -181,6 +189,7 @@ A Helm chart for kyverno
 | kyverno.backgroundController.rbac.create | bool | `true` | Create RBAC resources |
 | kyverno.backgroundController.rbac.createViewRoleBinding | bool | `true` | Create rolebinding to view role |
 | kyverno.backgroundController.rbac.serviceAccount.annotations | object | `{}` | Annotations for the ServiceAccount |
+| kyverno.backgroundController.rbac.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
 | kyverno.backgroundController.rbac.serviceAccount.name | string | `nil` | Service account name |
 | kyverno.backgroundController.rbac.viewRoleName | string | `"view"` | The view role to use in the rolebinding |
 | kyverno.backgroundController.replicas | int | `nil` | Desired number of pods |
@@ -190,6 +199,7 @@ A Helm chart for kyverno
 | kyverno.backgroundController.revisionHistoryLimit | int | `10` | The number of revisions to keep |
 | kyverno.backgroundController.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the containers |
 | kyverno.backgroundController.server | object | `{"port":9443}` | backgroundController server port in case you are using hostNetwork: true, you might want to change the port the backgroundController is listening to |
+| kyverno.backgroundController.serviceMonitor.additionalAnnotations | object | `{}` | Additional annotations |
 | kyverno.backgroundController.serviceMonitor.additionalLabels | object | `{}` | Additional labels |
 | kyverno.backgroundController.serviceMonitor.enabled | bool | `false` | Create a `ServiceMonitor` to collect Prometheus metrics. |
 | kyverno.backgroundController.serviceMonitor.interval | string | `"30s"` | Interval to scrape metrics |
@@ -232,6 +242,7 @@ A Helm chart for kyverno
 | kyverno.cleanupController.metricsService.create | bool | `true` | Create service. |
 | kyverno.cleanupController.metricsService.nodePort | string | `nil` | Service node port. Only used if `metricsService.type` is `NodePort`. |
 | kyverno.cleanupController.metricsService.port | int | `8000` | Service port. Metrics server will be exposed at this port. |
+| kyverno.cleanupController.metricsService.trafficDistribution | string | `nil` | Service traffic distribution policy. Set to `PreferClose` to route traffic to nearby endpoints, reducing latency and cross-zone costs. |
 | kyverno.cleanupController.metricsService.type | string | `"ClusterIP"` | Service type. |
 | kyverno.cleanupController.networkPolicy.enabled | bool | `false` | When true, use a NetworkPolicy to allow ingress to the webhook This is useful on clusters using Calico and/or native k8s network policies in a default-deny setup. |
 | kyverno.cleanupController.networkPolicy.ingressFrom | list | `[]` | A list of valid from selectors according to https://kubernetes.io/docs/concepts/services-networking/network-policies. |
@@ -243,6 +254,7 @@ A Helm chart for kyverno
 | kyverno.cleanupController.podDisruptionBudget.enabled | bool | `false` | Enable PodDisruptionBudget. Will always be enabled if replicas > 1. This non-declarative behavior should ideally be avoided, but changing it now would be breaking. |
 | kyverno.cleanupController.podDisruptionBudget.maxUnavailable | string | `nil` | Configures the maximum unavailable pods for disruptions. Cannot be used if `minAvailable` is set. |
 | kyverno.cleanupController.podDisruptionBudget.minAvailable | int | `1` | Configures the minimum available pods for disruptions. Cannot be used if `maxUnavailable` is set. |
+| kyverno.cleanupController.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `nil` | Unhealty pod eviction policy to be used. Possible values are `IfHealthyBudget` or `AlwaysAllow`. |
 | kyverno.cleanupController.podLabels | object | `{}` | Additional labels to add to each pod |
 | kyverno.cleanupController.podSecurityContext | object | `{}` | Security context for the pod |
 | kyverno.cleanupController.priorityClassName | string | `""` | Optional priority class |
@@ -253,6 +265,7 @@ A Helm chart for kyverno
 | kyverno.cleanupController.rbac.clusterRole.extraResources | list | `[]` | Extra resource permissions to add in the cluster role |
 | kyverno.cleanupController.rbac.create | bool | `true` | Create RBAC resources |
 | kyverno.cleanupController.rbac.serviceAccount.annotations | object | `{}` | Annotations for the ServiceAccount |
+| kyverno.cleanupController.rbac.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
 | kyverno.cleanupController.rbac.serviceAccount.name | string | `nil` | Service account name |
 | kyverno.cleanupController.readinessProbe | object | See [values.yaml](values.yaml) | Readiness Probe. The block is directly forwarded into the deployment, so you can use whatever readinessProbe configuration you want. ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/ |
 | kyverno.cleanupController.replicas | int | `nil` | Desired number of pods |
@@ -265,7 +278,9 @@ A Helm chart for kyverno
 | kyverno.cleanupController.service.annotations | object | `{}` | Service annotations. |
 | kyverno.cleanupController.service.nodePort | string | `nil` | Service node port. Only used if `service.type` is `NodePort`. |
 | kyverno.cleanupController.service.port | int | `443` | Service port. |
+| kyverno.cleanupController.service.trafficDistribution | string | `nil` | Service traffic distribution policy. Set to `PreferClose` to route traffic to nearby endpoints, reducing latency and cross-zone costs. |
 | kyverno.cleanupController.service.type | string | `"ClusterIP"` | Service type. |
+| kyverno.cleanupController.serviceMonitor.additionalAnnotations | object | `{}` | Additional annotations |
 | kyverno.cleanupController.serviceMonitor.additionalLabels | object | `{}` | Additional labels |
 | kyverno.cleanupController.serviceMonitor.enabled | bool | `false` | Create a `ServiceMonitor` to collect Prometheus metrics. |
 | kyverno.cleanupController.serviceMonitor.interval | string | `"30s"` | Interval to scrape metrics |
@@ -308,8 +323,8 @@ A Helm chart for kyverno
 | kyverno.config.webhooks | object | `{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kube-system"]}]}}` | Defines the `namespaceSelector`/`objectSelector` in the webhook configurations. The Kyverno namespace is excluded if `excludeKyvernoNamespace` is `true` (default) |
 | kyverno.crds.annotations | object | `{}` | Additional CRDs annotations |
 | kyverno.crds.customLabels | object | `{}` | Additional CRDs labels |
-| kyverno.crds.groups.kyverno | object | `{"cleanuppolicies":true,"clustercleanuppolicies":true,"clusterpolicies":true,"globalcontextentries":true,"policies":true,"policyexceptions":true,"updaterequests":true,"validatingpolicies":true}` | Install CRDs in group `kyverno.io` |
-| kyverno.crds.groups.policies | object | `{"imagevalidatingpolicies":true,"policyexceptions":true,"validatingpolicies":true}` | Install CRDs in group `policies.kyverno.io` |
+| kyverno.crds.groups.kyverno | object | `{"cleanuppolicies":true,"clustercleanuppolicies":true,"clusterpolicies":true,"globalcontextentries":true,"policies":true,"policyexceptions":true,"updaterequests":true}` | Install CRDs in group `kyverno.io` |
+| kyverno.crds.groups.policies | object | `{"deletingpolicies":true,"generatingpolicies":true,"imagevalidatingpolicies":true,"mutatingpolicies":true,"policyexceptions":true,"validatingpolicies":true}` | Install CRDs in group `policies.kyverno.io` |
 | kyverno.crds.groups.reports | object | `{"clusterephemeralreports":true,"ephemeralreports":true}` | Install CRDs in group `reports.kyverno.io` |
 | kyverno.crds.groups.wgpolicyk8s | object | `{"clusterpolicyreports":true,"policyreports":true}` | Install CRDs in group `wgpolicyk8s.io` |
 | kyverno.crds.install | bool | `true` | Whether to have Helm install the Kyverno CRDs, if the CRDs are not installed by Helm, they must be added before policies can be created |
@@ -331,7 +346,9 @@ A Helm chart for kyverno
 | kyverno.crds.migration.podSecurityContext | object | `{}` | Security context for the pod |
 | kyverno.crds.migration.resources | list | `["cleanuppolicies.kyverno.io","clustercleanuppolicies.kyverno.io","clusterpolicies.kyverno.io","globalcontextentries.kyverno.io","policies.kyverno.io","policyexceptions.kyverno.io","updaterequests.kyverno.io"]` | Resources to migrate |
 | kyverno.crds.migration.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the hook containers |
+| kyverno.crds.migration.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
 | kyverno.crds.migration.tolerations | list | `[]` | List of node taints to tolerate |
+| kyverno.crds.reportsServer.enabled | bool | `false` | Kyverno reports-server is used in your cluster |
 | kyverno.customLabels | object | `{}` | Additional labels |
 | kyverno.existingImagePullSecrets | list | `[]` | Existing Image pull secrets for image verification policies, this will define the `--imagePullSecrets` argument |
 | kyverno.features.admissionReports.enabled | bool | `true` | Enables the feature |
@@ -342,14 +359,17 @@ A Helm chart for kyverno
 | kyverno.features.backgroundScan.enabled | bool | `true` | Enables the feature |
 | kyverno.features.backgroundScan.skipResourceFilters | bool | `true` | Skips resource filters in background scan |
 | kyverno.features.configMapCaching.enabled | bool | `true` | Enables the feature |
+| kyverno.features.controllerRuntimeMetrics.bindAddress | string | `":8080"` | Bind address for controller-runtime metrics (use "0" to disable it) |
 | kyverno.features.deferredLoading.enabled | bool | `true` | Enables the feature |
 | kyverno.features.dumpPatches.enabled | bool | `false` | Enables the feature |
 | kyverno.features.dumpPayload.enabled | bool | `false` | Enables the feature |
 | kyverno.features.forceFailurePolicyIgnore.enabled | bool | `false` | Enables the feature |
-| kyverno.features.generateValidatingAdmissionPolicy.enabled | bool | `false` | Enables the feature |
+| kyverno.features.generateMutatingAdmissionPolicy.enabled | bool | `false` | Enables the feature |
+| kyverno.features.generateValidatingAdmissionPolicy.enabled | bool | `true` | Enables the feature |
 | kyverno.features.globalContext.maxApiCallResponseLength | int | `2000000` | Maximum allowed response size from API Calls. A value of 0 bypasses checks (not recommended) |
 | kyverno.features.logging.format | string | `"text"` | Logging format |
 | kyverno.features.logging.verbosity | int | `2` | Logging verbosity |
+| kyverno.features.mutatingAdmissionPolicyReports.enabled | bool | `false` | Enables the feature |
 | kyverno.features.omitEvents.eventTypes | list | `["PolicyApplied","PolicySkipped"]` | Events which should not be emitted (possible values `PolicyViolation`, `PolicyApplied`, `PolicyError`, and `PolicySkipped`) |
 | kyverno.features.policyExceptions.enabled | bool | `false` | Enables the feature |
 | kyverno.features.policyExceptions.namespace | string | `""` | Restrict policy exceptions to a single namespace Set to "*" to allow exceptions in all namespaces |
@@ -367,10 +387,11 @@ A Helm chart for kyverno
 | kyverno.features.tuf.mirror | string | `nil` | Tuf mirror |
 | kyverno.features.tuf.root | string | `nil` | Path to Tuf root |
 | kyverno.features.tuf.rootRaw | string | `nil` | Raw Tuf root |
-| kyverno.features.validatingAdmissionPolicyReports.enabled | bool | `false` | Enables the feature |
+| kyverno.features.validatingAdmissionPolicyReports.enabled | bool | `true` | Enables the feature |
 | kyverno.fullnameOverride | string | `nil` | Override the expanded name of the chart |
 | kyverno.global.caCertificates.data | string | `nil` | Global CA certificates to use with Kyverno deployments This value is expected to be one large string of CA certificates Individual controller values will override this global value |
 | kyverno.global.caCertificates.volume | object | `{}` | Global value to set single volume to be mounted for CA certificates for all deployments. Not used when `.Values.global.caCertificates.data` is defined Individual  controller values will override this global value |
+| kyverno.global.crdWatcher | bool | `false` | Enable/Disable custom resource watcher to invalidate cache |
 | kyverno.global.extraEnvVars | list | `[]` | Additional container environment variables to apply to all containers and init containers |
 | kyverno.global.image.registry | string | `nil` | Global value that allows to set a single image registry across all deployments. When set, it will override any values set under `.image.registry` across the chart. |
 | kyverno.global.imagePullSecrets | list | `[]` | Global list of Image pull secrets When set, it will override any values set under `imagePullSecrets` under different components across the chart. |
@@ -394,6 +415,7 @@ A Helm chart for kyverno
 | kyverno.metricsConfig.namespaces.include | list | `[]` | List of namespaces to capture metrics for. |
 | kyverno.nameOverride | string | `nil` | Override the name of the chart |
 | kyverno.namespaceOverride | string | `nil` | Override the namespace the chart deploys to |
+| kyverno.openreports.enabled | bool | `false` |  |
 | kyverno.policyReportsCleanup.enabled | bool | `true` | Create a helm post-upgrade hook to cleanup the old policy reports. |
 | kyverno.policyReportsCleanup.image.pullPolicy | string | `nil` | Image pull policy Defaults to image.pullPolicy if omitted |
 | kyverno.policyReportsCleanup.image.registry | string | `nil` | Image registry |
@@ -439,6 +461,7 @@ A Helm chart for kyverno
 | kyverno.reportsController.metricsService.create | bool | `true` | Create service. |
 | kyverno.reportsController.metricsService.nodePort | string | `nil` | Service node port. Only used if `type` is `NodePort`. |
 | kyverno.reportsController.metricsService.port | int | `8000` | Service port. Metrics server will be exposed at this port. |
+| kyverno.reportsController.metricsService.trafficDistribution | string | `nil` | Service traffic distribution policy. Set to `PreferClose` to route traffic to nearby endpoints, reducing latency and cross-zone costs. |
 | kyverno.reportsController.metricsService.type | string | `"ClusterIP"` | Service type. |
 | kyverno.reportsController.networkPolicy.enabled | bool | `false` | When true, use a NetworkPolicy to allow ingress to the webhook This is useful on clusters using Calico and/or native k8s network policies in a default-deny setup. |
 | kyverno.reportsController.networkPolicy.ingressFrom | list | `[]` | A list of valid from selectors according to https://kubernetes.io/docs/concepts/services-networking/network-policies. |
@@ -450,6 +473,7 @@ A Helm chart for kyverno
 | kyverno.reportsController.podDisruptionBudget.enabled | bool | `false` | Enable PodDisruptionBudget. Will always be enabled if replicas > 1. This non-declarative behavior should ideally be avoided, but changing it now would be breaking. |
 | kyverno.reportsController.podDisruptionBudget.maxUnavailable | string | `nil` | Configures the maximum unavailable pods for disruptions. Cannot be used if `minAvailable` is set. |
 | kyverno.reportsController.podDisruptionBudget.minAvailable | int | `1` | Configures the minimum available pods for disruptions. Cannot be used if `maxUnavailable` is set. |
+| kyverno.reportsController.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `nil` | Unhealty pod eviction policy to be used. Possible values are `IfHealthyBudget` or `AlwaysAllow`. |
 | kyverno.reportsController.podLabels | object | `{}` | Additional labels to add to each pod |
 | kyverno.reportsController.podSecurityContext | object | `{}` | Security context for the pod |
 | kyverno.reportsController.priorityClassName | string | `""` | Optional priority class |
@@ -463,6 +487,7 @@ A Helm chart for kyverno
 | kyverno.reportsController.rbac.create | bool | `true` | Create RBAC resources |
 | kyverno.reportsController.rbac.createViewRoleBinding | bool | `true` | Create rolebinding to view role |
 | kyverno.reportsController.rbac.serviceAccount.annotations | object | `{}` | Annotations for the ServiceAccount |
+| kyverno.reportsController.rbac.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
 | kyverno.reportsController.rbac.serviceAccount.name | string | `nil` | Service account name |
 | kyverno.reportsController.rbac.viewRoleName | string | `"view"` | The view role to use in the rolebinding |
 | kyverno.reportsController.replicas | int | `nil` | Desired number of pods |
@@ -473,6 +498,7 @@ A Helm chart for kyverno
 | kyverno.reportsController.sanityChecks | bool | `true` | Enable sanity check for reports CRDs |
 | kyverno.reportsController.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the containers |
 | kyverno.reportsController.server | object | `{"port":9443}` | reportsController server port in case you are using hostNetwork: true, you might want to change the port the reportsController is listening to |
+| kyverno.reportsController.serviceMonitor.additionalAnnotations | object | `{}` | Additional annotations |
 | kyverno.reportsController.serviceMonitor.additionalLabels | object | `{}` | Additional labels |
 | kyverno.reportsController.serviceMonitor.enabled | bool | `false` | Create a `ServiceMonitor` to collect Prometheus metrics. |
 | kyverno.reportsController.serviceMonitor.interval | string | `"30s"` | Interval to scrape metrics |
@@ -491,15 +517,18 @@ A Helm chart for kyverno
 | kyverno.reportsController.tracing.port | string | `nil` | Traces receiver port |
 | kyverno.reportsController.tufRootMountPath | string | `"/.sigstore"` | A writable volume to use for the TUF root initialization. |
 | kyverno.reportsController.updateStrategy | object | See [values.yaml](values.yaml) | Deployment update strategy. Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy |
+| kyverno.test.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
 | kyverno.test.image.pullPolicy | string | `nil` | Image pull policy Defaults to image.pullPolicy if omitted |
 | kyverno.test.image.registry | string | `nil` | Image registry |
 | kyverno.test.image.repository | string | `"busybox"` | Image repository |
 | kyverno.test.image.tag | string | `"1.35"` | Image tag Defaults to `latest` if omitted |
 | kyverno.test.imagePullSecrets | list | `[]` | Image pull secrets |
+| kyverno.test.nodeSelector | object | `{}` | Node labels for pod assignment |
 | kyverno.test.resources.limits | object | `{"cpu":"100m","memory":"256Mi"}` | Pod resource limits |
 | kyverno.test.resources.requests | object | `{"cpu":"10m","memory":"64Mi"}` | Pod resource requests |
 | kyverno.test.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the test containers |
 | kyverno.test.sleep | int | `20` | Sleep time before running test |
+| kyverno.test.tolerations | list | `[]` | List of node taints to tolerate |
 | kyverno.upgrade.fromV2 | bool | `false` | Upgrading from v2 to v3 is not allowed by default, set this to true once changes have been reviewed. |
 | kyverno.webhooksCleanup.autoDeleteWebhooks.enabled | bool | `false` | Allow webhooks controller to delete webhooks using finalizers |
 | kyverno.webhooksCleanup.enabled | bool | `true` | Create a helm pre-delete hook to cleanup webhooks. |
@@ -518,6 +547,7 @@ A Helm chart for kyverno
 | kyverno.webhooksCleanup.resources.limits | object | `{"cpu":"100m","memory":"256Mi"}` | Pod resource limits |
 | kyverno.webhooksCleanup.resources.requests | object | `{"cpu":"10m","memory":"64Mi"}` | Pod resource requests |
 | kyverno.webhooksCleanup.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the hook containers |
+| kyverno.webhooksCleanup.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
 | kyverno.webhooksCleanup.tolerations | list | `[]` | List of node taints to tolerate |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
@@ -550,7 +580,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: kyverno
     path: ''
     helm:
