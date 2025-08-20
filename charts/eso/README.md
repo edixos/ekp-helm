@@ -1,6 +1,6 @@
 # eso
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.14.2](https://img.shields.io/badge/AppVersion-0.14.2-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.14.2](https://img.shields.io/badge/AppVersion-0.14.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.external-secrets.io | eso(external-secrets) | 0.16.2 |
+| https://charts.external-secrets.io | eso(external-secrets) | 0.19.2 |
 
 ## Maintainers
 
@@ -30,11 +30,13 @@ A Helm chart ESO for Kubernetes
 |-----|------|---------|-------------|
 | eso.affinity | object | `{}` |  |
 | eso.bitwarden-sdk-server.enabled | bool | `false` |  |
+| eso.bitwarden-sdk-server.namespaceOverride | string | `""` |  |
 | eso.certController.affinity | object | `{}` |  |
 | eso.certController.create | bool | `true` | Specifies whether a certificate controller deployment be created. |
 | eso.certController.deploymentAnnotations | object | `{}` | Annotations to add to Deployment |
 | eso.certController.extraArgs | object | `{}` |  |
 | eso.certController.extraEnv | list | `[]` |  |
+| eso.certController.extraInitContainers | list | `[]` |  |
 | eso.certController.extraVolumeMounts | list | `[]` |  |
 | eso.certController.extraVolumes | list | `[]` |  |
 | eso.certController.fullnameOverride | string | `""` |  |
@@ -52,7 +54,7 @@ A Helm chart ESO for Kubernetes
 | eso.certController.nameOverride | string | `""` |  |
 | eso.certController.nodeSelector | object | `{}` |  |
 | eso.certController.podAnnotations | object | `{}` | Annotations to add to Pod |
-| eso.certController.podDisruptionBudget | object | `{"enabled":false,"minAvailable":1}` | Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/ |
+| eso.certController.podDisruptionBudget | object | `{"enabled":false,"minAvailable":1,"nameOverride":""}` | Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/ |
 | eso.certController.podLabels | object | `{}` |  |
 | eso.certController.podSecurityContext.enabled | bool | `true` |  |
 | eso.certController.priorityClassName | string | `""` | Pod priority class name. |
@@ -75,6 +77,7 @@ A Helm chart ESO for Kubernetes
 | eso.certController.serviceAccount.create | bool | `true` | Specifies whether a service account should be created. |
 | eso.certController.serviceAccount.extraLabels | object | `{}` | Extra Labels to add to the service account. |
 | eso.certController.serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template. |
+| eso.certController.strategy | object | `{}` | Set deployment strategy |
 | eso.certController.tolerations | list | `[]` |  |
 | eso.certController.topologySpreadConstraints | list | `[]` |  |
 | eso.commonLabels | object | `{}` | Additional labels added to all helm chart resources. |
@@ -95,6 +98,7 @@ A Helm chart ESO for Kubernetes
 | eso.extraArgs | object | `{}` |  |
 | eso.extraContainers | list | `[]` |  |
 | eso.extraEnv | list | `[]` |  |
+| eso.extraInitContainers | list | `[]` |  |
 | eso.extraObjects | list | `[]` |  |
 | eso.extraVolumeMounts | list | `[]` |  |
 | eso.extraVolumes | list | `[]` |  |
@@ -126,7 +130,7 @@ A Helm chart ESO for Kubernetes
 | eso.nodeSelector | object | `{}` |  |
 | eso.openshiftFinalizers | bool | `true` | If true the OpenShift finalizer permissions will be added to RBAC |
 | eso.podAnnotations | object | `{}` | Annotations to add to Pod |
-| eso.podDisruptionBudget | object | `{"enabled":false,"minAvailable":1}` | Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/ |
+| eso.podDisruptionBudget | object | `{"enabled":false,"minAvailable":1,"nameOverride":""}` | Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/ |
 | eso.podLabels | object | `{}` |  |
 | eso.podSecurityContext.enabled | bool | `true` |  |
 | eso.podSpecExtra | object | `{}` | Any extra pod spec on the deployment |
@@ -166,6 +170,7 @@ A Helm chart ESO for Kubernetes
 | eso.serviceMonitor.namespace | string | `""` | namespace where you want to install ServiceMonitors |
 | eso.serviceMonitor.relabelings | list | `[]` | Relabel configs to apply to samples before ingestion. [Relabeling](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config) |
 | eso.serviceMonitor.scrapeTimeout | string | `"25s"` | Timeout if metrics can't be retrieved in given time interval |
+| eso.strategy | object | `{}` | Set deployment strategy |
 | eso.tolerations | list | `[]` |  |
 | eso.topologySpreadConstraints | list | `[]` |  |
 | eso.webhook.affinity | object | `{}` |  |
@@ -184,6 +189,7 @@ A Helm chart ESO for Kubernetes
 | eso.webhook.deploymentAnnotations | object | `{}` | Annotations to add to Deployment |
 | eso.webhook.extraArgs | object | `{}` |  |
 | eso.webhook.extraEnv | list | `[]` |  |
+| eso.webhook.extraInitContainers | list | `[]` |  |
 | eso.webhook.extraVolumeMounts | list | `[]` |  |
 | eso.webhook.extraVolumes | list | `[]` |  |
 | eso.webhook.failurePolicy | string | `"Fail"` | Specifies whether validating webhooks should be created with failurePolicy: Fail or Ignore |
@@ -203,7 +209,7 @@ A Helm chart ESO for Kubernetes
 | eso.webhook.nameOverride | string | `""` |  |
 | eso.webhook.nodeSelector | object | `{}` |  |
 | eso.webhook.podAnnotations | object | `{}` | Annotations to add to Pod |
-| eso.webhook.podDisruptionBudget | object | `{"enabled":false,"minAvailable":1}` | Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/ |
+| eso.webhook.podDisruptionBudget | object | `{"enabled":false,"minAvailable":1,"nameOverride":""}` | Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/ |
 | eso.webhook.podLabels | object | `{}` |  |
 | eso.webhook.podSecurityContext.enabled | bool | `true` |  |
 | eso.webhook.port | int | `10250` | The port the webhook will listen to |
@@ -233,6 +239,7 @@ A Helm chart ESO for Kubernetes
 | eso.webhook.serviceAccount.create | bool | `true` | Specifies whether a service account should be created. |
 | eso.webhook.serviceAccount.extraLabels | object | `{}` | Extra Labels to add to the service account. |
 | eso.webhook.serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template. |
+| eso.webhook.strategy | object | `{}` | Set deployment strategy |
 | eso.webhook.tolerations | list | `[]` |  |
 | eso.webhook.topologySpreadConstraints | list | `[]` |  |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
@@ -266,7 +273,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: eso
     path: ''
 
