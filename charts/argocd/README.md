@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.14.4](https://img.shields.io/badge/AppVersion-2.14.4-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.14.4](https://img.shields.io/badge/AppVersion-2.14.4-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 8.0.1 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 8.3.1 |
 
 ## Maintainers
 
@@ -49,6 +49,7 @@ A Helm chart for Kubernetes
 | argocd.applicationSet.containerPorts.webhook | int | `7000` | Webhook container port |
 | argocd.applicationSet.containerSecurityContext | object | See [values.yaml] | ApplicationSet controller container-level security context |
 | argocd.applicationSet.deploymentAnnotations | object | `{}` | Annotations to be added to ApplicationSet controller Deployment |
+| argocd.applicationSet.deploymentLabels | object | `{}` | Labels for the ApplicationSet controller Deployment |
 | argocd.applicationSet.deploymentStrategy | object | `{}` | Deployment strategy to be added to the ApplicationSet controller Deployment |
 | argocd.applicationSet.dnsConfig | object | `{}` | [DNS configuration] |
 | argocd.applicationSet.dnsPolicy | string | `"ClusterFirst"` | Alternative DNS policy for ApplicationSet controller pods |
@@ -102,6 +103,7 @@ A Helm chart for Kubernetes
 | argocd.applicationSet.metrics.serviceMonitor.selector | object | `{}` | Prometheus ServiceMonitor selector |
 | argocd.applicationSet.metrics.serviceMonitor.tlsConfig | object | `{}` | Prometheus ServiceMonitor tlsConfig |
 | argocd.applicationSet.name | string | `"applicationset-controller"` | ApplicationSet controller name string |
+| argocd.applicationSet.networkPolicy.create | bool | `false` (defaults to global.networkPolicy.create) | Default network policy rules used by ApplicationSet controller |
 | argocd.applicationSet.nodeSelector | object | `{}` (defaults to global.nodeSelector) | [Node selector] |
 | argocd.applicationSet.pdb.annotations | object | `{}` | Annotations to be added to ApplicationSet controller pdb |
 | argocd.applicationSet.pdb.enabled | bool | `false` | Deploy a [PodDisruptionBudget] for the ApplicationSet controller |
@@ -137,6 +139,7 @@ A Helm chart for Kubernetes
 | argocd.commitServer.automountServiceAccountToken | bool | `false` | Automount API credentials for the Service Account into the pod. |
 | argocd.commitServer.containerSecurityContext | object | See [values.yaml] | commit server container-level security context |
 | argocd.commitServer.deploymentAnnotations | object | `{}` | Annotations to be added to commit server Deployment |
+| argocd.commitServer.deploymentLabels | object | `{}` | Labels for the commit server Deployment |
 | argocd.commitServer.deploymentStrategy | object | `{}` | Deployment strategy to be added to the commit server Deployment |
 | argocd.commitServer.dnsConfig | object | `{}` | [DNS configuration] |
 | argocd.commitServer.dnsPolicy | string | `"ClusterFirst"` | Alternative DNS policy for commit server pods |
@@ -162,6 +165,7 @@ A Helm chart for Kubernetes
 | argocd.commitServer.metrics.service.servicePort | int | `8087` | Metrics service port |
 | argocd.commitServer.metrics.service.type | string | `"ClusterIP"` | Metrics service type |
 | argocd.commitServer.name | string | `"commit-server"` | Commit server name |
+| argocd.commitServer.networkPolicy.create | bool | `false` (defaults to global.networkPolicy.create) | Default network policy rules used by commit server |
 | argocd.commitServer.nodeSelector | object | `{}` (defaults to global.nodeSelector) | [Node selector] |
 | argocd.commitServer.podAnnotations | object | `{}` | Annotations for the commit server pods |
 | argocd.commitServer.podLabels | object | `{}` | Labels for the commit server pods |
@@ -175,6 +179,8 @@ A Helm chart for Kubernetes
 | argocd.commitServer.runtimeClassName | string | `""` (defaults to global.runtimeClassName) | Runtime class name for the commit server |
 | argocd.commitServer.service.annotations | object | `{}` | commit server service annotations |
 | argocd.commitServer.service.labels | object | `{}` | commit server service labels |
+| argocd.commitServer.service.port | int | `8086` | commit server service port |
+| argocd.commitServer.service.portName | string | `"server"` | commit server service port name |
 | argocd.commitServer.serviceAccount.annotations | object | `{}` | Annotations applied to created service account |
 | argocd.commitServer.serviceAccount.automountServiceAccountToken | bool | `true` | Automount API credentials for the Service Account |
 | argocd.commitServer.serviceAccount.create | bool | `true` | Create commit server service account |
@@ -220,6 +226,7 @@ A Helm chart for Kubernetes
 | argocd.configs.params."controller.self.heal.timeout.seconds" | int | `5` | Specifies timeout between application self heal attempts |
 | argocd.configs.params."controller.status.processors" | int | `20` | Number of application status processors |
 | argocd.configs.params."controller.sync.timeout.seconds" | int | `0` | Specifies the timeout after which a sync would be terminated. 0 means no timeout |
+| argocd.configs.params."hydrator.enabled" | bool | `false` | Enable the hydrator feature (hydrator is in Alpha phase) |
 | argocd.configs.params."otlp.address" | string | `""` | Open-Telemetry collector address: (e.g. "otel-collector:4317") |
 | argocd.configs.params."reposerver.parallelism.limit" | int | `0` | Limit on number of concurrent manifests generate requests. Any value less the 1 means no limit. |
 | argocd.configs.params."server.basehref" | string | `"/"` | Value for base href in index.html. Used if Argo CD is running behind reverse proxy under subpath different from / |
@@ -268,6 +275,7 @@ A Helm chart for Kubernetes
 | argocd.controller.containerPorts.metrics | int | `8082` | Metrics container port |
 | argocd.controller.containerSecurityContext | object | See [values.yaml] | Application controller container-level security context |
 | argocd.controller.deploymentAnnotations | object | `{}` | Annotations for the application controller Deployment |
+| argocd.controller.deploymentLabels | object | `{}` | Labels for the application controller Deployment |
 | argocd.controller.dnsConfig | object | `{}` | [DNS configuration] |
 | argocd.controller.dnsPolicy | string | `"ClusterFirst"` | Alternative DNS policy for application controller pods |
 | argocd.controller.dynamicClusterDistribution | bool | `false` | Enable dynamic cluster distribution (alpha) Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/dynamic-cluster-distribution # This is done using a deployment instead of a statefulSet # When replicas are added or removed, the sharding algorithm is re-run to ensure that the # clusters are distributed according to the algorithm. If the algorithm is well-balanced, # like round-robin, then the shards will be well-balanced. |
@@ -311,6 +319,7 @@ A Helm chart for Kubernetes
 | argocd.controller.metrics.serviceMonitor.selector | object | `{}` | Prometheus ServiceMonitor selector |
 | argocd.controller.metrics.serviceMonitor.tlsConfig | object | `{}` | Prometheus ServiceMonitor tlsConfig |
 | argocd.controller.name | string | `"application-controller"` | Application controller name string |
+| argocd.controller.networkPolicy.create | bool | `false` (defaults to global.networkPolicy.create) | Default network policy rules used by application controller |
 | argocd.controller.nodeSelector | object | `{}` (defaults to global.nodeSelector) | [Node selector] |
 | argocd.controller.pdb.annotations | object | `{}` | Annotations to be added to application controller pdb |
 | argocd.controller.pdb.enabled | bool | `false` | Deploy a [PodDisruptionBudget] for the application controller |
@@ -340,7 +349,7 @@ A Helm chart for Kubernetes
 | argocd.controller.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to the application controller # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
 | argocd.controller.volumeMounts | list | `[]` | Additional volumeMounts to the application controller main container |
 | argocd.controller.volumes | list | `[]` | Additional volumes to the application controller pod |
-| argocd.crds.additionalLabels | object | `{}` | Addtional labels to be added to all CRDs |
+| argocd.crds.additionalLabels | object | `{}` | Additional labels to be added to all CRDs |
 | argocd.crds.annotations | object | `{}` | Annotations to be added to all CRDs |
 | argocd.crds.install | bool | `true` | Install and upgrade CRDs |
 | argocd.crds.keep | bool | `true` | Keep CRDs on chart uninstall |
@@ -359,6 +368,7 @@ A Helm chart for Kubernetes
 | argocd.dex.containerPorts.metrics | int | `5558` | Metrics container port |
 | argocd.dex.containerSecurityContext | object | See [values.yaml] | Dex container-level security context |
 | argocd.dex.deploymentAnnotations | object | `{}` | Annotations to be added to the Dex server Deployment |
+| argocd.dex.deploymentLabels | object | `{}` | Labels for the Dex server Deployment |
 | argocd.dex.deploymentStrategy | object | `{}` | Deployment strategy to be added to the Dex server Deployment |
 | argocd.dex.dnsConfig | object | `{}` | [DNS configuration] |
 | argocd.dex.dnsPolicy | string | `"ClusterFirst"` | Alternative DNS policy for Dex server pods |
@@ -370,7 +380,7 @@ A Helm chart for Kubernetes
 | argocd.dex.extraContainers | list | `[]` | Additional containers to be added to the dex pod # Note: Supports use of custom Helm templates |
 | argocd.dex.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Dex imagePullPolicy |
 | argocd.dex.image.repository | string | `"ghcr.io/dexidp/dex"` | Dex image repository |
-| argocd.dex.image.tag | string | `"v2.42.1"` | Dex image tag |
+| argocd.dex.image.tag | string | `"v2.43.1"` | Dex image tag |
 | argocd.dex.imagePullSecrets | list | `[]` (defaults to global.imagePullSecrets) | Secrets with credentials to pull images from a private registry |
 | argocd.dex.initContainers | list | `[]` | Init containers to add to the dex pod # Note: Supports use of custom Helm templates |
 | argocd.dex.initImage.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Argo CD init image imagePullPolicy |
@@ -402,6 +412,7 @@ A Helm chart for Kubernetes
 | argocd.dex.metrics.serviceMonitor.selector | object | `{}` | Prometheus ServiceMonitor selector |
 | argocd.dex.metrics.serviceMonitor.tlsConfig | object | `{}` | Prometheus ServiceMonitor tlsConfig |
 | argocd.dex.name | string | `"dex-server"` | Dex name |
+| argocd.dex.networkPolicy.create | bool | `false` (defaults to global.networkPolicy.create) | Default network policy rules used by Dex server |
 | argocd.dex.nodeSelector | object | `{}` (defaults to global.nodeSelector) | [Node selector] |
 | argocd.dex.pdb.annotations | object | `{}` | Annotations to be added to Dex server pdb |
 | argocd.dex.pdb.enabled | bool | `false` | Deploy a [PodDisruptionBudget] for the Dex server |
@@ -436,7 +447,7 @@ A Helm chart for Kubernetes
 | argocd.dex.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to dex # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
 | argocd.dex.volumeMounts | list | `[]` | Additional volumeMounts to the dex main container |
 | argocd.dex.volumes | list | `[]` | Additional volumes to the dex pod |
-| argocd.externalRedis.existingSecret | string | `""` | The name of an existing secret with Redis (must contain key `redis-password`) and Sentinel credentials. When it's set, the `externalRedis.password` parameter is ignored |
+| argocd.externalRedis.existingSecret | string | `""` | The name of an existing secret with Redis (must contain key `redis-password`. And should contain `redis-username` if username is not `default`) and Sentinel credentials. When it's set, the `externalRedis.username` and `externalRedis.password` parameters are ignored |
 | argocd.externalRedis.host | string | `""` | External Redis server host |
 | argocd.externalRedis.password | string | `""` | External Redis password |
 | argocd.externalRedis.port | int | `6379` | External Redis server port |
@@ -451,6 +462,7 @@ A Helm chart for Kubernetes
 | argocd.global.affinity.podAntiAffinity | string | `"soft"` | Default pod anti-affinity rules. Either: `none`, `soft` or `hard` |
 | argocd.global.certificateAnnotations | object | `{}` | Annotations for the all deployed Certificates |
 | argocd.global.deploymentAnnotations | object | `{}` | Annotations for the all deployed Deployments |
+| argocd.global.deploymentLabels | object | `{}` | Labels for the all deployed Deployments |
 | argocd.global.deploymentStrategy | object | `{}` | Deployment strategy for the all deployed Deployments |
 | argocd.global.domain | string | `"argocd.example.com"` | Default domain used by all components # Used for ingresses, certificates, SSO, notifications, etc. |
 | argocd.global.dualStack.ipFamilies | list | `[]` | IP families that should be supported and the order in which they should be applied to ClusterIP as well. Can be IPv4 and/or IPv6. |
@@ -487,6 +499,7 @@ A Helm chart for Kubernetes
 | argocd.notifications.containerSecurityContext | object | See [values.yaml] | Notification controller container-level security Context |
 | argocd.notifications.context | object | `{}` | Define user-defined context # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/templates/#defining-user-defined-context |
 | argocd.notifications.deploymentAnnotations | object | `{}` | Annotations to be applied to the notifications controller Deployment |
+| argocd.notifications.deploymentLabels | object | `{}` | Labels for the notifications controller Deployment |
 | argocd.notifications.deploymentStrategy | object | `{"type":"Recreate"}` | Deployment strategy to be added to the notifications controller Deployment |
 | argocd.notifications.dnsConfig | object | `{}` | [DNS configuration] |
 | argocd.notifications.dnsPolicy | string | `"ClusterFirst"` | Alternative DNS policy for notifications controller Pods |
@@ -525,6 +538,7 @@ A Helm chart for Kubernetes
 | argocd.notifications.metrics.serviceMonitor.selector | object | `{}` | Prometheus ServiceMonitor selector |
 | argocd.notifications.metrics.serviceMonitor.tlsConfig | object | `{}` | Prometheus ServiceMonitor tlsConfig |
 | argocd.notifications.name | string | `"notifications-controller"` | Notifications controller name string |
+| argocd.notifications.networkPolicy.create | bool | `false` (defaults to global.networkPolicy.create) | Default network policy rules used by notifications controller |
 | argocd.notifications.nodeSelector | object | `{}` (defaults to global.nodeSelector) | [Node selector] |
 | argocd.notifications.notifiers | object | See [values.yaml] | Configures notification services such as slack, email or custom webhook # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/services/overview/ |
 | argocd.notifications.pdb.annotations | object | `{}` | Annotations to be added to notifications controller pdb |
@@ -568,17 +582,18 @@ A Helm chart for Kubernetes
 | argocd.redis-ha.existingSecret | string | `"argocd-redis"` | Existing Secret to use for redis-ha authentication. By default the redis-secret-init Job is generating this Secret. |
 | argocd.redis-ha.exporter.enabled | bool | `false` | Enable Prometheus redis-exporter sidecar |
 | argocd.redis-ha.exporter.image | string | `"ghcr.io/oliver006/redis_exporter"` | Repository to use for the redis-exporter |
-| argocd.redis-ha.exporter.tag | string | `"v1.69.0"` | Tag to use for the redis-exporter |
+| argocd.redis-ha.exporter.tag | string | `"v1.75.0"` | Tag to use for the redis-exporter |
 | argocd.redis-ha.haproxy.additionalAffinities | object | `{}` | Additional affinities to add to the haproxy pods. |
 | argocd.redis-ha.haproxy.affinity | string | `""` | Assign custom [affinity] rules to the haproxy pods. |
 | argocd.redis-ha.haproxy.containerSecurityContext | object | See [values.yaml] | HAProxy container-level security context |
 | argocd.redis-ha.haproxy.enabled | bool | `true` | Enabled HAProxy LoadBalancing/Proxy |
 | argocd.redis-ha.haproxy.hardAntiAffinity | bool | `true` | Whether the haproxy pods should be forced to run on separate nodes. |
+| argocd.redis-ha.haproxy.image.repository | string | `"ecr-public.aws.com/docker/library/haproxy"` | HAProxy Image Repository |
 | argocd.redis-ha.haproxy.labels | object | `{"app.kubernetes.io/name":"argocd-redis-ha-haproxy"}` | Custom labels for the haproxy pod. This is relevant for Argo CD CLI. |
 | argocd.redis-ha.haproxy.metrics.enabled | bool | `true` | HAProxy enable prometheus metric scraping |
 | argocd.redis-ha.haproxy.tolerations | list | `[]` | [Tolerations] for use with node taints for haproxy pods. |
 | argocd.redis-ha.hardAntiAffinity | bool | `true` | Whether the Redis server pods should be forced to run on separate nodes. |
-| argocd.redis-ha.image.repository | string | `"public.ecr.aws/docker/library/redis"` | Redis repository |
+| argocd.redis-ha.image.repository | string | `"ecr-public.aws.com/docker/library/redis"` | Redis repository |
 | argocd.redis-ha.image.tag | string | `"7.2.8-alpine"` | Redis tag # Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis |
 | argocd.redis-ha.persistentVolume.enabled | bool | `false` | Configures persistence on Redis nodes |
 | argocd.redis-ha.redis.config | object | See [values.yaml] | Any valid redis config options in this section will be applied to each server (see `redis-ha` chart) |
@@ -596,6 +611,7 @@ A Helm chart for Kubernetes
 | argocd.redis.containerPorts.redis | int | `6379` | Redis container port |
 | argocd.redis.containerSecurityContext | object | See [values.yaml] | Redis container-level security context |
 | argocd.redis.deploymentAnnotations | object | `{}` | Annotations to be added to the Redis server Deployment |
+| argocd.redis.deploymentLabels | object | `{}` | Labels for the Redis server Deployment |
 | argocd.redis.dnsConfig | object | `{}` | [DNS configuration] |
 | argocd.redis.dnsPolicy | string | `"ClusterFirst"` | Alternative DNS policy for Redis server pods |
 | argocd.redis.enabled | bool | `true` | Enable redis |
@@ -606,7 +622,7 @@ A Helm chart for Kubernetes
 | argocd.redis.exporter.env | list | `[]` | Environment variables to pass to the Redis exporter |
 | argocd.redis.exporter.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for the redis-exporter |
 | argocd.redis.exporter.image.repository | string | `"ghcr.io/oliver006/redis_exporter"` | Repository to use for the redis-exporter |
-| argocd.redis.exporter.image.tag | string | `"v1.71.0"` | Tag to use for the redis-exporter |
+| argocd.redis.exporter.image.tag | string | `"v1.75.0"` | Tag to use for the redis-exporter |
 | argocd.redis.exporter.livenessProbe.enabled | bool | `false` | Enable Kubernetes liveness probe for Redis exporter |
 | argocd.redis.exporter.livenessProbe.failureThreshold | int | `5` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
 | argocd.redis.exporter.livenessProbe.initialDelaySeconds | int | `30` | Number of seconds after the container has started before [probe] is initiated |
@@ -623,7 +639,7 @@ A Helm chart for Kubernetes
 | argocd.redis.extraArgs | list | `[]` | Additional command line arguments to pass to redis-server |
 | argocd.redis.extraContainers | list | `[]` | Additional containers to be added to the redis pod # Note: Supports use of custom Helm templates |
 | argocd.redis.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Redis image pull policy |
-| argocd.redis.image.repository | string | `"public.ecr.aws/docker/library/redis"` | Redis repository |
+| argocd.redis.image.repository | string | `"ecr-public.aws.com/docker/library/redis"` | Redis repository |
 | argocd.redis.image.tag | string | `"7.2.8-alpine"` | Redis tag # Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis |
 | argocd.redis.imagePullSecrets | list | `[]` (defaults to global.imagePullSecrets) | Secrets with credentials to pull images from a private registry |
 | argocd.redis.initContainers | list | `[]` | Init containers to add to the redis pod # Note: Supports use of custom Helm templates |
@@ -652,6 +668,7 @@ A Helm chart for Kubernetes
 | argocd.redis.metrics.serviceMonitor.selector | object | `{}` | Prometheus ServiceMonitor selector |
 | argocd.redis.metrics.serviceMonitor.tlsConfig | object | `{}` | Prometheus ServiceMonitor tlsConfig |
 | argocd.redis.name | string | `"redis"` | Redis name |
+| argocd.redis.networkPolicy.create | bool | `false` (defaults to global.networkPolicy.create) | Default network policy rules used by redis |
 | argocd.redis.nodeSelector | object | `{}` (defaults to global.nodeSelector) | [Node selector] |
 | argocd.redis.pdb.annotations | object | `{}` | Annotations to be added to Redis pdb |
 | argocd.redis.pdb.enabled | bool | `false` | Deploy a [PodDisruptionBudget] for the Redis |
@@ -723,6 +740,7 @@ A Helm chart for Kubernetes
 | argocd.repoServer.containerPorts.server | int | `8081` | Repo server container port |
 | argocd.repoServer.containerSecurityContext | object | See [values.yaml] | Repo server container-level security context |
 | argocd.repoServer.deploymentAnnotations | object | `{}` | Annotations to be added to repo server Deployment |
+| argocd.repoServer.deploymentLabels | object | `{}` | Labels for the repo server Deployment |
 | argocd.repoServer.deploymentStrategy | object | `{}` | Deployment strategy to be added to the repo server Deployment |
 | argocd.repoServer.dnsConfig | object | `{}` | [DNS configuration] |
 | argocd.repoServer.dnsPolicy | string | `"ClusterFirst"` | Alternative DNS policy for Repo server pods |
@@ -764,6 +782,7 @@ A Helm chart for Kubernetes
 | argocd.repoServer.metrics.serviceMonitor.selector | object | `{}` | Prometheus ServiceMonitor selector |
 | argocd.repoServer.metrics.serviceMonitor.tlsConfig | object | `{}` | Prometheus ServiceMonitor tlsConfig |
 | argocd.repoServer.name | string | `"repo-server"` | Repo server name |
+| argocd.repoServer.networkPolicy.create | bool | `false` (defaults to global.networkPolicy.create) | Default network policy rules used by repo server |
 | argocd.repoServer.nodeSelector | object | `{}` (defaults to global.nodeSelector) | [Node selector] |
 | argocd.repoServer.pdb.annotations | object | `{}` | Annotations to be added to repo server pdb |
 | argocd.repoServer.pdb.enabled | bool | `false` | Deploy a [PodDisruptionBudget] for the repo server |
@@ -786,6 +805,7 @@ A Helm chart for Kubernetes
 | argocd.repoServer.service.labels | object | `{}` | Repo server service labels |
 | argocd.repoServer.service.port | int | `8081` | Repo server service port |
 | argocd.repoServer.service.portName | string | `"tcp-repo-server"` | Repo server service port name |
+| argocd.repoServer.service.trafficDistribution | string | `""` | Traffic distribution preference for the repo server service. If the field is not set, the implementation will apply its default routing strategy. |
 | argocd.repoServer.serviceAccount.annotations | object | `{}` | Annotations applied to created service account |
 | argocd.repoServer.serviceAccount.automountServiceAccountToken | bool | `true` | Automount API credentials for the Service Account |
 | argocd.repoServer.serviceAccount.create | bool | `true` | Create repo server service account |
@@ -832,6 +852,7 @@ A Helm chart for Kubernetes
 | argocd.server.containerPorts.server | int | `8080` | Server container port |
 | argocd.server.containerSecurityContext | object | See [values.yaml] | Server container-level security context |
 | argocd.server.deploymentAnnotations | object | `{}` | Annotations to be added to server Deployment |
+| argocd.server.deploymentLabels | object | `{}` | Labels for the server Deployment |
 | argocd.server.deploymentStrategy | object | `{}` | Deployment strategy to be added to the server Deployment |
 | argocd.server.dnsConfig | object | `{}` | [DNS configuration] |
 | argocd.server.dnsPolicy | string | `"ClusterFirst"` | Alternative DNS policy for Server pods |
@@ -910,6 +931,7 @@ A Helm chart for Kubernetes
 | argocd.server.metrics.serviceMonitor.selector | object | `{}` | Prometheus ServiceMonitor selector |
 | argocd.server.metrics.serviceMonitor.tlsConfig | object | `{}` | Prometheus ServiceMonitor tlsConfig |
 | argocd.server.name | string | `"server"` | Argo CD server name |
+| argocd.server.networkPolicy.create | bool | `false` (defaults to global.networkPolicy.create) | Default network policy rules used by ArgoCD Server |
 | argocd.server.nodeSelector | object | `{}` (defaults to global.nodeSelector) | [Node selector] |
 | argocd.server.pdb.annotations | object | `{}` | Annotations to be added to Argo CD server pdb |
 | argocd.server.pdb.enabled | bool | `false` | Deploy a [PodDisruptionBudget] for the Argo CD server |
@@ -989,7 +1011,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: argocd
     path: ''
     helm:
