@@ -17,18 +17,12 @@ velero:
     labels: {}
       # Enforce Pod Security Standards with Namespace Labels
       # https://kubernetes.io/docs/tasks/configure-pod-container/enforce-standards-namespace-labels/
-      # - key: pod-security.kubernetes.io/enforce
-      #   value: privileged
-      # - key: pod-security.kubernetes.io/enforce-version
-      #   value: latest
-      # - key: pod-security.kubernetes.io/audit
-      #   value: privileged
-      # - key: pod-security.kubernetes.io/audit-version
-      #   value: latest
-      # - key: pod-security.kubernetes.io/warn
-      #   value: privileged
-      # - key: pod-security.kubernetes.io/warn-version
-      #   value: latest
+      # pod-security.kubernetes.io/enforce: privileged
+      # pod-security.kubernetes.io/enforce-version: latest
+      # pod-security.kubernetes.io/audit: privileged
+      # pod-security.kubernetes.io/audit-version: latest
+      # pod-security.kubernetes.io/warn: privileged
+      # pod-security.kubernetes.io/warn-version: latest
 
   ##
   ## End of namespace-related settings.
@@ -43,7 +37,7 @@ velero:
   # enabling node-agent). Required.
   image:
     repository: velero/velero
-    tag: v1.16.0
+    tag: v1.16.2
     # Digest value example: sha256:d238835e151cec91c6a811fe3a89a66d3231d9f64d09e5f3c49552672d271f38.
     # If used, it will take precedence over the image.tag.
     # digest:
@@ -91,6 +85,22 @@ velero:
     #   cpu: 1000m
     #   memory: 512Mi
 
+  # Container resize policy for the Velero deployment.
+  # See: https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/
+  resizePolicy: []
+    # - resourceName: cpu
+    #   restartPolicy: NotRequired
+    # - resourceName: memory
+    #   restartPolicy: RestartContainer
+
+  # Configure hostAliases for Velero deployment. Optional
+  # For more information, check: https://kubernetes.io/docs/tasks/network/customize-hosts-file-for-pods/
+  hostAliases: []
+    # - ip: "127.0.0.1"
+    #   hostnames:
+    #     - "foo.local"
+    #     - "bar.local"
+
   # Resource requests/limits to specify for the upgradeCRDs job pod. Need to be adjusted by user accordingly.
   upgradeJobResources: {}
   # requests:
@@ -104,8 +114,18 @@ velero:
     extraVolumes: []
     # Extra volumeMounts for the Upgrade CRDs Job. Optional.
     extraVolumeMounts: []
-    # Extra key/value pairs to be used as environment variables. Optional.
-    extraEnvVars: {}
+    # Additional values to be used as environment variables. Optional.
+    extraEnvVars: []
+      # Simple value
+      # - name: SIMPLE_VAR
+      #   value: "simple-value"
+
+      # FieldRef example
+      # - name: MY_POD_LABEL
+      #   valueFrom:
+      #     fieldRef:
+      #       fieldPath: metadata.labels['my_label']
+
     # Configure if API credential for Service Account is automounted.
     automountServiceAccountToken: true
     # Configure the shell cmd in case you are using custom image
@@ -120,7 +140,7 @@ velero:
   # If the value is a string then it is evaluated as a template.
   initContainers:
     # - name: velero-plugin-for-aws
-    #   image: velero/velero-plugin-for-aws:v1.10.0
+    #   image: velero/velero-plugin-for-aws:v1.12.2
     #   imagePullPolicy: IfNotPresent
     #   volumeMounts:
     #     - mountPath: /target
@@ -230,7 +250,19 @@ velero:
     # service metdata if metrics are enabled
     service:
       annotations: {}
+      type: ClusterIP
       labels: {}
+      nodePort: null
+
+      # External/Internal traffic policy setting (Cluster, Local)
+      # https://kubernetes.io/docs/reference/networking/virtual-ips/#traffic-policies
+      externalTrafficPolicy: ""
+      internalTrafficPolicy: ""
+
+      # the IP family policy for the metrics Service to be able to configure dual-stack; see [Configure dual-stack](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services).
+      ipFamilyPolicy: ""
+      # a list of IP families for the metrics Service that should be supported, in the order in which they should be applied to ClusterIP. Can be "IPv4" and/or "IPv6".
+      ipFamilies: []
 
     # Pod annotations for Prometheus
     podAnnotations:
@@ -276,19 +308,40 @@ velero:
       # namespace: ""
       # Rules to be deployed
       spec: []
-      # - alert: VeleroBackupPartialFailures
+      # - alert: VeleroBackupFailed
       #   annotations:
-      #     message: Velero backup {{ $labels.schedule }} has {{ $value | humanizePercentage }} partialy failed backups.
+      #     message: Velero backup {{ $labels.schedule }} has failed
       #   expr: |-
-      #     velero_backup_partial_failure_total{schedule!=""} / velero_backup_attempt_total{schedule!=""} > 0.25
+      #     velero_backup_last_status{schedule!=""} != 1
       #   for: 15m
       #   labels:
       #     severity: warning
-      # - alert: VeleroBackupFailures
+      # - alert: VeleroBackupFailing
       #   annotations:
-      #     message: Velero backup {{ $labels.schedule }} has {{ $value | humanizePercentage }} failed backups.
+      #     message: Velero backup {{ $labels.schedule }} has been failing for the last 12h
       #   expr: |-
-      #     velero_backup_failure_total{schedule!=""} / velero_backup_attempt_total{schedule!=""} > 0.25
+      #     velero_backup_last_status{schedule!=""} != 1
+      #   for: 12h
+      #   labels:
+      #     severity: critical
+      # - alert: VeleroNoNewBackup
+      #   annotations:
+      #     message: Velero backup {{ $labels.schedule }} has not run successfuly in the last 30h
+      #   expr: |-
+      #     (
+      #     rate(velero_backup_last_successful_timestamp{schedule!=""}[15m]) <=bool 0
+      #     or
+      #     absent(velero_backup_last_successful_timestamp{schedule!=""})
+      #     ) == 1
+      #   for: 30h
+      #   labels:
+      #     severity: critical
+      # - alert: VeleroBackupPartialFailures
+      #   annotations:
+      #     message: Velero backup {{ $labels.schedule }} has {{ $value | humanizePercentage }} partialy failed backups
+      #   expr: |-
+      #     rate(velero_backup_partial_failure_total{schedule!=""}[25m])
+      #       / rate(velero_backup_attempt_total{schedule!=""}[25m]) > 0.5
       #   for: 15m
       #   labels:
       #     severity: warning
@@ -339,15 +392,15 @@ velero:
       # a backup storage location will be created with the name "default". Optional.
     - name:
       # provider is the name for the backup storage location provider.
-      provider:
+      provider: ""
       # bucket is the name of the bucket to store backups in. Required.
-      bucket:
+      bucket: ""
       # caCert defines a base64 encoded CA bundle to use when verifying TLS connections to the provider. Optional.
       caCert:
       # prefix is the directory under which all Velero data should be stored within the bucket. Optional.
       prefix:
       # default indicates this location is the default backup storage location. Optional.
-      default:
+      default: false
       # validationFrequency defines how frequently Velero should validate the object storage. Optional.
       validationFrequency:
       # accessMode determines if velero can write to this backup storage location. Optional.
@@ -383,10 +436,11 @@ velero:
     # Parameters for the VolumeSnapshotLocation(s). Configure multiple by adding other element(s) to the volumeSnapshotLocation slice.
     # See https://velero.io/docs/v1.6/api-types/volumesnapshotlocation/
     volumeSnapshotLocation:
-      # name is the name of the volume snapshot location where snapshots are being taken. Required.
+      # name is the name of the volume snapshot location where snapshots are being taken. If a name is not provided,
+      # a volume snapshot location will be created with the name "default". Optional.
     - name:
       # provider is the name for the volume snapshot provider.
-      provider:
+      provider: ""
       credential:
         # name of the secret used by this volumeSnapshotLocation.
         name:
@@ -463,6 +517,8 @@ velero:
     # Comma separated list of velero feature flags. default: empty
     # features: EnableCSI
     features:
+    # Configures the timeout for provisioning the volume created from the CSI snapshot. Default: 30m
+    dataMoverPrepareTimeout:
     # Resource requests/limits to specify for the repository-maintenance job. Optional.
     # https://velero.io/docs/v1.14/repository-maintenance/#resource-limitation
     repositoryMaintenanceJob:
@@ -474,14 +530,64 @@ velero:
       #   memory: 1024Mi
       # Number of latest maintenance jobs to keep for each repository
       latestJobsCount: 3
+      # Per-repository resource settings ConfigMap
+      # This ConfigMap allows specifying different settings for different repositories
+      # See: https://velero.io/docs/main/repository-maintenance/
+      repositoryConfigData:
+        # Name of the ConfigMap to create. If not provided, will use "velero-repo-maintenance"
+        name: "velero-repo-maintenance"
+        # Global configuration applied to all repositories
+        # This configuration is used when no specific repository configuration is found
+        # global:
+        #   podResources:
+        #     cpuRequest: "100m"
+        #     cpuLimit: "200m"
+        #     memoryRequest: "100Mi"
+        #     memoryLimit: "200Mi"
+        #   keepLatestMaintenanceJobs: 1
+        #   loadAffinity:
+        #     - nodeSelector:
+        #         matchExpressions:
+        #           - key: "cloud.google.com/machine-family"
+        #             operator: "In"
+        #             values: ["e2"]
+        #     - nodeSelector:
+        #         matchExpressions:
+        #           - key: "topology.kubernetes.io/zone"
+        #             operator: "In"
+        #             values: ["us-central1-a", "us-central1-b", "us-central1-c"]
+        #   priorityClassName: "low-priority"  # Note: priorityClassName is only supported in global configuration
+        global: {}
+        # Repository-specific configurations
+        # Repository keys are formed as: "{namespace}-{storageLocation}-{repositoryType}"
+        # For example: "default-default-kopia" or "prod-s3-backup-kopia"
+        # Note: priorityClassName is NOT supported in repository-specific configurations
+        # repositories:
+        #   "kibishii-default-kopia":
+        #     podResources:
+        #       cpuRequest: "200m"
+        #       cpuLimit: "400m"
+        #       memoryRequest: "200Mi"
+        #       memoryLimit: "400Mi"
+        #     keepLatestMaintenanceJobs: 2
+        repositories: {}
     # `velero server` default: velero
     namespace:
     # additional command-line arguments that will be passed to the `velero server`
     # e.g.: extraArgs: ["--foo=bar"]
     extraArgs: []
 
-    # additional key/value pairs to be used as environment variables such as "AWS_CLUSTER_NAME: 'yourcluster.domain.tld'"
-    extraEnvVars: {}
+    # Additional values to be used as environment variables. Optional.
+    extraEnvVars: []
+      # Simple value
+      # - name: SIMPLE_VAR
+      #   value: "simple-value"
+
+      # FieldRef example
+      # - name: MY_POD_LABEL
+      #   valueFrom:
+      #     fieldRef:
+      #       fieldPath: metadata.labels['my_label']
 
     # Set true for backup all pod volumes without having to apply annotation on the pod when used file system backup Default: false.
     defaultVolumesToFsBackup:
@@ -575,6 +681,13 @@ velero:
       # limits:
       #   cpu: 1000m
       #   memory: 1024Mi
+    # Container resize policy for the node-agent daemonset.
+    # See: https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/
+    resizePolicy: []
+      # - resourceName: cpu
+      #   restartPolicy: NotRequired
+      # - resourceName: memory
+      #   restartPolicy: RestartContainer
 
     # Tolerations to use for the node-agent daemonset. Optional.
     tolerations: []
@@ -600,8 +713,17 @@ velero:
     # Extra volumeMounts for the node-agent daemonset. Optional.
     extraVolumeMounts: []
 
-    # Key/value pairs to be used as environment variables for the node-agent daemonset. Optional.
-    extraEnvVars: {}
+    # Additional values to be used as environment variables for node-agent daemonset. Optional.
+    extraEnvVars: []
+      # Simple key/value
+      # - name: SIMPLE_VAR
+      #   value: "simple-value"
+
+      # FieldRef example
+      # - name: MY_POD_LABEL
+      #   valueFrom:
+      #     fieldRef:
+      #       fieldPath: metadata.labels['my_label']
 
     # Additional command-line arguments that will be passed to the node-agent. Optional.
     # e.g.: extraArgs: ["--foo=bar"]
@@ -610,6 +732,14 @@ velero:
     # Configure the dnsPolicy of the node-agent daemonset
     # See: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
     dnsPolicy: ClusterFirst
+
+    # Configure hostAliases for node-agent daemonset. Optional
+    # For more information, check: https://kubernetes.io/docs/tasks/network/customize-hosts-file-for-pods/
+    hostAliases: []
+      # - ip: "127.0.0.1"
+      #   hostnames:
+      #   - "foo.local"
+      #   - "bar.local"
 
     # SecurityContext to use for the Velero deployment. Optional.
     # Set fsGroup for `AWS IAM Roles for Service Accounts`
