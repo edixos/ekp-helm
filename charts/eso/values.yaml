@@ -33,6 +33,7 @@ eso:
 
   bitwarden-sdk-server:
     enabled: false
+    namespaceOverride: ""
 
   # -- Specifies the amount of historic ReplicaSets k8s should keep (see https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy)
   revisionHistoryLimit: 10
@@ -168,11 +169,17 @@ eso:
   ## -- Extra volumes to mount to the container.
   extraVolumeMounts: []
 
+  ## -- Extra init containers to add to the pod.
+  extraInitContainers: []
+
   ## -- Extra containers to add to the pod.
   extraContainers: []
 
   # -- Annotations to add to Deployment
   deploymentAnnotations: {}
+
+   # -- Set deployment strategy
+  strategy: {}
 
   # -- Annotations to add to Pod
   podAnnotations: {}
@@ -281,8 +288,9 @@ eso:
   # -- Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
   podDisruptionBudget:
     enabled: false
-    minAvailable: 1
-    # maxUnavailable: 1
+    minAvailable: 1  # @schema type:[integer, string]
+    nameOverride: ""
+    # maxUnavailable: "50%"
 
   # -- Run the controller on the host network
   hostNetwork: false
@@ -383,14 +391,18 @@ eso:
 
     affinity: {}
 
+    # -- Set deployment strategy
+    strategy: {}
+
       # -- Pod priority class name.
     priorityClassName: ""
 
     # -- Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
     podDisruptionBudget:
       enabled: false
-      minAvailable: 1
-      # maxUnavailable: 1
+      minAvailable: 1  # @schema type:[integer, string]
+      nameOverride: ""
+      # maxUnavailable: "50%"
 
     metrics:
 
@@ -420,6 +432,9 @@ eso:
 
       ## -- Map of extra arguments to pass to container.
     extraArgs: {}
+
+      ## -- Extra init containers to add to the pod.
+    extraInitContainers: []
 
       ## -- Extra volumes to pass to pod.
     extraVolumes: []
@@ -516,6 +531,9 @@ eso:
 
     affinity: {}
 
+    # -- Set deployment strategy
+    strategy: {}
+
     # -- Run the certController on the host network
     hostNetwork: false
 
@@ -525,8 +543,9 @@ eso:
     # -- Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
     podDisruptionBudget:
       enabled: false
-      minAvailable: 1
-      # maxUnavailable: 1
+      minAvailable: 1  # @schema type:[integer, string]
+      nameOverride: ""
+      # maxUnavailable: "50%"
 
     metrics:
 
@@ -555,6 +574,8 @@ eso:
       ## -- Map of extra arguments to pass to container.
     extraArgs: {}
 
+      ## -- Extra init containers to add to the pod.
+    extraInitContainers: []
 
       ## -- Extra volumes to pass to pod.
     extraVolumes: []
