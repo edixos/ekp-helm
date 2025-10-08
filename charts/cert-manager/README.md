@@ -1,6 +1,6 @@
 # cert-manager
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.17.1](https://img.shields.io/badge/AppVersion-1.17.1-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.17.1](https://img.shields.io/badge/AppVersion-1.17.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.jetstack.io | certmanager(cert-manager) | v1.17.2 |
+| https://charts.jetstack.io | certmanager(cert-manager) | v1.19.0 |
 | https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-members) | 0.1.2 |
 | https://edixos.github.io/ekp-helm | workloadIdentity(gcp-workload-identity) | 0.1.1 |
 
@@ -84,6 +84,7 @@ A Helm chart for cert-manager
 | certmanager.global.imagePullSecrets | list | `[]` |  |
 | certmanager.global.leaderElection.namespace | string | `"kube-system"` |  |
 | certmanager.global.logLevel | int | `2` |  |
+| certmanager.global.nodeSelector | object | `{}` |  |
 | certmanager.global.podSecurityPolicy.enabled | bool | `false` |  |
 | certmanager.global.podSecurityPolicy.useAppArmor | bool | `true` |  |
 | certmanager.global.priorityClassName | string | `""` |  |
@@ -124,7 +125,7 @@ A Helm chart for cert-manager
 | certmanager.prometheus.servicemonitor.path | string | `"/metrics"` |  |
 | certmanager.prometheus.servicemonitor.prometheusInstance | string | `"default"` |  |
 | certmanager.prometheus.servicemonitor.scrapeTimeout | string | `"30s"` |  |
-| certmanager.prometheus.servicemonitor.targetPort | int | `9402` |  |
+| certmanager.prometheus.servicemonitor.targetPort | string | `"http-metrics"` |  |
 | certmanager.replicaCount | int | `1` |  |
 | certmanager.resources | object | `{}` |  |
 | certmanager.securityContext.runAsNonRoot | bool | `true` |  |
@@ -196,8 +197,10 @@ A Helm chart for cert-manager
 | certmanager.webhook.networkPolicy.egress[0].ports[4].port | int | `6443` |  |
 | certmanager.webhook.networkPolicy.egress[0].ports[4].protocol | string | `"TCP"` |  |
 | certmanager.webhook.networkPolicy.egress[0].to[0].ipBlock.cidr | string | `"0.0.0.0/0"` |  |
+| certmanager.webhook.networkPolicy.egress[0].to[1].ipBlock.cidr | string | `"::/0"` |  |
 | certmanager.webhook.networkPolicy.enabled | bool | `false` |  |
 | certmanager.webhook.networkPolicy.ingress[0].from[0].ipBlock.cidr | string | `"0.0.0.0/0"` |  |
+| certmanager.webhook.networkPolicy.ingress[0].from[1].ipBlock.cidr | string | `"::/0"` |  |
 | certmanager.webhook.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | certmanager.webhook.podDisruptionBudget.enabled | bool | `false` |  |
 | certmanager.webhook.podLabels | object | `{}` |  |
@@ -273,7 +276,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: cert-manager
     path: ''
     helm:
