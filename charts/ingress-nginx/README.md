@@ -1,6 +1,6 @@
 # ingress-nginx
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.12.1](https://img.shields.io/badge/AppVersion-1.12.1-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.12.1](https://img.shields.io/badge/AppVersion-1.12.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubernetes.github.io/ingress-nginx | ingressNginx(ingress-nginx) | 4.12.2 |
+| https://kubernetes.github.io/ingress-nginx | ingressNginx(ingress-nginx) | 4.14.0 |
 
 ## Maintainers
 
@@ -31,12 +31,17 @@ A Helm chart for Kubernetes
 | ingressNginx.controller.addHeaders | object | `{}` | Will add custom headers before sending response traffic to the client according to: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/#add-headers |
 | ingressNginx.controller.admissionWebhooks.annotations | object | `{}` |  |
 | ingressNginx.controller.admissionWebhooks.certManager.admissionCert.duration | string | `""` |  |
+| ingressNginx.controller.admissionWebhooks.certManager.admissionCert.revisionHistoryLimit | int | `0` | Revision history limit of the webhook certificate. Ref.: https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec |
 | ingressNginx.controller.admissionWebhooks.certManager.enabled | bool | `false` |  |
 | ingressNginx.controller.admissionWebhooks.certManager.rootCert.duration | string | `""` |  |
+| ingressNginx.controller.admissionWebhooks.certManager.rootCert.revisionHistoryLimit | int | `0` | Revision history limit of the root certificate. Ref.: https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec |
 | ingressNginx.controller.admissionWebhooks.certificate | string | `"/usr/local/certificates/cert"` |  |
+| ingressNginx.controller.admissionWebhooks.createSecretJob.activeDeadlineSeconds | int | `0` | Deadline in seconds for the job to complete. Must be greater than 0 to enforce. If unset or 0, no deadline is enforced. |
 | ingressNginx.controller.admissionWebhooks.createSecretJob.name | string | `"create"` |  |
 | ingressNginx.controller.admissionWebhooks.createSecretJob.resources | object | `{}` |  |
 | ingressNginx.controller.admissionWebhooks.createSecretJob.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":65532,"runAsNonRoot":true,"runAsUser":65532,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for secret creation containers |
+| ingressNginx.controller.admissionWebhooks.createSecretJob.volumeMounts | list | `[]` | Volume mounts for secret creation containers |
+| ingressNginx.controller.admissionWebhooks.createSecretJob.volumes | list | `[]` | Volumes for secret creation pod |
 | ingressNginx.controller.admissionWebhooks.enabled | bool | `true` |  |
 | ingressNginx.controller.admissionWebhooks.extraEnvs | list | `[]` | Additional environment variables to set |
 | ingressNginx.controller.admissionWebhooks.failurePolicy | string | `"Fail"` | Admission Webhook failure policy to use |
@@ -46,10 +51,10 @@ A Helm chart for Kubernetes
 | ingressNginx.controller.admissionWebhooks.namespaceSelector | object | `{}` |  |
 | ingressNginx.controller.admissionWebhooks.objectSelector | object | `{}` |  |
 | ingressNginx.controller.admissionWebhooks.patch.enabled | bool | `true` |  |
-| ingressNginx.controller.admissionWebhooks.patch.image.digest | string | `"sha256:2cf4ebfa82a37c357455458f6dfc334aea1392d508270b2517795a9933a02524"` |  |
+| ingressNginx.controller.admissionWebhooks.patch.image.digest | string | `"sha256:bcfc926ed57831edf102d62c5c0e259572591df4796ef1420b87f9cf6092497f"` |  |
 | ingressNginx.controller.admissionWebhooks.patch.image.image | string | `"ingress-nginx/kube-webhook-certgen"` |  |
 | ingressNginx.controller.admissionWebhooks.patch.image.pullPolicy | string | `"IfNotPresent"` |  |
-| ingressNginx.controller.admissionWebhooks.patch.image.tag | string | `"v1.5.3"` |  |
+| ingressNginx.controller.admissionWebhooks.patch.image.tag | string | `"v1.6.4"` |  |
 | ingressNginx.controller.admissionWebhooks.patch.labels | object | `{}` | Labels to be added to patch job resources |
 | ingressNginx.controller.admissionWebhooks.patch.networkPolicy.enabled | bool | `false` | Enable 'networkPolicy' or not |
 | ingressNginx.controller.admissionWebhooks.patch.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
@@ -57,15 +62,19 @@ A Helm chart for Kubernetes
 | ingressNginx.controller.admissionWebhooks.patch.priorityClassName | string | `""` | Provide a priority class name to the webhook patching job # |
 | ingressNginx.controller.admissionWebhooks.patch.rbac | object | `{"create":true}` | Admission webhook patch job RBAC |
 | ingressNginx.controller.admissionWebhooks.patch.rbac.create | bool | `true` | Create RBAC or not |
+| ingressNginx.controller.admissionWebhooks.patch.runtimeClassName | string | `""` | Instruct the kubelet to use the named RuntimeClass to run the pod |
 | ingressNginx.controller.admissionWebhooks.patch.securityContext | object | `{}` | Security context for secret creation & webhook patch pods |
 | ingressNginx.controller.admissionWebhooks.patch.serviceAccount | object | `{"automountServiceAccountToken":true,"create":true,"name":""}` | Admission webhook patch job service account |
 | ingressNginx.controller.admissionWebhooks.patch.serviceAccount.automountServiceAccountToken | bool | `true` | Auto-mount service account token or not |
 | ingressNginx.controller.admissionWebhooks.patch.serviceAccount.create | bool | `true` | Create a service account or not |
 | ingressNginx.controller.admissionWebhooks.patch.serviceAccount.name | string | `""` | Custom service account name |
 | ingressNginx.controller.admissionWebhooks.patch.tolerations | list | `[]` |  |
+| ingressNginx.controller.admissionWebhooks.patchWebhookJob.activeDeadlineSeconds | int | `0` | Deadline in seconds for the job to complete. Must be greater than 0 to enforce. If unset or 0, no deadline is enforced. |
 | ingressNginx.controller.admissionWebhooks.patchWebhookJob.name | string | `"patch"` |  |
 | ingressNginx.controller.admissionWebhooks.patchWebhookJob.resources | object | `{}` |  |
 | ingressNginx.controller.admissionWebhooks.patchWebhookJob.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":65532,"runAsNonRoot":true,"runAsUser":65532,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for webhook patch containers |
+| ingressNginx.controller.admissionWebhooks.patchWebhookJob.volumeMounts | list | `[]` | Volume mounts for webhook patch containers |
+| ingressNginx.controller.admissionWebhooks.patchWebhookJob.volumes | list | `[]` | Volumes for webhook patch pod |
 | ingressNginx.controller.admissionWebhooks.port | int | `8443` |  |
 | ingressNginx.controller.admissionWebhooks.service.annotations | object | `{}` |  |
 | ingressNginx.controller.admissionWebhooks.service.externalIPs | list | `[]` |  |
@@ -102,7 +111,7 @@ A Helm chart for Kubernetes
 | ingressNginx.controller.extraArgs | object | `{}` | Additional command line arguments to pass to Ingress-Nginx Controller E.g. to specify the default SSL certificate you can use |
 | ingressNginx.controller.extraContainers | list | `[]` | Additional containers to be added to the controller pod. See https://github.com/lemonldap-ng-controller/lemonldap-ng-controller as example. |
 | ingressNginx.controller.extraEnvs | list | `[]` | Additional environment variables to set |
-| ingressNginx.controller.extraInitContainers | list | `[]` | Containers, which are run before the app containers are started. |
+| ingressNginx.controller.extraInitContainers | list | `[]` | Containers, which are run before the app containers are started. Values may contain Helm templates. |
 | ingressNginx.controller.extraModules | list | `[]` | Modules, which are mounted into the core nginx image. |
 | ingressNginx.controller.extraVolumeMounts | list | `[]` | Additional volumeMounts to the controller main container. |
 | ingressNginx.controller.extraVolumes | list | `[]` | Additional volumes to the controller pod. |
@@ -116,8 +125,8 @@ A Helm chart for Kubernetes
 | ingressNginx.controller.hostname | object | `{}` | Optionally customize the pod hostname. |
 | ingressNginx.controller.image.allowPrivilegeEscalation | bool | `false` |  |
 | ingressNginx.controller.image.chroot | bool | `false` |  |
-| ingressNginx.controller.image.digest | string | `"sha256:03497ee984628e95eca9b2279e3f3a3c1685dd48635479e627d219f00c8eefa9"` |  |
-| ingressNginx.controller.image.digestChroot | string | `"sha256:a697e2bfa419768315250d079ccbbca45f6099c60057769702b912d20897a574"` |  |
+| ingressNginx.controller.image.digest | string | `"sha256:e4127065d0317bd11dc64c4dd38dcf7fb1c3d72e468110b4086e636dbaac943d"` |  |
+| ingressNginx.controller.image.digestChroot | string | `"sha256:d0158a50630981a945325c15a638e52c2d0691bc528caf5c04d2cf2051c5665f"` |  |
 | ingressNginx.controller.image.image | string | `"ingress-nginx/controller"` |  |
 | ingressNginx.controller.image.pullPolicy | string | `"IfNotPresent"` |  |
 | ingressNginx.controller.image.readOnlyRootFilesystem | bool | `false` |  |
@@ -125,7 +134,7 @@ A Helm chart for Kubernetes
 | ingressNginx.controller.image.runAsNonRoot | bool | `true` |  |
 | ingressNginx.controller.image.runAsUser | int | `101` | This value must not be changed using the official image. uid=101(www-data) gid=82(www-data) groups=82(www-data) |
 | ingressNginx.controller.image.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| ingressNginx.controller.image.tag | string | `"v1.12.2"` |  |
+| ingressNginx.controller.image.tag | string | `"v1.14.0"` |  |
 | ingressNginx.controller.ingressClass | string | `"nginx"` | For backwards compatibility with ingress.class annotation, use ingressClass. Algorithm is as follows, first ingressClassName is considered, if not present, controller looks for ingress.class annotation |
 | ingressNginx.controller.ingressClassByName | bool | `false` | Process IngressClass per name (additionally as per spec.controller). |
 | ingressNginx.controller.ingressClassResource | object | `{"aliases":[],"annotations":{},"controllerValue":"k8s.io/ingress-nginx","default":false,"enabled":true,"name":"nginx","parameters":{}}` | This section refers to the creation of the IngressClass resource. IngressClasses are immutable and cannot be changed after creation. We do not support namespaced IngressClasses, yet, so a ClusterRole and a ClusterRoleBinding is required. |
@@ -175,12 +184,18 @@ A Helm chart for Kubernetes
 | ingressNginx.controller.metrics.serviceMonitor.additionalLabels | object | `{}` |  |
 | ingressNginx.controller.metrics.serviceMonitor.annotations | object | `{}` | Annotations to be added to the ServiceMonitor. |
 | ingressNginx.controller.metrics.serviceMonitor.enabled | bool | `false` |  |
+| ingressNginx.controller.metrics.serviceMonitor.labelLimit | int | `0` | Per-scrape limit on number of labels that will be accepted for a sample. |
+| ingressNginx.controller.metrics.serviceMonitor.labelNameLengthLimit | int | `0` | Per-scrape limit on length of labels name that will be accepted for a sample. |
+| ingressNginx.controller.metrics.serviceMonitor.labelValueLengthLimit | int | `0` | Per-scrape limit on length of labels value that will be accepted for a sample. |
 | ingressNginx.controller.metrics.serviceMonitor.metricRelabelings | list | `[]` |  |
 | ingressNginx.controller.metrics.serviceMonitor.namespace | string | `""` |  |
 | ingressNginx.controller.metrics.serviceMonitor.namespaceSelector | object | `{}` |  |
 | ingressNginx.controller.metrics.serviceMonitor.relabelings | list | `[]` |  |
+| ingressNginx.controller.metrics.serviceMonitor.sampleLimit | int | `0` | Defines a per-scrape limit on the number of scraped samples that will be accepted. |
 | ingressNginx.controller.metrics.serviceMonitor.scrapeInterval | string | `"30s"` |  |
+| ingressNginx.controller.metrics.serviceMonitor.scrapeTimeout | string | `""` | Timeout after which the scrape is ended. Not being set if empty and therefore defaults to the global Prometheus scrape timeout. |
 | ingressNginx.controller.metrics.serviceMonitor.targetLabels | list | `[]` |  |
+| ingressNginx.controller.metrics.serviceMonitor.targetLimit | int | `0` | Defines a limit on the number of scraped targets that will be accepted. |
 | ingressNginx.controller.minAvailable | int | `1` | Minimum available pods set in PodDisruptionBudget. Define either 'minAvailable' or 'maxUnavailable', never both. |
 | ingressNginx.controller.minReadySeconds | int | `0` | `minReadySeconds` to avoid killing pods before we are ready # |
 | ingressNginx.controller.name | string | `"controller"` |  |
@@ -205,28 +220,34 @@ A Helm chart for Kubernetes
 | ingressNginx.controller.readinessProbe.timeoutSeconds | int | `1` |  |
 | ingressNginx.controller.replicaCount | int | `1` |  |
 | ingressNginx.controller.reportNodeInternalIp | bool | `false` | Bare-metal considerations via the host network https://kubernetes.github.io/ingress-nginx/deploy/baremetal/#via-the-host-network Ingress status was blank because there is no Service exposing the Ingress-Nginx Controller in a configuration using the host network, the default --publish-service flag used in standard cloud setups does not apply |
+| ingressNginx.controller.resizePolicy | list | `[]` | Resize policy for controller containers. Ref: https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources |
 | ingressNginx.controller.resources.requests.cpu | string | `"100m"` |  |
 | ingressNginx.controller.resources.requests.memory | string | `"90Mi"` |  |
+| ingressNginx.controller.runtimeClassName | string | `""` | Instruct the kubelet to use the named RuntimeClass to run the pod |
 | ingressNginx.controller.scope.enabled | bool | `false` | Enable 'scope' or not |
 | ingressNginx.controller.scope.namespace | string | `""` | Namespace to limit the controller to; defaults to $(POD_NAMESPACE) |
 | ingressNginx.controller.scope.namespaceSelector | string | `""` | When scope.enabled == false, instead of watching all namespaces, we watching namespaces whose labels only match with namespaceSelector. Format like foo=bar. Defaults to empty, means watching all namespaces. |
 | ingressNginx.controller.service.annotations | object | `{}` | Annotations to be added to the external controller service. See `controller.service.internal.annotations` for annotations to be added to the internal controller service. |
 | ingressNginx.controller.service.appProtocol | bool | `true` | Declare the app protocol of the external HTTP and HTTPS listeners or not. Supersedes provider-specific annotations for declaring the backend protocol. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#application-protocol |
 | ingressNginx.controller.service.clusterIP | string | `""` | Pre-defined cluster internal IP address of the external controller service. Take care of collisions with existing services. This value is immutable. Set once, it can not be changed without deleting and re-creating the service. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#choosing-your-own-ip-address |
+| ingressNginx.controller.service.clusterIPs | list | `[]` | Pre-defined cluster internal IP addresses of the external controller service. Take care of collisions with existing services. This value is immutable. Set once, it can not be changed without deleting and re-creating the service. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#choosing-your-own-ip-address |
 | ingressNginx.controller.service.enableHttp | bool | `true` | Enable the HTTP listener on both controller services or not. |
 | ingressNginx.controller.service.enableHttps | bool | `true` | Enable the HTTPS listener on both controller services or not. |
 | ingressNginx.controller.service.enabled | bool | `true` | Enable controller services or not. This does not influence the creation of either the admission webhook or the metrics service. |
 | ingressNginx.controller.service.external.enabled | bool | `true` | Enable the external controller service or not. Useful for internal-only deployments. |
+| ingressNginx.controller.service.external.labels | object | `{}` | Labels to be added to the external controller service. |
 | ingressNginx.controller.service.externalIPs | list | `[]` | List of node IP addresses at which the external controller service is available. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#external-ips |
 | ingressNginx.controller.service.externalTrafficPolicy | string | `""` | External traffic policy of the external controller service. Set to "Local" to preserve source IP on providers supporting it. Ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip |
 | ingressNginx.controller.service.internal.annotations | object | `{}` | Annotations to be added to the internal controller service. Mandatory for the internal controller service to be created. Varies with the cloud service. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer |
 | ingressNginx.controller.service.internal.appProtocol | bool | `true` | Declare the app protocol of the internal HTTP and HTTPS listeners or not. Supersedes provider-specific annotations for declaring the backend protocol. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#application-protocol |
 | ingressNginx.controller.service.internal.clusterIP | string | `""` | Pre-defined cluster internal IP address of the internal controller service. Take care of collisions with existing services. This value is immutable. Set once, it can not be changed without deleting and re-creating the service. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#choosing-your-own-ip-address |
+| ingressNginx.controller.service.internal.clusterIPs | list | `[]` | Pre-defined cluster internal IP addresses of the internal controller service. Take care of collisions with existing services. This value is immutable. Set once, it can not be changed without deleting and re-creating the service. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#choosing-your-own-ip-address |
 | ingressNginx.controller.service.internal.enabled | bool | `false` | Enable the internal controller service or not. Remember to configure `controller.service.internal.annotations` when enabling this. |
 | ingressNginx.controller.service.internal.externalIPs | list | `[]` | List of node IP addresses at which the internal controller service is available. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#external-ips |
 | ingressNginx.controller.service.internal.externalTrafficPolicy | string | `""` | External traffic policy of the internal controller service. Set to "Local" to preserve source IP on providers supporting it. Ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip |
 | ingressNginx.controller.service.internal.ipFamilies | list | `["IPv4"]` | List of IP families (e.g. IPv4, IPv6) assigned to the internal controller service. This field is usually assigned automatically based on cluster configuration and the `ipFamilyPolicy` field. Ref: https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services |
 | ingressNginx.controller.service.internal.ipFamilyPolicy | string | `"SingleStack"` | Represents the dual-stack capabilities of the internal controller service. Possible values are SingleStack, PreferDualStack or RequireDualStack. Fields `ipFamilies` and `clusterIP` depend on the value of this field. Ref: https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services |
+| ingressNginx.controller.service.internal.labels | object | `{}` | Labels to be added to the internal controller service. |
 | ingressNginx.controller.service.internal.loadBalancerClass | string | `""` | Load balancer class of the internal controller service. Used by cloud providers to select a load balancer implementation other than the cloud provider default. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class |
 | ingressNginx.controller.service.internal.loadBalancerIP | string | `""` | Deprecated: Pre-defined IP address of the internal controller service. Used by cloud providers to connect the resulting load balancer service to a pre-existing static IP. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer |
 | ingressNginx.controller.service.internal.loadBalancerSourceRanges | list | `[]` | Restrict access to the internal controller service. Values must be CIDRs. Allows any source address by default. |
@@ -237,6 +258,7 @@ A Helm chart for Kubernetes
 | ingressNginx.controller.service.internal.ports | object | `{}` |  |
 | ingressNginx.controller.service.internal.sessionAffinity | string | `""` | Session affinity of the internal controller service. Must be either "None" or "ClientIP" if set. Defaults to "None". Ref: https://kubernetes.io/docs/reference/networking/virtual-ips/#session-affinity |
 | ingressNginx.controller.service.internal.targetPorts | object | `{}` |  |
+| ingressNginx.controller.service.internal.trafficDistribution | string | `""` | Traffic distribution policy of the internal controller service. Set to "PreferClose" to route traffic to endpoints that are topologically closer to the client. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution |
 | ingressNginx.controller.service.internal.type | string | `""` | Type of the internal controller service. Defaults to the value of `controller.service.type`. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types |
 | ingressNginx.controller.service.ipFamilies | list | `["IPv4"]` | List of IP families (e.g. IPv4, IPv6) assigned to the external controller service. This field is usually assigned automatically based on cluster configuration and the `ipFamilyPolicy` field. Ref: https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services |
 | ingressNginx.controller.service.ipFamilyPolicy | string | `"SingleStack"` | Represents the dual-stack capabilities of the external controller service. Possible values are SingleStack, PreferDualStack or RequireDualStack. Fields `ipFamilies` and `clusterIP` depend on the value of this field. Ref: https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services |
@@ -253,6 +275,7 @@ A Helm chart for Kubernetes
 | ingressNginx.controller.service.sessionAffinity | string | `""` | Session affinity of the external controller service. Must be either "None" or "ClientIP" if set. Defaults to "None". Ref: https://kubernetes.io/docs/reference/networking/virtual-ips/#session-affinity |
 | ingressNginx.controller.service.targetPorts.http | string | `"http"` | Port of the ingress controller the external HTTP listener is mapped to. |
 | ingressNginx.controller.service.targetPorts.https | string | `"https"` | Port of the ingress controller the external HTTPS listener is mapped to. |
+| ingressNginx.controller.service.trafficDistribution | string | `""` | Traffic distribution policy of the external controller service. Set to "PreferClose" to route traffic to endpoints that are topologically closer to the client. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution |
 | ingressNginx.controller.service.type | string | `"LoadBalancer"` | Type of the external controller service. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types |
 | ingressNginx.controller.shareProcessNamespace | bool | `false` |  |
 | ingressNginx.controller.sysctls | object | `{}` | sysctls for controller pods # Ref: https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/ |
@@ -312,7 +335,9 @@ A Helm chart for Kubernetes
 | ingressNginx.defaultBackend.readinessProbe.timeoutSeconds | int | `5` |  |
 | ingressNginx.defaultBackend.replicaCount | int | `1` |  |
 | ingressNginx.defaultBackend.resources | object | `{}` |  |
+| ingressNginx.defaultBackend.runtimeClassName | string | `""` | Instruct the kubelet to use the named RuntimeClass to run the pod |
 | ingressNginx.defaultBackend.service.annotations | object | `{}` |  |
+| ingressNginx.defaultBackend.service.clusterIPs | list | `[]` | Pre-defined cluster internal IP addresses of the default backend service. Take care of collisions with existing services. This value is immutable. Set once, it can not be changed without deleting and re-creating the service. Ref: https://kubernetes.io/docs/concepts/services-networking/service/#choosing-your-own-ip-address |
 | ingressNginx.defaultBackend.service.externalIPs | list | `[]` | List of IP addresses at which the default backend service is available # Ref: https://kubernetes.io/docs/concepts/services-networking/service/#external-ips # |
 | ingressNginx.defaultBackend.service.loadBalancerSourceRanges | list | `[]` |  |
 | ingressNginx.defaultBackend.service.servicePort | int | `80` |  |
@@ -368,7 +393,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: ingress-nginx
     path: ''
     helm:
