@@ -1,7 +1,7 @@
 dependencies:
 - name: velero
   repository: https://vmware-tanzu.github.io/helm-charts
-  version: 9.1.2
+  version: 11.2.0
 - name: gcp-workload-identity
   repository: https://edixos.github.io/ekp-helm
   version: 0.1.1
@@ -14,5 +14,5 @@ dependencies:
 - name: gcp-bucket
   repository: https://edixos.github.io/ekp-helm
   version: 0.1.0
-digest: sha256:56dafcc28b5517504b03be7a9549166c131b26251d03d0d55a63954e2c5bf30a
-generated: "2025-05-14T10:23:09.920610947Z"
+digest: sha256:27b6615d6bba5872fe5bce97c1973e6aa1e89663711f7a648b94263768d9e772
+generated: "2025-12-24T10:25:58.616416308Z"
