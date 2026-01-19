@@ -170,6 +170,10 @@ class HelmChartUpdater:
                 formatted_values = self._get_upstream_values(dep['repo_name'], dep['name'], dep['version'], dep['alias'])
                 if not formatted_values: 
                     continue
+                formatted_values = "\n".join(
+                    line for line in formatted_values.splitlines()
+                    if line.strip() not in ("---", "...")
+                )
                 alias = dep['alias']
                 alias_line_index = -1
                 end_index = -1
@@ -255,15 +259,23 @@ class HelmChartUpdater:
 
     def _run_fix_lint(self, chart_path, chart_name):
         fix_lint_script = "./scripts/fix-lint.sh"
-        if os.path.exists(fix_lint_script):
-            values_path = os.path.join(chart_path, "values.yaml")
-            if os.path.exists(values_path):
-                if self.run_command(f"bash {fix_lint_script} {values_path}"):
-                    logger.info(f"Fixed lint for {chart_name}")
+
+        if not os.path.exists(fix_lint_script):
+            logger.warning("fix-lint.sh script not found")
+            return
+
+        files_to_fix = ["values.yaml", "Chart.yaml"]
+
+        for filename in files_to_fix:
+            file_path = os.path.join(chart_path, filename)
+
+            if os.path.exists(file_path):
+                if self.run_command(f"bash {fix_lint_script} {file_path}"):
+                    logger.info(f"Fixed lint for {chart_name}/{filename}")
                 else:
-                    logger.warning(f"Failed to fix lint for {chart_name}")
+                    logger.warning(f"Failed to fix lint for {chart_name}/{filename}")
             else:
-                logger.warning(f"No values.yaml found for {chart_name}")
+                logger.warning(f"No {filename} found for {chart_name}")
 
     def _run_helm_docs(self, chart_path, chart_name):
         logger.info(f"Running helm-docs for {chart_name}")        
