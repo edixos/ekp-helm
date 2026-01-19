@@ -10,19 +10,24 @@ serviceMonitor:
 
 prometheus:
   additionalScrapeConfigs:
-  - job_name: namespace-metrics
-    metrics_path: /federate
-    scrape_interval: 1m
-    scrape_timeout: 55s
-    honor_labels: true
-    params:
-      "match[]":
-        - '{namespace="infra-argocd"}'
-    static_configs:
-      - targets:
-          - "prometheus-operated.infra-prometheus-operator.svc.cluster.local:9090"
+    - job_name: namespace-metrics
+      metrics_path: /federate
+      scrape_interval: 1m
+      scrape_timeout: 55s
+      honor_labels: true
+      params:
+        "match[]":
+          - '{namespace="infra-argocd"}'
+      static_configs:
+        - targets:
+            - "prometheus-operated.infra-prometheus-operator.svc.cluster.local:9090"
 istio:
   useCertificates: true
 
 commonLabels:
   prometheus: prometheus-operator-prometheus
+
+oidc:
+  enabled: false
+  configMap:
+    create: false

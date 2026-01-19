@@ -154,7 +154,19 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 {{/* Prometheus metics enabled for oidc proxy*/}}
 {{- define "alertmanager.oidc.metricsEnabled" -}}
-{{- if and .Values.prometheus.serviceMonitor.enabled (or .Values.oidc.serviceMonitor (and .Values.oidc.configMap.create .Values.oidc.configMap.enableMetric)) -}}
+{{- $oidc := .Values.oidc | default dict -}}
+{{- $cm := $oidc.configMap | default dict -}}
+
+{{- if and
+      (.Values.prometheus.serviceMonitor.enabled | default false)
+      (or
+        ($oidc.serviceMonitor | default false)
+        (and
+          ($cm.create | default false)
+          ($cm.enableMetric | default false)
+        )
+      )
+-}}
 true
 {{- else -}}
 false

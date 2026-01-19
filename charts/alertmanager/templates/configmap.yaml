@@ -118,9 +118,11 @@ metadata:
   name: {{ template "alertmanager.envoy.configmapName" . }}
   labels:
     {{- include "alertmanager.labels" . | nindent 4 }}
-  {{- if .Values.oidc.configMap.annotations }}
+  {{- $oidc := .Values.oidc | default dict }}
+  {{- $cm := $oidc.configMap | default dict }}
+  {{- if $cm.annotations }}
   annotations:
-  {{- toYaml .Values.oidc.configMap.annotations | nindent 4 }}
+    {{- toYaml $cm.annotations | nindent 4 }}
   {{- end }}
 data:
   envoy-custom.yaml: |
