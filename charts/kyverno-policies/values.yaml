@@ -30,11 +30,11 @@ kyvernopolicies:
   #   spec: # spec
 
   # -- API server behavior if the webhook fails to respond ('Ignore', 'Fail')
-  # For more info: https://kyverno.io/docs/writing-policies/policy-settings/
+  # For more info: https://kyverno.io/docs/policy-types/cluster-policy/policy-settings/
   failurePolicy: Fail
 
   # -- Validation failure action (`Audit`, `Enforce`).
-  # For more info https://kyverno.io/docs/writing-policies/validate.
+  # For more info https://kyverno.io/docs/policy-types/cluster-policy/validate.
   validationFailureAction: Audit
 
   # -- Define validationFailureActionByPolicy for specific policies.
@@ -58,7 +58,7 @@ kyvernopolicies:
     #       - fluent
 
   # -- Validate already existing resources.
-  # For more info https://kyverno.io/docs/writing-policies/validate.
+  # For more info https://kyverno.io/docs/policy-types/.
   validationAllowExistingViolations: true
 
   # -- Exclude resources from individual policies.
@@ -102,11 +102,14 @@ kyvernopolicies:
     #     value: "dcgm-exporter*"
 
   # -- Customize the target Pod controllers for the auto-generated rules. (Eg. `none`, `Deployment`, `DaemonSet,Deployment,StatefulSet`)
-  # For more info https://kyverno.io/docs/writing-policies/autogen/.
+  # For more info https://kyverno.io/docs/policy-types/cluster-policy/autogen/.
   autogenControllers: ""
 
   # -- Name override.
   nameOverride:
+
+  # -- Additional Annotations.
+  customAnnotations: {}
 
   # -- Additional labels.
   customLabels: {}

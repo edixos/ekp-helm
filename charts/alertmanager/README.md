@@ -1,6 +1,6 @@
 # alertmanager
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: v0.27.0](https://img.shields.io/badge/AppVersion-v0.27.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![AppVersion: v0.27.0](https://img.shields.io/badge/AppVersion-v0.27.0-informational?style=flat-square)
 
 ----
 
@@ -17,7 +17,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://oauth2-proxy.github.io/manifests | oidc(oauth2-proxy) | 7.12.7 |
+| https://oauth2-proxy.github.io/manifests | oidc(oauth2-proxy) | 10.1.0 |
 
 ## Maintainers
 
@@ -76,43 +76,169 @@ Deploies Alertmanager through Prometheus-Operator
 | logLevel | string | `"info"` | Log level for Alertmanager to be configured with. |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` | Define which Nodes the Pods are scheduled on. ref: https://kubernetes.io/docs/user-guide/node-selection/ |
-| oidc.applicationId | string | release chart full name | OAUTH2 client id |
-| oidc.configMap.annotations | object | `{}` | Map of annotations to apply to the configMap |
-| oidc.configMap.cookieDomains | string | `""` | Cookie domain to force cookies to (ie: .yourcompany.com) |
-| oidc.configMap.cookieExpire | string | `"12h"` | Expire timeframe for cookie |
-| oidc.configMap.cookieHttponly | bool | `true` | HttpOnly cookies are not readable by javascript (recommended) |
-| oidc.configMap.cookieName | string | `"_oauth2_proxy"` | the cookie name for use with an AES cipher when cookie_refresh or pass_access_token is set |
-| oidc.configMap.cookieRefresh | string | `""` | Refresh the cookie when duration has elapsed after cookie was initially set. Should be less than cookie_expire; set to 0 to disable. On refresh, OAuth token is re-validated. (ie: 1h means tokens are refreshed on request 1hr+ after it was set) |
-| oidc.configMap.cookieSecure | bool | `true` | Secure cookies are only sent by the browser of a HTTPS connection (recommended) |
-| oidc.configMap.create | bool | `false` | Create and configure configmap  with name `oidc.configMap.name` |
-| oidc.configMap.emailDomains | list | `["*"]` | Authenticate emails with the specified domain. Use * to authenticate any email |
-| oidc.configMap.extraConfig | string | `""` | Extra options to add to configuration file. See [oauth2-proxy documentation](https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview/#config-file) for details |
-| oidc.configMap.issuerUrl | string | `""` | Required, the OpenID Connect issuer URL, e.g. "https://accounts.google.com" |
-| oidc.configMap.name | string | Generated from release chart name | Configmap name to inject into sidecar |
-| oidc.configMap.passAccessToken | bool | `true` | Pass OAuth Access token to upstream via "X-Forwarded-Access-Token" |
-| oidc.configMap.passBasicAuth | bool | `true` | Pass HTTP Basic Auth, X-Forwarded-User and X-Forwarded-Email information to upstream |
-| oidc.configMap.passUserHeaders | bool | `true` | Pass X-Forwarded-User, X-Forwarded-Groups, X-Forwarded-Email and X-Forwarded-Preferred-Username information to upstream |
-| oidc.configMap.providerDisplayName | string | `""` | Override the provider's name with the given string; used for the sign-in page |
-| oidc.configMap.reverseProxy | bool | `true` | Are we running behind a reverse proxy, controls whether headers like X-Real-IP are accepted and allows X-Forwarded-{Proto,Host,Uri} headers to be used on redirect selection |
-| oidc.configMap.setXauthrequest | bool | `false` | Set X-Auth-Request-User, X-Auth-Request-Groups, X-Auth-Request-Email and X-Auth-Request-Preferred-Username. When used with pass_access_token, X-Auth-Request-Access-Token is added to response headers |
-| oidc.configMap.upstreamUrl | string | http://localhost:<service.targetPort> | Upstream service to proxy |
-| oidc.dexClient.annotations | object | `{}` | Map of annotations to apply to the dex Client created |
-| oidc.dexClient.enabled | bool | `false` | Manage aplicationId/secret as Dex resource |
-| oidc.enabled | bool | `false` | If `true`, enable oidc authentification with sidecar container |
-| oidc.env | list | `[]` | Environment variables to inject into sidecar |
-| oidc.image.pullPolicy | string | `"IfNotPresent"` | Container image pull policy for oauth2-proxy sidecar |
-| oidc.image.repository | string | `"quay.io/oauth2-proxy/oauth2-proxy"` | Container name for oauth2-proxy sidecar |
-| oidc.metricsPort | int | `3090` | Port number where to expose prometheus proxy for oidc proxy |
-| oidc.metricsPortName | string | `"http-oauth-prom"` | PortName to use for oidc proxy sidecar metrics |
-| oidc.port | int | `3000` | Port to listen by oidc proxy |
-| oidc.portName | string | `"http-oidc"` | PortName to use for oidc proxy sidecar |
-| oidc.resources | object | `{"limits":{"cpu":"100m","memory":"50Mi"},"requests":{"cpu":"5m","memory":"30Mi"}}` | Add resources limits and request to oidc proxy side-car container. |
-| oidc.secret.annotations | object | `{}` | Map of annotations to apply to the Secret created |
-| oidc.secret.clientSecretKey | string | `"client_secret"` | Secret key name for OAUTH2 client secret. If `oidc.secret.create` is `true`, a secret with this key will be generated. Else, this key matches existing key in `oidc.secret.name`. |
-| oidc.secret.cookieSecretKey | string | `"encryption_key"` | Secret key name for encryption key. If `oidc.secret.create` is `true`, a secret with this key will be generated. Else, this key matches existing key in `oidc.secret.name`. The value key length should be either 16 or 32 bytes, depending or whether you want AES-128 or AES-256 |
-| oidc.secret.create | bool | `true` | Create and configure secrets with name `oidc.secret.name`. If `false`, use existing secret. |
-| oidc.secret.name | string | Generated from release chart name | Secret name use to store oidc secrets |
-| oidc.serviceMonitor | bool | `true` | Deploy prometheus ServiceMonitor resource to scrape oidc proxy metrics. |
+| oidc.alphaConfig.annotations | object | `{}` |  |
+| oidc.alphaConfig.configData | object | `{}` |  |
+| oidc.alphaConfig.configFile | string | `""` |  |
+| oidc.alphaConfig.enabled | bool | `false` |  |
+| oidc.alphaConfig.existingConfig | string | `nil` |  |
+| oidc.alphaConfig.existingSecret | string | `nil` |  |
+| oidc.alphaConfig.metricsConfigData | object | `{}` |  |
+| oidc.alphaConfig.serverConfigData | object | `{}` |  |
+| oidc.authenticatedEmailsFile.annotations | object | `{}` |  |
+| oidc.authenticatedEmailsFile.enabled | bool | `false` |  |
+| oidc.authenticatedEmailsFile.persistence | string | `"configmap"` |  |
+| oidc.authenticatedEmailsFile.restrictedUserAccessKey | string | `""` |  |
+| oidc.authenticatedEmailsFile.restricted_access | string | `""` |  |
+| oidc.authenticatedEmailsFile.template | string | `""` |  |
+| oidc.autoscaling.annotations | object | `{}` |  |
+| oidc.autoscaling.behavior | object | `{}` |  |
+| oidc.autoscaling.enabled | bool | `false` |  |
+| oidc.autoscaling.maxReplicas | int | `10` |  |
+| oidc.autoscaling.minReplicas | int | `1` |  |
+| oidc.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| oidc.checkDeprecation | bool | `true` |  |
+| oidc.config.annotations | object | `{}` |  |
+| oidc.config.clientID | string | `"XXXXXXX"` |  |
+| oidc.config.clientSecret | string | `"XXXXXXXX"` |  |
+| oidc.config.configFile | string | `"email_domains = [ \"*\" ]\nupstreams = [ \"file:///dev/null\" ]"` |  |
+| oidc.config.cookieName | string | `""` |  |
+| oidc.config.cookieSecret | string | `"XXXXXXXXXXXXXXXX"` |  |
+| oidc.config.google | object | `{}` |  |
+| oidc.config.requiredSecretKeys[0] | string | `"client-id"` |  |
+| oidc.config.requiredSecretKeys[1] | string | `"client-secret"` |  |
+| oidc.config.requiredSecretKeys[2] | string | `"cookie-secret"` |  |
+| oidc.customLabels | object | `{}` | Custom labels to add into metadata |
+| oidc.deploymentAnnotations | object | `{}` |  |
+| oidc.enableServiceLinks | bool | `true` |  |
+| oidc.envFrom | list | `[]` |  |
+| oidc.extraArgs | object | `{}` |  |
+| oidc.extraContainers | list | `[]` |  |
+| oidc.extraEnv | list | `[]` |  |
+| oidc.extraInitContainers | list | `[]` |  |
+| oidc.extraObjects | list | `[]` |  |
+| oidc.extraVolumeMounts | list | `[]` |  |
+| oidc.extraVolumes | list | `[]` |  |
+| oidc.gatewayApi.annotations | object | `{}` |  |
+| oidc.gatewayApi.enabled | bool | `false` |  |
+| oidc.gatewayApi.gatewayRef.name | string | `""` |  |
+| oidc.gatewayApi.gatewayRef.namespace | string | `""` |  |
+| oidc.gatewayApi.hostnames | list | `[]` |  |
+| oidc.gatewayApi.labels | object | `{}` |  |
+| oidc.gatewayApi.rules | list | `[]` |  |
+| oidc.global.imagePullSecrets | list | `[]` |  |
+| oidc.global.imageRegistry | string | `""` |  |
+| oidc.hostAliases | list | `[]` |  |
+| oidc.htpasswdFile.enabled | bool | `false` |  |
+| oidc.htpasswdFile.entries | list | `[]` |  |
+| oidc.htpasswdFile.existingSecret | string | `""` |  |
+| oidc.httpScheme | string | `"http"` |  |
+| oidc.image.command | list | `[]` |  |
+| oidc.image.pullPolicy | string | `"IfNotPresent"` |  |
+| oidc.image.registry | string | `""` |  |
+| oidc.image.repository | string | `"oauth2-proxy/oauth2-proxy"` |  |
+| oidc.image.tag | string | `""` |  |
+| oidc.imagePullSecrets | list | `[]` |  |
+| oidc.ingress.enabled | bool | `false` |  |
+| oidc.ingress.labels | object | `{}` |  |
+| oidc.ingress.path | string | `"/"` |  |
+| oidc.ingress.pathType | string | `"ImplementationSpecific"` |  |
+| oidc.initContainers.waitForRedis.enabled | bool | `true` |  |
+| oidc.initContainers.waitForRedis.image.pullPolicy | string | `"IfNotPresent"` |  |
+| oidc.initContainers.waitForRedis.image.repository | string | `"alpine"` |  |
+| oidc.initContainers.waitForRedis.image.tag | string | `"latest"` |  |
+| oidc.initContainers.waitForRedis.kubectlVersion | string | `""` |  |
+| oidc.initContainers.waitForRedis.resources | object | `{}` |  |
+| oidc.initContainers.waitForRedis.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| oidc.initContainers.waitForRedis.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| oidc.initContainers.waitForRedis.securityContext.enabled | bool | `true` |  |
+| oidc.initContainers.waitForRedis.securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| oidc.initContainers.waitForRedis.securityContext.runAsGroup | int | `65534` |  |
+| oidc.initContainers.waitForRedis.securityContext.runAsNonRoot | bool | `true` |  |
+| oidc.initContainers.waitForRedis.securityContext.runAsUser | int | `65534` |  |
+| oidc.initContainers.waitForRedis.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| oidc.initContainers.waitForRedis.timeout | int | `180` |  |
+| oidc.kubeVersion | string | `nil` |  |
+| oidc.livenessProbe.enabled | bool | `true` |  |
+| oidc.livenessProbe.initialDelaySeconds | int | `0` |  |
+| oidc.livenessProbe.timeoutSeconds | int | `1` |  |
+| oidc.metrics.enabled | bool | `true` |  |
+| oidc.metrics.port | int | `44180` |  |
+| oidc.metrics.service.appProtocol | string | `"http"` |  |
+| oidc.metrics.serviceMonitor.annotations | object | `{}` |  |
+| oidc.metrics.serviceMonitor.bearerTokenFile | string | `""` |  |
+| oidc.metrics.serviceMonitor.enabled | bool | `false` |  |
+| oidc.metrics.serviceMonitor.interval | string | `"60s"` |  |
+| oidc.metrics.serviceMonitor.labels | object | `{}` |  |
+| oidc.metrics.serviceMonitor.metricRelabelings | list | `[]` |  |
+| oidc.metrics.serviceMonitor.namespace | string | `""` |  |
+| oidc.metrics.serviceMonitor.prometheusInstance | string | `"default"` |  |
+| oidc.metrics.serviceMonitor.relabelings | list | `[]` |  |
+| oidc.metrics.serviceMonitor.scheme | string | `""` |  |
+| oidc.metrics.serviceMonitor.scrapeTimeout | string | `"30s"` |  |
+| oidc.metrics.serviceMonitor.tlsConfig | object | `{}` |  |
+| oidc.namespaceOverride | string | `""` |  |
+| oidc.networkPolicy.create | bool | `false` |  |
+| oidc.networkPolicy.egress | list | `[]` |  |
+| oidc.networkPolicy.ingress | list | `[]` |  |
+| oidc.nodeSelector | object | `{}` |  |
+| oidc.podAnnotations | object | `{}` |  |
+| oidc.podDisruptionBudget.enabled | bool | `true` |  |
+| oidc.podDisruptionBudget.maxUnavailable | string | `nil` |  |
+| oidc.podDisruptionBudget.minAvailable | int | `1` |  |
+| oidc.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `""` |  |
+| oidc.podLabels | object | `{}` |  |
+| oidc.podSecurityContext | object | `{}` |  |
+| oidc.priorityClassName | string | `""` |  |
+| oidc.proxyVarsAsSecrets | bool | `true` |  |
+| oidc.readinessProbe.enabled | bool | `true` |  |
+| oidc.readinessProbe.initialDelaySeconds | int | `0` |  |
+| oidc.readinessProbe.periodSeconds | int | `10` |  |
+| oidc.readinessProbe.successThreshold | int | `1` |  |
+| oidc.readinessProbe.timeoutSeconds | int | `5` |  |
+| oidc.redis-ha.enabled | bool | `false` |  |
+| oidc.replicaCount | int | `1` |  |
+| oidc.resizePolicy | list | `[]` |  |
+| oidc.resources | object | `{}` |  |
+| oidc.revisionHistoryLimit | int | `10` |  |
+| oidc.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| oidc.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| oidc.securityContext.enabled | bool | `true` |  |
+| oidc.securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| oidc.securityContext.runAsGroup | int | `2000` |  |
+| oidc.securityContext.runAsNonRoot | bool | `true` |  |
+| oidc.securityContext.runAsUser | int | `2000` |  |
+| oidc.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| oidc.service.annotations | object | `{}` |  |
+| oidc.service.appProtocol | string | `"http"` |  |
+| oidc.service.externalTrafficPolicy | string | `""` |  |
+| oidc.service.internalTrafficPolicy | string | `""` |  |
+| oidc.service.ipDualStack.enabled | bool | `false` |  |
+| oidc.service.ipDualStack.ipFamilies[0] | string | `"IPv6"` |  |
+| oidc.service.ipDualStack.ipFamilies[1] | string | `"IPv4"` |  |
+| oidc.service.ipDualStack.ipFamilyPolicy | string | `"PreferDualStack"` |  |
+| oidc.service.portNumber | int | `80` |  |
+| oidc.service.targetPort | string | `""` |  |
+| oidc.service.trafficDistribution | string | `""` |  |
+| oidc.service.type | string | `"ClusterIP"` |  |
+| oidc.serviceAccount.annotations | object | `{}` |  |
+| oidc.serviceAccount.automountServiceAccountToken | bool | `true` |  |
+| oidc.serviceAccount.enabled | bool | `true` |  |
+| oidc.serviceAccount.imagePullSecrets | list | `[]` |  |
+| oidc.serviceAccount.name | string | `nil` |  |
+| oidc.sessionStorage.redis.clientType | string | `"standalone"` |  |
+| oidc.sessionStorage.redis.cluster.connectionUrls | list | `[]` |  |
+| oidc.sessionStorage.redis.existingSecret | string | `""` |  |
+| oidc.sessionStorage.redis.password | string | `""` |  |
+| oidc.sessionStorage.redis.passwordKey | string | `"redis-password"` |  |
+| oidc.sessionStorage.redis.sentinel.connectionUrls | list | `[]` |  |
+| oidc.sessionStorage.redis.sentinel.existingSecret | string | `""` |  |
+| oidc.sessionStorage.redis.sentinel.masterName | string | `""` |  |
+| oidc.sessionStorage.redis.sentinel.password | string | `""` |  |
+| oidc.sessionStorage.redis.sentinel.passwordKey | string | `"redis-sentinel-password"` |  |
+| oidc.sessionStorage.redis.standalone.connectionUrl | string | `""` |  |
+| oidc.sessionStorage.type | string | `"cookie"` |  |
+| oidc.strategy | object | `{}` |  |
+| oidc.tolerations | list | `[]` |  |
 | paused | bool | `false` | If set to true all actions on the underlying managed objects are not going to be performed, except for delete actions. |
 | podAntiAffinity | string | `""` | Pod anti-affinity can prevent the scheduler from placing Prometheus replicas on the same node. The default value "soft" means that the scheduler should *prefer* to not schedule two replica pods onto the same node but no guarantee is provided. The value "hard" means that the scheduler is *required* to not schedule two replica pods onto the same node. The value "" will disable pod anti-affinity so that no anti-affinity rules will be configured. |
 | podAntiAffinityTopologyKey | string | `"kubernetes.io/hostname"` | If anti-affinity is enabled sets the topologyKey to use for anti-affinity. This can be changed to, for example, failure-domain.beta.kubernetes.io/zone |
@@ -190,7 +316,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: alertmanager
     path: ''
 

@@ -19,6 +19,10 @@ prometheus:
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 dex:
+  # Default values for dex.
+  # This is a YAML-formatted file.
+  # Declare variables to be passed into your templates.
+
   # -- Number of replicas (pods) to launch.
   replicaCount: 1
 
@@ -36,6 +40,9 @@ dex:
     # -- Image tag override for the default value (chart appVersion).
     tag: ""
 
+    # -- When digest is set to a non-empty value, images will be pulled by digest (regardless of tag value).
+    digest: ""
+
   # -- Reference to one or more secrets to be used when [pulling images](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#create-a-pod-that-uses-your-secret) (from private registries).
   imagePullSecrets: []
 
@@ -46,7 +53,7 @@ dex:
   nameOverride: ""
 
   # -- A name to substitute for the full names of resources.
-  fullnameOverride: "test"
+  fullnameOverride: ""
 
   # -- A list of hosts and IPs that will be injected into the pod's hosts file if specified.
   # See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#hostname-and-name-resolution)
@@ -357,7 +364,6 @@ dex:
     #    ports:
     #      - port: 636
     #        protocol: TCP
-
 tags:
   # -- Enables Config Connector features
   configConnector: false
