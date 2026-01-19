@@ -3,10 +3,12 @@ name: Auto Bump Helm Dependencies
 on:
   schedule:
     - cron: "0 10 * * 3"
+  workflow_dispatch:
 permissions:
   contents: write
   pull-requests: write
   issues: write
+  
 
 jobs:
   bump-helm-deps:
