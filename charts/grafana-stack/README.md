@@ -1,6 +1,6 @@
 # grafana-stack
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![AppVersion: 11.3.1](https://img.shields.io/badge/AppVersion-11.3.1-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![AppVersion: 11.3.1](https://img.shields.io/badge/AppVersion-11.3.1-informational?style=flat-square)
 
 ----
 
@@ -16,7 +16,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://grafana.github.io/helm-charts | grafana | 9.0.0 |
+| https://grafana.github.io/helm-charts | grafana | 10.5.8 |
 
 ## Maintainers
 
@@ -43,7 +43,8 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana."grafana.ini".paths.logs | string | `"/var/log/grafana"` |  |
 | grafana."grafana.ini".paths.plugins | string | `"/var/lib/grafana/plugins"` |  |
 | grafana."grafana.ini".paths.provisioning | string | `"/etc/grafana/provisioning"` |  |
-| grafana."grafana.ini".server.domain | string | `"{{ if (and .Values.ingress.enabled .Values.ingress.hosts) }}{{ tpl (.Values.ingress.hosts | first) . }}{{ else }}''{{ end }}"` |  |
+| grafana."grafana.ini".server.domain | string | `"{{ if (and .Values.ingress.enabled .Values.ingress.hosts) }}{{ tpl (.Values.ingress.hosts | first) . }}{{ else if (and .Values.route.main.enabled .Values.route.main.hostnames) }}{{ tpl (.Values.route.main.hostnames | first) . }}{{ else }}''{{ end }}"` |  |
+| grafana."grafana.ini".unified_storage.index_path | string | `"/var/lib/grafana-search/bleve"` |  |
 | grafana.admin.existingSecret | string | `""` |  |
 | grafana.admin.passwordKey | string | `"admin-password"` |  |
 | grafana.admin.userKey | string | `"admin-user"` |  |
@@ -106,6 +107,7 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.gossipPortName | string | `"gossip"` |  |
 | grafana.headlessService | bool | `false` |  |
 | grafana.hostAliases | list | `[]` |  |
+| grafana.hostUsers | string | `nil` |  |
 | grafana.image.pullPolicy | string | `"IfNotPresent"` |  |
 | grafana.image.pullSecrets | list | `[]` |  |
 | grafana.image.registry | string | `"docker.io"` | The Docker registry |
@@ -137,6 +139,7 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.imageRenderer.grafanaProtocol | string | `"http"` |  |
 | grafana.imageRenderer.grafanaSubPath | string | `""` |  |
 | grafana.imageRenderer.hostAliases | list | `[]` |  |
+| grafana.imageRenderer.hostUsers | string | `nil` |  |
 | grafana.imageRenderer.image.pullPolicy | string | `"Always"` |  |
 | grafana.imageRenderer.image.pullSecrets | list | `[]` |  |
 | grafana.imageRenderer.image.registry | string | `"docker.io"` | The Docker registry |
@@ -199,7 +202,7 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.lifecycleHooks | object | `{}` |  |
 | grafana.livenessProbe.failureThreshold | int | `10` |  |
 | grafana.livenessProbe.httpGet.path | string | `"/api/health"` |  |
-| grafana.livenessProbe.httpGet.port | int | `3000` |  |
+| grafana.livenessProbe.httpGet.port | string | `"grafana"` |  |
 | grafana.livenessProbe.initialDelaySeconds | int | `60` |  |
 | grafana.livenessProbe.timeoutSeconds | int | `30` |  |
 | grafana.namespaceOverride | string | `""` |  |
@@ -233,11 +236,11 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.rbac.pspEnabled | bool | `false` |  |
 | grafana.rbac.pspUseAppArmor | bool | `false` |  |
 | grafana.readinessProbe.httpGet.path | string | `"/api/health"` |  |
-| grafana.readinessProbe.httpGet.port | int | `3000` |  |
+| grafana.readinessProbe.httpGet.port | string | `"grafana"` |  |
 | grafana.replicas | int | `1` |  |
 | grafana.resources | object | `{}` |  |
 | grafana.revisionHistoryLimit | int | `10` |  |
-| grafana.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[]}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/references/spec/#gateway.networking.k8s.io%2fv1alpha2) |
+| grafana.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[]}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/references/spec/#gateway.networking.k8s.io%2fv1alpha2) |
 | grafana.route.main.apiVersion | string | `"gateway.networking.k8s.io/v1"` | Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1alpha2 |
 | grafana.route.main.enabled | bool | `false` | Enables or disables the route |
 | grafana.route.main.kind | string | `"HTTPRoute"` | Set the route kind Valid options are GRPCRoute, HTTPRoute, TCPRoute, TLSRoute, UDPRoute |
@@ -278,6 +281,7 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.shareProcessNamespace | bool | `false` |  |
 | grafana.sidecar.alerts.enabled | bool | `false` |  |
 | grafana.sidecar.alerts.env | object | `{}` |  |
+| grafana.sidecar.alerts.envValueFrom | object | `{}` |  |
 | grafana.sidecar.alerts.extraMounts | list | `[]` |  |
 | grafana.sidecar.alerts.initAlerts | bool | `false` |  |
 | grafana.sidecar.alerts.label | string | `"grafana_alert"` |  |
@@ -287,7 +291,7 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.sidecar.alerts.resourceName | string | `""` |  |
 | grafana.sidecar.alerts.script | string | `nil` |  |
 | grafana.sidecar.alerts.searchNamespace | string | `nil` |  |
-| grafana.sidecar.alerts.sizeLimit | object | `{}` |  |
+| grafana.sidecar.alerts.sizeLimit | string | `""` |  |
 | grafana.sidecar.alerts.skipReload | bool | `false` |  |
 | grafana.sidecar.alerts.watchMethod | string | `"WATCH"` |  |
 | grafana.sidecar.dashboards.SCProvider | bool | `true` |  |
@@ -298,6 +302,7 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.sidecar.dashboards.extraMounts | list | `[]` |  |
 | grafana.sidecar.dashboards.folder | string | `"/tmp/dashboards"` |  |
 | grafana.sidecar.dashboards.folderAnnotation | string | `nil` |  |
+| grafana.sidecar.dashboards.initDashboards | bool | `false` |  |
 | grafana.sidecar.dashboards.label | string | `"grafana_dashboard"` |  |
 | grafana.sidecar.dashboards.labelValue | string | `""` |  |
 | grafana.sidecar.dashboards.provider.allowUiUpdates | bool | `false` |  |
@@ -313,7 +318,7 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.sidecar.dashboards.resourceName | string | `""` |  |
 | grafana.sidecar.dashboards.script | string | `nil` |  |
 | grafana.sidecar.dashboards.searchNamespace | string | `nil` |  |
-| grafana.sidecar.dashboards.sizeLimit | object | `{}` |  |
+| grafana.sidecar.dashboards.sizeLimit | string | `""` |  |
 | grafana.sidecar.dashboards.skipReload | bool | `false` |  |
 | grafana.sidecar.dashboards.watchMethod | string | `"WATCH"` |  |
 | grafana.sidecar.datasources.enabled | bool | `false` |  |
@@ -328,14 +333,14 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.sidecar.datasources.resourceName | string | `""` |  |
 | grafana.sidecar.datasources.script | string | `nil` |  |
 | grafana.sidecar.datasources.searchNamespace | string | `nil` |  |
-| grafana.sidecar.datasources.sizeLimit | object | `{}` |  |
+| grafana.sidecar.datasources.sizeLimit | string | `""` |  |
 | grafana.sidecar.datasources.skipReload | bool | `false` |  |
 | grafana.sidecar.datasources.watchMethod | string | `"WATCH"` |  |
 | grafana.sidecar.enableUniqueFilenames | bool | `false` |  |
 | grafana.sidecar.image.registry | string | `"quay.io"` | The Docker registry |
 | grafana.sidecar.image.repository | string | `"kiwigrid/k8s-sidecar"` |  |
 | grafana.sidecar.image.sha | string | `""` |  |
-| grafana.sidecar.image.tag | string | `"1.30.0"` |  |
+| grafana.sidecar.image.tag | string | `"2.2.1"` |  |
 | grafana.sidecar.imagePullPolicy | string | `"IfNotPresent"` |  |
 | grafana.sidecar.livenessProbe | object | `{}` |  |
 | grafana.sidecar.notifiers.enabled | bool | `false` |  |
@@ -349,7 +354,7 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.sidecar.notifiers.resourceName | string | `""` |  |
 | grafana.sidecar.notifiers.script | string | `nil` |  |
 | grafana.sidecar.notifiers.searchNamespace | string | `nil` |  |
-| grafana.sidecar.notifiers.sizeLimit | object | `{}` |  |
+| grafana.sidecar.notifiers.sizeLimit | string | `""` |  |
 | grafana.sidecar.notifiers.skipReload | bool | `false` |  |
 | grafana.sidecar.notifiers.watchMethod | string | `"WATCH"` |  |
 | grafana.sidecar.plugins.enabled | bool | `false` |  |
@@ -363,7 +368,7 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.sidecar.plugins.resourceName | string | `""` |  |
 | grafana.sidecar.plugins.script | string | `nil` |  |
 | grafana.sidecar.plugins.searchNamespace | string | `nil` |  |
-| grafana.sidecar.plugins.sizeLimit | object | `{}` |  |
+| grafana.sidecar.plugins.sizeLimit | string | `""` |  |
 | grafana.sidecar.plugins.skipReload | bool | `false` |  |
 | grafana.sidecar.plugins.watchMethod | string | `"WATCH"` |  |
 | grafana.sidecar.readinessProbe | object | `{}` |  |
@@ -421,7 +426,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: grafana-stack
     path: ''
 
