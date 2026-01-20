@@ -81,6 +81,7 @@ class HelmChartUpdater:
         
         if chart_updated and not self.dry_run:
             self._bump_chart_version(chart_data, chart_name)
+            self._update_app_version(chart_data, updated_deps)
             self._save_chart_yaml(chart_data, chart_yaml_path, chart_name)
             self._update_chart_dependencies(chart_path, chart_name)
             
@@ -229,6 +230,42 @@ class HelmChartUpdater:
         except Exception as e:
             logger.error(f"Error formatting upstream values for {chart_name}: {str(e)}")
             return ""
+
+    def get_chart_app_version(self, repo_name, chart_name, version):
+        result = self.run_command(
+            f"helm show chart {repo_name}/{chart_name} --version {version}"
+        )
+        if not result:
+            return None
+
+        try:
+            chart_info = yaml.load(result)
+            return chart_info.get('appVersion')
+        except Exception as e:
+            logger.error(f"Error parsing chart info for {chart_name}: {e}")
+            return None
+    
+    def _update_app_version(self, chart_data, updated_deps):
+        if not updated_deps:
+            return
+
+        dep = updated_deps[0] 
+        upstream_app_version = self.get_chart_app_version(
+            dep["repo_name"],
+            dep["name"],
+            dep["version"],
+        )
+
+        if upstream_app_version:
+            old = chart_data.get("appVersion")
+            chart_data["appVersion"] = upstream_app_version
+            logger.info(
+                f"Updated appVersion: {old} → {upstream_app_version}"
+            )
+        else:
+            logger.warning(
+                f"No upstream appVersion found for {dep['name']}, keeping existing appVersion"
+            )
 
     def _save_chart_yaml(self, chart_data, chart_path, chart_name):
         with open(chart_path, 'w') as f:
