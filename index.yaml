@@ -1519,6 +1519,21 @@ entries:
   kube-prometheus-stack:
   - apiVersion: v2
     appVersion: v0.88.0
+    created: "2026-01-21T18:03:06.440513092Z"
+    dependencies:
+    - alias: kubePrometheusStack
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 81.2.0
+    description: A Helm chart for Kubernetes
+    digest: cbfcaf183a3482a09b1f2f249a4e21ba604afdc415b6899f03b8b974a84f54b5
+    name: kube-prometheus-stack
+    type: application
+    urls:
+    - kube-prometheus-stack-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
+    appVersion: v0.88.0
     created: "2026-01-20T08:57:50.564733867Z"
     dependencies:
     - alias: kubePrometheusStack
@@ -2041,4 +2056,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-01-20T08:57:50.564882674Z"
+generated: "2026-01-21T18:03:06.440691515Z"
