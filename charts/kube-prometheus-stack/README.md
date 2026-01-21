@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.88.0](https://img.shields.io/badge/AppVersion-v0.88.0-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.88.0](https://img.shields.io/badge/AppVersion-v0.88.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 81.0.1 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 81.2.0 |
 
 ## Description
 
@@ -776,6 +776,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.automountServiceAccountToken | bool | `true` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.configMaps | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.containers | list | `[]` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.convertClassicHistogramsToNHCB | bool | `false` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.disableCompaction | bool | `false` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.dnsConfig | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.dnsPolicy | string | `""` |  |
@@ -848,11 +849,13 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.ruleSelectorNilUsesHelmValues | bool | `true` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.sampleLimit | bool | `false` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.scrapeClasses | list | `[]` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.scrapeClassicHistograms | bool | `false` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.scrapeConfigNamespaceSelector | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.scrapeConfigSelector | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.scrapeConfigSelectorNilUsesHelmValues | bool | `true` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.scrapeFailureLogFile | string | `""` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.scrapeInterval | string | `""` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.scrapeNativeHistograms | bool | `false` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.scrapeProtocols | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.scrapeTimeout | string | `""` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.secrets | list | `[]` |  |
@@ -1339,7 +1342,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: kube-prometheus-stack
     path: ''
     helm:
