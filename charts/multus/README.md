@@ -12,8 +12,8 @@
 
 ## Maintainers
 
-| Name       | Email                     | Url                             |
-| ---------- | ------------------------- | ------------------------------- |
+| Name | Email | Url |
+| ---- | ------ | --- |
 | hamzatalbi | <hamzatalbi831@gmail.com> | <https://github.com/TalbiHamza> |
 
 ## Description
@@ -22,7 +22,7 @@ A Helm chart for Multus CNI - enabling multiple network interfaces for Kubernete
 
 ## Source Code
 
-- <https://github.com/k8snetworkplumbingwg/multus-cni>
+* <https://github.com/k8snetworkplumbingwg/multus-cni>
 
 ## Features
 
@@ -65,20 +65,20 @@ metadata:
   namespace: argocd
 spec:
   project: networking
-
+ 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
     targetRevision: "0.1.0"
     chart: multus
-    path: ""
+    path: ''
     helm:
       values: |
         pluginMode: "thick"
-
+       
         daemon:
           config:
             metricsPort: 9091
-
+       
         metrics:
           enabled: true
           prometheusRules:
@@ -87,17 +87,17 @@ spec:
               prometheus: kube-prometheus
           grafanaDashboard:
             enabled: true
-
+       
         hostPaths:
           cniBinDir: "/opt/cni/bin"
-
+       
         global:
           enableArgocdAnnotations: true
-
+ 
   destination:
     server: https://kubernetes.default.svc
     namespace: "kube-system"
-
+ 
   syncPolicy:
     automated:
       prune: true
@@ -118,7 +118,7 @@ spec:
 hostPaths:
   # Standard Kubernetes
   cniBinDir: "/opt/cni/bin"
-
+ 
   # GKE (if available at this path)
   # cniBinDir: "/home/kubernetes/bin"
 ```
@@ -152,7 +152,7 @@ image:
 
 daemon:
   config:
-    metricsPort: 9091 # Enable metrics
+    metricsPort: 9091  # Enable metrics
 ```
 
 **Features**: Prometheus metrics, better observability, enhanced logging
@@ -167,7 +167,7 @@ image:
 
 **Features**: Lower resource usage, no metrics support
 
-````
+```
 ## Develop
 
 ### Update Documentation
@@ -176,7 +176,7 @@ Chart documentation is generated with [helm-docs](https://github.com/norwoodj/he
 
 ```bash
 docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 helm-docs
-````
+```
 
 ### Run Linter
 
@@ -210,3 +210,4 @@ docker run --rm -it -v pluto:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 
 
 docker volume rm pluto
 ```
+
