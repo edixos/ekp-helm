@@ -1,0 +1,46 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "multus-cni.fullname" . }}-config
+  namespace: {{ include "multus-cni.namespace" . }}
+  labels:
+    {{- include "multus-cni.labels" . | nindent 4 }}
+    tier: node
+    app: multus
+data:
+{{- if eq .Values.pluginMode "thick" }}
+  # Thick mode daemon configuration
+  daemon-config.json: |
+    {
+      "chrootDir": {{ .Values.daemon.config.chrootDir | quote }},
+      "cniVersion": {{ .Values.daemon.config.cniVersion | quote }},
+      "logLevel": {{ .Values.daemon.config.logLevel | quote }},
+      "logToStderr": {{ .Values.daemon.config.logToStderr }},
+      "cniConfigDir": {{ .Values.daemon.config.cniConfigDir | quote }},
+      "multusAutoconfigDir": {{ .Values.daemon.config.multusAutoconfigDir | quote }},
+      "multusConfigFile": {{ .Values.daemon.config.multusConfigFile | quote }},
+      "socketDir": {{ .Values.daemon.config.socketDir | quote }}
+      {{- if .Values.daemon.config.metricsPort }},
+      "metricsPort": {{ .Values.daemon.config.metricsPort }}
+      {{- end }}
+    }
+{{- else }}
+  # Thin mode CNI configuration
+  # NOTE: If you'd prefer to manually apply a configuration file, you may create one here.
+  # In the case you'd like to customize the Multus installation, you should change the arguments to the Multus pod
+  # change the "args" line below from
+  # - "--multus-conf-file=auto"
+  # to:
+  # "--multus-conf-file=/tmp/multus-conf/70-multus.conf"
+  # Additionally -- you should ensure that the name "70-multus.conf" is the alphabetically first name in the
+  # /etc/cni/net.d/ directory on each node, otherwise, it will not be used by the Kubelet.
+  cni-conf.json: |
+    {
+      "name": {{ .Values.config.name | quote }},
+      "type": {{ .Values.config.type | quote }},
+      "capabilities": {{ .Values.config.capabilities | toJson }},
+      "clusterNetwork": {{ .Values.config.clusterNetwork | quote }},
+      "defaultNetworks": {{ .Values.config.defaultNetworks | toJson }},
+      "kubeconfig": {{ .Values.config.kubeconfig | quote }}
+    }
+{{- end }}

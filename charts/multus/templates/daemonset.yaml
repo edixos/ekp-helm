@@ -1,0 +1,184 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "multus-cni.fullname" . }}-ds
+  namespace: {{ include "multus-cni.namespace" . }}
+  labels:
+    {{- include "multus-cni.labels" . | nindent 4 }}
+    tier: node
+    app: multus
+    name: multus
+spec:
+  selector:
+    matchLabels:
+      name: multus
+      {{- include "multus-cni.selectorLabels" . | nindent 6 }}
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  template:
+    metadata:
+      labels:
+        tier: node
+        app: multus
+        name: multus
+        {{- include "multus-cni.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      hostNetwork: true
+      {{- if eq .Values.pluginMode "thick" }}
+      hostPID: true
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
+      serviceAccountName: {{ include "multus-cni.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: kube-multus
+          image: {{ include "multus-cni.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+{{- if eq .Values.pluginMode "thick" }}
+          command: ["/usr/src/multus-cni/bin/multus-daemon"]
+{{- else }}
+          command: ["/thin_entrypoint"]
+          args:
+            - "--multus-conf-file={{ .Values.args.multusConfFile }}"
+            - "--multus-autoconfig-dir={{ .Values.args.multusAutoconfigDir }}"
+            - "--cni-conf-dir={{ .Values.args.cniConfDir }}"
+{{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          terminationMessagePolicy: FallbackToLogsOnError
+{{- if eq .Values.pluginMode "thick" }}
+          env:
+            - name: MULTUS_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+{{- end }}
+          volumeMounts:
+            - name: cni
+              mountPath: /host/etc/cni/net.d
+{{- if eq .Values.pluginMode "thick" }}
+            # In thick mode, cnibin path must be identical between pod and host
+            - name: cnibin
+              mountPath: {{ .Values.hostPaths.cniBinDir }}
+            - name: host-run
+              mountPath: /host/run
+            - name: host-var-lib-cni-multus
+              mountPath: /var/lib/cni/multus
+            - name: host-var-lib-kubelet
+              mountPath: /var/lib/kubelet
+              mountPropagation: HostToContainer
+            - name: host-run-k8s-cni-cncf-io
+              mountPath: /run/k8s.cni.cncf.io
+            - name: host-run-netns
+              mountPath: /run/netns
+              mountPropagation: HostToContainer
+            - name: multus-daemon-config
+              mountPath: /etc/cni/net.d/multus.d
+              readOnly: true
+            - name: hostroot
+              mountPath: /hostroot
+              mountPropagation: HostToContainer
+            - name: multus-conf-dir
+              mountPath: /etc/cni/multus/net.d
+{{- else }}
+            - name: cnibin
+              mountPath: /host/opt/cni/bin
+            - name: multus-cfg
+              mountPath: /tmp/multus-conf
+{{- end }}
+      initContainers:
+        - name: install-multus-binary
+          image: {{ include "multus-cni.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+{{- if eq .Values.pluginMode "thick" }}
+          command:
+            - "/usr/src/multus-cni/bin/install_multus"
+            - "-d"
+            - {{ .Values.hostPaths.cniBinDir | quote }}
+            - "-t"
+            - "thick"
+{{- else }}
+          command: ["/install_multus"]
+          args:
+            - "--type"
+            - "thin"
+{{- end }}
+          resources:
+            {{- toYaml .Values.initResources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+            - name: cnibin
+              mountPath: {{ if eq .Values.pluginMode "thick" }}{{ .Values.hostPaths.cniBinDir }}{{ else }}/host/opt/cni/bin{{ end }}
+              mountPropagation: Bidirectional
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      volumes:
+        - name: cni
+          hostPath:
+            path: {{ .Values.hostPaths.cniConfigDir }}
+        - name: cnibin
+          hostPath:
+            path: {{ .Values.hostPaths.cniBinDir }}
+{{- if eq .Values.pluginMode "thick" }}
+        - name: hostroot
+          hostPath:
+            path: {{ .Values.hostPaths.hostRoot }}
+        - name: multus-daemon-config
+          configMap:
+            name: {{ include "multus-cni.fullname" . }}-config
+            items:
+            - key: daemon-config.json
+              path: daemon-config.json
+        - name: host-run
+          hostPath:
+            path: {{ .Values.hostPaths.hostRun }}
+        - name: host-var-lib-cni-multus
+          hostPath:
+            path: {{ .Values.hostPaths.hostVarLibCniMultus }}
+        - name: host-var-lib-kubelet
+          hostPath:
+            path: {{ .Values.hostPaths.hostVarLibKubelet }}
+        - name: host-run-k8s-cni-cncf-io
+          hostPath:
+            path: {{ .Values.hostPaths.hostRunK8sCniCncfIo }}
+        - name: host-run-netns
+          hostPath:
+            path: {{ .Values.hostPaths.hostRunNetns }}
+        - name: multus-conf-dir
+          hostPath:
+            path: {{ .Values.hostPaths.multusConfDir }}
+{{- else }}
+        - name: multus-cfg
+          configMap:
+            name: {{ include "multus-cni.fullname" . }}-config
+            items:
+              - key: cni-conf.json
+                path: 70-multus.conf
+{{- end }}
