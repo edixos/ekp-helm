@@ -17,6 +17,8 @@ chart-repos:
   - ingress-nginx=https://kubernetes.github.io/ingress-nginx
   - external-dns=https://kubernetes-sigs.github.io/external-dns/
   - ory=https://k8s.ory.sh/helm/charts
+  - kube-ovn=https://kubeovn.github.io/kube-ovn/
+  - cloudtty=https://cloudtty.github.io/cloudtty/
 
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
