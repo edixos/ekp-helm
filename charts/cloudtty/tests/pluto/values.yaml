@@ -1,0 +1,27 @@
+cloudtty:
+  installCRDs: true
+
+  replicaCount: 1
+
+  coreWorkerLimit: 5
+
+  maxWorkerLimit: 10
+
+  image:
+    registry: ghcr.io
+    repository: cloudtty/cloudshell-operator
+    tag: "v0.8.8"
+
+    pullPolicy: IfNotPresent
+
+  livenessProbe:
+    enabled: false
+
+  readinessProbe:
+    enabled: false
+
+  cloudshell:
+    image:
+      registry: ghcr.io
+      repository: cloudtty/cloudshell
+      tag: "v0.8.8"

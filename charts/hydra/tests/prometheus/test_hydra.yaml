@@ -1,0 +1,41 @@
+rule_files:
+  - ../../resources/prometheus-rules/hydra.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - name: Hydra instance down
+    interval: 1m
+    input_series:
+      - series: 'up{job="hydra-hydra-admin", instance="10.0.34.60:4445"}'
+        values: "1 1 0 0 0 0 0 0"
+
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: HydraDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: "hydra-hydra-admin"
+              instance: "10.0.34.60:4445"
+            exp_annotations:
+              summary: "Hydra instance is down"
+              description: "Hydra has been down for more than 2 minutes. Job: hydra-hydra-admin, Instance: 10.0.34.60:4445"
+
+  - name: Health check failing
+    interval: 1m
+    input_series:
+      - series: 'http_requests_total{job="hydra-hydra-admin", endpoint="/health/ready", code="503"}'
+        values: "0 5 10 15 20 25 30 35 40 45"
+      - series: 'http_requests_total{job="hydra-hydra-admin", endpoint="/health/ready", code="200"}'
+        values: "0 100 200 300 400 500 600 700 800 900"
+
+    alert_rule_test:
+      - eval_time: 8m
+        alertname: HydraHealthCheckFailing
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+            exp_annotations:
+              summary: "Hydra health check is failing"
+              description: "Hydra /health/ready endpoint is returning non-200 status codes"

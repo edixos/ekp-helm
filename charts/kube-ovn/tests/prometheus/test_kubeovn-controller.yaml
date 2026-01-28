@@ -1,0 +1,69 @@
+rule_files:
+  - ../../resources/prometheus-rules/kubeovn-controller.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - name: "Kube-OVN Controller instance down"
+    interval: 1m
+    input_series:
+      - series: 'up{job="kube-ovn-controller", instance="10.0.0.202:10660"}'
+        values: "1 1 1 0 0 0 0 0 0 0"
+
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: KubeOVNControllerDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: "kube-ovn-controller"
+              instance: "10.0.0.202:10660"
+            exp_annotations:
+              summary: "Kube-OVN Controller instance is down"
+              description: "Kube-OVN Controller has been down for more than 2 minutes. Instance: 10.0.0.202:10660, Job: kube-ovn-controller"
+
+  - name: "Subnet IP exhaustion warning"
+    interval: 1m
+    input_series:
+      - series: 'subnet_used_ip_count{subnet_name="ovn-default", subnet_cidr="10.16.0.0/16", protocol="IPv4"}'
+        values: "60000 60500 61000 61500 62000 62500 63000 63500 64000 64500"
+      - series: 'subnet_available_ip_count{subnet_name="ovn-default", subnet_cidr="10.16.0.0/16", protocol="IPv4"}'
+        values: "5536 5036 4536 4036 3536 3036 2536 2036 1536 1036"
+
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: KubeOVNSubnetIPExhaustion
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              subnet_name: "ovn-default"
+              subnet_cidr: "10.16.0.0/16"
+              protocol: "IPv4"
+            exp_annotations:
+              summary: "Kube-OVN Subnet IP exhaustion"
+              description: "Subnet ovn-default is using 98.42% of available IPs. CIDR: 10.16.0.0/16"
+
+  - name: "High OVS client request latency"
+    interval: 1m
+    input_series:
+      - series: 'ovs_client_request_latency_milliseconds_bucket{job="kube-ovn-controller", method="lsp-add", le="1"}'
+        values: "0 0 0 0 0 0 0 0 0 0"
+      - series: 'ovs_client_request_latency_milliseconds_bucket{job="kube-ovn-controller", method="lsp-add", le="10"}'
+        values: "5 10 15 20 25 30 35 40 45 50"
+      - series: 'ovs_client_request_latency_milliseconds_bucket{job="kube-ovn-controller", method="lsp-add", le="100"}'
+        values: "8 16 24 32 40 48 56 64 72 80"
+      - series: 'ovs_client_request_latency_milliseconds_bucket{job="kube-ovn-controller", method="lsp-add", le="200"}'
+        values: "10 20 30 40 50 60 70 80 90 100"
+      - series: 'ovs_client_request_latency_milliseconds_bucket{job="kube-ovn-controller", method="lsp-add", le="+Inf"}'
+        values: "10 20 30 40 50 60 70 80 90 100"
+
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: KubeOVNHighOVSLatency
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              method: "lsp-add"
+            exp_annotations:
+              summary: "Kube-OVN high OVS client latency"
+              description: "OVS client request latency (p95) is 175ms for method lsp-add. This may indicate performance issues."

@@ -1,0 +1,38 @@
+groups:
+  - name: multus.availability
+    interval: 30s
+    rules:
+      - alert: MultusDown
+        expr: up{job="multus-metrics"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Multus CNI instance is down"
+          description: "Multus CNI has been down for more than 2 minutes. Job: {{ $labels.job }}, Instance: {{ $labels.instance }}, Pod: {{ $labels.pod }}"
+
+  - name: multus.health
+    interval: 30s
+    rules:
+      - alert: MultusHealthCheckFailing
+        expr: |
+          sum(rate(multus_server_request_total{job="multus-metrics",handler="/healthz",code!="200"}[5m])) > 0
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Multus health check is failing"
+          description: "Multus /healthz endpoint is returning non-200 status codes"
+
+  - name: multus.resources
+    interval: 30s
+    rules:
+      - alert: MultusHighMemoryUsage
+        expr: |
+          process_resident_memory_bytes{job="multus-metrics"} > 100 * 1024 * 1024
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Multus CNI high memory usage"
+          description: "Multus CNI instance {{ $labels.pod }} is using more than 100MB of memory. Current usage: {{ $value | humanize }}B"

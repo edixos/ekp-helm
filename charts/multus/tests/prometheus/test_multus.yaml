@@ -1,0 +1,63 @@
+rule_files:
+  - ../../resources/prometheus-rules/multus.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - name: Multus instance down
+    interval: 1m
+    input_series:
+      - series: 'up{job="multus-metrics", instance="10.132.0.22:9091", pod="multus-ds-dk6zj", namespace="kube-system"}'
+        values: "1 1 0 0 0 0 0 0"
+
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: MultusDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: "multus-metrics"
+              instance: "10.132.0.22:9091"
+              pod: "multus-ds-dk6zj"
+              namespace: "kube-system"
+            exp_annotations:
+              summary: "Multus CNI instance is down"
+              description: "Multus CNI has been down for more than 2 minutes. Job: multus-metrics, Instance: 10.132.0.22:9091, Pod: multus-ds-dk6zj"
+
+  - name: Multus health check failing
+    interval: 1m
+    input_series:
+      - series: 'multus_server_request_total{job="multus-metrics", handler="/healthz", code="503", method="post"}'
+        values: "0 5 10 15 20 25 30 35 40 45"
+      - series: 'multus_server_request_total{job="multus-metrics", handler="/healthz", code="200", method="post"}'
+        values: "0 100 200 300 400 500 600 700 800 900"
+
+    alert_rule_test:
+      - eval_time: 8m
+        alertname: MultusHealthCheckFailing
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+            exp_annotations:
+              summary: "Multus health check is failing"
+              description: "Multus /healthz endpoint is returning non-200 status codes"
+
+  - name: Multus high memory usage
+    interval: 1m
+    input_series:
+      - series: 'process_resident_memory_bytes{job="multus-metrics", pod="multus-ds-dk6zj", instance="10.132.0.22:9091", namespace="kube-system"}'
+        values: "50000000 60000000 80000000 90000000 110000000 110000000 110000000 110000000 110000000 110000000"
+
+    alert_rule_test:
+      - eval_time: 9m
+        alertname: MultusHighMemoryUsage
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: "multus-metrics"
+              pod: "multus-ds-dk6zj"
+              instance: "10.132.0.22:9091"
+              namespace: "kube-system"
+            exp_annotations:
+              summary: "Multus CNI high memory usage"
+              description: "Multus CNI instance multus-ds-dk6zj is using more than 100MB of memory. Current usage: 110MB"

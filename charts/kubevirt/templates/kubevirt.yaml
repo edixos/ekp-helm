@@ -1,0 +1,28 @@
+apiVersion: kubevirt.io/v1
+kind: KubeVirt
+metadata:
+  name: {{ .Values.kubevirt.name }}
+  namespace: {{ include "kubevirt.namespace" . }}
+  labels:
+    {{- include "kubevirt.labels" . | nindent 4 }}
+  {{- with (include "kubevirt.annotations" . ) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.kubevirt.certificateRotateStrategy }}
+  certificateRotateStrategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.kubevirt.configuration }}
+  configuration:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.kubevirt.infra }}
+  infra:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.kubevirt.workloads }}
+  workloads:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}

@@ -1,0 +1,130 @@
+prometheus:
+  enabled: false
+  rules:
+    enabled: false
+    labels:
+      prometheus: prometheus-operator-prometheus
+  grafanaDashboard:
+    enabled: false
+    label:
+      grafana_dashboard: "1"
+
+kratos:
+  development: false
+  config:
+    dsn: postgres://kratos:password@postgres-postgresql.kratos.svc.cluster.local:5432/kratosdb?sslmode=disable
+    secrets:
+      default:
+        - "super-secure-secret-key"
+    serve:
+      public:
+        base_url: https://auth-dev.example.com
+        cors:
+          enabled: true
+          allowed_origins:
+            - http://localhost:5173
+          allowed_methods:
+            - GET
+            - POST
+          allowed_headers:
+            - Authorization
+            - Content-Type
+            - Accept
+          allow_credentials: true
+
+    oauth2_provider:
+      url: http://hydra-admin.hydra.svc.cluster.local:4445
+
+    selfservice:
+      default_browser_return_url: http://localhost:5173/scenarios
+      flows:
+        login:
+          ui_url: http://localhost:5173/login
+          after:
+            default_browser_return_url: http://localhost:5173/scenarios
+        registration:
+          ui_url: http://localhost:5173/register
+          after:
+            oidc:
+              hooks:
+                - hook: session
+        logout:
+          after:
+            default_browser_return_url: http://localhost:5173/login
+        error:
+          ui_url: http://localhost:5173/error
+      methods:
+        oidc:
+          enabled: true
+          config:
+            providers:
+              - id: google
+                provider: google
+                client_id: "secret"
+                client_secret: "secret"
+                issuer_url: https://accounts.google.com
+                mapper_url: "base64://bG9jYWwgY2xhaW1zID0gew0KICBlbWFpbF92ZXJpZmllZDogZmFsc2UsDQp9ICsgc3RkLmV4dFZhcignY2xhaW1zJyk7DQoNCnsNCiAgaWRlbnRpdHk6IHsNCiAgICB0cmFpdHM6IHsNCiAgICAgIFtpZiAnZW1haWwnIGluIGNsYWltcyAmJiBjbGFpbXMuZW1haWxfdmVyaWZpZWQgdGhlbiAnZW1haWwnIGVsc2UgbnVsbF06IGNsYWltcy5lbWFpbCwNCiAgICAgIFtpZiAnZ2l2ZW5fbmFtZScgaW4gY2xhaW1zIHRoZW4gJ2ZpcnN0X25hbWUnIGVsc2UgbnVsbF06IGNsYWltcy5naXZlbl9uYW1lLA0KICAgICAgW2lmICdmYW1pbHlfbmFtZScgaW4gY2xhaW1zIHRoZW4gJ2xhc3RfbmFtZScgZWxzZSBudWxsXTogY2xhaW1zLmZhbWlseV9uYW1lLA0KICAgIH0sDQogICAgbWV0YWRhdGFfcHVibGljOiB7DQogICAgICBmdWxsX25hbWU6IGlmICduYW1lJyBpbiBjbGFpbXMgdGhlbiBjbGFpbXMubmFtZSBlbHNlIG51bGwsDQogICAgICBwaWN0dXJlOiBpZiAncGljdHVyZScgaW4gY2xhaW1zIHRoZW4gY2xhaW1zLnBpY3R1cmUgZWxzZSBudWxsLA0KICAgICAgbG9jYWxlOiBpZiAnbG9jYWxlJyBpbiBjbGFpbXMgdGhlbiBjbGFpbXMubG9jYWxlIGVsc2UgbnVsbCwNCiAgICAgIHByb2ZpbGVfdXJsOiBpZiAncHJvZmlsZScgaW4gY2xhaW1zIHRoZW4gY2xhaW1zLnByb2ZpbGUgZWxzZSBudWxsLA0KICAgICAgaG9zdGVkX2RvbWFpbjogaWYgJ2hkJyBpbiBjbGFpbXMgdGhlbiBjbGFpbXMuaGQgZWxzZSBudWxsLA0KICAgIH0sDQogICAgbWV0YWRhdGFfYWRtaW46IHsNCiAgICAgIGdvb2dsZV9zdWI6IGlmICdzdWInIGluIGNsYWltcyB0aGVuIGNsYWltcy5zdWIgZWxzZSBudWxsLA0KICAgICAgYXpwOiBpZiAnYXpwJyBpbiBjbGFpbXMgdGhlbiBjbGFpbXMuYXpwIGVsc2UgbnVsbCwNCiAgICB9LA0KICB9DQp9DQo="
+                scope:
+                  - openid
+                  - email
+                  - profile
+    cookies:
+      domain: auth-dev.example.com
+      path: /
+      secure: "true"
+      same_site: "None"
+
+    identity:
+      default_schema_id: default
+      schemas:
+        - id: default
+          url: file:///etc/config/identity.default.schema.json
+
+  automigration:
+    enabled: true
+
+  identitySchemas:
+    "identity.default.schema.json": |
+      {
+        "$id": "https://schemas.ory.sh/presets/kratos/identity.email.schema.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Person",
+        "type": "object",
+        "properties": {
+          "traits": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "format": "email",
+                "title": "E-Mail",
+                "ory.sh/kratos": {
+                  "credentials": {
+                    "password": {
+                      "identifier": true
+                    }
+                  },
+                  "recovery": {
+                    "via": "email"
+                  },
+                  "verification": {
+                    "via": "email"
+                  }
+                }
+              },
+              "first_name": {
+                "type": "string",
+                "title": "First Name"
+              },
+              "last_name": {
+                "type": "string",
+                "title": "Last Name"
+              }
+            },
+            "required": [
+              "email"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }

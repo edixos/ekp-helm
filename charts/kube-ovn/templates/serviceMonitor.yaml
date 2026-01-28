@@ -1,0 +1,53 @@
+{{- if and .Values.prometheus.enabled .Values.prometheus.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "kube-ovn.fullname" . }}-controller
+  namespace: {{ .Values.prometheus.serviceMonitor.namespace | default "monitoring" }}
+  labels:
+    {{- with .Values.prometheus.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.prometheus.serviceMonitor.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  endpoints:
+    - port: metrics
+      {{- with .Values.prometheus.serviceMonitor.interval }}
+      interval: {{ . }}
+      {{- else }}
+      interval: 15s
+      {{- end }}
+      {{- with .Values.prometheus.serviceMonitor.scheme }}
+      scheme: {{ . }}
+      {{- end }}
+      {{- with .Values.prometheus.serviceMonitor.tlsConfig }}
+      tlsConfig:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.prometheus.serviceMonitor.bearerTokenFile }}
+      bearerTokenFile: {{ .Values.prometheus.serviceMonitor.bearerTokenFile }}
+      {{- else }}
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      {{- end }}
+      {{- with .Values.prometheus.serviceMonitor.metricRelabelings }}
+      metricRelabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.prometheus.serviceMonitor.relabelings }}
+      relabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.prometheus.serviceMonitor.targetNamespace | default "kube-system" }}
+  selector:
+    matchLabels:
+      {{- if .Values.prometheus.serviceMonitor.selectorLabels }}
+      {{- toYaml .Values.prometheus.serviceMonitor.selectorLabels | nindent 6 }}
+      {{- else }}
+      app: kube-ovn-controller
+      {{- end }}
+{{- end }}

@@ -1,0 +1,51 @@
+image:
+  registry: ghcr.io
+  repository: k8snetworkplumbingwg/multus-cni
+  tag: "snapshot-thick"
+  pullPolicy: IfNotPresent
+
+pluginMode: "thick"
+
+namespace: kube-system
+
+serviceAccount:
+  create: true
+  name: "multus"
+
+rbac:
+  create: true
+
+daemon:
+  config:
+    metricsPort: "9091"
+    logLevel: "verbose"
+
+metrics:
+  enabled: true
+  port: 9091
+  service:
+    create: true
+    type: ClusterIP
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9091"
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      release: kube-prometheus-stack
+    interval: 30s
+    scrapeTimeout: 10s
+
+tolerations:
+  - operator: Exists
+    effect: NoSchedule
+  - operator: Exists
+    effect: NoExecute
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 50Mi
+  requests:
+    cpu: 50m
+    memory: 50Mi
