@@ -1,0 +1,7 @@
+remote: origin
+chart-dirs:
+  - charts
+helm-extra-args: --timeout=500
+chart-repos:
+  - kube-ovn=https://kubeovn.github.io/kube-ovn/
+check-version-increment: true
