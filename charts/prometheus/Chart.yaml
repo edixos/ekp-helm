@@ -1,15 +1,15 @@
 apiVersion: v2
 description: Deploys Prometheus through prometheus operator
 name: prometheus
-version: 0.1.1
-appVersion: "v3.0.1"
+version: 0.1.2
+appVersion: "7.13.0"
 maintainers:
   - name: ilyasabdellaoui
     email: ilyas.abdellaoui21@gmail.com
     url: https://github.com/ilyasabdellaoui
 dependencies:
   - name: oauth2-proxy
-    version: 10.1.0
+    version: 10.1.1
     repository: https://oauth2-proxy.github.io/manifests
     alias: oidc
     condition: oidc.enabled
