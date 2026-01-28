@@ -1,0 +1,7 @@
+remote: origin
+chart-dirs:
+  - charts
+helm-extra-args: --timeout=500
+chart-repos:
+  - hydra=https://k8s.ory.sh/helm/charts
+check-version-increment: true

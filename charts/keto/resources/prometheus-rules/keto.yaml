@@ -1,0 +1,37 @@
+groups:
+  - name: keto.availability
+    interval: 30s
+    rules:
+      - alert: KetoDown
+        expr: up{job="keto-metrics"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Keto instance is down"
+          description: "Keto metrics endpoint has been unreachable for >2 minutes. Instance: {{ $labels.instance }}, Job: {{ $labels.job }}"
+
+  - name: keto.health
+    interval: 30s
+    rules:
+      - alert: KetoHealthCheckFailing
+        expr: |
+          sum by (job, endpoint) (rate(http_requests_total{job="keto-metrics", endpoint=~"/health/alive|/health/ready", code!="200"}[5m])) > 0
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Keto health check failing"
+          description: "Keto /health/alive or /health/ready returning non-200 for >3m. Job: {{ $labels.job }}, Endpoint: {{ $labels.endpoint }}"
+
+  - name: keto.runtime
+    interval: 60s
+    rules:
+      - alert: KetoHighGCPauses
+        expr: go_gc_duration_seconds{job="keto-metrics", quantile="0.95"} > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Keto high GC pauses (p95 >500ms)"
+          description: "GC pauses are too long (p95 = {{ $value }}s). May cause increased latency or timeouts. Instance: {{ $labels.instance }}"

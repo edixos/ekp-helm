@@ -1,0 +1,12 @@
+groups:
+  - name: kratos.availability
+    interval: 30s
+    rules:
+      - alert: KratosAdminDown
+        expr: up{job="kratos-admin"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Kratos admin instance is down"
+          description: "Kratos admin (/admin/metrics/prometheus) has been unreachable for more than 2 minutes. Job: {{ $labels.job }}, Instance: {{ $labels.instance }}"

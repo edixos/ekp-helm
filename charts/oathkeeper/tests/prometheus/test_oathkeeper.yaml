@@ -1,0 +1,22 @@
+rule_files:
+  - ../../resources/prometheus-rules/oathkeeper.yaml
+evaluation_interval: 1m
+
+tests:
+  - name: "Oathkeeper instance down"
+    interval: 1m
+    input_series:
+      - series: 'up{job="oathkeeper-metrics", instance="10.0.32.27:9000"}'
+        values: "1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: OathkeeperDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: "oathkeeper-metrics"
+              instance: "10.0.32.27:9000"
+            exp_annotations:
+              summary: "Oathkeeper instance is down"
+              description: "Oathkeeper metrics endpoint is unreachable for more than 2 minutes. Instance: 10.0.32.27:9000"

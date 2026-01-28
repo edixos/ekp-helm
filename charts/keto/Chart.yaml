@@ -1,0 +1,14 @@
+apiVersion: v2
+name: keto
+description: A Helm chart for Kubernetes
+version: 0.1.0
+appVersion: "v25.4.0"
+maintainers:
+  - name: hamzatalbi
+    email: hamzatalbi831@gmail.com
+    url: https://github.com/TalbiHamza
+dependencies:
+  - name: keto
+    version: 0.60.1
+    repository: "https://k8s.ory.sh/helm/charts"
+    alias: keto

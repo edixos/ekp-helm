@@ -1,0 +1,12 @@
+groups:
+  - name: oathkeeper.availability
+    interval: 30s
+    rules:
+      - alert: OathkeeperDown
+        expr: up{job="oathkeeper-metrics"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Oathkeeper instance is down"
+          description: "Oathkeeper metrics endpoint is unreachable for more than 2 minutes. Instance: {{ $labels.instance }}"

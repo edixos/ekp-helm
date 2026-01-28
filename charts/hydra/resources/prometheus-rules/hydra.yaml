@@ -1,0 +1,25 @@
+groups:
+  - name: hydra.availability
+    interval: 30s
+    rules:
+      - alert: HydraDown
+        expr: up{job="hydra-hydra-admin"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Hydra instance is down"
+          description: "Hydra has been down for more than 2 minutes. Job: {{ $labels.job }}, Instance: {{ $labels.instance }}"
+
+  - name: hydra.health
+    interval: 30s
+    rules:
+      - alert: HydraHealthCheckFailing
+        expr: |
+          sum(rate(http_requests_total{job="hydra-hydra-admin",endpoint="/health/ready",code!="200"}[5m])) > 0
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Hydra health check is failing"
+          description: "Hydra /health/ready endpoint is returning non-200 status codes"

@@ -1,0 +1,53 @@
+keto:
+  config:
+    dsn: "memory"
+
+    serve:
+      read:
+        port: 4466
+        host: "0.0.0.0"
+        cors:
+          enabled: true
+          allowed_origins:
+            - "http://localhost:5173"
+          allowed_methods:
+            - GET
+            - POST
+          allowed_headers:
+            - Content-Type
+            - Authorization
+          allow_credentials: true
+          max_age: 3600
+
+      write:
+        port: 4467
+        host: "0.0.0.0"
+        cors:
+          enabled: true
+          allowed_origins:
+            - "http://localhost:5173"
+          allowed_methods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - PATCH
+          allowed_headers:
+            - Content-Type
+            - Authorization
+          allow_credentials: true
+          max_age: 3600
+
+    log:
+      level: "info"
+      format: "json"
+
+service:
+  type: ClusterIP
+  ports:
+    read:
+      port: 4466
+    write:
+      port: 4467
+    metrics:
+      port: 8080
