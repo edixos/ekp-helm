@@ -1,6 +1,6 @@
 # eso
 
-![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.14.2](https://img.shields.io/badge/AppVersion-0.14.2-informational?style=flat-square)
+![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.3.1](https://img.shields.io/badge/AppVersion-v1.3.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.external-secrets.io | eso(external-secrets) | 1.2.1 |
+| https://charts.external-secrets.io | eso(external-secrets) | 1.3.1 |
 
 ## Maintainers
 
@@ -40,6 +40,7 @@ A Helm chart ESO for Kubernetes
 | eso.certController.extraVolumeMounts | list | `[]` |  |
 | eso.certController.extraVolumes | list | `[]` |  |
 | eso.certController.hostNetwork | bool | `false` | Run the certController on the host network |
+| eso.certController.hostUsers | bool | `nil` | Specifies if certController pod should use hostUsers or not. If hostNetwork is true, hostUsers should be too. Only available in Kubernetes ≥ 1.33. @schema type: [boolean, null] |
 | eso.certController.image.flavour | string | `""` |  |
 | eso.certController.image.pullPolicy | string | `"IfNotPresent"` |  |
 | eso.certController.image.repository | string | `"ghcr.io/external-secrets/external-secrets"` |  |
@@ -92,6 +93,7 @@ A Helm chart ESO for Kubernetes
 | eso.crds.createClusterSecretStore | bool | `true` | If true, create CRDs for Cluster Secret Store. If set to false you must also set processClusterStore: false. |
 | eso.crds.createPushSecret | bool | `true` | If true, create CRDs for Push Secret. If set to false you must also set processPushSecret: false. |
 | eso.crds.createSecretStore | bool | `true` | If true, create CRDs for Secret Store. If set to false you must also set processSecretStore: false. |
+| eso.crds.unsafeServeV1Beta1 | bool | `false` | If true, enable v1beta1 API version serving for ExternalSecret, ClusterExternalSecret, SecretStore, and ClusterSecretStore CRDs. v1beta1 is deprecated. Only enable this for backward compatibility if you have existing v1beta1 resources. Warning: This flag will be removed on 2026.05.01. |
 | eso.createOperator | bool | `true` | Specifies whether an external secret operator deployment be created. |
 | eso.deploymentAnnotations | object | `{}` | Annotations to add to Deployment |
 | eso.dnsConfig | object | `{}` | Specifies `dnsOptions` to deployment |
@@ -124,6 +126,7 @@ A Helm chart ESO for Kubernetes
 | eso.grafanaDashboard.sidecarLabel | string | `"grafana_dashboard"` | Label that ConfigMaps should have to be loaded as dashboards. |
 | eso.grafanaDashboard.sidecarLabelValue | string | `"1"` | Label value that ConfigMaps should have to be loaded as dashboards. |
 | eso.hostNetwork | bool | `false` | Run the controller on the host network |
+| eso.hostUsers | bool | `nil` | Specifies if controller pod should use hostUsers or not. If hostNetwork is true, hostUsers should be too. Only available in Kubernetes ≥ 1.33. @schema type: [boolean, null] |
 | eso.image.flavour | string | `""` | The flavour of tag you want to use There are different image flavours available, like distroless and ubi. Please see GitHub release notes for image tags for these flavors. By default, the distroless image is used. |
 | eso.image.pullPolicy | string | `"IfNotPresent"` |  |
 | eso.image.repository | string | `"ghcr.io/external-secrets/external-secrets"` |  |
@@ -132,14 +135,15 @@ A Helm chart ESO for Kubernetes
 | eso.installCRDs | bool | `true` | If set, install and upgrade CRDs through helm chart. |
 | eso.leaderElect | bool | `false` | If true, external-secrets will perform leader election between instances to ensure no more than one instance of external-secrets operates at a time. |
 | eso.livenessProbe.enabled | bool | `false` | Enabled determines if the liveness probe should be used or not. By default it's disabled. |
-| eso.livenessProbe.spec | object | `{"address":"","failureThreshold":5,"httpGet":{"path":"/healthz","port":8082},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | The body of the liveness probe settings. |
+| eso.livenessProbe.spec | object | `{"address":"","failureThreshold":5,"httpGet":{"path":"/healthz","port":"live"},"initialDelaySeconds":10,"periodSeconds":10,"port":8082,"successThreshold":1,"timeoutSeconds":5}` | The body of the liveness probe settings. |
 | eso.livenessProbe.spec.address | string | `""` | Address for liveness probe. |
 | eso.livenessProbe.spec.failureThreshold | int | `5` | Number of consecutive probe failures that should occur before considering the probe as failed. |
-| eso.livenessProbe.spec.httpGet | object | `{"path":"/healthz","port":8082}` | Handler for liveness probe. |
+| eso.livenessProbe.spec.httpGet | object | `{"path":"/healthz","port":"live"}` | Handler for liveness probe. |
 | eso.livenessProbe.spec.httpGet.path | string | `"/healthz"` | Path for liveness probe. |
-| eso.livenessProbe.spec.httpGet.port | int | `8082` | Set this value to 8082 to active liveness probes. @schema type: [string, integer] |
+| eso.livenessProbe.spec.httpGet.port | string | `"live"` | Set this value to 'live' (for named port) or an an integer for liveness probes. @schema type: [string, integer] |
 | eso.livenessProbe.spec.initialDelaySeconds | int | `10` | Delay in seconds for the container to start before performing the initial probe. |
 | eso.livenessProbe.spec.periodSeconds | int | `10` | Period in seconds for K8s to start performing probes. |
+| eso.livenessProbe.spec.port | int | `8082` | Named port for liveness probe. |
 | eso.livenessProbe.spec.successThreshold | int | `1` | Number of successful probes to mark probe successful. |
 | eso.livenessProbe.spec.timeoutSeconds | int | `5` | Specify the maximum amount of time to wait for a probe to respond before considering it fails. |
 | eso.log | object | `{"level":"info","timeEncoding":"epoch"}` | Specifies Log Params to the External Secrets Operator |
@@ -212,8 +216,10 @@ A Helm chart ESO for Kubernetes
 | eso.webhook.certManager.cert.create | bool | `true` | Create a certificate resource within this chart. See https://cert-manager.io/docs/usage/certificate/ |
 | eso.webhook.certManager.cert.duration | string | `"8760h0m0s"` | Set the requested duration (i.e. lifetime) of the Certificate. See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec One year by default. |
 | eso.webhook.certManager.cert.issuerRef | object | `{"group":"cert-manager.io","kind":"Issuer","name":"my-issuer"}` | For the Certificate created by this chart, setup the issuer. See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.IssuerSpec |
+| eso.webhook.certManager.cert.privateKey | object | `{}` | Specific settings on the privateKey and its generation |
 | eso.webhook.certManager.cert.renewBefore | string | `""` | How long before the currently issued certificate’s expiry cert-manager should renew the certificate. See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec Note that renewBefore should be greater than .webhook.lookaheadInterval since the webhook will check this far in advance that the certificate is valid. |
 | eso.webhook.certManager.cert.revisionHistoryLimit | int | `0` | Set the revisionHistoryLimit on the Certificate. See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec Defaults to 0 (ignored). |
+| eso.webhook.certManager.cert.signatureAlgorithm | string | `""` | Specific settings on the signatureAlgorithm used on the cert. signatureAlgorithm is only valid for cert-manager v1.18.0+ |
 | eso.webhook.certManager.enabled | bool | `false` | Enabling cert-manager support will disable the built in secret and switch to using cert-manager (installed separately) to automatically issue and renew the webhook certificate. This chart does not install cert-manager for you, See https://cert-manager.io/docs/ |
 | eso.webhook.create | bool | `true` | Specifies whether a webhook deployment be created. If set to false, crds.conversion.enabled should also be set to false otherwise the kubeapi will be hammered because the conversion is looking for a webhook endpoint. |
 | eso.webhook.deploymentAnnotations | object | `{}` | Annotations to add to Deployment |
@@ -224,6 +230,7 @@ A Helm chart ESO for Kubernetes
 | eso.webhook.extraVolumes | list | `[]` |  |
 | eso.webhook.failurePolicy | string | `"Fail"` | Specifies whether validating webhooks should be created with failurePolicy: Fail or Ignore |
 | eso.webhook.hostNetwork | bool | `false` | Specifies if webhook pod should use hostNetwork or not. |
+| eso.webhook.hostUsers | bool | `nil` | Specifies if webhook pod should use hostUsers or not. If hostNetwork is true, hostUsers should be too. Only available in Kubernetes ≥ 1.33. @schema type: [boolean, null] |
 | eso.webhook.image.flavour | string | `""` | The flavour of tag you want to use |
 | eso.webhook.image.pullPolicy | string | `"IfNotPresent"` |  |
 | eso.webhook.image.repository | string | `"ghcr.io/external-secrets/external-secrets"` |  |
@@ -300,7 +307,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.5"
+    targetRevision: "0.1.6"
     chart: eso
     path: ''
 
