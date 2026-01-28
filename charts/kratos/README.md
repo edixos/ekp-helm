@@ -1,6 +1,6 @@
 # kratos
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: v25.4.0](https://img.shields.io/badge/AppVersion-v25.4.0-informational?style=flat-square) 
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![AppVersion: v25.4.0](https://img.shields.io/badge/AppVersion-v25.4.0-informational?style=flat-square) 
 
 
 
@@ -270,9 +270,9 @@ A Helm chart for Kubernetes
 | kratos.watcher.revisionHistoryLimit | int | `5` | Number of revisions kept in history |
 | kratos.watcher.watchLabelKey | string | `"ory.sh/watcher"` | Label key used for managing applications |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
-| prometheus.grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
+| prometheus.grafanaDashboard.enabled | bool | `false` | Add grafana dashboard as a configmap |
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
-| prometheus.rules.enabled | bool | `true` | Enables prometheus operator rules |
+| prometheus.rules.enabled | bool | `false` | Enables prometheus operator rules |
 | prometheus.rules.labels | object | `{"prometheus":"prometheus-operator-prometheus"}` | Labels to affect to the Prometheus Rules |
 
 ## Installing the Chart
@@ -300,7 +300,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.0"
     chart: kratos
     path: ''
     helm:

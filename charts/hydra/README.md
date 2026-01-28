@@ -1,6 +1,6 @@
 # hydra
 
-![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v25.4.0](https://img.shields.io/badge/AppVersion-v25.4.0-informational?style=flat-square) 
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v25.4.0](https://img.shields.io/badge/AppVersion-v25.4.0-informational?style=flat-square) 
 
 
 
@@ -17,7 +17,11 @@
 |------------|------|---------|
 | https://k8s.ory.sh/helm/charts | hydra(hydra) | 0.60.1 |
 
+## Maintainers
 
+| Name | Email | Url |
+| ---- | ------ | --- |
+| hamzatalbi | <hamzatalbi831@gmail.com> | <https://github.com/TalbiHamza> |
 
 ## Description
 
@@ -259,7 +263,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.6"
+    targetRevision: "0.1.0"
     chart: hydra
     path: ''
     helm:
