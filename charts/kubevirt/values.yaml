@@ -1,0 +1,252 @@
+prometheus:
+  # -- Enables prometheus operator resources
+  enabled: false
+  serviceMonitor:
+    # -- Enables prometheus operator service monitor
+    enabled: false
+    # -- Map of labels to apply to the servicemonitor
+    labels:
+      prometheus: prometheus-operator-prometheus
+    # -- Scrape interval. If not set, the Prometheus default scrape interval is used. dd
+    interval: ""
+    # -- HTTP scheme to use for scraping. Can be used with `tlsConfig` for example if using istio mTLS.
+    scheme: ""
+    # -- TLS configuration to use when scraping the endpoint. For example if using istio mTLS.
+    # Of type: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#tlsconfig
+    tlsConfig: {}
+    # --
+    bearerTokenFile:
+
+    # -- metric relabel configs to apply to samples before ingestion.
+    metricRelabelings: []
+    # - action: keep
+    #   regex: 'kube_(daemonset|deployment|pod|namespace|node|statefulset).+'
+    #   sourceLabels: [__name__]
+
+    # -- Relabel configs to apply to samples before ingestion.
+    relabelings: []
+    # - sourceLabels: [__meta_kubernetes_pod_node_name]
+    #   separator: ;
+    #   regex: ^(.*)$
+    #   targetLabel: nodename
+    #   replacement: $1
+    #   action: replace
+
+    # -- Map of annotations to apply to the ServiceMonitor
+    annotations: {}
+
+  rules:
+    # -- Labels to affect to the Prometheus Rules
+    labels:
+      prometheus: prometheus-operator-prometheus
+
+  grafanaDashboard:
+    # -- If `true`, deploy grafana dashboard
+    enabled: false
+    # -- Labels to apply to dashboard configmap
+    label:
+      grafana_dashboard: "1"
+# Default values for kubevirt.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# -- Override the name of the chart
+nameOverride: ""
+
+# -- Override the full name of the chart
+fullnameOverride: ""
+
+# -- KubeVirt version
+version: v1.5.2
+
+# -- Operator configuration
+operator:
+  # -- Number of operator replicas
+  replicas: 2
+
+  image:
+    # -- Operator image repository
+    repository: quay.io/kubevirt/virt-operator
+    # -- Operator image tag (overrides version if set)
+    tag: ""
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+
+  resources:
+    requests:
+      # -- CPU request for operator
+      cpu: 10m
+      # -- Memory request for operator
+      memory: 450Mi
+    # limits:
+    #   cpu: 100m
+    #   memory: 512Mi
+
+  # -- Node selector for operator pods
+  nodeSelector:
+    kubernetes.io/os: linux
+
+  # -- Tolerations for operator pods
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+
+  # -- Affinity rules for operator pods (pod anti-affinity enabled by default)
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: kubevirt.io
+                  operator: In
+                  values:
+                    - virt-operator
+            topologyKey: kubernetes.io/hostname
+
+# -- KubeVirt CR configuration
+kubevirt:
+  # -- Name of the KubeVirt CR
+  name: kubevirt
+
+  # -- Certificate rotation strategy
+  certificateRotateStrategy: {}
+
+  # -- Developer configuration
+  configuration: {}
+    # developerConfiguration:
+    #   useEmulation: true
+    # network:
+    #   defaultNetworkInterface: bridge
+    # migrations:
+    #   allowAutoConverge: true
+
+  # -- Infrastructure components placement (controllers, webhooks, etc.)
+  infra:
+    # -- Node placement configuration for infrastructure components
+    nodePlacement:
+      # -- Node selector for infrastructure components
+      nodeSelector:
+        kubernetes.io/os: "linux"
+
+      # -- Tolerations for infrastructure components
+      tolerations:
+        - key: "klastro.io/lab"
+          operator: "Exists"
+          effect: "NoSchedule"
+
+      # -- Affinity rules for infrastructure components
+      affinity: {}
+
+  # -- Workload VM placement configuration
+  workloads:
+    # -- Node placement configuration for VM workloads
+    nodePlacement:
+      # -- Node selector for VM workloads
+      nodeSelector: {}
+
+      # -- Tolerations for VM workloads
+      tolerations: []
+
+      # -- Affinity rules for VM workloads
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/os
+                    operator: In
+                    values:
+                      - linux
+
+# -- Namespace configuration
+namespace:
+  # -- Create namespace
+  create: true
+
+  # -- Namespace name
+  name: kubevirt
+
+  # -- Namespace labels
+  labels:
+    kubevirt.io: ""
+    pod-security.kubernetes.io/enforce: "privileged"
+
+# -- Priority class configuration
+priorityClass:
+  # -- Create priority class
+  create: true
+
+  # -- Priority class name
+  name: kubevirt-cluster-critical
+
+  # -- Priority value (higher = more important)
+  value: 1000000000
+
+  # -- Set as global default
+  globalDefault: false
+
+  # -- Priority class description
+  description: "This priority class should be used for core kubevirt components only."
+
+# -- RBAC configuration
+rbac:
+  # -- Create RBAC resources
+  create: true
+
+# -- Service account configuration
+serviceAccount:
+  # -- Create service account
+  create: true
+
+  # -- Service account name
+  name: kubevirt-operator
+
+  # -- Annotations to add to the service account
+  annotations: {}
+
+# -- Monitoring configuration
+monitoring:
+  # -- Enable Prometheus monitoring
+  enabled: true
+
+  # -- ServiceMonitor configuration (requires prometheus-operator)
+  serviceMonitor:
+    # -- Create ServiceMonitor resource
+    enabled: true
+
+    # -- ServiceMonitor namespace (defaults to release namespace)
+    namespace: ""
+
+    # -- Additional labels for ServiceMonitor
+    labels:
+      release: kube-prometheus-stack
+
+    # -- Scrape interval
+    interval: 30s
+
+    # -- Scrape timeout
+    scrapeTimeout: 10s
+
+# -- Security context for operator pod
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+# -- Security context for operator container
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+# -- Additional labels to add to all resources
+commonLabels: {}
+
+# -- Additional annotations to add to all resources
+commonAnnotations: {}
