@@ -4,18 +4,20 @@ chart-dirs:
   - charts
 
 chart-repos:
- - external-secrets=https://charts.external-secrets.io
- - dex=https://charts.dexidp.io
- - ekp-helm=https://edixos.github.io/ekp-helm
- - argo-cd=https://argoproj.github.io/argo-helm
- - kyverno=https://kyverno.github.io/kyverno/
- - cert-manager=https://charts.jetstack.io
- - kube-prometheus-stack=https://prometheus-community.github.io/helm-charts
- - velero=https://vmware-tanzu.github.io/helm-charts
- - oauth2-proxy=https://oauth2-proxy.github.io/manifests
- - grafana=https://grafana.github.io/helm-charts
- - ingress-nginx=https://kubernetes.github.io/ingress-nginx
- - external-dns=https://kubernetes-sigs.github.io/external-dns/
+  - external-secrets=https://charts.external-secrets.io
+  - dex=https://charts.dexidp.io
+  - ekp-helm=https://edixos.github.io/ekp-helm
+  - argo-cd=https://argoproj.github.io/argo-helm
+  - kyverno=https://kyverno.github.io/kyverno/
+  - cert-manager=https://charts.jetstack.io
+  - kube-prometheus-stack=https://prometheus-community.github.io/helm-charts
+  - velero=https://vmware-tanzu.github.io/helm-charts
+  - oauth2-proxy=https://oauth2-proxy.github.io/manifests
+  - grafana=https://grafana.github.io/helm-charts
+  - ingress-nginx=https://kubernetes.github.io/ingress-nginx
+  - external-dns=https://kubernetes-sigs.github.io/external-dns/
+  - ory=https://k8s.ory.sh/helm/charts
+
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
 validate-maintainers: false
