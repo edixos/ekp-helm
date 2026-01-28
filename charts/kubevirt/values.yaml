@@ -46,9 +46,6 @@ prometheus:
     # -- Labels to apply to dashboard configmap
     label:
       grafana_dashboard: "1"
-# Default values for kubevirt.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
 
 # -- Override the name of the chart
 nameOverride: ""

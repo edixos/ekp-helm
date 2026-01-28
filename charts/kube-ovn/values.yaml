@@ -2,6 +2,49 @@
 prometheus:
   # -- Enables Prometheus Operator monitoring
   enabled: false
+  serviceMonitor:
+    # -- Enables prometheus operator service monitor
+    enabled: false
+
+    # -- Namespace where the ServiceMonitor will be created (default: monitoring)
+    namespace: "monitoring"
+
+    # -- Target namespace to monitor (where kube-ovn is installed, default: kube-system)
+    targetNamespace: "kube-system"
+
+    # -- Map of labels to apply to the servicemonitor
+    labels:
+      prometheus: prometheus-operator-prometheus
+
+    # -- Map of annotations to apply to the ServiceMonitor
+    annotations: {}
+
+    # -- Scrape interval. If not set, defaults to 15s
+    interval: "15s"
+
+    # -- Scrape timeout. If not set, Prometheus uses its default
+    scrapeTimeout: ""
+
+    # -- HTTP scheme to use for scraping. Can be used with `tlsConfig` for example if using istio mTLS.
+    scheme: ""
+
+    # -- TLS configuration to use when scraping the endpoint. For example if using istio mTLS.
+    # Of type: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#tlsconfig
+    tlsConfig: {}
+
+    # -- Path to bearer token file for authentication
+    bearerTokenFile: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+
+    # -- Override selector labels for the ServiceMonitor (default: app: kube-ovn-controller)
+    selectorLabels: {}
+      # app: kube-ovn-controller
+
+    # -- metric relabel configs to apply to samples before ingestion.
+    metricRelabelings: []
+
+    # -- Relabel configs to apply to samples before ingestion.
+    relabelings: []
+
   rules:
     # -- Enables prometheus operator rules
     enabled: false
