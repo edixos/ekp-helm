@@ -1,6 +1,6 @@
 # grafana-stack
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![AppVersion: 11.3.1](https://img.shields.io/badge/AppVersion-11.3.1-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![AppVersion: 12.3.1](https://img.shields.io/badge/AppVersion-12.3.1-informational?style=flat-square)
 
 ----
 
@@ -16,7 +16,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://grafana.github.io/helm-charts | grafana | 10.5.8 |
+| https://grafana.github.io/helm-charts | grafana | 10.5.13 |
 
 ## Maintainers
 
@@ -37,7 +37,6 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | fullnameOverride | string | `""` |  |
 | global.enableArgocdAnnotations | bool | `false` | Annotate Custom Resources with `argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true` for Argocd |
 | grafana."grafana.ini".analytics.check_for_updates | bool | `true` |  |
-| grafana."grafana.ini".grafana_net.url | string | `"https://grafana.net"` |  |
 | grafana."grafana.ini".log.mode | string | `"console"` |  |
 | grafana."grafana.ini".paths.data | string | `"/var/lib/grafana/"` |  |
 | grafana."grafana.ini".paths.logs | string | `"/var/log/grafana"` |  |
@@ -61,6 +60,7 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.autoscaling.targetMemory | string | `""` |  |
 | grafana.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | grafana.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| grafana.containerSecurityContext.privileged | bool | `false` |  |
 | grafana.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | grafana.createConfigmap | bool | `true` |  |
 | grafana.dashboardProviders | object | `{}` |  |
@@ -340,7 +340,7 @@ Deploys Grafana instance. Pre-configured values from [upstream grafana chart](ht
 | grafana.sidecar.image.registry | string | `"quay.io"` | The Docker registry |
 | grafana.sidecar.image.repository | string | `"kiwigrid/k8s-sidecar"` |  |
 | grafana.sidecar.image.sha | string | `""` |  |
-| grafana.sidecar.image.tag | string | `"2.2.1"` |  |
+| grafana.sidecar.image.tag | string | `"2.5.0"` |  |
 | grafana.sidecar.imagePullPolicy | string | `"IfNotPresent"` |  |
 | grafana.sidecar.livenessProbe | object | `{}` |  |
 | grafana.sidecar.notifiers.enabled | bool | `false` |  |
@@ -426,7 +426,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: grafana-stack
     path: ''
 
