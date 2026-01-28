@@ -1,0 +1,7 @@
+remote: origin
+chart-dirs:
+  - charts
+helm-extra-args: --timeout=500
+chart-repos:
+  - cloudtty=https://cloudtty.github.io/cloudtty
+check-version-increment: true
