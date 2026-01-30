@@ -1,0 +1,36 @@
+groups:
+  - name: kube-ovn.availability
+    interval: 30s
+    rules:
+      - alert: KubeOVNControllerDown
+        expr: up{job="kube-ovn-controller"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Kube-OVN Controller instance is down"
+          description: "Kube-OVN Controller has been down for more than 2 minutes. Instance: {{ $labels.instance }}, Job: {{ $labels.job }}"
+
+  - name: kube-ovn.networking
+    interval: 30s
+    rules:
+      - alert: KubeOVNSubnetIPExhaustion
+        expr: (subnet_used_ip_count / (subnet_used_ip_count + subnet_available_ip_count)) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kube-OVN Subnet IP exhaustion"
+          description: "Subnet {{ $labels.subnet_name }} is using {{ $value | humanize }}% of available IPs. CIDR: {{ $labels.subnet_cidr }}"
+
+  - name: kube-ovn.performance
+    interval: 30s
+    rules:
+      - alert: KubeOVNHighOVSLatency
+        expr: histogram_quantile(0.95, sum(rate(ovs_client_request_latency_milliseconds_bucket{job="kube-ovn-controller"}[5m])) by (le, method)) > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kube-OVN high OVS client latency"
+          description: "OVS client request latency (p95) is {{ $value | humanize }}ms for method {{ $labels.method }}. This may indicate performance issues."

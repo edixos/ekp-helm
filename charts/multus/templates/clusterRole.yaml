@@ -1,0 +1,33 @@
+{{- if .Values.rbac.create -}}
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "multus-cni.fullname" . }}
+  labels:
+    {{- include "multus-cni.labels" . | nindent 4 }}
+rules:
+  - apiGroups: ["k8s.cni.cncf.io"]
+    resources:
+      - "*"
+    verbs:
+      - "*"
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - pods/status
+    verbs:
+      - get
+      - list
+      - update
+      - watch
+  - apiGroups:
+      - ""
+      - events.k8s.io
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+      - update
+{{- end }}

@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: virt-operator
+  namespace: {{ include "kubevirt.namespace" . }}
+  labels:
+    kubevirt.io: virt-operator
+    {{- include "kubevirt.labels" . | nindent 4 }}
+  {{- with (include "kubevirt.annotations" . ) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.operator.replicas }}
+  selector:
+    matchLabels:
+      {{- include "kubevirt.operatorSelectorLabels" . | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        openshift.io/required-scc: restricted-v2
+        {{- with (include "kubevirt.annotations" . ) }}
+        {{- . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "kubevirt.operatorSelectorLabels" . | nindent 8 }}
+        name: virt-operator
+        prometheus.kubevirt.io: "true"
+    spec:
+      {{- with .Values.operator.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: virt-operator
+        image: {{ include "kubevirt.operatorImage" . }}
+        imagePullPolicy: {{ .Values.operator.image.pullPolicy }}
+        command:
+          - virt-operator
+        args:
+          - --port
+          - "8443"
+          - -v
+          - "2"
+        env:
+          - name: VIRT_OPERATOR_IMAGE
+            value: {{ include "kubevirt.operatorImage" . }}
+          - name: WATCH_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.annotations['olm.targetNamespaces']
+          - name: KUBEVIRT_VERSION
+            value: {{ .Values.version }}
+        ports:
+          - name: metrics
+            containerPort: 8443
+            protocol: TCP
+          - name: webhooks
+            containerPort: 8444
+            protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: 8443
+            scheme: HTTPS
+          initialDelaySeconds: 5
+          timeoutSeconds: 10
+        {{- with .Values.operator.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+          - name: kubevirt-operator-certs
+            mountPath: /etc/virt-operator/certificates
+            readOnly: true
+          - name: profile-data
+            mountPath: /profile-data
+      {{- with .Values.operator.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      priorityClassName: {{ include "kubevirt.priorityClassName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "kubevirt.serviceAccountName" . }}
+      {{- with .Values.operator.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: kubevirt-operator-certs
+          secret:
+            secretName: kubevirt-operator-certs
+            optional: true
+        - name: profile-data
+          emptyDir: {}

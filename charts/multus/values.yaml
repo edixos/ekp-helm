@@ -1,0 +1,230 @@
+# Default values for multus-cni
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global configuration
+global:
+  # Enable ArgoCD annotations for resources
+  enableArgocdAnnotations: false
+
+# Name overrides
+# Override the chart name used in resource names
+nameOverride: ""
+# Override the full resource names (takes precedence over nameOverride)
+fullnameOverride: ""
+
+# Image configuration
+image:
+  registry: ghcr.io
+  repository: k8snetworkplumbingwg/multus-cni
+  # Use snapshot-thick for thick plugin mode (recommended for metrics support)
+  tag: "snapshot-thick"
+  pullPolicy: IfNotPresent
+
+# Plugin mode: "thick" or "thin"
+# Thick mode provides metrics support and better observability
+# Thin mode is lighter but lacks metrics
+pluginMode: "thick"
+
+# ImagePullSecrets for private registries
+imagePullSecrets: []
+
+# Namespace where Multus will be deployed
+namespace: kube-system
+
+# Service account configuration
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: "multus"
+
+# RBAC configuration
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: true
+
+# Multus CNI configuration (used in thin mode)
+config:
+  # CNI configuration file name (will be created in /etc/cni/net.d/)
+  name: "multus-cni-network"
+  type: "multus"
+
+  # Capabilities
+  capabilities:
+    portMappings: true
+
+  # Cluster network - the primary CNI configuration file path
+  # This should point to your existing CNI configuration (e.g., Calico, Flannel, etc.)
+  # Examples:
+  # - GKE: "/etc/cni/net.d/10-gke-ptp.conflist"
+  # - Calico: "/etc/cni/net.d/10-calico.conflist"
+  # - Flannel: "/etc/cni/net.d/10-flannel.conflist"
+  clusterNetwork: "/etc/cni/net.d/10-gke-ptp.conflist"
+
+  # Default networks (optional)
+  defaultNetworks: []
+
+  # Kubeconfig path for Multus
+  kubeconfig: "/etc/cni/net.d/multus.d/multus.kubeconfig"
+
+# Multus daemon configuration (used in thick mode)
+daemon:
+  config:
+    # Root directory for chroot operations
+    chrootDir: "/hostroot"
+    # CNI version
+    cniVersion: "0.3.1"
+    # Log level: debug, verbose, error, panic
+    logLevel: "verbose"
+    # Log to stderr
+    logToStderr: true
+    # CNI configuration directory
+    cniConfigDir: "/host/etc/cni/net.d"
+    # Multus autoconfig directory
+    multusAutoconfigDir: "/host/etc/cni/net.d"
+    # Multus config file (auto-detect or specify path)
+    multusConfigFile: "auto"
+    # Socket directory for multus daemon
+    socketDir: "/host/run/multus/"
+    # Metrics port for Prometheus (set to enable metrics, empty to disable)
+    # Example: 9091
+    metricsPort: "9091"
+
+# Multus daemon arguments (used in thin mode)
+args:
+  # Auto-generate Multus CNI configuration from the cluster
+  multusConfFile: "auto"
+  # Directory to watch for CNI config files
+  multusAutoconfigDir: "/host/etc/cni/net.d"
+  # CNI configuration directory
+  cniConfDir: "/host/etc/cni/net.d"
+
+# Host paths configuration
+hostPaths:
+  # CNI configuration directory on host
+  cniConfigDir: "/etc/cni/net.d"
+  # CNI binaries directory on host (varies by Kubernetes distribution)
+  # IMPORTANT: In thick mode, this path must be identical between pod and host
+  # - Standard: "/opt/cni/bin"
+  # - GKE: "/home/kubernetes/bin" (requires update)
+  # - Some distros: "/var/lib/cni/bin"
+  cniBinDir: "/opt/cni/bin"
+  # Host root directory (for chroot operations in thick mode)
+  hostRoot: "/"
+  # Host run directory
+  hostRun: "/run"
+  # Multus state directory
+  hostVarLibCniMultus: "/var/lib/cni/multus"
+  # Kubelet directory
+  hostVarLibKubelet: "/var/lib/kubelet"
+  # CNI runtime directory
+  hostRunK8sCniCncfIo: "/run/k8s.cni.cncf.io"
+  # Network namespace directory
+  hostRunNetns: "/run/netns/"
+  # Multus configuration directory
+  multusConfDir: "/etc/cni/multus/net.d"
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 100m
+    memory: 50Mi
+  requests:
+    cpu: 50m
+    memory: 50Mi
+
+# Init container resources
+initResources:
+  requests:
+    cpu: 10m
+    memory: 15Mi
+
+# Node tolerations - by default, Multus tolerates all taints
+tolerations:
+  - operator: Exists
+    effect: NoSchedule
+  - operator: Exists
+    effect: NoExecute
+
+# Node selector
+nodeSelector: {}
+
+# Affinity rules
+affinity: {}
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod labels
+podLabels: {}
+
+# Security context for the main container
+securityContext:
+  privileged: true
+
+prometheus:
+  # -- Enables Prometheus Operator monitoring
+  enabled: true
+  rules:
+    # -- Enables prometheus operator rules
+    enabled: true
+    # -- Labels to affect to the Prometheus Rules
+    labels:
+      prometheus: prometheus-operator-prometheus
+  grafanaDashboard:
+    # -- Add grafana dashboard as a configmap
+    enabled: true
+    # -- label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard
+    label:
+      grafana_dashboard: "1"
+
+# Prometheus metrics configuration (only available in thick mode)
+metrics:
+  # Enable Prometheus metrics endpoint
+  enabled: true
+  # Metrics port (must match daemon.config.metricsPort when enabled)
+  port: 9091
+  # Service configuration for metrics
+  service:
+    # Create a Service for metrics
+    create: true
+    # Service type
+    type: ClusterIP
+    # Service port
+    port: 9091
+    # Service annotations (useful for Prometheus auto-discovery)
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9091"
+    # Service labels
+    labels: {}
+  # ServiceMonitor for Prometheus Operator
+  serviceMonitor:
+    # Create ServiceMonitor resource
+    enabled: true
+    # Additional labels for ServiceMonitor
+    additionalLabels:
+      release: kube-prometheus-stack
+    # Scrape interval
+    interval: 30s
+    # Scrape timeout
+    scrapeTimeout: 10s
+
+# Update strategy for DaemonSet
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+
+# Termination grace period in seconds
+terminationGracePeriodSeconds: 10
+
+# Priority class name
+priorityClassName: ""
+
+# Custom labels for all resources
+labels: {}

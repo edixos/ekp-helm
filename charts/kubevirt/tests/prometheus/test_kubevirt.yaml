@@ -1,0 +1,81 @@
+rule_files:
+  - ../../resources/prometheus-rules/kubevirt.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - name: KubeVirt component down
+    interval: 1m
+    input_series:
+      - series: 'up{namespace="kubevirt", pod="virt-api-569d6d4489-vcgqq"}'
+        values: "1 1 0 0 0 0 0 0 0 0"
+      - series: 'up{namespace="kubevirt", pod="virt-controller-5c4dbccbfd-5mqc6"}'
+        values: "1 1 1 1 1 1 1 1 1 1"
+      - series: 'up{namespace="kubevirt", pod="virt-handler-2zhc8"}'
+        values: "1 1 1 1 1 1 1 1 1 1"
+
+    alert_rule_test:
+      - eval_time: 7m
+        alertname: KubeVirtComponentDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              namespace: "kubevirt"
+              pod: "virt-api-569d6d4489-vcgqq"
+            exp_annotations:
+              summary: "KubeVirt component is down"
+              description: "KubeVirt component virt-api-569d6d4489-vcgqq in namespace kubevirt is not available."
+
+  - name: VMI excessive migrations
+    interval: 1m
+    input_series:
+      - series: 'kubevirt_vmi_migration_succeeded{name="test-vm", namespace="default"}'
+        values: 0+0x30 4+0x40
+
+    alert_rule_test:
+      - eval_time: 66m
+        alertname: KubeVirtVMIExcessiveMigrations
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              name: "test-vm"
+              namespace: "default"
+            exp_annotations:
+              summary: "VMI test-vm is migrating too frequently"
+              description: "VirtualMachineInstance test-vm in namespace default has migrated 4 times in the last hour."
+
+  - name: VMI high memory usage
+    interval: 1m
+    input_series:
+      - series: 'kubevirt_vmi_memory_used_bytes{name="memory-hungry-vm", namespace="production"}'
+        values: 9100000000+0x20
+      - series: 'kubevirt_vmi_memory_available_bytes{name="memory-hungry-vm", namespace="production"}'
+        values: 10000000000+0x20
+
+    alert_rule_test:
+      - eval_time: 11m
+        alertname: KubeVirtVMIHighMemoryUsage
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              name: "memory-hungry-vm"
+              namespace: "production"
+            exp_annotations:
+              summary: "VMI memory-hungry-vm has high memory usage"
+              description: "VirtualMachineInstance memory-hungry-vm in namespace production is using 91% of available memory."
+
+  - name: No available nodes to run VMs
+    interval: 1m
+    input_series:
+      - series: "kubevirt_nodes_with_kvm{}"
+        values: "3 3 2 1 0 0 0 0 0 0"
+
+    alert_rule_test:
+      - eval_time: 9m
+        alertname: KubeVirtNoAvailableNodesToRunVMs
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+            exp_annotations:
+              summary: "No available nodes to run VMs"
+              description: "No nodes are available to schedule new VirtualMachineInstances."

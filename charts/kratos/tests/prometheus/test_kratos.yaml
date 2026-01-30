@@ -1,0 +1,23 @@
+rule_files:
+  - ../../resources/prometheus-rules/kratos.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - name: "Kratos admin instance down"
+    interval: 1m
+    input_series:
+      - series: 'up{job="kratos-admin", instance="10.0.32.18:4434"}'
+        values: "1 1 1 0 0 0 0 0 0 0"
+
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: KratosAdminDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: "kratos-admin"
+              instance: "10.0.32.18:4434"
+            exp_annotations:
+              summary: "Kratos admin instance is down"
+              description: "Kratos admin (/admin/metrics/prometheus) has been unreachable for more than 2 minutes. Job: kratos-admin, Instance: 10.0.32.18:4434"

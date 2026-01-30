@@ -1,0 +1,41 @@
+kube-ovn:
+  global:
+    registry:
+      address: docker.io/kubeovn
+    images:
+      kubeovn:
+        repository: kube-ovn
+        tag: v1.14.0
+        support_arm: true
+
+  image:
+    pullPolicy: IfNotPresent
+
+  namespace: kube-system
+
+  networking:
+    stack: "IPv4"
+    pods:
+      cidr:
+        v4: "10.16.0.0/16"
+      gateways:
+        v4: "10.16.0.1"
+    services:
+      cidr:
+        v4: "10.96.0.0/12"
+    join:
+      cidr:
+        v4: "100.64.0.0/16"
+
+  features:
+    enableLoadbalancer: true
+    enableNetworkPolicies: true
+    enableExternalVpcs: true
+    enableNatGateways: true
+    enableKeepVmIps: true
+
+  masterNodes:
+    - "192.168.1.10"
+    - "192.168.1.11"
+
+  masterNodesLabels: {}

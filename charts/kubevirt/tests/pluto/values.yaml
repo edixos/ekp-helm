@@ -1,0 +1,60 @@
+nameOverride: ""
+fullnameOverride: ""
+
+version: v1.5.2
+
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    labels:
+      release: kube-prometheus-stack
+    interval: 30s
+    scrapeTimeout: 10s
+
+operator:
+  replicas: 1
+  image:
+    repository: quay.io/kubevirt/virt-operator
+    tag: v1.5.2
+    pullPolicy: IfNotPresent
+
+kubevirt:
+  name: kubevirt
+  configuration:
+    developerConfiguration: {}
+    migrations: {}
+  infra:
+    nodePlacement: {}
+  workloads:
+    nodePlacement: {}
+
+namespace:
+  create: true
+  name: kubevirt
+  labels:
+    kubevirt.io: ""
+
+priorityClass:
+  create: true
+  name: kubevirt-cluster-critical
+  value: 1000000000
+
+rbac:
+  create: true
+serviceAccount:
+  create: true
+  name: kubevirt-operator
+
+podSecurityContext:
+  runAsNonRoot: true
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+
+grafanaDashboard:
+  enabled: true
+
+prometheus:
+  enabled: false

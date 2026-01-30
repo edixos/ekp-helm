@@ -1,0 +1,15 @@
+apiVersion: v2
+name: cloudtty
+description: A Helm chart for Kubernetes
+type: application
+version: 0.1.0
+appVersion: "0.8.9"
+maintainers:
+  - name: hamzatalbi
+    email: hamzatalbi831@gmail.com
+    url: https://github.com/TalbiHamza
+dependencies:
+  - name: cloudtty
+    version: 0.8.9
+    repository: "https://cloudtty.github.io/cloudtty"
+    alias: cloudtty

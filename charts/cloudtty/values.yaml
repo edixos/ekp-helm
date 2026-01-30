@@ -1,0 +1,110 @@
+# Default values for cloudtty.
+cloudtty:
+  ## Default values for charts.
+  ## This is a YAML-formatted file.
+  ## Declare variables to be passed into your templates.
+
+  ## @section Global configuration
+  ## @param global.imageRegistry Global Docker image registry
+  ## @param global.imagePullSecrets Global Docker image pull secrets
+  global:
+    ## @param global.imageRegistry Global Docker image registry
+    imageRegistry: ""
+    ## E.g.
+    ## imagePullSecrets:
+    ##   - myRegistryKeySecretName
+    ## @param global.imagePullSecrets Global Docker image pull secrets
+    imagePullSecrets: []
+
+  ## @section Pre-Hook configuration
+  ## @param installCRDs define flag whether to install CRD resources
+  installCRDs: true
+
+
+  ## @section controllerManager configuration
+  ## @param labels controllerManager labels
+  labels: {}
+
+  ## @param replicaCount controllerManager target replica count
+  replicaCount: 1
+
+  ## @param podAnnotations controllerManager pod annotations
+  podAnnotations: {}
+
+  ## @param podLabels controllerManager pod labels
+  podLabels: {}
+
+  ## @param coreWorkerLimit defines the core limit of worker pool
+  coreWorkerLimit: 5
+  ## @param maxWorkerLimit defines the max limit of worker pool
+  maxWorkerLimit: 10
+  ## @param image.registry cloudtty image registry
+  ## @param image.repository cloudtty image repository
+  ## @param image.tag cloudtty image tag (immutable tags are recommended)
+  ## @param image.pullPolicy cloudtty image pull policy
+  ## @param image.pullSecrets Specify docker-registry secret names as an array
+  image:
+    registry: ghcr.io
+    repository: cloudtty/cloudshell-operator
+    tag: "v0.8.9"
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## Example:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+
+  ## @param resources controllerManager resource requests and limits
+  resources: {}
+    # If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  ## @param nodeSelector controllerManager node labels for pod assignment
+  nodeSelector: {}
+
+  ## @param affinity controllerManager affinity settings
+  affinity: {}
+
+  ## @param tolerations controllerManager tolerations for pod assignment
+  tolerations: {}
+
+  ## @param livenessProbe.enabled Enable livenessProbe on Kafka containers
+  livenessProbe:
+    enabled: false
+
+  ## @param readinessProbe.enabled Enable readinessProbe on Kafka containers
+  readinessProbe:
+    enabled: false
+
+
+  cloudshell:
+    ## @param image.registry cloudshell image registry
+    ## @param image.repository cloudshell image repository
+    ## @param image.tag cloudshell image tag (immutable tags are recommended)
+    image:
+      registry: ghcr.io
+      repository: cloudtty/cloudshell
+      tag: "v0.8.9"
+    ## @param resources cloudshell resource requests and limits
+    resources: {}
+    # If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    ## @param nodeSelector cloudshell node labels for pod assignment
+    nodeSelector: {}
