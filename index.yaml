@@ -331,6 +331,26 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/cert-manager-0.1.0.tgz
     version: 0.1.0
+  cloudtty:
+  - apiVersion: v2
+    appVersion: 0.8.9
+    created: "2026-01-30T08:45:10.106197983Z"
+    dependencies:
+    - alias: cloudtty
+      name: cloudtty
+      repository: https://cloudtty.github.io/cloudtty
+      version: 0.8.9
+    description: A Helm chart for Kubernetes
+    digest: e23663a7eb1c26281f6e5152bc95e4aad9042d9b334d4d067d0afab2955238d8
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: cloudtty
+    type: application
+    urls:
+    - cloudtty-0.1.0.tgz
+    version: 0.1.0
   configconnector:
   - apiVersion: v2
     appVersion: 1.129.2
@@ -1420,6 +1440,26 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/grafana-stack-0.1.0.tgz
     version: 0.1.0
+  hydra:
+  - apiVersion: v2
+    appVersion: v25.4.0
+    created: "2026-01-30T08:45:10.479863732Z"
+    dependencies:
+    - alias: hydra
+      name: hydra
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.60.1
+    description: A Helm chart for Kubernetes
+    digest: 7daa251129a6d888fa6e535138011df659877a7ddc9584c32261bc113adee931
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: hydra
+    type: application
+    urls:
+    - hydra-0.1.0.tgz
+    version: 0.1.0
   ingress-nginx:
   - apiVersion: v2
     appVersion: 1.12.1
@@ -1516,6 +1556,64 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/ingress-nginx-0.1.0.tgz
     version: 0.1.0
+  keto:
+  - apiVersion: v2
+    appVersion: v25.4.0
+    created: "2026-01-30T08:45:10.724023442Z"
+    dependencies:
+    - alias: keto
+      name: keto
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.60.1
+    description: A Helm chart for Kubernetes
+    digest: 1e2deec8a3b17c1bfeeaac284f3c53cd9368ea5e4b8b520376c5ae0c129f11fa
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: keto
+    urls:
+    - keto-0.1.0.tgz
+    version: 0.1.0
+  kratos:
+  - apiVersion: v2
+    appVersion: v25.4.0
+    created: "2026-01-30T08:45:10.965638044Z"
+    dependencies:
+    - alias: kratos
+      name: kratos
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.60.1
+    description: A Helm chart for Kubernetes
+    digest: f37950899c735eb6aa8e783a6d4d6f7a3611825063625d778cc6997a5b3adbc0
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: kratos
+    urls:
+    - kratos-0.1.0.tgz
+    version: 0.1.0
+  kube-ovn:
+  - apiVersion: v2
+    appVersion: 1.14.0
+    created: "2026-01-30T08:45:11.233219523Z"
+    dependencies:
+    - alias: kube-ovn
+      name: kube-ovn
+      repository: https://kubeovn.github.io/kube-ovn/
+      version: 2.0.0
+    description: A Helm chart for Kubernetes
+    digest: 2766901cd7f46f28037791c28983492ef0ae04fc5f4864f5cc44a14dd676b4ef
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: kube-ovn
+    type: application
+    urls:
+    - kube-ovn-0.1.0.tgz
+    version: 0.1.0
   kube-prometheus-stack:
   - apiVersion: v2
     appVersion: v0.88.0
@@ -1606,6 +1704,29 @@ entries:
     type: application
     urls:
     - https://edixos.github.io/ekp-helm/kube-prometheus-stack-0.1.0.tgz
+    version: 0.1.0
+  kubevirt:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-01-30T08:45:11.468228728Z"
+    description: A Helm chart for KubeVirt - Virtual Machine Management on Kubernetes
+    digest: 96c9e44eef24c77a8439288b717d81c36a4be45bdfb81f61c5eb36242c3526cc
+    home: https://kubevirt.io
+    keywords:
+    - kubevirt
+    - virtualization
+    - virtual-machines
+    - kvm
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: kubevirt
+    sources:
+    - https://github.com/kubevirt/kubevirt
+    type: application
+    urls:
+    - kubevirt-0.1.0.tgz
     version: 0.1.0
   kyverno:
   - apiVersion: v2
@@ -1751,6 +1872,50 @@ entries:
     type: application
     urls:
     - https://edixos.github.io/ekp-helm/kyverno-policies-0.1.0.tgz
+    version: 0.1.0
+  multus:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2026-01-30T08:45:11.710073479Z"
+    description: A Helm chart for Multus CNI - enabling multiple network interfaces
+      for Kubernetes pods
+    digest: d1a6880fdc320331dc04c2306d3e6d76e32e422dae0801941f35d70787042c8c
+    home: https://github.com/k8snetworkplumbingwg/multus-cni
+    keywords:
+    - cni
+    - networking
+    - multus
+    - network-attachment
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: multus
+    sources:
+    - https://github.com/k8snetworkplumbingwg/multus-cni
+    type: application
+    urls:
+    - multus-0.1.0.tgz
+    version: 0.1.0
+  oathkeeper:
+  - apiVersion: v2
+    appVersion: v25.4.0
+    created: "2026-01-30T08:45:12.01157545Z"
+    dependencies:
+    - alias: oathkeeper
+      name: oathkeeper
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.60.1
+    description: A Helm chart for Kubernetes
+    digest: cc6f308ec2dc7e6e1c3f70fed456188b2d558cffc7d4ac0c70f89b63521c4253
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: oathkeeper
+    type: application
+    urls:
+    - oathkeeper-0.1.0.tgz
     version: 0.1.0
   prometheus:
   - apiVersion: v2
@@ -2056,4 +2221,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-01-21T18:03:06.440691515Z"
+generated: "2026-01-30T08:45:12.011689574Z"
