@@ -2,11 +2,11 @@ apiVersion: v2
 name: eso
 description: A Helm chart ESO for Kubernetes
 type: application
-version: 0.1.5
-appVersion: "0.14.2"
+version: 0.1.6
+appVersion: "v1.3.2"
 dependencies:
   - name: external-secrets
-    version: 1.2.1
+    version: 1.3.2
     repository: https://charts.external-secrets.io
     alias: eso
 maintainers:
