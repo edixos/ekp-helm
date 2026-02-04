@@ -29,6 +29,10 @@ class HelmChartUpdater:
         self.repo_cache = {}
         self.branch_name = f"chore/bump-helm-deps-{datetime.now().strftime('%Y-%m-%d')}"
         logger.info(f"Running with: dry_run={dry_run}, skip_pr={skip_pr}, update_values={update_values}")
+    
+    def is_oci_repo(self, repo_url):
+        """Check if a repository URL is OCI-based."""
+        return repo_url.startswith('oci://')
         
     def run_command(self, cmd, cwd=None):
         try:
@@ -40,6 +44,10 @@ class HelmChartUpdater:
     
     # STEP 1: Add Helm repository and cache it
     def add_helm_repo(self, repo_url):
+        """Add HTTP Helm repository. Not applicable for OCI."""
+        if self.is_oci_repo(repo_url):
+            return None
+            
         if repo_url in self.repo_cache:
             return self.repo_cache[repo_url]
         
@@ -54,16 +62,37 @@ class HelmChartUpdater:
         return None
     
     # STEP 2: Get latest version of a chart
-    def get_latest_version(self, repo_name, chart_name):
-        result = self.run_command(f"helm search repo {repo_name}/{chart_name} -o json")
-        if not result: return None
-        
-        try:
-            search_results = json.loads(result)
-            return search_results[0]['version'] if search_results else None
-        except (json.JSONDecodeError, IndexError, KeyError) as e:
-            logger.error(f"Error parsing helm search results: {e}")
-            return None
+    def get_latest_version(self, repo_url, chart_name, repo_name=None):
+        """Get the latest version of a chart from either HTTP or OCI repository."""
+        if self.is_oci_repo(repo_url):
+            oci_ref = f"{repo_url}/{chart_name}"
+            
+            result = self.run_command(f"helm show chart {oci_ref} --version latest 2>/dev/null || helm show chart {oci_ref}")
+            
+            if not result:
+                logger.warning(f"Could not fetch chart info from OCI: {oci_ref}")
+                return None
+            
+            try:
+                chart_info = yaml.load(result)
+                return chart_info.get('version')
+            except Exception as e:
+                logger.error(f"Error parsing OCI chart info: {e}")
+                return None
+        else:
+            if not repo_name:
+                logger.error("repo_name is required for HTTP repositories")
+                return None
+                
+            result = self.run_command(f"helm search repo {repo_name}/{chart_name} -o json")
+            if not result: return None
+            
+            try:
+                search_results = json.loads(result)
+                return search_results[0]['version'] if search_results else None
+            except (json.JSONDecodeError, IndexError, KeyError) as e:
+                logger.error(f"Error parsing helm search results: {e}")
+                return None
     
     # STEP 3: Main chart update processing
     def update_single_chart(self, chart_path):
@@ -105,10 +134,17 @@ class HelmChartUpdater:
             repo_url = dep['repository']
             alias = dep.get('alias', name)
             
-            repo_name = self.add_helm_repo(repo_url)
-            if not repo_name: continue
-                
-            latest_version = self.get_latest_version(repo_name, name)
+            is_oci = self.is_oci_repo(repo_url)
+            
+            if is_oci:
+                logger.info(f"Processing OCI dependency: {name} from {repo_url}")
+                repo_name = None
+                latest_version = self.get_latest_version(repo_url, name)
+            else:
+                repo_name = self.add_helm_repo(repo_url)
+                if not repo_name: continue
+                latest_version = self.get_latest_version(repo_url, name, repo_name)
+            
             if not latest_version:
                 logger.warning(f"Could not find latest version for {name}")
                 continue
@@ -133,12 +169,15 @@ class HelmChartUpdater:
                             'name': name,
                             'alias': alias,
                             'version': latest_version,
-                            'repo_name': repo_name
+                            'repo_url': repo_url,
+                            'repo_name': repo_name,
+                            'is_oci': is_oci
                         })
                     else:
                         logger.info(f"DRY RUN: Would update {name} from {current_version} to {latest_version}")
-            except ValueError:
-                logger.warning(f"Invalid semver comparison: {current_version} vs {latest_version}")
+            except ValueError as e:
+                logger.warning(f"Invalid semver comparison: {current_version} vs {latest_version}: {e}")
+        
         return chart_updated, updated_deps
 
     # STEP 5: Bump chart version
@@ -168,7 +207,7 @@ class HelmChartUpdater:
             with open(values_path, 'r') as f:
                 lines = f.readlines()
             for dep in updated_deps:
-                formatted_values = self._get_upstream_values(dep['repo_name'], dep['name'], dep['version'], dep['alias'])
+                formatted_values = self._get_upstream_values(dep)
                 if not formatted_values: 
                     continue
                 formatted_values = "\n".join(
@@ -214,10 +253,20 @@ class HelmChartUpdater:
         except Exception as e:
             logger.error(f"Error updating values.yaml: {str(e)}")
 
-    def _get_upstream_values(self, repo_name, chart_name, version, alias):
+    def _get_upstream_values(self, dep):
+        """Get upstream default values for a dependency (works for both OCI and HTTP)."""
         try:
-            output = self.run_command(f"helm show values {repo_name}/{chart_name} --version {version}")
-            if not output: return ""
+            if dep['is_oci']:
+                # For OCI repositories, we use the full OCI reference
+                oci_ref = f"{dep['repo_url']}/{dep['name']}"
+                output = self.run_command(f"helm show values {oci_ref} --version {dep['version']}")
+            else:
+                # For HTTP repositories, we use repo_name/chart_name
+                output = self.run_command(f"helm show values {dep['repo_name']}/{dep['name']} --version {dep['version']}")
+            
+            if not output:
+                return ""
+            
             lines = output.split('\n')
             formatted_lines = []
             start_idx = 1 if lines and not lines[0].strip() else 0
@@ -228,21 +277,29 @@ class HelmChartUpdater:
                     formatted_lines.append("")
             return '\n'.join(formatted_lines)
         except Exception as e:
-            logger.error(f"Error formatting upstream values for {chart_name}: {str(e)}")
+            logger.error(f"Error formatting upstream values for {dep['name']}: {str(e)}")
             return ""
 
-    def get_chart_app_version(self, repo_name, chart_name, version):
-        result = self.run_command(
-            f"helm show chart {repo_name}/{chart_name} --version {version}"
-        )
-        if not result:
-            return None
-
+    def get_chart_app_version(self, dep):
+        """Get the appVersion from a chart (works for both OCI and HTTP)."""
         try:
+            if dep['is_oci']:
+                # For OCI repositories
+                oci_ref = f"{dep['repo_url']}/{dep['name']}"
+                result = self.run_command(f"helm show chart {oci_ref} --version {dep['version']}")
+            else:
+                # For HTTP repositories
+                result = self.run_command(
+                    f"helm show chart {dep['repo_name']}/{dep['name']} --version {dep['version']}"
+                )
+            
+            if not result:
+                return None
+
             chart_info = yaml.load(result)
             return chart_info.get('appVersion')
         except Exception as e:
-            logger.error(f"Error parsing chart info for {chart_name}: {e}")
+            logger.error(f"Error parsing chart info for {dep['name']}: {e}")
             return None
     
     def _update_app_version(self, chart_data, updated_deps):
