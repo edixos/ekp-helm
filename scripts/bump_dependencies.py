@@ -246,25 +246,44 @@ class HelmChartUpdater:
             return None
     
     def _update_app_version(self, chart_data, updated_deps):
+        """Update appVersion only if there's a direct dependency matching the chart name."""
         if not updated_deps:
             return
 
-        dep = updated_deps[0] 
-        upstream_app_version = self.get_chart_app_version(
-            dep["repo_name"],
-            dep["name"],
-            dep["version"],
-        )
+        # Get the parent chart name
+        parent_chart_name = chart_data.get('name', '').lower()
+        
+        matching_dep = None
+        for dep in updated_deps:
+            dep_name = dep['name'].lower()
+            dep_alias = dep['alias'].lower()
+            
+            # Check if dependency name or alias matches the parent chart name
+            if dep_name == parent_chart_name or dep_alias == parent_chart_name:
+                matching_dep = dep
+                logger.info(f"Found matching dependency for appVersion update: {dep['name']} (alias: {dep['alias']})")
+                break
+        
+        if not matching_dep:
+            logger.info(
+                f"No direct dependency matching chart name '{parent_chart_name}' found. "
+                f"Skipping appVersion update (this chart likely wraps different dependencies)."
+            )
+            return
+        
+        # Update appVersion from the matching dependency
+        upstream_app_version = self.get_chart_app_version(matching_dep)
 
         if upstream_app_version:
             old = chart_data.get("appVersion")
             chart_data["appVersion"] = upstream_app_version
             logger.info(
-                f"Updated appVersion: {old} → {upstream_app_version}"
+                f"Updated appVersion: {old} → {upstream_app_version} "
+                f"(from dependency: {matching_dep['name']})"
             )
         else:
             logger.warning(
-                f"No upstream appVersion found for {dep['name']}, keeping existing appVersion"
+                f"No upstream appVersion found for {matching_dep['name']}, keeping existing appVersion"
             )
 
     def _save_chart_yaml(self, chart_data, chart_path, chart_name):
