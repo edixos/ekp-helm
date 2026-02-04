@@ -1,6 +1,6 @@
 # kyverno
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.13.4](https://img.shields.io/badge/AppVersion-1.13.4-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.17.0](https://img.shields.io/badge/AppVersion-v1.17.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kyverno.github.io/kyverno/ | kyverno | 3.6.2 |
+| https://kyverno.github.io/kyverno/ | kyverno | 3.7.0 |
 
 ## Maintainers
 
@@ -38,6 +38,21 @@ A Helm chart for kyverno
 | kyverno.admissionController.autoscaling.targetCPUUtilizationPercentage | int | `80` | Target CPU utilization percentage |
 | kyverno.admissionController.caCertificates.data | string | `nil` | CA certificates to use with Kyverno deployments This value is expected to be one large string of CA certificates |
 | kyverno.admissionController.caCertificates.volume | object | `{}` | Volume to be mounted for CA certificates Not used when `.Values.admissionController.caCertificates.data` is defined |
+| kyverno.admissionController.certManager | object | `{"algorithm":"RSA","ca":{"duration":"87600h","renewBefore":"720h"},"createSelfSignedIssuer":true,"enabled":false,"issuerRef":{"group":"cert-manager.io","kind":"ClusterIssuer","name":""},"size":2048,"tls":{"duration":"8760h","renewBefore":"720h"}}` | Configure cert-manager to manage TLS certificates. When enabled, cert-manager Certificate resources will be created to provision the TLS certificates for the admission controller. Requires cert-manager to be installed in the cluster. Takes precedence over createSelfSignedCert when enabled. |
+| kyverno.admissionController.certManager.algorithm | string | `"RSA"` | Key algorithm for certificates (RSA, ECDSA, Ed25519) |
+| kyverno.admissionController.certManager.ca | object | `{"duration":"87600h","renewBefore":"720h"}` | CA certificate configuration |
+| kyverno.admissionController.certManager.ca.duration | string | `"87600h"` | Duration of the CA certificate (default 10 years) |
+| kyverno.admissionController.certManager.ca.renewBefore | string | `"720h"` | Time before expiry to renew the CA certificate (default 30 days) |
+| kyverno.admissionController.certManager.createSelfSignedIssuer | bool | `true` | Create a self-signed ClusterIssuer for CA generation. Set to false if you want to use an existing issuer specified in issuerRef. |
+| kyverno.admissionController.certManager.enabled | bool | `false` | Enable cert-manager integration for certificate management |
+| kyverno.admissionController.certManager.issuerRef | object | `{"group":"cert-manager.io","kind":"ClusterIssuer","name":""}` | Reference to an existing issuer for signing CA certificates. Only used when createSelfSignedIssuer is false. |
+| kyverno.admissionController.certManager.issuerRef.group | string | `"cert-manager.io"` | Group of the issuer |
+| kyverno.admissionController.certManager.issuerRef.kind | string | `"ClusterIssuer"` | Kind of the issuer (ClusterIssuer or Issuer) |
+| kyverno.admissionController.certManager.issuerRef.name | string | `""` | Name of the issuer |
+| kyverno.admissionController.certManager.size | int | `2048` | Key size for RSA (2048, 4096) or ECDSA (256, 384). Ignored for Ed25519. |
+| kyverno.admissionController.certManager.tls | object | `{"duration":"8760h","renewBefore":"720h"}` | TLS certificate configuration |
+| kyverno.admissionController.certManager.tls.duration | string | `"8760h"` | Duration of the TLS certificate (default 1 year) |
+| kyverno.admissionController.certManager.tls.renewBefore | string | `"720h"` | Time before expiry to renew the TLS certificate (default 30 days) |
 | kyverno.admissionController.container.extraArgs | object | `{}` | Additional container args. |
 | kyverno.admissionController.container.extraEnvVars | list | `[]` | Additional container environment variables. |
 | kyverno.admissionController.container.image.defaultRegistry | string | `"reg.kyverno.io"` |  |
@@ -83,7 +98,7 @@ A Helm chart for kyverno
 | kyverno.admissionController.networkPolicy.enabled | bool | `false` | When true, use a NetworkPolicy to allow ingress to the webhook This is useful on clusters using Calico and/or native k8s network policies in a default-deny setup. |
 | kyverno.admissionController.networkPolicy.ingressFrom | list | `[]` | A list of valid from selectors according to https://kubernetes.io/docs/concepts/services-networking/network-policies. |
 | kyverno.admissionController.nodeAffinity | object | `{}` | Node affinity constraints. |
-| kyverno.admissionController.nodeSelector | object | `{}` | Node labels for pod assignment |
+| kyverno.admissionController.nodeSelector | object | `{"kubernetes.io/os":"linux"}` | Node labels for pod assignment |
 | kyverno.admissionController.podAffinity | object | `{}` | Pod affinity constraints. |
 | kyverno.admissionController.podAnnotations | object | `{}` | Additional annotations to add to each pod |
 | kyverno.admissionController.podAntiAffinity | object | See [values.yaml](values.yaml) | Pod anti affinity constraints. |
@@ -128,6 +143,7 @@ A Helm chart for kyverno
 | kyverno.admissionController.serviceMonitor.tlsConfig | object | `{}` | TLS Configuration for endpoint |
 | kyverno.admissionController.sigstoreVolume | object | `{"emptyDir":{}}` | Volume to be mounted in pods for TUF/cosign work. |
 | kyverno.admissionController.startupProbe | object | See [values.yaml](values.yaml) | Startup probe. The block is directly forwarded into the deployment, so you can use whatever startupProbes configuration you want. ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/ |
+| kyverno.admissionController.tlsKeyAlgorithm | string | `"RSA"` | Key algorithm for self-signed TLS certificates. Supported values: RSA, ECDSA, Ed25519 Only used when createSelfSignedCert is false (Kyverno-managed certificates). |
 | kyverno.admissionController.tolerations | list | `[]` | List of node taints to tolerate |
 | kyverno.admissionController.topologySpreadConstraints | list | `[]` | Topology spread constraints. |
 | kyverno.admissionController.tracing.address | string | `nil` | Traces receiver address |
@@ -169,7 +185,7 @@ A Helm chart for kyverno
 | kyverno.backgroundController.networkPolicy.enabled | bool | `false` | When true, use a NetworkPolicy to allow ingress to the webhook This is useful on clusters using Calico and/or native k8s network policies in a default-deny setup. |
 | kyverno.backgroundController.networkPolicy.ingressFrom | list | `[]` | A list of valid from selectors according to https://kubernetes.io/docs/concepts/services-networking/network-policies. |
 | kyverno.backgroundController.nodeAffinity | object | `{}` | Node affinity constraints. |
-| kyverno.backgroundController.nodeSelector | object | `{}` | Node labels for pod assignment |
+| kyverno.backgroundController.nodeSelector | object | `{"kubernetes.io/os":"linux"}` | Node labels for pod assignment |
 | kyverno.backgroundController.podAffinity | object | `{}` | Pod affinity constraints. |
 | kyverno.backgroundController.podAnnotations | object | `{}` | Additional annotations to add to each pod |
 | kyverno.backgroundController.podAntiAffinity | object | See [values.yaml](values.yaml) | Pod anti affinity constraints. |
@@ -218,6 +234,21 @@ A Helm chart for kyverno
 | kyverno.backgroundController.updateStrategy | object | See [values.yaml](values.yaml) | Deployment update strategy. Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy |
 | kyverno.cleanupController.annotations | object | `{}` | Deployment annotations. |
 | kyverno.cleanupController.antiAffinity.enabled | bool | `true` | Pod antiAffinities toggle. Enabled by default but can be disabled if you want to schedule pods to the same node. |
+| kyverno.cleanupController.certManager | object | `{"algorithm":"RSA","ca":{"duration":"87600h","renewBefore":"720h"},"createSelfSignedIssuer":true,"enabled":false,"issuerRef":{"group":"cert-manager.io","kind":"ClusterIssuer","name":""},"size":2048,"tls":{"duration":"8760h","renewBefore":"720h"}}` | Configure cert-manager to manage TLS certificates. When enabled, cert-manager Certificate resources will be created to provision the TLS certificates for the cleanup controller. Requires cert-manager to be installed in the cluster. Takes precedence over createSelfSignedCert when enabled. |
+| kyverno.cleanupController.certManager.algorithm | string | `"RSA"` | Key algorithm for certificates (RSA, ECDSA, Ed25519) |
+| kyverno.cleanupController.certManager.ca | object | `{"duration":"87600h","renewBefore":"720h"}` | CA certificate configuration |
+| kyverno.cleanupController.certManager.ca.duration | string | `"87600h"` | Duration of the CA certificate (default 10 years) |
+| kyverno.cleanupController.certManager.ca.renewBefore | string | `"720h"` | Time before expiry to renew the CA certificate (default 30 days) |
+| kyverno.cleanupController.certManager.createSelfSignedIssuer | bool | `true` | Create a self-signed ClusterIssuer for CA generation. Set to false if you want to use an existing issuer specified in issuerRef. |
+| kyverno.cleanupController.certManager.enabled | bool | `false` | Enable cert-manager integration for certificate management |
+| kyverno.cleanupController.certManager.issuerRef | object | `{"group":"cert-manager.io","kind":"ClusterIssuer","name":""}` | Reference to an existing issuer for signing CA certificates. Only used when createSelfSignedIssuer is false. |
+| kyverno.cleanupController.certManager.issuerRef.group | string | `"cert-manager.io"` | Group of the issuer |
+| kyverno.cleanupController.certManager.issuerRef.kind | string | `"ClusterIssuer"` | Kind of the issuer (ClusterIssuer or Issuer) |
+| kyverno.cleanupController.certManager.issuerRef.name | string | `""` | Name of the issuer |
+| kyverno.cleanupController.certManager.size | int | `2048` | Key size for RSA (2048, 4096) or ECDSA (256, 384). Ignored for Ed25519. |
+| kyverno.cleanupController.certManager.tls | object | `{"duration":"8760h","renewBefore":"720h"}` | TLS certificate configuration |
+| kyverno.cleanupController.certManager.tls.duration | string | `"8760h"` | Duration of the TLS certificate (default 1 year) |
+| kyverno.cleanupController.certManager.tls.renewBefore | string | `"720h"` | Time before expiry to renew the TLS certificate (default 30 days) |
 | kyverno.cleanupController.createSelfSignedCert | bool | `false` | Create self-signed certificates at deployment time. The certificates won't be automatically renewed if this is set to `true`. |
 | kyverno.cleanupController.dnsConfig | object | `{}` | `dnsConfig` allows to specify DNS configuration for the pod. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config. |
 | kyverno.cleanupController.dnsPolicy | string | `"ClusterFirst"` | `dnsPolicy` determines the manner in which DNS resolution happens in the cluster. In case of `hostNetwork: true`, usually, the `dnsPolicy` is suitable to be `ClusterFirstWithHostNet`. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy. |
@@ -247,7 +278,7 @@ A Helm chart for kyverno
 | kyverno.cleanupController.networkPolicy.enabled | bool | `false` | When true, use a NetworkPolicy to allow ingress to the webhook This is useful on clusters using Calico and/or native k8s network policies in a default-deny setup. |
 | kyverno.cleanupController.networkPolicy.ingressFrom | list | `[]` | A list of valid from selectors according to https://kubernetes.io/docs/concepts/services-networking/network-policies. |
 | kyverno.cleanupController.nodeAffinity | object | `{}` | Node affinity constraints. |
-| kyverno.cleanupController.nodeSelector | object | `{}` | Node labels for pod assignment |
+| kyverno.cleanupController.nodeSelector | object | `{"kubernetes.io/os":"linux"}` | Node labels for pod assignment |
 | kyverno.cleanupController.podAffinity | object | `{}` | Pod affinity constraints. |
 | kyverno.cleanupController.podAnnotations | object | `{}` | Additional annotations to add to each pod |
 | kyverno.cleanupController.podAntiAffinity | object | See [values.yaml](values.yaml) | Pod anti affinity constraints. |
@@ -291,6 +322,7 @@ A Helm chart for kyverno
 | kyverno.cleanupController.serviceMonitor.secure | bool | `false` | Is TLS required for endpoint |
 | kyverno.cleanupController.serviceMonitor.tlsConfig | object | `{}` | TLS Configuration for endpoint |
 | kyverno.cleanupController.startupProbe | object | See [values.yaml](values.yaml) | Startup probe. The block is directly forwarded into the deployment, so you can use whatever startupProbes configuration you want. ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/ |
+| kyverno.cleanupController.tlsKeyAlgorithm | string | `"RSA"` | Key algorithm for self-signed TLS certificates. Supported values: RSA, ECDSA, Ed25519 Only used when createSelfSignedCert is false (Kyverno-managed certificates). |
 | kyverno.cleanupController.tolerations | list | `[]` | List of node taints to tolerate |
 | kyverno.cleanupController.topologySpreadConstraints | list | `[]` | Topology spread constraints. |
 | kyverno.cleanupController.tracing.address | string | `nil` | Traces receiver address |
@@ -309,6 +341,7 @@ A Helm chart for kyverno
 | kyverno.config.excludeUsernames | list | `[]` | Exclude usernames |
 | kyverno.config.generateSuccessEvents | bool | `false` | Generate success events. |
 | kyverno.config.matchConditions | list | `[]` | Defines match conditions to set on webhook configurations (requires Kubernetes 1.27+). |
+| kyverno.config.maxContextSize | string | 2Mi | Maximum cumulative size of context data during policy evaluation. Supports Kubernetes quantity format (e.g., 100Mi, 2Gi) or plain bytes (e.g., 2097152). Limits memory used by context variables to prevent unbounded growth. Increase if policies legitimately need large context data (e.g., processing large ConfigMaps). Set to 0 to disable the limit (not recommended for production). |
 | kyverno.config.name | string | `nil` | The configmap name (required if `create` is `false`). |
 | kyverno.config.preserve | bool | `true` | Preserve the configmap settings during upgrade. |
 | kyverno.config.resourceFilters | list | See [values.yaml](values.yaml) | Resource types to be skipped by the Kyverno policy engine. Make sure to surround each entry in quotes so that it doesn't get parsed as a nested YAML list. These are joined together without spaces, run through `tpl`, and the result is set in the config map. |
@@ -323,7 +356,7 @@ A Helm chart for kyverno
 | kyverno.crds.annotations | object | `{}` | Additional CRDs annotations |
 | kyverno.crds.customLabels | object | `{}` | Additional CRDs labels |
 | kyverno.crds.groups.kyverno | object | `{"cleanuppolicies":true,"clustercleanuppolicies":true,"clusterpolicies":true,"globalcontextentries":true,"policies":true,"policyexceptions":true,"updaterequests":true}` | Install CRDs in group `kyverno.io` |
-| kyverno.crds.groups.policies | object | `{"deletingpolicies":true,"generatingpolicies":true,"imagevalidatingpolicies":true,"mutatingpolicies":true,"namespaceddeletingpolicies":true,"namespacedimagevalidatingpolicies":true,"namespacedvalidatingpolicies":true,"policyexceptions":true,"validatingpolicies":true}` | Install CRDs in group `policies.kyverno.io` |
+| kyverno.crds.groups.policies | object | `{"deletingpolicies":true,"generatingpolicies":true,"imagevalidatingpolicies":true,"mutatingpolicies":true,"namespaceddeletingpolicies":true,"namespacedimagevalidatingpolicies":true,"namespacedmutatingpolicies":true,"namespacedvalidatingpolicies":true,"policyexceptions":true,"validatingpolicies":true}` | Install CRDs in group `policies.kyverno.io` |
 | kyverno.crds.groups.reports | object | `{"clusterephemeralreports":true,"ephemeralreports":true}` | Install CRDs in group `reports.kyverno.io` |
 | kyverno.crds.groups.wgpolicyk8s | object | `{"clusterpolicyreports":true,"policyreports":true}` | Install CRDs in group `wgpolicyk8s.io` |
 | kyverno.crds.install | bool | `true` | Whether to have Helm install the Kyverno CRDs, if the CRDs are not installed by Helm, they must be added before policies can be created |
@@ -343,7 +376,7 @@ A Helm chart for kyverno
 | kyverno.crds.migration.podResources.limits | object | `{"cpu":"100m","memory":"256Mi"}` | Pod resource limits |
 | kyverno.crds.migration.podResources.requests | object | `{"cpu":"10m","memory":"64Mi"}` | Pod resource requests |
 | kyverno.crds.migration.podSecurityContext | object | `{}` | Security context for the pod |
-| kyverno.crds.migration.resources | list | `["cleanuppolicies.kyverno.io","clustercleanuppolicies.kyverno.io","clusterpolicies.kyverno.io","globalcontextentries.kyverno.io","policies.kyverno.io","policyexceptions.kyverno.io","updaterequests.kyverno.io","deletingpolicies.policies.kyverno.io","generatingpolicies.policies.kyverno.io","imagevalidatingpolicies.policies.kyverno.io","namespacedimagevalidatingpolicies.policies.kyverno.io","mutatingpolicies.policies.kyverno.io","namespaceddeletingpolicies.policies.kyverno.io","namespacedvalidatingpolicies.policies.kyverno.io","policyexceptions.policies.kyverno.io","validatingpolicies.policies.kyverno.io"]` | Resources to migrate |
+| kyverno.crds.migration.resources | list | `["cleanuppolicies.kyverno.io","clustercleanuppolicies.kyverno.io","clusterpolicies.kyverno.io","globalcontextentries.kyverno.io","policies.kyverno.io","policyexceptions.kyverno.io","updaterequests.kyverno.io","deletingpolicies.policies.kyverno.io","generatingpolicies.policies.kyverno.io","imagevalidatingpolicies.policies.kyverno.io","mutatingpolicies.policies.kyverno.io","namespaceddeletingpolicies.policies.kyverno.io","namespacedgeneratingpolicies.policies.kyverno.io","namespacedimagevalidatingpolicies.policies.kyverno.io","namespacedmutatingpolicies.policies.kyverno.io","namespacedvalidatingpolicies.policies.kyverno.io","policyexceptions.policies.kyverno.io","validatingpolicies.policies.kyverno.io"]` | Resources to migrate |
 | kyverno.crds.migration.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the hook containers |
 | kyverno.crds.migration.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
 | kyverno.crds.migration.tolerations | list | `[]` | List of node taints to tolerate |
@@ -449,7 +482,7 @@ A Helm chart for kyverno
 | kyverno.reportsController.networkPolicy.enabled | bool | `false` | When true, use a NetworkPolicy to allow ingress to the webhook This is useful on clusters using Calico and/or native k8s network policies in a default-deny setup. |
 | kyverno.reportsController.networkPolicy.ingressFrom | list | `[]` | A list of valid from selectors according to https://kubernetes.io/docs/concepts/services-networking/network-policies. |
 | kyverno.reportsController.nodeAffinity | object | `{}` | Node affinity constraints. |
-| kyverno.reportsController.nodeSelector | object | `{}` | Node labels for pod assignment |
+| kyverno.reportsController.nodeSelector | object | `{"kubernetes.io/os":"linux"}` | Node labels for pod assignment |
 | kyverno.reportsController.podAffinity | object | `{}` | Pod affinity constraints. |
 | kyverno.reportsController.podAnnotations | object | `{}` | Additional annotations to add to each pod |
 | kyverno.reportsController.podAntiAffinity | object | See [values.yaml](values.yaml) | Pod anti affinity constraints. |
@@ -500,11 +533,14 @@ A Helm chart for kyverno
 | kyverno.reportsController.tracing.port | string | `nil` | Traces receiver port |
 | kyverno.reportsController.tufRootMountPath | string | `"/.sigstore"` | A writable volume to use for the TUF root initialization. |
 | kyverno.reportsController.updateStrategy | object | See [values.yaml](values.yaml) | Deployment update strategy. Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy |
+| kyverno.reportsServer.enabled | bool | `false` | Enable reports-server deployment alongside Kyverno |
+| kyverno.reportsServer.readinessTimeout | int | `300` | Timeout for waiting for reports-server readiness (in seconds) |
+| kyverno.reportsServer.waitForReady | bool | `true` | Wait for reports-server to be ready before starting Kyverno components |
 | kyverno.test.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
 | kyverno.test.image.pullPolicy | string | `nil` | Image pull policy Defaults to image.pullPolicy if omitted |
-| kyverno.test.image.registry | string | `"curlimages"` | Image registry |
-| kyverno.test.image.repository | string | `"curl"` | Image repository |
-| kyverno.test.image.tag | string | `"8.10.1"` | Image tag Defaults to `latest` if omitted |
+| kyverno.test.image.registry | string | `"ghcr.io"` | Image registry |
+| kyverno.test.image.repository | string | `"kyverno/readiness-checker"` | Image repository |
+| kyverno.test.image.tag | string | `"v0.1.0"` | Image tag Defaults to `latest` if omitted |
 | kyverno.test.imagePullSecrets | list | `[]` | Image pull secrets |
 | kyverno.test.nodeSelector | object | `{}` | Node labels for pod assignment |
 | kyverno.test.podAnnotations | object | `{}` | Additional Pod annotations |
@@ -519,7 +555,7 @@ A Helm chart for kyverno
 | kyverno.webhooksCleanup.image.pullPolicy | string | `nil` | Image pull policy Defaults to image.pullPolicy if omitted |
 | kyverno.webhooksCleanup.image.registry | string | `"registry.k8s.io"` | Image registry |
 | kyverno.webhooksCleanup.image.repository | string | `"kubectl"` | Image repository |
-| kyverno.webhooksCleanup.image.tag | string | `"v1.32.7"` | Image tag Defaults to `latest` if omitted |
+| kyverno.webhooksCleanup.image.tag | string | `"v1.34.3"` | Image tag Defaults to `latest` if omitted |
 | kyverno.webhooksCleanup.imagePullSecrets | list | `[]` | Image pull secrets |
 | kyverno.webhooksCleanup.nodeAffinity | object | `{}` | Node affinity constraints. |
 | kyverno.webhooksCleanup.nodeSelector | object | `{}` | Node labels for pod assignment |
@@ -564,7 +600,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: kyverno
     path: ''
     helm:

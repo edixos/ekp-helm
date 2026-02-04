@@ -101,6 +101,17 @@ kyverno:
     # -- Whether to install CRDs from the upstream OpenReports chart. Setting this to true requires enabled to also be true.
     installCrds: false
 
+  # Reports Server configuration
+  reportsServer:
+    # -- Enable reports-server deployment alongside Kyverno
+    enabled: false
+
+    # -- Wait for reports-server to be ready before starting Kyverno components
+    waitForReady: true
+
+    # -- Timeout for waiting for reports-server readiness (in seconds)
+    readinessTimeout: 300
+
   # CRDs configuration
   crds:
 
@@ -130,6 +141,7 @@ kyverno:
         imagevalidatingpolicies: true
         namespacedimagevalidatingpolicies: true
         mutatingpolicies: true
+        namespacedmutatingpolicies: true
         generatingpolicies: true
         deletingpolicies: true
         namespaceddeletingpolicies: true
@@ -167,12 +179,15 @@ kyverno:
         - policies.kyverno.io
         - policyexceptions.kyverno.io
         - updaterequests.kyverno.io
+        # policies.kyverno.io
         - deletingpolicies.policies.kyverno.io
         - generatingpolicies.policies.kyverno.io
         - imagevalidatingpolicies.policies.kyverno.io
-        - namespacedimagevalidatingpolicies.policies.kyverno.io
         - mutatingpolicies.policies.kyverno.io
         - namespaceddeletingpolicies.policies.kyverno.io
+        - namespacedgeneratingpolicies.policies.kyverno.io
+        - namespacedimagevalidatingpolicies.policies.kyverno.io
+        - namespacedmutatingpolicies.policies.kyverno.io
         - namespacedvalidatingpolicies.policies.kyverno.io
         - policyexceptions.policies.kyverno.io
         - validatingpolicies.policies.kyverno.io
@@ -282,6 +297,14 @@ kyverno:
 
     # -- Generate success events.
     generateSuccessEvents: false
+
+    # -- Maximum cumulative size of context data during policy evaluation.
+    # Supports Kubernetes quantity format (e.g., 100Mi, 2Gi) or plain bytes (e.g., 2097152).
+    # Limits memory used by context variables to prevent unbounded growth.
+    # Increase if policies legitimately need large context data (e.g., processing large ConfigMaps).
+    # Set to 0 to disable the limit (not recommended for production).
+    # @default -- 2Mi
+    maxContextSize: ~
 
     # -- Resource types to be skipped by the Kyverno policy engine.
     # Make sure to surround each entry in quotes so that it doesn't get parsed as a nested YAML list.
@@ -524,12 +547,12 @@ kyverno:
 
     image:
       # -- (string) Image registry
-      registry: curlimages
+      registry: ghcr.io
       # -- Image repository
-      repository: curl
+      repository: kyverno/readiness-checker
       # -- Image tag
       # Defaults to `latest` if omitted
-      tag: '8.10.1'
+      tag: 'v0.1.0'
       # -- (string) Image pull policy
       # Defaults to image.pullPolicy if omitted
       pullPolicy: ~
@@ -593,7 +616,7 @@ kyverno:
       repository: kubectl
       # -- Image tag
       # Defaults to `latest` if omitted
-      tag: 'v1.32.7'
+      tag: 'v1.34.3'
       # -- (string) Image pull policy
       # Defaults to image.pullPolicy if omitted
       pullPolicy: ~
@@ -858,6 +881,49 @@ kyverno:
     # The certificates won't be automatically renewed if this is set to `true`.
     createSelfSignedCert: false
 
+    # -- Key algorithm for self-signed TLS certificates.
+    # Supported values: RSA, ECDSA, Ed25519
+    # Only used when createSelfSignedCert is false (Kyverno-managed certificates).
+    tlsKeyAlgorithm: RSA
+
+    # -- Configure cert-manager to manage TLS certificates.
+    # When enabled, cert-manager Certificate resources will be created to provision
+    # the TLS certificates for the admission controller.
+    # Requires cert-manager to be installed in the cluster.
+    # Takes precedence over createSelfSignedCert when enabled.
+    certManager:
+      # -- Enable cert-manager integration for certificate management
+      enabled: false
+      # -- Create a self-signed ClusterIssuer for CA generation.
+      # Set to false if you want to use an existing issuer specified in issuerRef.
+      createSelfSignedIssuer: true
+      # -- Reference to an existing issuer for signing CA certificates.
+      # Only used when createSelfSignedIssuer is false.
+      issuerRef:
+        # -- Name of the issuer
+        name: ""
+        # -- Kind of the issuer (ClusterIssuer or Issuer)
+        kind: ClusterIssuer
+        # -- Group of the issuer
+        group: cert-manager.io
+      # -- Key algorithm for certificates (RSA, ECDSA, Ed25519)
+      algorithm: RSA
+      # -- Key size for RSA (2048, 4096) or ECDSA (256, 384).
+      # Ignored for Ed25519.
+      size: 2048
+      # -- CA certificate configuration
+      ca:
+        # -- Duration of the CA certificate (default 10 years)
+        duration: 87600h
+        # -- Time before expiry to renew the CA certificate (default 30 days)
+        renewBefore: 720h
+      # -- TLS certificate configuration
+      tls:
+        # -- Duration of the TLS certificate (default 1 year)
+        duration: 8760h
+        # -- Time before expiry to renew the TLS certificate (default 30 days)
+        renewBefore: 720h
+
     # -- (int) Desired number of pods
     replicas: ~
 
@@ -977,7 +1043,8 @@ kyverno:
       successThreshold: 1
 
     # -- Node labels for pod assignment
-    nodeSelector: {}
+    nodeSelector:
+      kubernetes.io/os: linux
 
     # -- List of node taints to tolerate
     tolerations: []
@@ -1423,7 +1490,8 @@ kyverno:
         memory: 64Mi
 
     # -- Node labels for pod assignment
-    nodeSelector: {}
+    nodeSelector:
+      kubernetes.io/os: linux
 
     # -- List of node taints to tolerate
     tolerations: []
@@ -1623,6 +1691,49 @@ kyverno:
     # The certificates won't be automatically renewed if this is set to `true`.
     createSelfSignedCert: false
 
+    # -- Key algorithm for self-signed TLS certificates.
+    # Supported values: RSA, ECDSA, Ed25519
+    # Only used when createSelfSignedCert is false (Kyverno-managed certificates).
+    tlsKeyAlgorithm: RSA
+
+    # -- Configure cert-manager to manage TLS certificates.
+    # When enabled, cert-manager Certificate resources will be created to provision
+    # the TLS certificates for the cleanup controller.
+    # Requires cert-manager to be installed in the cluster.
+    # Takes precedence over createSelfSignedCert when enabled.
+    certManager:
+      # -- Enable cert-manager integration for certificate management
+      enabled: false
+      # -- Create a self-signed ClusterIssuer for CA generation.
+      # Set to false if you want to use an existing issuer specified in issuerRef.
+      createSelfSignedIssuer: true
+      # -- Reference to an existing issuer for signing CA certificates.
+      # Only used when createSelfSignedIssuer is false.
+      issuerRef:
+        # -- Name of the issuer
+        name: ""
+        # -- Kind of the issuer (ClusterIssuer or Issuer)
+        kind: ClusterIssuer
+        # -- Group of the issuer
+        group: cert-manager.io
+      # -- Key algorithm for certificates (RSA, ECDSA, Ed25519)
+      algorithm: RSA
+      # -- Key size for RSA (2048, 4096) or ECDSA (256, 384).
+      # Ignored for Ed25519.
+      size: 2048
+      # -- CA certificate configuration
+      ca:
+        # -- Duration of the CA certificate (default 10 years)
+        duration: 87600h
+        # -- Time before expiry to renew the CA certificate (default 30 days)
+        renewBefore: 720h
+      # -- TLS certificate configuration
+      tls:
+        # -- Duration of the TLS certificate (default 1 year)
+        duration: 8760h
+        # -- Time before expiry to renew the TLS certificate (default 30 days)
+        renewBefore: 720h
+
     image:
       # -- Image registry
       registry: ~
@@ -1756,7 +1867,8 @@ kyverno:
       successThreshold: 1
 
     # -- Node labels for pod assignment
-    nodeSelector: {}
+    nodeSelector:
+      kubernetes.io/os: linux
 
     # -- List of node taints to tolerate
     tolerations: []
@@ -2060,7 +2172,8 @@ kyverno:
         memory: 64Mi
 
     # -- Node labels for pod assignment
-    nodeSelector: {}
+    nodeSelector:
+      kubernetes.io/os: linux
 
     # -- List of node taints to tolerate
     tolerations: []

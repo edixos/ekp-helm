@@ -915,7 +915,7 @@ kubePrometheusStack:
       image:
         registry: quay.io
         repository: prometheus/alertmanager
-        tag: v0.30.1
+        tag: v0.31.0
         sha: ""
         pullPolicy: IfNotPresent
 
@@ -1487,6 +1487,10 @@ kubePrometheusStack:
     #   url: https://{{ printf "%s-prometheus.svc" .Release.Name }}:9090
     #   version: 1
 
+    ## Configure additional grafana datasources as a templated string (passed through tpl)
+    ## Useful when you need Helm flow control or templating inside the datasource definition
+    additionalDataSourcesString: ""
+
     # Flag to mark provisioned data sources for deletion if they are no longer configured.
     # It takes no effect if data sources are already listed in the deleteDatasources section.
     # ref: https://grafana.com/docs/grafana/latest/administration/provisioning/#example-data-source-configuration-file
@@ -2054,6 +2058,11 @@ kubePrometheusStack:
       ## https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#servicemonitor
       targetLabels: []
 
+      ## File containing bearer token to be used when scraping targets
+      ## Empty value do not send any bearer token.
+      ##
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+
   ## Component scraping kubeDns. Use either this or coreDns
   ##
   kubeDns:
@@ -2151,6 +2160,11 @@ kubePrometheusStack:
       ## defines the labels which are transferred from the associated Kubernetes Service object onto the ingested metrics.
       ## https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#servicemonitor
       targetLabels: []
+
+      ## File containing bearer token to be used when scraping targets
+      ## Empty value do not send any bearer token.
+      ##
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
 
   ## Component scraping etcd
   ##
@@ -2260,6 +2274,11 @@ kubePrometheusStack:
       ## defines the labels which are transferred from the associated Kubernetes Service object onto the ingested metrics.
       ## https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#servicemonitor
       targetLabels: []
+
+      ## File containing bearer token to be used when scraping targets
+      ## Empty value do not send any bearer token.
+      ##
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
 
   ## Component scraping kube scheduler
   ##
@@ -2466,6 +2485,11 @@ kubePrometheusStack:
       ## defines the labels which are transferred from the associated Kubernetes Service object onto the ingested metrics.
       ## https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#servicemonitor
       targetLabels: []
+
+      ## File containing bearer token to be used when scraping targets
+      ## Empty value do not send any bearer token.
+      ##
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
 
   ## Component scraping kube state metrics
   ##
@@ -4046,6 +4070,10 @@ kubePrometheusStack:
       #   labelSelector:
       #     matchLabels:
       #       app: prometheus
+
+      ## Disable alerting
+      ##
+      disableAlerting: false
 
       ## Alertmanagers to which alerts will be sent
       ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#alertmanagerendpoints
