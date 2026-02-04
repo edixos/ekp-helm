@@ -4,14 +4,21 @@
 # Usage:
 #   ./ekp-chart.sh create --name <chartName> --dependency-url <url> --dependency-chart-name <depChartName> --dependency-chart-version <depChartVersion> [--dependency-alias <alias>]
 #
-# Example:
+# Example (HTTP repository):
 #   ./ekp-chart.sh create --name kube-prometheus-stack \
 #     --dependency-url https://prometheus-community.github.io/helm-charts \
 #     --dependency-chart-name kube-prometheus-stack \
 #     --dependency-chart-version 69.8.0 \
 #     --dependency-alias kps
 #
-# In the above example, the dependency values will be rendered under "kps" instead of "kube-prometheus-stack".
+# Example (OCI repository):
+#   ./ekp-chart.sh create --name envoy-gateway \
+#     --dependency-url oci://docker.io/envoyproxy \
+#     --dependency-chart-name gateway-helm \
+#     --dependency-chart-version 1.6.3 \
+#     --dependency-alias envoy-gateway
+#
+# In the above examples, the dependency values will be rendered under the alias if provided.
 
 set -euo pipefail
 
@@ -32,7 +39,16 @@ fi
 
 usage() {
   echo "Usage: $0 create --name <chartName> --dependency-url <url> --dependency-chart-name <depChartName> --dependency-chart-version <depChartVersion> [--dependency-alias <alias>]"
+  echo ""
+  echo "Supports both HTTP and OCI repositories:"
+  echo "  HTTP: --dependency-url https://charts.example.com"
+  echo "  OCI:  --dependency-url oci://registry.example.com/charts"
   exit 1
+}
+
+# Helper function to check if URL is OCI
+is_oci_repo() {
+  [[ "$1" =~ ^oci:// ]]
 }
 
 # --- Argument Parsing ---
@@ -90,6 +106,13 @@ if [[ -z "$CHART_NAME" || -z "$DEP_URL" || -z "$DEP_CHART_NAME" || -z "$DEP_CHAR
   usage
 fi
 
+# Determine if this is an OCI repository
+IS_OCI=false
+if is_oci_repo "$DEP_URL"; then
+  IS_OCI=true
+  echo "Detected OCI repository"
+fi
+
 echo "Creating chart '$CHART_NAME' with dependency '$DEP_CHART_NAME' ($DEP_CHART_VERSION) from '$DEP_URL'..."
 if [[ -n "$DEP_ALIAS" ]]; then
   echo "Using dependency alias: $DEP_ALIAS"
@@ -104,13 +127,25 @@ rm -rf "$TEMPLATE_DIR"/*
 
 # --- Step 3: Update Chart.yaml ---
 CHART_YAML="$CHART_DIR/$CHART_NAME/Chart.yaml"
-# Append dependency section. If a dependency alias is provided, include it.
-cat <<EOF >> "$CHART_YAML"
+
+# For OCI repositories, the repository field should contain the full OCI path
+if [[ "$IS_OCI" == true ]]; then
+  # Append dependency section for OCI
+  cat <<EOF >> "$CHART_YAML"
 dependencies:
   - name: ${DEP_CHART_NAME}
     version: ${DEP_CHART_VERSION}
     repository: "${DEP_URL}"
 EOF
+else
+  # Append dependency section for HTTP repositories
+  cat <<EOF >> "$CHART_YAML"
+dependencies:
+  - name: ${DEP_CHART_NAME}
+    version: ${DEP_CHART_VERSION}
+    repository: "${DEP_URL}"
+EOF
+fi
 
 if [[ -n "$DEP_ALIAS" ]]; then
   echo "    alias: ${DEP_ALIAS}" >> "$CHART_YAML"
@@ -136,14 +171,33 @@ else
 fi
 
 # --- Step 5: Fetch default values from the dependency chart ---
-# Add dependency repository (ignore error if already added)
-helm repo add "${DEP_CHART_NAME}" "${DEP_URL}" 2>/dev/null || true
-helm repo update
+DEFAULT_VALUES=""
 
-# Try to fetch default values from the dependency chart.
-DEFAULT_VALUES=$(helm show values "${DEP_CHART_NAME}/${DEP_CHART_NAME}" --version "${DEP_CHART_VERSION}" 2>/dev/null || true)
-if [ -z "$DEFAULT_VALUES" ]; then
-  echo "Warning: Unable to fetch default values for ${DEP_CHART_NAME} from ${DEP_URL}."
+if [[ "$IS_OCI" == true ]]; then
+  # For OCI repositories, pull the chart directly
+  echo "Fetching values from OCI repository..."
+  OCI_CHART_REF="${DEP_URL}/${DEP_CHART_NAME}"
+  
+  # Use helm show values with OCI reference
+  DEFAULT_VALUES=$(helm show values "${OCI_CHART_REF}" --version "${DEP_CHART_VERSION}" 2>/dev/null || true)
+  
+  if [ -z "$DEFAULT_VALUES" ]; then
+    echo "Warning: Unable to fetch default values from OCI chart ${OCI_CHART_REF}:${DEP_CHART_VERSION}."
+  fi
+else
+  # For HTTP repositories, add repo and fetch values
+  echo "Fetching values from HTTP repository..."
+  
+  # Add dependency repository (ignore error if already added)
+  helm repo add "${DEP_CHART_NAME}-repo" "${DEP_URL}" 2>/dev/null || true
+  helm repo update
+  
+  # Try to fetch default values from the dependency chart.
+  DEFAULT_VALUES=$(helm show values "${DEP_CHART_NAME}-repo/${DEP_CHART_NAME}" --version "${DEP_CHART_VERSION}" 2>/dev/null || true)
+  
+  if [ -z "$DEFAULT_VALUES" ]; then
+    echo "Warning: Unable to fetch default values for ${DEP_CHART_NAME} from ${DEP_URL}."
+  fi
 fi
 
 # --- Step 6: Write values.yaml with an alias key if provided ---
