@@ -1,0 +1,59 @@
+prometheus:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    labels:
+      release: kube-prometheus-stack
+    interval: 30s
+    scrapeTimeout: 10s
+
+envoy-gateway:
+  deployment:
+    replicas: 1
+    envoyGateway:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1024Mi
+        requests:
+          cpu: 100m
+          memory: 256Mi
+
+  service:
+    type: ClusterIP
+
+  pod:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "19001"
+
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: 70
+
+  podDisruptionBudget:
+    minAvailable: 1
+
+  certgen:
+    enabled: true
+    job:
+      resources:
+        limits:
+          cpu: 300m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+  topologyInjector:
+    enabled: true
+
+  createNamespace: false
