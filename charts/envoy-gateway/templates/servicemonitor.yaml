@@ -1,0 +1,50 @@
+{{- if and .Values.prometheus.enabled .Values.prometheus.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "envoy-gateway.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "envoy-gateway.labels" . | nindent 4 }}
+    {{- with .Values.prometheus.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.prometheus.serviceMonitor.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  endpoints:
+    - port: metrics
+      path: /metrics
+      {{- if .Values.prometheus.serviceMonitor.interval }}
+      interval: {{ .Values.prometheus.serviceMonitor.interval }}
+      {{- end }}
+      {{- if .Values.prometheus.serviceMonitor.scrapeTimeout }}
+      scrapeTimeout: {{ .Values.prometheus.serviceMonitor.scrapeTimeout }}
+      {{- end }}
+      {{- if .Values.prometheus.serviceMonitor.scheme }}
+      scheme: {{ .Values.prometheus.serviceMonitor.scheme }}
+      {{- end }}
+      {{- if .Values.prometheus.serviceMonitor.bearerTokenFile }}
+      bearerTokenFile: {{ .Values.prometheus.serviceMonitor.bearerTokenFile }}
+      {{- end }}
+      {{- with .Values.prometheus.serviceMonitor.tlsConfig }}
+      tlsConfig:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.prometheus.serviceMonitor.metricRelabelings }}
+      metricRelabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.prometheus.serviceMonitor.relabelings }}
+      relabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "envoy-gateway.selectorLabels" . | nindent 6 }}
+{{- end }}

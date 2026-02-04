@@ -1,0 +1,7 @@
+remote: origin
+chart-dirs:
+  - charts
+helm-extra-args: --timeout=500
+chart-repos:
+  - gateway-helm=oci://docker.io/envoyproxy
+check-version-increment: true

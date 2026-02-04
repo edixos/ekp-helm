@@ -1,0 +1,92 @@
+rule_files:
+  - ../../resources/prometheus-rules/envoy-gateway.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - name: "Envoy Gateway instance down"
+    interval: 1m
+    input_series:
+      - series: 'up{job="envoy-gateway", instance="10.88.2.13:19001"}'
+        values: "1 1 1 0 0 0 0 0 0 0"
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: EnvoyGatewayDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: "envoy-gateway"
+              instance: "10.88.2.13:19001"
+            exp_annotations:
+              summary: "Envoy Gateway instance is down"
+              description: "Envoy Gateway has been down for more than 2 minutes. Job: envoy-gateway, Instance: 10.88.2.13:19001"
+
+  - name: "Envoy Gateway leader election lost"
+    interval: 1m
+    input_series:
+      - series: 'leader_election_master_status{job="envoy-gateway", instance="10.88.2.13:19001", name="5b9825d2.gateway.envoyproxy.io"}'
+        values: "1 1 1 0 0 0 0 0 0 0"
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: EnvoyGatewayLeaderElectionLost
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: "envoy-gateway"
+              instance: "10.88.2.13:19001"
+              name: "5b9825d2.gateway.envoyproxy.io"
+            exp_annotations:
+              summary: "Envoy Gateway lost leader election"
+              description: "Envoy Gateway instance is not the leader. Job: envoy-gateway, Instance: 10.88.2.13:19001"
+
+  - name: "High workqueue depth"
+    interval: 1m
+    input_series:
+      - series: 'workqueue_depth{job="envoy-gateway", name="gatewayapi-1770167274", controller="gatewayapi-1770167274"}'
+        values: "10 20 40 60 80 100 110 120 130 140 150 150 150 150 150 150 150 150 150 150 150 150"
+    alert_rule_test:
+      - eval_time: 16m
+        alertname: EnvoyGatewayWorkqueueDepthHigh
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: "envoy-gateway"
+              name: "gatewayapi-1770167274"
+              controller: "gatewayapi-1770167274"
+            exp_annotations:
+              summary: "High workqueue depth in Envoy Gateway"
+              description: "Envoy Gateway workqueue gatewayapi-1770167274 has 150 items pending for more than 10 minutes"
+
+  - name: "High memory usage"
+    interval: 1m
+    input_series:
+      - series: 'process_resident_memory_bytes{job="envoy-gateway", instance="10.88.2.13:19001"}'
+        values: "1000000000 1000000000 1073741824 1100000000 1150000000 1200000000 1250000000 1300000000 1350000000 1400000000"
+    alert_rule_test:
+      - eval_time: 8m
+        alertname: EnvoyGatewayHighMemoryUsage
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: "envoy-gateway"
+              instance: "10.88.2.13:19001"
+            exp_annotations:
+              summary: "High memory usage in Envoy Gateway"
+              description: "Envoy Gateway is using 1.257GiB of memory (threshold: 1GB). Instance: 10.88.2.13:19001"
+
+  - name: "High goroutines count"
+    interval: 1m
+    input_series:
+      - series: 'go_goroutines{job="envoy-gateway", instance="10.88.2.13:19001"}'
+        values: "800 900 950 1000 1050 1100 1150 1200 1200 1200"
+    alert_rule_test:
+      - eval_time: 9m
+        alertname: EnvoyGatewayHighGoroutines
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: "envoy-gateway"
+              instance: "10.88.2.13:19001"
+            exp_annotations:
+              summary: "High number of goroutines in Envoy Gateway"
+              description: "Envoy Gateway has 1200 goroutines (threshold: 1000). Instance: 10.88.2.13:19001"

@@ -1,0 +1,57 @@
+groups:
+  - name: envoy-gateway.availability
+    interval: 30s
+    rules:
+      - alert: EnvoyGatewayDown
+        expr: up{job="envoy-gateway"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Envoy Gateway instance is down"
+          description: "Envoy Gateway has been down for more than 2 minutes. Job: {{ $labels.job }}, Instance: {{ $labels.instance }}"
+
+      - alert: EnvoyGatewayLeaderElectionLost
+        expr: leader_election_master_status{job="envoy-gateway"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Envoy Gateway lost leader election"
+          description: "Envoy Gateway instance is not the leader. Job: {{ $labels.job }}, Instance: {{ $labels.instance }}"
+
+  - name: envoy-gateway.workqueue
+    interval: 30s
+    rules:
+      - alert: EnvoyGatewayWorkqueueDepthHigh
+        expr: |
+          workqueue_depth{job="envoy-gateway"} > 100
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High workqueue depth in Envoy Gateway"
+          description: "Envoy Gateway workqueue {{ $labels.name }} has {{ $value }} items pending for more than 10 minutes"
+
+  - name: envoy-gateway.resources
+    interval: 30s
+    rules:
+      - alert: EnvoyGatewayHighMemoryUsage
+        expr: |
+          process_resident_memory_bytes{job="envoy-gateway"} > 1073741824
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage in Envoy Gateway"
+          description: "Envoy Gateway is using {{ $value | humanize1024 }}B of memory (threshold: 1GB). Instance: {{ $labels.instance }}"
+
+      - alert: EnvoyGatewayHighGoroutines
+        expr: |
+          go_goroutines{job="envoy-gateway"} > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High number of goroutines in Envoy Gateway"
+          description: "Envoy Gateway has {{ $value }} goroutines (threshold: 1000). Instance: {{ $labels.instance }}"
