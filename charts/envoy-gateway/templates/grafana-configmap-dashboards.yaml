@@ -1,0 +1,14 @@
+{{- if and .Values.prometheus.grafanaDashboard.enabled .Values.prometheus.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "call-nested" (list . "envoy-gateway" "envoy-gateway.fullname") }}-grafana-dashboards
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: hydra-grafana
+{{- .Values.prometheus.grafanaDashboard.label | toYaml | nindent 4 }}
+data:
+  {{- (.Files.Glob "resources/grafana-dashboards/*.json").AsConfig | nindent 2 }}
+{{- end }}
+
