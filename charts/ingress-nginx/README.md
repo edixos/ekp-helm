@@ -1,6 +1,6 @@
 # ingress-nginx
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.12.1](https://img.shields.io/badge/AppVersion-1.12.1-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.14.3](https://img.shields.io/badge/AppVersion-1.14.3-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubernetes.github.io/ingress-nginx | ingressNginx(ingress-nginx) | 4.14.1 |
+| https://kubernetes.github.io/ingress-nginx | ingressNginx(ingress-nginx) | 4.14.3 |
 
 ## Maintainers
 
@@ -51,10 +51,10 @@ A Helm chart for Kubernetes
 | ingressNginx.controller.admissionWebhooks.namespaceSelector | object | `{}` |  |
 | ingressNginx.controller.admissionWebhooks.objectSelector | object | `{}` |  |
 | ingressNginx.controller.admissionWebhooks.patch.enabled | bool | `true` |  |
-| ingressNginx.controller.admissionWebhooks.patch.image.digest | string | `"sha256:03a00eb0e255e8a25fa49926c24cde0f7e12e8d072c445cdf5136ec78b546285"` |  |
+| ingressNginx.controller.admissionWebhooks.patch.image.digest | string | `"sha256:7c74a715af2c94cb734785b4d3ea1357b4f02b88e1e123c622a9cb68b62f669c"` |  |
 | ingressNginx.controller.admissionWebhooks.patch.image.image | string | `"ingress-nginx/kube-webhook-certgen"` |  |
 | ingressNginx.controller.admissionWebhooks.patch.image.pullPolicy | string | `"IfNotPresent"` |  |
-| ingressNginx.controller.admissionWebhooks.patch.image.tag | string | `"v1.6.5"` |  |
+| ingressNginx.controller.admissionWebhooks.patch.image.tag | string | `"v1.6.7"` |  |
 | ingressNginx.controller.admissionWebhooks.patch.labels | object | `{}` | Labels to be added to patch job resources |
 | ingressNginx.controller.admissionWebhooks.patch.networkPolicy.enabled | bool | `false` | Enable 'networkPolicy' or not |
 | ingressNginx.controller.admissionWebhooks.patch.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
@@ -125,8 +125,8 @@ A Helm chart for Kubernetes
 | ingressNginx.controller.hostname | object | `{}` | Optionally customize the pod hostname. |
 | ingressNginx.controller.image.allowPrivilegeEscalation | bool | `false` |  |
 | ingressNginx.controller.image.chroot | bool | `false` |  |
-| ingressNginx.controller.image.digest | string | `"sha256:f95a79b85fb93ac3de752c71a5c27d5ceae10a18b61904dec224c1c6a4581e47"` |  |
-| ingressNginx.controller.image.digestChroot | string | `"sha256:29840e06768457b82ef0a9f70bdde03b3b9c42e84a9d78dd6f179326848c1a88"` |  |
+| ingressNginx.controller.image.digest | string | `"sha256:82917be97c0939f6ada1717bb39aa7e66c229d6cfb10dcfc8f1bd42f9efe0f81"` |  |
+| ingressNginx.controller.image.digestChroot | string | `"sha256:ffdab64d0e0556f810d82d618a0fa97c4fc8dc2bc5717c51bfe83b5d4252c73e"` |  |
 | ingressNginx.controller.image.image | string | `"ingress-nginx/controller"` |  |
 | ingressNginx.controller.image.pullPolicy | string | `"IfNotPresent"` |  |
 | ingressNginx.controller.image.readOnlyRootFilesystem | bool | `false` |  |
@@ -134,7 +134,7 @@ A Helm chart for Kubernetes
 | ingressNginx.controller.image.runAsNonRoot | bool | `true` |  |
 | ingressNginx.controller.image.runAsUser | int | `101` | This value must not be changed using the official image. uid=101(www-data) gid=82(www-data) groups=82(www-data) |
 | ingressNginx.controller.image.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| ingressNginx.controller.image.tag | string | `"v1.14.1"` |  |
+| ingressNginx.controller.image.tag | string | `"v1.14.3"` |  |
 | ingressNginx.controller.ingressClass | string | `"nginx"` | For backwards compatibility with ingress.class annotation, use ingressClass. Algorithm is as follows, first ingressClassName is considered, if not present, controller looks for ingress.class annotation |
 | ingressNginx.controller.ingressClassByName | bool | `false` | Process IngressClass per name (additionally as per spec.controller). |
 | ingressNginx.controller.ingressClassResource | object | `{"aliases":[],"annotations":{},"controllerValue":"k8s.io/ingress-nginx","default":false,"enabled":true,"name":"nginx","parameters":{}}` | This section refers to the creation of the IngressClass resource. IngressClasses are immutable and cannot be changed after creation. We do not support namespaced IngressClasses, yet, so a ClusterRole and a ClusterRoleBinding is required. |
@@ -393,7 +393,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: ingress-nginx
     path: ''
     helm:
