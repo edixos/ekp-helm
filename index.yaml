@@ -3,6 +3,25 @@ entries:
   alertmanager:
   - apiVersion: v2
     appVersion: v0.27.0
+    created: "2026-02-11T11:07:02.398144142Z"
+    dependencies:
+    - alias: oidc
+      condition: oidc.enabled
+      name: oauth2-proxy
+      repository: https://oauth2-proxy.github.io/manifests
+      version: 10.1.3
+    description: Deploies Alertmanager through Prometheus-Operator
+    digest: 31cecbb59e30bc75f716bfbd7b1dda51a67fdd0b4e58efce9366d115894628f4
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: alertmanager
+    urls:
+    - alertmanager-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: v0.27.0
     created: "2026-02-11T09:02:03.938692567Z"
     dependencies:
     - alias: oidc
@@ -78,6 +97,25 @@ entries:
     - https://edixos.github.io/ekp-helm/alertmanager-0.1.0.tgz
     version: 0.1.0
   argocd:
+  - apiVersion: v2
+    appVersion: v3.3.0
+    created: "2026-02-11T11:07:02.696596385Z"
+    dependencies:
+    - alias: argocd
+      name: argo-cd
+      repository: https://argoproj.github.io/argo-helm
+      version: 9.4.1
+    description: A Helm chart for Kubernetes
+    digest: 5d5f9a716c487565e7f5372dd016ee2e85c8685d04a2c5393ef48a58c234fbe8
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: argocd
+    type: application
+    urls:
+    - argocd-0.1.6.tgz
+    version: 0.1.6
   - apiVersion: v2
     appVersion: v3.3.0
     created: "2026-02-11T09:02:04.147507542Z"
@@ -686,6 +724,25 @@ entries:
     version: 0.1.0
   envoy-gateway:
   - apiVersion: v2
+    appVersion: v1.7.0
+    created: "2026-02-11T11:07:02.931302506Z"
+    dependencies:
+    - alias: envoy-gateway
+      name: gateway-helm
+      repository: oci://docker.io/envoyproxy
+      version: 1.7.0
+    description: Helm chart to deploy Envoy Gateway on Kubernetes
+    digest: edfa1edbf3364026c33a1a2b6ff90faa6c5ca16b247ba8169b687d8a35a6e2ca
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: envoy-gateway
+    type: application
+    urls:
+    - envoy-gateway-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: v1.6.3
     created: "2026-02-11T09:02:04.571272679Z"
     dependencies:
@@ -705,6 +762,28 @@ entries:
     - envoy-gateway-0.1.0.tgz
     version: 0.1.0
   eso:
+  - apiVersion: v2
+    appVersion: v2.0.0
+    created: "2026-02-11T11:07:03.178544568Z"
+    dependencies:
+    - alias: eso
+      name: external-secrets
+      repository: https://charts.external-secrets.io
+      version: 2.0.0
+    description: A Helm chart ESO for Kubernetes
+    digest: 3cad3ecd32850b6a7be510f74a428d45a3d61ab55e5caba36c623d35824c367a
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: eso
+    type: application
+    urls:
+    - eso-0.1.7.tgz
+    version: 0.1.7
   - apiVersion: v2
     appVersion: v1.3.2
     created: "2026-02-11T09:02:04.792235724Z"
@@ -1768,6 +1847,21 @@ entries:
   kube-prometheus-stack:
   - apiVersion: v2
     appVersion: v0.88.1
+    created: "2026-02-11T11:07:03.487246747Z"
+    dependencies:
+    - alias: kubePrometheusStack
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 81.6.1
+    description: A Helm chart for Kubernetes
+    digest: e29fa632de80015ad37ce4a6c869affd78171dc0ed91e8086c759255bfe00cd1
+    name: kube-prometheus-stack
+    type: application
+    urls:
+    - kube-prometheus-stack-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
+    appVersion: v0.88.1
     created: "2026-02-11T09:02:05.649327931Z"
     dependencies:
     - alias: kubePrometheusStack
@@ -2129,6 +2223,25 @@ entries:
   prometheus:
   - apiVersion: v2
     appVersion: v3.0.1
+    created: "2026-02-11T11:07:03.696259254Z"
+    dependencies:
+    - alias: oidc
+      condition: oidc.enabled
+      name: oauth2-proxy
+      repository: https://oauth2-proxy.github.io/manifests
+      version: 10.1.3
+    description: Deploys Prometheus through prometheus operator
+    digest: fc11e643eda6a959a26ab0a4b8e95b9e2ee36a28ce83cdd70386c3a9fb452f89
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: prometheus
+    urls:
+    - prometheus-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: v3.0.1
     created: "2026-02-11T09:02:06.377444065Z"
     dependencies:
     - alias: oidc
@@ -2449,4 +2562,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-02-11T09:02:06.377626918Z"
+generated: "2026-02-11T11:07:03.69643851Z"
