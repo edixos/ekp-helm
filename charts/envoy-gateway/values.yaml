@@ -66,7 +66,7 @@ envoy-gateway:
     images:
       envoyGateway:
         # This is the full image name including the hub, repo, and tag.
-        image: docker.io/envoyproxy/gateway:v1.6.3
+        image: docker.io/envoyproxy/gateway:v1.7.0
         # Specify image pull policy if default behavior isn't desired.
         # Default behavior: latest images will be Always else IfNotPresent.
         pullPolicy: IfNotPresent
@@ -104,7 +104,7 @@ envoy-gateway:
         allowPrivilegeEscalation: false
         capabilities:
           drop:
-            - ALL
+          - ALL
         privileged: false
         runAsNonRoot: true
         runAsGroup: 65532
@@ -129,8 +129,8 @@ envoy-gateway:
     pod:
       affinity: {}
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "19001"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '19001'
       labels: {}
       topologySpreadConstraints: []
       tolerations: []
@@ -140,6 +140,9 @@ envoy-gateway:
     # If set to PreferClose, the Envoy fleet will prioritize connecting to the Envoy Gateway pods that are topologically closest to them.
     trafficDistribution: ""
     annotations: {}
+    # -- Service type. Can be set to LoadBalancer with specific IP, e.g.:
+    # type: LoadBalancer
+    # loadBalancerIP: 10.236.90.20
     type: "ClusterIP"
 
   hpa:
@@ -150,7 +153,7 @@ envoy-gateway:
     behavior: {}
 
   config:
-    # -- EnvoyGateway configuration. Visit https://gateway.envoyproxy.io/docs/api/extension_types/#envoygateway to view all options.
+  # -- EnvoyGateway configuration. Visit https://gateway.envoyproxy.io/docs/api/extension_types/#envoygateway to view all options.
     envoyGateway:
       gateway:
         controllerName: gateway.envoyproxy.io/gatewayclass-controller
@@ -182,7 +185,7 @@ envoy-gateway:
         allowPrivilegeEscalation: false
         capabilities:
           drop:
-            - ALL
+          - ALL
         privileged: false
         readOnlyRootFilesystem: true
         runAsNonRoot: true

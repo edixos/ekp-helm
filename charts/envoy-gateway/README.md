@@ -1,6 +1,6 @@
 # envoy-gateway
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.6.3](https://img.shields.io/badge/AppVersion-v1.6.3-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.7.0](https://img.shields.io/badge/AppVersion-v1.7.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://docker.io/envoyproxy | envoy-gateway(gateway-helm) | 1.6.3 |
+| oci://docker.io/envoyproxy | envoy-gateway(gateway-helm) | 1.7.0 |
 
 ## Maintainers
 
@@ -68,7 +68,7 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | envoy-gateway.deployment.replicas | int | `1` |  |
 | envoy-gateway.global.imagePullSecrets | list | `[]` | Global override for image pull secrets |
 | envoy-gateway.global.imageRegistry | string | `""` | Global override for image registry |
-| envoy-gateway.global.images.envoyGateway.image | string | `"docker.io/envoyproxy/gateway:v1.6.3"` |  |
+| envoy-gateway.global.images.envoyGateway.image | string | `"docker.io/envoyproxy/gateway:v1.7.0"` |  |
 | envoy-gateway.global.images.envoyGateway.pullPolicy | string | `"IfNotPresent"` |  |
 | envoy-gateway.global.images.envoyGateway.pullSecrets | list | `[]` |  |
 | envoy-gateway.global.images.ratelimit.image | string | `"docker.io/envoyproxy/ratelimit:3fb70258"` |  |
@@ -83,7 +83,7 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | envoy-gateway.podDisruptionBudget.minAvailable | int | `0` |  |
 | envoy-gateway.service.annotations | object | `{}` |  |
 | envoy-gateway.service.trafficDistribution | string | `""` |  |
-| envoy-gateway.service.type | string | `"ClusterIP"` |  |
+| envoy-gateway.service.type | string | `"ClusterIP"` | Service type. Can be set to LoadBalancer with specific IP, e.g.: type: LoadBalancer loadBalancerIP: 10.236.90.20 |
 | envoy-gateway.topologyInjector.annotations | object | `{}` |  |
 | envoy-gateway.topologyInjector.enabled | bool | `true` |  |
 | prometheus.enabled | bool | `false` | Enables prometheus operator resources |
@@ -126,7 +126,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: envoy-gateway
     path: ''
     helm:
