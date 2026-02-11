@@ -1,6 +1,6 @@
 # eso
 
-![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.3.2](https://img.shields.io/badge/AppVersion-v1.3.2-informational?style=flat-square)
+![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.0.0](https://img.shields.io/badge/AppVersion-v2.0.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.external-secrets.io | eso(external-secrets) | 1.3.2 |
+| https://charts.external-secrets.io | eso(external-secrets) | 2.0.0 |
 
 ## Maintainers
 
@@ -39,6 +39,7 @@ A Helm chart ESO for Kubernetes
 | eso.certController.extraInitContainers | list | `[]` |  |
 | eso.certController.extraVolumeMounts | list | `[]` |  |
 | eso.certController.extraVolumes | list | `[]` |  |
+| eso.certController.hostAliases | list | `[]` | Specifies `hostAliases` to cert-controller deployment |
 | eso.certController.hostNetwork | bool | `false` | Run the certController on the host network |
 | eso.certController.hostUsers | bool | `nil` | Specifies if certController pod should use hostUsers or not. If hostNetwork is true, hostUsers should be too. Only available in Kubernetes ≥ 1.33. @schema type: [boolean, null] |
 | eso.certController.image.flavour | string | `""` |  |
@@ -113,6 +114,7 @@ A Helm chart ESO for Kubernetes
 | eso.genericTargets.resources | list | `[]` | List of additional resource types to grant permissions for. Each entry should specify apiGroup, resources, and verbs. Example: resources:   - apiGroup: "argoproj.io"     resources: ["applications"]     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"] |
 | eso.global.affinity | object | `{}` |  |
 | eso.global.compatibility.openshift.adaptSecurityContext | string | `"auto"` | Manages the securityContext properties to make them compatible with OpenShift. Possible values: auto - Apply configurations if it is detected that OpenShift is the target platform. force - Always apply configurations. disabled - No modification applied. |
+| eso.global.hostAliases | list | `[]` | Global hostAliases to be applied to all deployments |
 | eso.global.imagePullSecrets | list | `[]` | Global imagePullSecrets to be applied to all deployments |
 | eso.global.nodeSelector | object | `{}` |  |
 | eso.global.podAnnotations | object | `{}` | Global pod annotations to be applied to all deployments |
@@ -125,6 +127,7 @@ A Helm chart ESO for Kubernetes
 | eso.grafanaDashboard.extraLabels | object | `{}` | Extra labels to add to the Grafana dashboard ConfigMap. |
 | eso.grafanaDashboard.sidecarLabel | string | `"grafana_dashboard"` | Label that ConfigMaps should have to be loaded as dashboards. |
 | eso.grafanaDashboard.sidecarLabelValue | string | `"1"` | Label value that ConfigMaps should have to be loaded as dashboards. |
+| eso.hostAliases | list | `[]` | Specifies `hostAliases` to deployment |
 | eso.hostNetwork | bool | `false` | Run the controller on the host network |
 | eso.hostUsers | bool | `nil` | Specifies if controller pod should use hostUsers or not. If hostNetwork is true, hostUsers should be too. Only available in Kubernetes ≥ 1.33. @schema type: [boolean, null] |
 | eso.image.flavour | string | `""` | The flavour of tag you want to use There are different image flavours available, like distroless and ubi. Please see GitHub release notes for image tags for these flavors. By default, the distroless image is used. |
@@ -229,6 +232,7 @@ A Helm chart ESO for Kubernetes
 | eso.webhook.extraVolumeMounts | list | `[]` |  |
 | eso.webhook.extraVolumes | list | `[]` |  |
 | eso.webhook.failurePolicy | string | `"Fail"` | Specifies whether validating webhooks should be created with failurePolicy: Fail or Ignore |
+| eso.webhook.hostAliases | list | `[]` | Specifies `hostAliases` to webhook deployment |
 | eso.webhook.hostNetwork | bool | `false` | Specifies if webhook pod should use hostNetwork or not. |
 | eso.webhook.hostUsers | bool | `nil` | Specifies if webhook pod should use hostUsers or not. If hostNetwork is true, hostUsers should be too. Only available in Kubernetes ≥ 1.33. @schema type: [boolean, null] |
 | eso.webhook.image.flavour | string | `""` | The flavour of tag you want to use |
@@ -307,7 +311,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.6"
+    targetRevision: "0.1.7"
     chart: eso
     path: ''
 
