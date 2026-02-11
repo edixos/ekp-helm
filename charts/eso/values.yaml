@@ -30,6 +30,8 @@ eso:
     #    matchLabelKeys:
     #      - pod-template-hash
     affinity: {}
+    # -- Global hostAliases to be applied to all deployments
+    hostAliases: []
     # -- Global pod labels to be applied to all deployments
     podLabels: {}
     # -- Global pod annotations to be applied to all deployments
@@ -456,6 +458,9 @@ eso:
       name: ""
     nodeSelector: {}
 
+    # -- Specifies `hostAliases` to webhook deployment
+    hostAliases: []
+
     certManager:
       # -- Enabling cert-manager support will disable the built in secret and
       # switch to using cert-manager (installed separately) to automatically issue
@@ -641,6 +646,9 @@ eso:
       name: ""
     nodeSelector: {}
 
+    # -- Specifies `hostAliases` to cert-controller deployment
+    hostAliases: []
+
     tolerations: []
 
     topologySpreadConstraints: []
@@ -744,6 +752,9 @@ eso:
 
   # -- Specifies `dnsOptions` to deployment
   dnsConfig: {}
+
+  # -- Specifies `hostAliases` to deployment
+  hostAliases: []
 
   # -- Any extra pod spec on the deployment
   podSpecExtra: {}
