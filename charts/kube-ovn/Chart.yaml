@@ -10,6 +10,6 @@ maintainers:
     url: https://github.com/TalbiHamza
 dependencies:
   - name: kube-ovn
-    version: 2.0.0
+    version: 1.15.3
     repository: "https://kubeovn.github.io/kube-ovn/"
     alias: kube-ovn
