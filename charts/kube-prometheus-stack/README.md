@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.88.1](https://img.shields.io/badge/AppVersion-v0.88.1-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.89.0](https://img.shields.io/badge/AppVersion-v0.89.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 81.6.1 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 82.1.0 |
 
 ## Description
 
@@ -48,7 +48,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.repository | string | `"prometheus/alertmanager"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.alertmanager.alertmanagerSpec.image.tag | string | `"v0.31.0"` |  |
+| kubePrometheusStack.alertmanager.alertmanagerSpec.image.tag | string | `"v0.31.1"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.listenLocal | bool | `false` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.logFormat | string | `"logfmt"` |  |
@@ -1081,7 +1081,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.registry | string | `"ghcr.io"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.repository | string | `"jkroepke/kube-webhook-certgen"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"1.7.6"` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"1.7.7"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.nodeSelector | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.priorityClassName | string | `""` |  |
@@ -1204,7 +1204,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.thanosImage.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.prometheusOperator.thanosImage.repository | string | `"thanos/thanos"` |  |
 | kubePrometheusStack.prometheusOperator.thanosImage.sha | string | `""` |  |
-| kubePrometheusStack.prometheusOperator.thanosImage.tag | string | `"v0.40.1"` |  |
+| kubePrometheusStack.prometheusOperator.thanosImage.tag | string | `"v0.41.0"` |  |
 | kubePrometheusStack.prometheusOperator.thanosRulerInstanceNamespaces | list | `[]` |  |
 | kubePrometheusStack.prometheusOperator.thanosRulerInstanceSelector | string | `""` |  |
 | kubePrometheusStack.prometheusOperator.tls.enabled | bool | `true` |  |
@@ -1284,7 +1284,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.image.repository | string | `"thanos/thanos"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.thanosRuler.thanosRulerSpec.image.tag | string | `"v0.40.1"` |  |
+| kubePrometheusStack.thanosRuler.thanosRulerSpec.image.tag | string | `"v0.41.0"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.labels | object | `{}` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.listenLocal | bool | `false` |  |
@@ -1348,7 +1348,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.7"
+    targetRevision: "0.1.8"
     chart: kube-prometheus-stack
     path: ''
     helm:

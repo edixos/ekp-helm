@@ -1,6 +1,6 @@
 # kube-ovn
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.14.0](https://img.shields.io/badge/AppVersion-1.14.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.15.4](https://img.shields.io/badge/AppVersion-1.15.4-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn) | 1.15.3 |
+| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn) | v1.15.4 |
 
 ## Maintainers
 
@@ -25,280 +25,146 @@ A Helm chart for Kubernetes
 
 ## Values
 
-### CNI agent configuration
-
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| kube-ovn.agent | object | "{}" | Configuration for kube-ovn-cni, the agent responsible for handling CNI requests from the CRI. |
-| kube-ovn.agent.annotations | object | `{}` | Annotations to be added to all top-level agent objects (resources under templates/agent) |
-| kube-ovn.agent.labels | object | `{}` | Labels to be added to all top-level agent objects (resources under templates/agent) |
-| kube-ovn.agent.metrics | object | "{}" | Agent metrics configuration. |
-| kube-ovn.agent.metrics.port | int | `10665` | Configure the port on which the agent service will serve metrics. |
-| kube-ovn.agent.mirroring | object | "{}" | Mirroring of the traffic for debug or analysis. https://kubeovn.github.io/docs/stable/en/guide/mirror/ |
-| kube-ovn.agent.mirroring.enabled | bool | `false` | Enable mirroring of the traffic. |
-| kube-ovn.agent.mirroring.interface | string | `"mirror0"` | Interface on which to send the mirrored traffic. |
-| kube-ovn.agent.podAnnotations | object | `{}` | Annotations to be added to the agent pods (kube-ovn-cni) |
-| kube-ovn.agent.podLabels | object | `{}` | Labels to be added to the agent pods (kube-ovn-cni) |
-| kube-ovn.agent.resources | object | `{"limits":{"cpu":"1000m","memory":"1Gi"},"requests":{"cpu":"100m","memory":"100Mi"}}` | Agent daemon resource limits & requests. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
-
-### CNI agent configuration.
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.agent.dpdkTunnelInterface | string | `"br-phy"` | "" |
-| kube-ovn.agent.interface | string | `""` | "" |
-
-### API Network Attachment Definition configuration
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.apiNad | object | "{}" | API NetworkAttachmentDefinition to give some pods (CoreDNS, NAT GW) in custom VPCs access to the K8S API. This requires Multus to be installed. |
-| kube-ovn.apiNad.enabled | bool | `false` | Enable the creation of the API NAD. |
-| kube-ovn.apiNad.name | string | `"ovn-kubernetes-api"` | Name of the NAD. |
-| kube-ovn.apiNad.provider | string | `"{{ .Values.apiNad.name }}.{{ .Values.namespace }}.ovn"` | Name of the provider, must be in the form "nadName.nadNamespace.ovn". |
-| kube-ovn.apiNad.subnet | object | "{}" | Subnet associated with the NAD, it will have full access to the API server. |
-| kube-ovn.apiNad.subnet.cidrBlock | string | `"100.100.0.0/16,fd00:100:100::/112"` | CIDR block used by the API subnet. |
-| kube-ovn.apiNad.subnet.name | string | `"ovn-kubernetes-api"` | Name of the subnet. |
-| kube-ovn.apiNad.subnet.protocol | string | `"Dual"` | Protocol for the API subnet. |
-
-### BGP speaker configuration
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.bgpSpeaker | object | "{}" | Configuration for kube-ovn-speaker, the BGP speaker announcing routes to the external world. |
-| kube-ovn.bgpSpeaker.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-speaker objects (resources under templates/speaker) |
-| kube-ovn.bgpSpeaker.args | list | `[]` | Args passed to the kube-ovn-speaker pod. |
-| kube-ovn.bgpSpeaker.enabled | bool | `false` | Enable the kube-ovn-speaker. |
-| kube-ovn.bgpSpeaker.labels | object | `{}` | Labels to be added to all top-level kube-ovn-speaker objects (resources under templates/speaker) |
-| kube-ovn.bgpSpeaker.nodeSelector | object | `{}` | Node selector to restrict the deployment of the speaker to specific nodes. |
-| kube-ovn.bgpSpeaker.podAnnotations | object | `{}` | Annotations to be added to kube-ovn-speaker pods. |
-| kube-ovn.bgpSpeaker.podLabels | object | `{}` | Labels to be added to kube-ovn-speaker pods. |
-| kube-ovn.bgpSpeaker.resources | object | `{"limits":{},"requests":{"cpu":"500m","memory":"300Mi"}}` | kube-ovn-speaker resource limits & requests. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
-
-### OVN-central daemon configuration
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.central | object | "{}" | Configuration for ovn-central, the daemon containing the northbound/southbound DBs and northd. |
-| kube-ovn.central.annotations | object | `{}` | Annotations to be added to all top-level ovn-central objects (resources under templates/central) |
-| kube-ovn.central.labels | object | `{}` | Labels to be added to all top-level ovn-central objects (resources under templates/central) |
-| kube-ovn.central.podAnnotations | object | `{}` | Annotations to be added to ovn-central pods. |
-| kube-ovn.central.podLabels | object | `{}` | Labels to be added to ovn-central pods. |
-| kube-ovn.central.resources | object | `{"limits":{"cpu":"3","memory":"4Gi"},"requests":{"cpu":"300m","memory":"200Mi"}}` | ovn-central resource limits & requests. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
-
-### OVN-central daemon configuration.
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.central.ovnLeaderProbeInterval | int | `5` | "" |
-| kube-ovn.central.ovnNorthdNThreads | int | `1` | "" |
-| kube-ovn.central.ovnNorthdProbeInterval | int | `5000` | "" |
-
-### Global parameters
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.clusterDomain | string | `"cluster.local"` | Domain used by the cluster. |
-| kube-ovn.fullnameOverride | string | `""` | Full name override. |
-| kube-ovn.global | object | `{"images":{"kubeovn":{"repository":"kube-ovn","support_arm":true,"tag":"v1.14.0","thirdparty":true,"vpcRepository":"vpc-nat-gateway"}},"registry":{"address":"docker.io/kubeovn","imagePullSecrets":[]}}` | Global configuration. |
-| kube-ovn.image | object | "{}" | Image configuration. |
-| kube-ovn.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for all images. |
-| kube-ovn.masterNodes | list | `[]` | Comma-separated list of IPs for each master node. If not specified, fallback to auto-identifying masters based on "masterNodesLabels" |
-| kube-ovn.masterNodesLabels | object | `{"kube-ovn/role":"master"}` | Label used to auto-identify masters. Any node that has any of these labels will be considered a master node. Note: This feature uses Helm "lookup" function, which is not compatible with tools such as ArgoCD. |
-| kube-ovn.nameOverride | string | `""` | Name override. |
-| kube-ovn.namespace | string | `"kube-system"` | Namespace in which the CNI is deployed. |
-
-### CNI configuration
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.cni | object | "{}" | CNI binary/configuration injected on the nodes. |
-| kube-ovn.cni.binaryDirectory | string | `"/opt/cni/bin"` | Location on the node where the agent will inject the Kube-OVN binary. |
-| kube-ovn.cni.configDirectory | string | `"/etc/cni/net.d"` | Location of the CNI configuration on the node. |
-| kube-ovn.cni.configPriority | string | `"01"` | Priority of Kube-OVN within the CNI configuration directory on the node. Should be a string representing a double-digit integer. |
-| kube-ovn.cni.localConfigFile | string | `"/kube-ovn/01-kube-ovn.conflist"` | Location of the CNI configuration inside the agent's pod. |
-| kube-ovn.cni.mountToolingDirectory | bool | `false` | Whether to mount the node's tooling directory into the pod. |
-| kube-ovn.cni.toolingDirectory | string | `"/usr/local/bin"` | Location on the node where the CNI will install Kube-OVN's tooling. |
-
-### Kube-OVN controller configuration
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.controller | object | "{}" | Configuration for kube-ovn-controller, the controller responsible for syncing K8s with OVN. |
-| kube-ovn.controller.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-controller objects (resources under templates/controller) |
-| kube-ovn.controller.labels | object | `{}` | Labels to be added to all top-level kube-ovn-controller objects (resources under templates/controller) |
-| kube-ovn.controller.metrics | object | "{}" | Controller metrics configuration. |
-| kube-ovn.controller.metrics.port | int | `10660` | Configure the port on which the controller service will serve metrics. |
-| kube-ovn.controller.podAnnotations | object | `{}` | Annotations to be added to kube-ovn-controller pods. |
-| kube-ovn.controller.podLabels | object | `{}` | Labels to be added to kube-ovn-controller pods. |
-| kube-ovn.controller.resources | object | `{"limits":{"cpu":"1000m","memory":"1Gi"},"requests":{"cpu":"200m","memory":"200Mi"}}` | kube-ovn-controller resource limits & requests. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
-
-### Extra objects
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.extraObjects | list | `[]` | Array of extra K8s manifests to deploy. Note: Supports use of custom Helm templates (Go templating) |
-
-### Opt-in/out Features
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.features | object | `{"ENABLE_ANP":false,"ENABLE_BIND_LOCAL_IP":true,"ENABLE_OVN_LB_PREFER_LOCAL":false,"LS_CT_SKIP_DST_LPORT_IPS":true,"LS_DNAT_MOD_DL_DST":true,"OVSDB_CON_TIMEOUT":3,"OVSDB_INACTIVITY_TIMEOUT":10,"SET_VXLAN_TX_OFF":false,"enableExternalVpcs":true,"enableHardwareOffload":false,"enableKeepVmIps":true,"enableLiveMigrationOptimization":true,"enableLoadbalancer":true,"enableLoadbalancerService":false,"enableNatGateways":true,"enableNetworkPolicies":true,"enableOvnInterconnections":false,"enableOvnIpsec":false,"enableSecureServing":false,"enableTproxy":false,"enableU2OInterconnections":false}` | Features of Kube-OVN we wish to enable/disable. |
-| kube-ovn.features.enableExternalVpcs | bool | `true` | Enable external VPCs |
-| kube-ovn.features.enableHardwareOffload | bool | `false` | Enable hardware offloads |
-| kube-ovn.features.enableKeepVmIps | bool | `true` | Enable persistent VM IPs |
-| kube-ovn.features.enableLiveMigrationOptimization | bool | `true` | Enable optimized live migrations for VMs |
-| kube-ovn.features.enableLoadbalancer | bool | `true` | Enable Kube-OVN loadbalancers |
-| kube-ovn.features.enableLoadbalancerService | bool | `false` | Enable Kube-OVN loadbalancer services |
-| kube-ovn.features.enableNatGateways | bool | `true` | Enable NAT gateways |
-| kube-ovn.features.enableNetworkPolicies | bool | `true` | Enable Kube-OVN network policies |
-| kube-ovn.features.enableOvnInterconnections | bool | `false` | Enable OVN interconnections |
-| kube-ovn.features.enableOvnIpsec | bool | `false` | Enable IPSEC |
-| kube-ovn.features.enableSecureServing | bool | `false` | Enable secure serving |
-| kube-ovn.features.enableTproxy | bool | `false` | Enable TProxy |
-| kube-ovn.features.enableU2OInterconnections | bool | `false` | Enable underlay to overlay interconnections |
-
-### Kubelet configuration
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.kubelet | object | "{}" | Kubelet configuration. |
-| kube-ovn.kubelet.directory | string | `"/var/lib/kubelet"` | Directory in which the kubelet operates. |
-| kube-ovn.logging.directory | string | `"/var/log"` | Directory in which to write the logs. |
-
-### Logging configuration
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.logging | object | "{}" | Logging configuration for all the daemons. |
-
-### OVN monitoring daemon configuration
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.monitor | object | "{}" | Configuration for kube-ovn-monitor, the agent monitoring and returning metrics for the northbound/southbound DBs and northd. |
-| kube-ovn.monitor.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-monitor objects (resources under templates/monitor) |
-| kube-ovn.monitor.labels | object | `{}` | Labels to be added to all top-level kube-ovn-monitor objects (resources under templates/monitor) |
-| kube-ovn.monitor.metrics | object | "{}" | kube-ovn-monitor metrics configuration. |
-| kube-ovn.monitor.metrics.port | int | `10661` | Configure the port on which the kube-ovn-monitor service will serve metrics. |
-| kube-ovn.monitor.podAnnotations | object | `{}` | Annotations to be added to kube-ovn-monitor pods. |
-| kube-ovn.monitor.podLabels | object | `{}` | Labels to be added to kube-ovn-monitor pods. |
-| kube-ovn.monitor.resources | object | `{"limits":{"cpu":"200m","memory":"200Mi"},"requests":{"cpu":"200m","memory":"200Mi"}}` | kube-ovn-monitor resource limits & requests. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
-
-### NAT gateways configuration
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.natGw | object | "{}" | Configuration for the NAT gateways. |
-| kube-ovn.natGw.bgpSpeaker | object | "{}" | Configuration of the BGP sidecar for when a NAT gateway is running in BGP mode. |
-| kube-ovn.natGw.bgpSpeaker.apiNadProvider | string | `"{{ .Values.apiNad.name }}.{{ .Values.namespace }}.ovn"` | Network attachment definition used to reach the API server when running on BGP mode. By default, equals the value set at ".apiNad.provider", you will need to set ".apiNad.enabled" to true. See https://kubeovn.github.io/docs/stable/en/advance/with-bgp/ |
-| kube-ovn.natGw.bgpSpeaker.image | object | "{}" | Image used by the NAT gateway sidecar. |
-| kube-ovn.natGw.bgpSpeaker.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
-| kube-ovn.natGw.bgpSpeaker.image.repository | string | `"docker.io/kubeovn/kube-ovn"` | Image repository. |
-| kube-ovn.natGw.bgpSpeaker.image.tag | string | `"v1.14.0"` | Image tag. |
-| kube-ovn.natGw.namePrefix | string | `"vpc-nat-gw"` | Prefix appended to the name of the NAT gateways when generating the Pods. If this value is changed after NAT GWs have been provisioned, every NAT gateway will need to be manually destroyed and recreated. |
-
-### Network parameters of the CNI
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.networking | object | "{}" | General configuration of the network created by Kube-OVN. |
-| kube-ovn.networking.defaultVpcName | string | `"ovn-cluster"` | Name of the default VPC once it is generated in the cluster. Pods in the default subnet live in this VPC. |
-| kube-ovn.networking.enableCompact | bool | `false` | "" |
-| kube-ovn.networking.enableEcmp | bool | `false` | "" |
-| kube-ovn.networking.enableEipSnat | bool | `true` | Enable EIP and SNAT. |
-| kube-ovn.networking.enableMetrics | bool | `true` | Enable listening on the metrics endpoint for the CNI daemons. |
-| kube-ovn.networking.enableSsl | bool | `false` | Deploy the CNI with SSL encryption in between components. |
-| kube-ovn.networking.exchangeLinkName | bool | `false` | "" |
-| kube-ovn.networking.excludeIps | string | `""` | IPs to exclude from IPAM in the default subnet. |
-| kube-ovn.networking.join | object | "{}" | Configuration of the "join" subnet, used by the nodes to contact (join) the pods in the default subnet. If .networking.stack is set to IPv4, only the .v4 key is used. If .networking.stack is set to IPv6, only the .v6 key is used. If .networking.stack is set to Dual, both keys are used. |
-| kube-ovn.networking.join.cidr | object | "{}" | CIDR used by the join subnet. |
-| kube-ovn.networking.join.cidr.v4 | string | `"100.64.0.0/16"` | IPv4 CIDR. |
-| kube-ovn.networking.join.cidr.v6 | string | `"fd00:100:64::/112"` | IPv6 CIDR. |
-| kube-ovn.networking.join.subnetName | string | `"join"` | Name of the join subnet once it gets generated in the cluster. |
-| kube-ovn.networking.networkType | string | `"geneve"` | Network type can be "geneve" or "vlan". |
-| kube-ovn.networking.nodeLocalDnsIp | string | `""` | Comma-separated string of NodeLocal DNS IP addresses. |
-| kube-ovn.networking.podNicType | string | `"veth-pair"` | NIC type used on pods to connect them to the CNI. |
-| kube-ovn.networking.pods | object | "{}" | Configuration for the default pod subnet. If .networking.stack is set to IPv4, only the .v4 key is used. If .networking.stack is set to IPv6, only the .v6 key is used. If .networking.stack is set to Dual, both keys are used. |
-| kube-ovn.networking.pods.cidr | object | "{}" | CIDR used by the pods subnet. |
-| kube-ovn.networking.pods.cidr.v4 | string | `"10.16.0.0/16"` | IPv4 CIDR. |
-| kube-ovn.networking.pods.cidr.v6 | string | `"fd00:10:16::/112"` | IPv6 CIDR. |
-| kube-ovn.networking.pods.enableGatewayChecks | bool | `true` | Enable default gateway checks |
-| kube-ovn.networking.pods.enableLogicalGateways | bool | `false` | Enable logical gateways |
-| kube-ovn.networking.pods.gateways | object | "{}" | Gateways used in the pod subnet. |
-| kube-ovn.networking.pods.gateways.v4 | string | `"10.16.0.1"` | IPv4 gateway. |
-| kube-ovn.networking.pods.gateways.v6 | string | `"fd00:10:16::1"` | IPv6 gateway. |
-| kube-ovn.networking.pods.subnetName | string | `"ovn-default"` | Name of the pod subnet once it gets generated in the cluster. |
-| kube-ovn.networking.services | object | "{}" | Configuration for the service subnet. If .networking.stack is set to IPv4, only the .v4 key is used. If .networking.stack is set to IPv6, only the .v6 key is used. If .networking.stack is set to Dual, both keys are used. |
-| kube-ovn.networking.services.cidr | object | "{}" | CIDR used by the service subnet. |
-| kube-ovn.networking.services.cidr.v4 | string | `"10.96.0.0/12"` | IPv4 CIDR. |
-| kube-ovn.networking.services.cidr.v6 | string | `"fd00:10:96::/112"` | IPv6 CIDR. |
-| kube-ovn.networking.stack | string | `"IPv4"` | Protocol(s) used by Kube-OVN to allocate IPs to pods and services. Can be either IPv4, IPv6 or Dual. |
-| kube-ovn.networking.tunnelType | string | `"geneve"` | Tunnel type can be "geneve", "vxlan" or "stt". |
-| kube-ovn.networking.vlan | object | `{"id":"100","interfaceName":"","name":"ovn-vlan","providerName":"provider"}` | Configuration if we're running on top of a VLAN. |
-
-### OVS/OVN daemons configuration
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.ovsOvn | object | "{}" | Configuration for ovs-ovn, the Open vSwitch/Open Virtual Network daemons. |
-| kube-ovn.ovsOvn.annotations | object | `{}` | Annotations to be added to all top-level ovs-ovn objects (resources under templates/ovs-ovn) |
-| kube-ovn.ovsOvn.disableModulesManagement | bool | `false` | Disable auto-loading of kernel modules by OVS. If this is disabled, you will have to enable the Open vSwitch kernel module yourself. |
-| kube-ovn.ovsOvn.dpdkHybrid | object | "{}" | DPDK-hybrid support for OVS. ref: https://kubeovn.github.io/docs/v1.12.x/en/advance/dpdk/ |
-| kube-ovn.ovsOvn.dpdkHybrid.enabled | bool | `false` | Enables DPDK-hybrid support on OVS. |
-| kube-ovn.ovsOvn.dpdkHybrid.resources | object | `{"limits":{"cpu":"2","hugepages-2Mi":"1Gi","memory":"1000Mi"},"requests":{"cpu":"200m","memory":"200Mi"}}` | ovs-ovn resource limits & requests when DPDK-hybrid is enabled. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
-| kube-ovn.ovsOvn.dpdkHybrid.tag | string | `"v1.14.0-dpdk"` | DPDK image tag. |
-| kube-ovn.ovsOvn.labels | object | `{}` | Labels to be added to all top-level ovs-ovn objects (resources under templates/ovs-ovn) |
-| kube-ovn.ovsOvn.ovnDirectory | string | `"/etc/origin/ovn"` | Directory on the node where Open Virtual Network (OVN) lives. |
-| kube-ovn.ovsOvn.ovsDirectory | string | `"/etc/origin/openvswitch"` | Directory on the node where Open vSwitch (OVS) lives. |
-| kube-ovn.ovsOvn.podAnnotations | object | `{}` | Annotations to be added to ovs-ovn pods. |
-| kube-ovn.ovsOvn.podLabels | object | `{}` | Labels to be added to ovs-ovn pods. |
-| kube-ovn.ovsOvn.resources | object | `{"limits":{"cpu":"2","memory":"1000Mi"},"requests":{"cpu":"200m","memory":"200Mi"}}` | ovs-ovn resource limits & requests. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
-
-### Performance configuration
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.performance | object | "{}" | Performance tuning parameters. |
-| kube-ovn.performance.gcInterval | int | `360` | "" |
-| kube-ovn.performance.inspectInterval | int | `20` | "" |
-| kube-ovn.performance.ovsVsctlConcurrency | int | `100` | "" |
-
-### Ping daemon configuration
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.pinger | object | "{}" | Configuration for kube-ovn-pinger, the agent monitoring and returning metrics for OVS/external connectivity. |
-| kube-ovn.pinger.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-pinger objects (resources under templates/pinger) |
-| kube-ovn.pinger.labels | object | `{}` | Labels to be added to all top-level kube-ovn-pinger objects (resources under templates/pinger) |
-| kube-ovn.pinger.metrics | object | "{}" | kube-ovn-pinger metrics configuration. |
-| kube-ovn.pinger.metrics.port | int | `8080` | Configure the port on which the kube-ovn-monitor service will serve metrics. |
-| kube-ovn.pinger.podAnnotations | object | `{}` | Annotations to be added to kube-ovn-pinger pods. |
-| kube-ovn.pinger.podLabels | object | `{}` | Labels to be added to kube-ovn-pinger pods. |
-| kube-ovn.pinger.resources | object | `{"limits":{"cpu":"200m","memory":"400Mi"},"requests":{"cpu":"100m","memory":"100Mi"}}` | kube-ovn-pinger resource limits & requests. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
-| kube-ovn.pinger.targets | object | "{}" | Remote targets used by the pinger daemon to determine if the CNI works and has external connectivity. |
-| kube-ovn.pinger.targets.externalAddresses | object | "{}" | Raw IPv4/6 on which to issue pings. |
-| kube-ovn.pinger.targets.externalAddresses.v4 | string | `"1.1.1.1"` | IPv4 address. |
-| kube-ovn.pinger.targets.externalAddresses.v6 | string | `"2606:4700:4700::1111"` | IPv6 address. |
-| kube-ovn.pinger.targets.externalDomain | object | "{}" | Domains to resolve and to ping. Make sure the v6 domain resolves both A and AAAA records, while the v4 only resolves A records. |
-| kube-ovn.pinger.targets.externalDomain.v4 | string | `"kube-ovn.io."` | Domain name resolving to an IPv4 only (A record) |
-| kube-ovn.pinger.targets.externalDomain.v6 | string | `"google.com."` | Domain name resolving to an IPv6 and IPv4 only (A/AAAA record) |
-
-### Validating webhook configuration
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| kube-ovn.validatingWebhook | object | "{}" | Configuration of the validating webhook used to verify custom resources before they are pushed to Kubernetes. Make sure cert-manager is installed for the generation of certificates for the webhook. See https://kubeovn.github.io/docs/stable/en/guide/webhook/ |
-| kube-ovn.validatingWebhook.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-webhook objects (resources under templates/webhook) |
-| kube-ovn.validatingWebhook.enabled | bool | `false` | Enable the deployment of the validating webhook. |
-| kube-ovn.validatingWebhook.labels | object | `{}` | Labels to be added to all top-level kube-ovn-webhook objects (resources under templates/webhook) |
-| kube-ovn.validatingWebhook.podAnnotations | object | `{}` | Annotations to be added to kube-ovn-webhook pods. |
-| kube-ovn.validatingWebhook.podLabels | object | `{}` | Labels to be added to kube-ovn-webhook pods. |
-
-### Other Values
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
+| kube-ovn.DISABLE_MODULES_MANAGEMENT | bool | `false` |  |
+| kube-ovn.DPDK_CPU | string | `"1000m"` |  |
+| kube-ovn.DPDK_IMAGE_TAG | string | `"v1.15.0-dpdk"` |  |
+| kube-ovn.DPDK_MEMORY | string | `"2Gi"` |  |
+| kube-ovn.HUGEPAGES | string | `"1Gi"` |  |
+| kube-ovn.HUGEPAGE_SIZE_TYPE | string | `"hugepages-2Mi"` |  |
+| kube-ovn.HYBRID_DPDK | bool | `false` |  |
+| kube-ovn.MASTER_NODES | string | `""` |  |
+| kube-ovn.MASTER_NODES_LABEL | string | `"kube-ovn/role=master"` |  |
+| kube-ovn.OPENVSWITCH_DIR | string | `"/etc/origin/openvswitch"` |  |
+| kube-ovn.OVN_DIR | string | `"/etc/origin/ovn"` |  |
+| kube-ovn.OVN_IPSEC_KEY_DIR | string | `"/etc/origin/ovs_ipsec_keys"` |  |
+| kube-ovn.cni_conf.CNI_BIN_DIR | string | `"/opt/cni/bin"` |  |
+| kube-ovn.cni_conf.CNI_CONFIG_PRIORITY | string | `"01"` |  |
+| kube-ovn.cni_conf.CNI_CONF_DIR | string | `"/etc/cni/net.d"` |  |
+| kube-ovn.cni_conf.CNI_CONF_FILE | string | `"/kube-ovn/01-kube-ovn.conflist"` |  |
+| kube-ovn.cni_conf.LOCAL_BIN_DIR | string | `"/usr/local/bin"` |  |
+| kube-ovn.cni_conf.MOUNT_CNI_CONF_DIR | string | `"/etc/cni/net.d"` |  |
+| kube-ovn.cni_conf.MOUNT_LOCAL_BIN_DIR | bool | `false` |  |
+| kube-ovn.cni_conf.NON_PRIMARY_CNI | bool | `false` |  |
+| kube-ovn.debug.ENABLE_MIRROR | bool | `false` |  |
+| kube-ovn.debug.MIRROR_IFACE | string | `"mirror0"` |  |
+| kube-ovn.dual_stack.JOIN_CIDR | string | `"100.64.0.0/16,fd00:100:64::/112"` |  |
+| kube-ovn.dual_stack.PINGER_EXTERNAL_ADDRESS | string | `"1.1.1.1,2606:4700:4700::1111"` |  |
+| kube-ovn.dual_stack.PINGER_EXTERNAL_DOMAIN | string | `"google.com."` |  |
+| kube-ovn.dual_stack.POD_CIDR | string | `"10.16.0.0/16,fd00:10:16::/112"` |  |
+| kube-ovn.dual_stack.POD_GATEWAY | string | `"10.16.0.1,fd00:10:16::1"` |  |
+| kube-ovn.dual_stack.SVC_CIDR | string | `"10.96.0.0/12,fd00:10:96::/112"` |  |
+| kube-ovn.fullnameOverride | string | `""` |  |
+| kube-ovn.func.CHECK_GATEWAY | bool | `true` |  |
+| kube-ovn.func.ENABLE_ANP | bool | `false` |  |
+| kube-ovn.func.ENABLE_BIND_LOCAL_IP | bool | `true` |  |
+| kube-ovn.func.ENABLE_DNS_NAME_RESOLVER | bool | `false` |  |
+| kube-ovn.func.ENABLE_EXTERNAL_VPC | bool | `false` |  |
+| kube-ovn.func.ENABLE_IC | bool | `false` |  |
+| kube-ovn.func.ENABLE_KEEP_VM_IP | bool | `true` |  |
+| kube-ovn.func.ENABLE_LB | bool | `true` |  |
+| kube-ovn.func.ENABLE_LB_SVC | bool | `false` |  |
+| kube-ovn.func.ENABLE_LIVE_MIGRATION_OPTIMIZE | bool | `true` |  |
+| kube-ovn.func.ENABLE_NAT_GW | bool | `true` |  |
+| kube-ovn.func.ENABLE_NP | bool | `true` |  |
+| kube-ovn.func.ENABLE_OVN_IPSEC | bool | `false` |  |
+| kube-ovn.func.ENABLE_OVN_LB_PREFER_LOCAL | bool | `false` |  |
+| kube-ovn.func.ENABLE_TPROXY | bool | `false` |  |
+| kube-ovn.func.HW_OFFLOAD | bool | `false` |  |
+| kube-ovn.func.LOGICAL_GATEWAY | bool | `false` |  |
+| kube-ovn.func.LS_CT_SKIP_DST_LPORT_IPS | bool | `true` |  |
+| kube-ovn.func.LS_DNAT_MOD_DL_DST | bool | `true` |  |
+| kube-ovn.func.NP_ENFORCEMENT | string | `"standard"` |  |
+| kube-ovn.func.OVSDB_CON_TIMEOUT | int | `3` |  |
+| kube-ovn.func.OVSDB_INACTIVITY_TIMEOUT | int | `10` |  |
+| kube-ovn.func.SECURE_SERVING | bool | `false` |  |
+| kube-ovn.func.SET_VXLAN_TX_OFF | bool | `false` |  |
+| kube-ovn.func.U2O_INTERCONNECTION | bool | `false` |  |
+| kube-ovn.global.images.kubeovn.repository | string | `"kube-ovn"` |  |
+| kube-ovn.global.images.kubeovn.tag | string | `"v1.15.4"` |  |
+| kube-ovn.global.images.natgateway.repository | string | `"vpc-nat-gateway"` |  |
+| kube-ovn.global.images.natgateway.tag | string | `"v1.15.4"` |  |
+| kube-ovn.global.registry.address | string | `"docker.io/kubeovn"` |  |
+| kube-ovn.global.registry.imagePullSecrets | list | `[]` |  |
+| kube-ovn.image.pullPolicy | string | `"IfNotPresent"` |  |
+| kube-ovn.ipv4.JOIN_CIDR | string | `"100.64.0.0/16"` |  |
+| kube-ovn.ipv4.PINGER_EXTERNAL_ADDRESS | string | `"1.1.1.1"` |  |
+| kube-ovn.ipv4.PINGER_EXTERNAL_DOMAIN | string | `"kube-ovn.io."` |  |
+| kube-ovn.ipv4.POD_CIDR | string | `"10.16.0.0/16"` |  |
+| kube-ovn.ipv4.POD_GATEWAY | string | `"10.16.0.1"` |  |
+| kube-ovn.ipv4.SVC_CIDR | string | `"10.96.0.0/12"` |  |
+| kube-ovn.ipv6.JOIN_CIDR | string | `"fd00:100:64::/112"` |  |
+| kube-ovn.ipv6.PINGER_EXTERNAL_ADDRESS | string | `"2606:4700:4700::1111"` |  |
+| kube-ovn.ipv6.PINGER_EXTERNAL_DOMAIN | string | `"google.com."` |  |
+| kube-ovn.ipv6.POD_CIDR | string | `"fd00:10:16::/112"` |  |
+| kube-ovn.ipv6.POD_GATEWAY | string | `"fd00:10:16::1"` |  |
+| kube-ovn.ipv6.SVC_CIDR | string | `"fd00:10:96::/112"` |  |
+| kube-ovn.kube-ovn-cni.limits.cpu | string | `"1000m"` |  |
+| kube-ovn.kube-ovn-cni.limits.ephemeral-storage | string | `"1Gi"` |  |
+| kube-ovn.kube-ovn-cni.limits.memory | string | `"1Gi"` |  |
+| kube-ovn.kube-ovn-cni.requests.cpu | string | `"100m"` |  |
+| kube-ovn.kube-ovn-cni.requests.memory | string | `"100Mi"` |  |
+| kube-ovn.kube-ovn-controller.limits.cpu | string | `"1000m"` |  |
+| kube-ovn.kube-ovn-controller.limits.ephemeral-storage | string | `"1Gi"` |  |
+| kube-ovn.kube-ovn-controller.limits.memory | string | `"1Gi"` |  |
+| kube-ovn.kube-ovn-controller.requests.cpu | string | `"200m"` |  |
+| kube-ovn.kube-ovn-controller.requests.memory | string | `"200Mi"` |  |
+| kube-ovn.kube-ovn-monitor.limits.cpu | string | `"200m"` |  |
+| kube-ovn.kube-ovn-monitor.limits.ephemeral-storage | string | `"1Gi"` |  |
+| kube-ovn.kube-ovn-monitor.limits.memory | string | `"200Mi"` |  |
+| kube-ovn.kube-ovn-monitor.requests.cpu | string | `"200m"` |  |
+| kube-ovn.kube-ovn-monitor.requests.memory | string | `"200Mi"` |  |
+| kube-ovn.kube-ovn-pinger.limits.cpu | string | `"200m"` |  |
+| kube-ovn.kube-ovn-pinger.limits.ephemeral-storage | string | `"1Gi"` |  |
+| kube-ovn.kube-ovn-pinger.limits.memory | string | `"400Mi"` |  |
+| kube-ovn.kube-ovn-pinger.requests.cpu | string | `"100m"` |  |
+| kube-ovn.kube-ovn-pinger.requests.memory | string | `"100Mi"` |  |
+| kube-ovn.kubelet_conf.KUBELET_DIR | string | `"/var/lib/kubelet"` |  |
+| kube-ovn.log_conf.LOG_DIR | string | `"/var/log"` |  |
+| kube-ovn.nameOverride | string | `""` |  |
+| kube-ovn.namespace | string | `"kube-system"` |  |
+| kube-ovn.networking.DEFAULT_SUBNET | string | `"ovn-default"` |  |
+| kube-ovn.networking.DEFAULT_VPC | string | `"ovn-cluster"` |  |
+| kube-ovn.networking.DPDK_TUNNEL_IFACE | string | `"br-phy"` |  |
+| kube-ovn.networking.ENABLE_COMPACT | bool | `false` |  |
+| kube-ovn.networking.ENABLE_ECMP | bool | `false` |  |
+| kube-ovn.networking.ENABLE_EIP_SNAT | bool | `true` |  |
+| kube-ovn.networking.ENABLE_METRICS | bool | `true` |  |
+| kube-ovn.networking.ENABLE_SSL | bool | `false` |  |
+| kube-ovn.networking.EXCHANGE_LINK_NAME | bool | `false` |  |
+| kube-ovn.networking.EXCLUDE_IPS | string | `""` |  |
+| kube-ovn.networking.IFACE | string | `""` |  |
+| kube-ovn.networking.NETWORK_TYPE | string | `"geneve"` |  |
+| kube-ovn.networking.NET_STACK | string | `"ipv4"` |  |
+| kube-ovn.networking.NODE_LOCAL_DNS_IP | string | `""` |  |
+| kube-ovn.networking.NODE_SUBNET | string | `"join"` |  |
+| kube-ovn.networking.OVN_LEADER_PROBE_INTERVAL | int | `5` |  |
+| kube-ovn.networking.OVN_NORTHD_N_THREADS | int | `1` |  |
+| kube-ovn.networking.OVN_NORTHD_PROBE_INTERVAL | int | `5000` |  |
+| kube-ovn.networking.OVN_REMOTE_OPENFLOW_INTERVAL | int | `180` |  |
+| kube-ovn.networking.OVN_REMOTE_PROBE_INTERVAL | int | `10000` |  |
+| kube-ovn.networking.POD_NIC_TYPE | string | `"veth-pair"` |  |
+| kube-ovn.networking.PROBE_INTERVAL | int | `180000` |  |
+| kube-ovn.networking.SKIP_CONNTRACK_DST_CIDRS | string | `""` |  |
+| kube-ovn.networking.TUNNEL_TYPE | string | `"geneve"` |  |
+| kube-ovn.networking.vlan.PROVIDER_NAME | string | `"provider"` |  |
+| kube-ovn.networking.vlan.VLAN_ID | string | `"100"` |  |
+| kube-ovn.networking.vlan.VLAN_INTERFACE_NAME | string | `""` |  |
+| kube-ovn.networking.vlan.VLAN_NAME | string | `"ovn-vlan"` |  |
+| kube-ovn.ovn-central.limits.cpu | string | `"3"` |  |
+| kube-ovn.ovn-central.limits.ephemeral-storage | string | `"1Gi"` |  |
+| kube-ovn.ovn-central.limits.memory | string | `"4Gi"` |  |
+| kube-ovn.ovn-central.requests.cpu | string | `"300m"` |  |
+| kube-ovn.ovn-central.requests.memory | string | `"200Mi"` |  |
+| kube-ovn.ovs-ovn.limits.cpu | string | `"2"` |  |
+| kube-ovn.ovs-ovn.limits.ephemeral-storage | string | `"1Gi"` |  |
+| kube-ovn.ovs-ovn.limits.memory | string | `"1000Mi"` |  |
+| kube-ovn.ovs-ovn.requests.cpu | string | `"200m"` |  |
+| kube-ovn.ovs-ovn.requests.memory | string | `"200Mi"` |  |
+| kube-ovn.performance.GC_INTERVAL | int | `360` |  |
+| kube-ovn.performance.INSPECT_INTERVAL | int | `20` |  |
+| kube-ovn.performance.OVS_VSCTL_CONCURRENCY | int | `100` |  |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `false` | Add grafana dashboard as a configmap |
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
@@ -343,7 +209,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: kube-ovn
     path: ''
     helm:
