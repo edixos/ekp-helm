@@ -3,6 +3,25 @@ entries:
   alertmanager:
   - apiVersion: v2
     appVersion: v0.27.0
+    created: "2026-02-18T12:27:57.3112803Z"
+    dependencies:
+    - alias: oidc
+      condition: oidc.enabled
+      name: oauth2-proxy
+      repository: https://oauth2-proxy.github.io/manifests
+      version: 10.1.4
+    description: Deploies Alertmanager through Prometheus-Operator
+    digest: e7049d733e7c799ceb3c2bbb020f7e1993de931a659061543396dbfe457abf8e
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: alertmanager
+    urls:
+    - alertmanager-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
+    appVersion: v0.27.0
     created: "2026-02-11T11:07:02.398144142Z"
     dependencies:
     - alias: oidc
@@ -97,6 +116,25 @@ entries:
     - https://edixos.github.io/ekp-helm/alertmanager-0.1.0.tgz
     version: 0.1.0
   argocd:
+  - apiVersion: v2
+    appVersion: v3.3.0
+    created: "2026-02-18T12:27:57.575868908Z"
+    dependencies:
+    - alias: argocd
+      name: argo-cd
+      repository: https://argoproj.github.io/argo-helm
+      version: 9.4.2
+    description: A Helm chart for Kubernetes
+    digest: dc51f003af235201d03d6b91f18f8c54c4c9bcbf87c6fbe957738ed38dbaff40
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: argocd
+    type: application
+    urls:
+    - argocd-0.1.7.tgz
+    version: 0.1.7
   - apiVersion: v2
     appVersion: v3.3.0
     created: "2026-02-11T11:07:02.696596385Z"
@@ -1826,6 +1864,25 @@ entries:
     version: 0.1.0
   kube-ovn:
   - apiVersion: v2
+    appVersion: 1.15.4
+    created: "2026-02-18T12:27:57.777427544Z"
+    dependencies:
+    - alias: kube-ovn
+      name: kube-ovn
+      repository: https://kubeovn.github.io/kube-ovn/
+      version: v1.15.4
+    description: A Helm chart for Kubernetes
+    digest: 997fe67174697fd860cfe0fb004c6ff2e79c2d2a9ecc184543a4b39ad87b06e0
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: kube-ovn
+    type: application
+    urls:
+    - kube-ovn-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 1.14.0
     created: "2026-01-30T08:45:11.233219523Z"
     dependencies:
@@ -1845,6 +1902,21 @@ entries:
     - kube-ovn-0.1.0.tgz
     version: 0.1.0
   kube-prometheus-stack:
+  - apiVersion: v2
+    appVersion: v0.89.0
+    created: "2026-02-18T12:27:58.103468446Z"
+    dependencies:
+    - alias: kubePrometheusStack
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 82.1.0
+    description: A Helm chart for Kubernetes
+    digest: 5962dd34b81bb192cea72ffb7861c5bef73749a313176b4528f6251043ce753c
+    name: kube-prometheus-stack
+    type: application
+    urls:
+    - kube-prometheus-stack-0.1.8.tgz
+    version: 0.1.8
   - apiVersion: v2
     appVersion: v0.88.1
     created: "2026-02-11T11:07:03.487246747Z"
@@ -2223,6 +2295,25 @@ entries:
   prometheus:
   - apiVersion: v2
     appVersion: v3.0.1
+    created: "2026-02-18T12:27:58.326992766Z"
+    dependencies:
+    - alias: oidc
+      condition: oidc.enabled
+      name: oauth2-proxy
+      repository: https://oauth2-proxy.github.io/manifests
+      version: 10.1.4
+    description: Deploys Prometheus through prometheus operator
+    digest: 9ed03a53c6160e5e5732ea612c54e8591b0ff3cc5c51b7bbd91dc39f668227d5
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: prometheus
+    urls:
+    - prometheus-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: v3.0.1
     created: "2026-02-11T11:07:03.696259254Z"
     dependencies:
     - alias: oidc
@@ -2562,4 +2653,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-02-11T11:07:03.69643851Z"
+generated: "2026-02-18T12:27:58.32715551Z"
