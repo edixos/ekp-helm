@@ -915,7 +915,7 @@ kubePrometheusStack:
       image:
         registry: quay.io
         repository: prometheus/alertmanager
-        tag: v0.31.0
+        tag: v0.31.1
         sha: ""
         pullPolicy: IfNotPresent
 
@@ -2936,7 +2936,7 @@ kubePrometheusStack:
         image:
           registry: ghcr.io
           repository: jkroepke/kube-webhook-certgen
-          tag: 1.7.6
+          tag: 1.7.7
           sha: ""
           pullPolicy: IfNotPresent
         resources: {}
@@ -3378,7 +3378,7 @@ kubePrometheusStack:
     thanosImage:
       registry: quay.io
       repository: thanos/thanos
-      tag: v0.40.1
+      tag: v0.41.0
       sha: ""
 
     ## Set a Label Selector to filter watched prometheus and prometheusAgent
@@ -5154,7 +5154,7 @@ kubePrometheusStack:
       image:
         registry: quay.io
         repository: thanos/thanos
-        tag: v0.40.1
+        tag: v0.41.0
         sha: ""
 
       ## Namespaces to be selected for PrometheusRules discovery.
