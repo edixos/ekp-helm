@@ -1,6 +1,6 @@
 # kyverno
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.17.0](https://img.shields.io/badge/AppVersion-v1.17.0-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.17.1](https://img.shields.io/badge/AppVersion-v1.17.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kyverno.github.io/kyverno/ | kyverno | 3.7.0 |
+| https://kyverno.github.io/kyverno/ | kyverno | 3.7.1 |
 
 ## Maintainers
 
@@ -534,7 +534,7 @@ A Helm chart for kyverno
 | kyverno.reportsController.tufRootMountPath | string | `"/.sigstore"` | A writable volume to use for the TUF root initialization. |
 | kyverno.reportsController.updateStrategy | object | See [values.yaml](values.yaml) | Deployment update strategy. Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy |
 | kyverno.reportsServer.enabled | bool | `false` | Enable reports-server deployment alongside Kyverno |
-| kyverno.reportsServer.readinessTimeout | int | `300` | Timeout for waiting for reports-server readiness (in seconds) |
+| kyverno.reportsServer.readinessTimeout | string | `"300s"` | Timeout for waiting for reports-server readiness (as duration string, e.g. 300s, 5m) |
 | kyverno.reportsServer.waitForReady | bool | `true` | Wait for reports-server to be ready before starting Kyverno components |
 | kyverno.test.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
 | kyverno.test.image.pullPolicy | string | `nil` | Image pull policy Defaults to image.pullPolicy if omitted |
@@ -600,7 +600,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: kyverno
     path: ''
     helm:
