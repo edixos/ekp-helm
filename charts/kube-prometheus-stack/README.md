@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.89.0](https://img.shields.io/badge/AppVersion-v0.89.0-informational?style=flat-square)
+![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.89.0](https://img.shields.io/badge/AppVersion-v0.89.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 82.1.0 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 82.8.0 |
 
 ## Description
 
@@ -201,6 +201,11 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.stringConfig | string | `""` |  |
 | kubePrometheusStack.alertmanager.templateFiles | object | `{}` |  |
 | kubePrometheusStack.alertmanager.tplConfig | bool | `false` |  |
+| kubePrometheusStack.alertmanager.verticalPodAutoscaler.controlledResources | list | `[]` |  |
+| kubePrometheusStack.alertmanager.verticalPodAutoscaler.enabled | bool | `false` |  |
+| kubePrometheusStack.alertmanager.verticalPodAutoscaler.maxAllowed | object | `{}` |  |
+| kubePrometheusStack.alertmanager.verticalPodAutoscaler.minAllowed | object | `{}` |  |
+| kubePrometheusStack.alertmanager.verticalPodAutoscaler.updatePolicy.updateMode | string | `"Recreate"` |  |
 | kubePrometheusStack.cleanPrometheusOperatorObjectNames | bool | `false` |  |
 | kubePrometheusStack.commonLabels | object | `{}` |  |
 | kubePrometheusStack.coreDns.enabled | bool | `true` |  |
@@ -809,7 +814,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.repository | string | `"prometheus/prometheus"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.9.1"` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.10.0"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.listenLocal | bool | `false` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.logFormat | string | `"logfmt"` |  |
@@ -993,6 +998,11 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.thanosServiceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.prometheus.thanosServiceMonitor.scheme | string | `""` |  |
 | kubePrometheusStack.prometheus.thanosServiceMonitor.tlsConfig | object | `{}` |  |
+| kubePrometheusStack.prometheus.verticalPodAutoscaler.controlledResources | list | `[]` |  |
+| kubePrometheusStack.prometheus.verticalPodAutoscaler.enabled | bool | `false` |  |
+| kubePrometheusStack.prometheus.verticalPodAutoscaler.maxAllowed | object | `{}` |  |
+| kubePrometheusStack.prometheus.verticalPodAutoscaler.minAllowed | object | `{}` |  |
+| kubePrometheusStack.prometheus.verticalPodAutoscaler.updatePolicy.updateMode | string | `"Recreate"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.annotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.caBundle | string | `""` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.certManager.admissionCert.duration | string | `""` |  |
@@ -1081,7 +1091,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.registry | string | `"ghcr.io"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.repository | string | `"jkroepke/kube-webhook-certgen"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"1.7.7"` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"1.7.8"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.nodeSelector | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.priorityClassName | string | `""` |  |
@@ -1215,7 +1225,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.verticalPodAutoscaler.enabled | bool | `false` |  |
 | kubePrometheusStack.prometheusOperator.verticalPodAutoscaler.maxAllowed | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.verticalPodAutoscaler.minAllowed | object | `{}` |  |
-| kubePrometheusStack.prometheusOperator.verticalPodAutoscaler.updatePolicy.updateMode | string | `"Auto"` |  |
+| kubePrometheusStack.prometheusOperator.verticalPodAutoscaler.updatePolicy.updateMode | string | `"Recreate"` |  |
 | kubePrometheusStack.thanosRuler.annotations | object | `{}` |  |
 | kubePrometheusStack.thanosRuler.enabled | bool | `false` |  |
 | kubePrometheusStack.thanosRuler.extraSecret.annotations | object | `{}` |  |
@@ -1348,7 +1358,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.8"
+    targetRevision: "0.1.9"
     chart: kube-prometheus-stack
     path: ''
     helm:
