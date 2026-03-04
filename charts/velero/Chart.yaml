@@ -2,11 +2,11 @@ apiVersion: v2
 name: velero
 description: A Helm chart for velero
 type: application
-version: 0.1.5
-appVersion: "1.15.2"
+version: 0.1.6
+appVersion: "1.17.1"
 dependencies:
   - name: velero
-    version: 11.3.2
+    version: 11.4.0
     repository: "https://vmware-tanzu.github.io/helm-charts"
   - name: gcp-workload-identity
     version: 0.1.1

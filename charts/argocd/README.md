@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.3.0](https://img.shields.io/badge/AppVersion-v3.3.0-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.3.2](https://img.shields.io/badge/AppVersion-v3.3.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 9.4.2 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 9.4.7 |
 
 ## Maintainers
 
@@ -205,7 +205,8 @@ A Helm chart for Kubernetes
 | argocd.configs.cm."resource.exclusions" | string | See [values.yaml] | Resource Exclusion/Inclusion |
 | argocd.configs.cm."statusbadge.enabled" | bool | `false` | Enable Status Badge # Ref: https://argo-cd.readthedocs.io/en/stable/user-guide/status-badge/ |
 | argocd.configs.cm."timeout.hard.reconciliation" | string | `"0s"` | Timeout to refresh application data as well as target manifests cache |
-| argocd.configs.cm."timeout.reconciliation" | string | `"180s"` | Timeout to discover if a new manifests version got published to the repository |
+| argocd.configs.cm."timeout.reconciliation" | string | `"120s"` | Timeout to discover if a new manifests version got published to the repository |
+| argocd.configs.cm."timeout.reconciliation.jitter" | string | `"60s"` | Maximum jitter added to the reconciliation timeout to spread out refreshes and reduce repo-server load |
 | argocd.configs.cm.annotations | object | `{}` | Annotations to be added to argocd-cm configmap |
 | argocd.configs.cm.create | bool | `true` | Create the argocd-cm configmap for [declarative setup] |
 | argocd.configs.cmp.annotations | object | `{}` | Annotations to be added to argocd-cmp-cm configmap |
@@ -323,6 +324,7 @@ A Helm chart for Kubernetes
 | argocd.controller.serviceAccount.labels | object | `{}` | Labels applied to created service account |
 | argocd.controller.serviceAccount.name | string | `"argocd-application-controller"` | Service account name |
 | argocd.controller.statefulsetAnnotations | object | `{}` | Annotations for the application controller StatefulSet |
+| argocd.controller.statefulsetLabels | object | `{}` | Labels for the application controller StatefulSet |
 | argocd.controller.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds for container lifecycle hook |
 | argocd.controller.tolerations | list | `[]` (defaults to global.tolerations) | [Tolerations] for use with node taints |
 | argocd.controller.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to the application controller # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
@@ -471,6 +473,7 @@ A Helm chart for Kubernetes
 | argocd.global.runtimeClassName | string | `""` | Runtime class name for all components |
 | argocd.global.securityContext | object | `{}` (See [values.yaml]) | Toggle and define pod-level security context. |
 | argocd.global.statefulsetAnnotations | object | `{}` | Annotations for the all deployed Statefulsets |
+| argocd.global.statefulsetLabels | object | `{}` | Labels for the all deployed Statefulsets |
 | argocd.global.tolerations | list | `[]` | Default tolerations for all components |
 | argocd.global.topologySpreadConstraints | list | `[]` | Default [TopologySpreadConstraints] rules for all components # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector of the component |
 | argocd.kubeVersionOverride | string | `""` | Override the Kubernetes version, which is used to evaluate certain manifests |
@@ -1022,7 +1025,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.7"
+    targetRevision: "0.1.8"
     chart: argocd
     path: ''
     helm:
