@@ -1,6 +1,6 @@
 # cert-manager
 
-![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.19.4](https://img.shields.io/badge/AppVersion-v1.19.4-informational?style=flat-square)
+![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.20.0](https://img.shields.io/badge/AppVersion-v1.20.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.jetstack.io | certmanager(cert-manager) | v1.19.4 |
+| https://charts.jetstack.io | certmanager(cert-manager) | v1.20.0 |
 | https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-members) | 0.1.2 |
 | https://edixos.github.io/ekp-helm | workloadIdentity(gcp-workload-identity) | 0.1.1 |
 
@@ -30,8 +30,9 @@ A Helm chart for cert-manager
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| certmanager.acmesolver.image.name | string | `"cert-manager-acmesolver"` |  |
 | certmanager.acmesolver.image.pullPolicy | string | `"IfNotPresent"` |  |
-| certmanager.acmesolver.image.repository | string | `"quay.io/jetstack/cert-manager-acmesolver"` |  |
+| certmanager.acmesolver.image.repository | string | `""` |  |
 | certmanager.affinity | object | `{}` |  |
 | certmanager.approveSignerNames[0] | string | `"issuers.cert-manager.io/*"` |  |
 | certmanager.approveSignerNames[1] | string | `"clusterissuers.cert-manager.io/*"` |  |
@@ -45,8 +46,22 @@ A Helm chart for cert-manager
 | certmanager.cainjector.extraArgs | list | `[]` |  |
 | certmanager.cainjector.extraEnv | list | `[]` |  |
 | certmanager.cainjector.featureGates | string | `""` |  |
+| certmanager.cainjector.image.name | string | `"cert-manager-cainjector"` |  |
 | certmanager.cainjector.image.pullPolicy | string | `"IfNotPresent"` |  |
-| certmanager.cainjector.image.repository | string | `"quay.io/jetstack/cert-manager-cainjector"` |  |
+| certmanager.cainjector.image.repository | string | `""` |  |
+| certmanager.cainjector.networkPolicy.egress[0].ports[0].port | int | `80` |  |
+| certmanager.cainjector.networkPolicy.egress[0].ports[0].protocol | string | `"TCP"` |  |
+| certmanager.cainjector.networkPolicy.egress[0].ports[1].port | int | `443` |  |
+| certmanager.cainjector.networkPolicy.egress[0].ports[1].protocol | string | `"TCP"` |  |
+| certmanager.cainjector.networkPolicy.egress[0].ports[2].port | int | `53` |  |
+| certmanager.cainjector.networkPolicy.egress[0].ports[2].protocol | string | `"TCP"` |  |
+| certmanager.cainjector.networkPolicy.egress[0].ports[3].port | int | `53` |  |
+| certmanager.cainjector.networkPolicy.egress[0].ports[3].protocol | string | `"UDP"` |  |
+| certmanager.cainjector.networkPolicy.egress[0].ports[4].port | int | `6443` |  |
+| certmanager.cainjector.networkPolicy.egress[0].ports[4].protocol | string | `"TCP"` |  |
+| certmanager.cainjector.networkPolicy.enabled | bool | `false` |  |
+| certmanager.cainjector.networkPolicy.ingress[0].ports[0].port | string | `"http-metrics"` |  |
+| certmanager.cainjector.networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
 | certmanager.cainjector.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | certmanager.cainjector.podDisruptionBudget.enabled | bool | `false` |  |
 | certmanager.cainjector.podLabels | object | `{}` |  |
@@ -77,6 +92,7 @@ A Helm chart for cert-manager
 | certmanager.enableServiceLinks | bool | `false` |  |
 | certmanager.enabled | bool | `true` |  |
 | certmanager.extraArgs | list | `[]` |  |
+| certmanager.extraContainers | list | `[]` |  |
 | certmanager.extraEnv | list | `[]` |  |
 | certmanager.extraObjects | list | `[]` |  |
 | certmanager.featureGates | string | `""` |  |
@@ -91,8 +107,11 @@ A Helm chart for cert-manager
 | certmanager.global.rbac.aggregateClusterRoles | bool | `true` |  |
 | certmanager.global.rbac.create | bool | `true` |  |
 | certmanager.hostAliases | list | `[]` |  |
+| certmanager.image.name | string | `"cert-manager-controller"` |  |
 | certmanager.image.pullPolicy | string | `"IfNotPresent"` |  |
-| certmanager.image.repository | string | `"quay.io/jetstack/cert-manager-controller"` |  |
+| certmanager.image.repository | string | `""` |  |
+| certmanager.imageNamespace | string | `"jetstack"` |  |
+| certmanager.imageRegistry | string | `"quay.io"` |  |
 | certmanager.ingressShim | object | `{}` |  |
 | certmanager.installCRDs | bool | `false` |  |
 | certmanager.livenessProbe.enabled | bool | `true` |  |
@@ -103,6 +122,21 @@ A Helm chart for cert-manager
 | certmanager.livenessProbe.timeoutSeconds | int | `15` |  |
 | certmanager.maxConcurrentChallenges | int | `60` |  |
 | certmanager.namespace | string | `""` |  |
+| certmanager.networkPolicy.egress[0].ports[0].port | int | `80` |  |
+| certmanager.networkPolicy.egress[0].ports[0].protocol | string | `"TCP"` |  |
+| certmanager.networkPolicy.egress[0].ports[1].port | int | `443` |  |
+| certmanager.networkPolicy.egress[0].ports[1].protocol | string | `"TCP"` |  |
+| certmanager.networkPolicy.egress[0].ports[2].port | int | `53` |  |
+| certmanager.networkPolicy.egress[0].ports[2].protocol | string | `"TCP"` |  |
+| certmanager.networkPolicy.egress[0].ports[3].port | int | `53` |  |
+| certmanager.networkPolicy.egress[0].ports[3].protocol | string | `"UDP"` |  |
+| certmanager.networkPolicy.egress[0].ports[4].port | int | `6443` |  |
+| certmanager.networkPolicy.egress[0].ports[4].protocol | string | `"TCP"` |  |
+| certmanager.networkPolicy.enabled | bool | `false` |  |
+| certmanager.networkPolicy.ingress[0].ports[0].port | string | `"http-metrics"` |  |
+| certmanager.networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
+| certmanager.networkPolicy.ingress[0].ports[1].port | string | `"http-healthz"` |  |
+| certmanager.networkPolicy.ingress[0].ports[1].protocol | string | `"TCP"` |  |
 | certmanager.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | certmanager.podDisruptionBudget.enabled | bool | `false` |  |
 | certmanager.podLabels | object | `{}` |  |
@@ -141,8 +175,9 @@ A Helm chart for cert-manager
 | certmanager.startupapicheck.enabled | bool | `true` |  |
 | certmanager.startupapicheck.extraArgs[0] | string | `"-v"` |  |
 | certmanager.startupapicheck.extraEnv | list | `[]` |  |
+| certmanager.startupapicheck.image.name | string | `"cert-manager-startupapicheck"` |  |
 | certmanager.startupapicheck.image.pullPolicy | string | `"IfNotPresent"` |  |
-| certmanager.startupapicheck.image.repository | string | `"quay.io/jetstack/cert-manager-startupapicheck"` |  |
+| certmanager.startupapicheck.image.repository | string | `""` |  |
 | certmanager.startupapicheck.jobAnnotations."helm.sh/hook" | string | `"post-install"` |  |
 | certmanager.startupapicheck.jobAnnotations."helm.sh/hook-delete-policy" | string | `"before-hook-creation,hook-succeeded"` |  |
 | certmanager.startupapicheck.jobAnnotations."helm.sh/hook-weight" | string | `"1"` |  |
@@ -169,17 +204,21 @@ A Helm chart for cert-manager
 | certmanager.volumeMounts | list | `[]` |  |
 | certmanager.volumes | list | `[]` |  |
 | certmanager.webhook.affinity | object | `{}` |  |
+| certmanager.webhook.apiserverClientCertSubjects | string | `""` |  |
+| certmanager.webhook.clientCAFile | string | `""` |  |
 | certmanager.webhook.config | object | `{}` |  |
 | certmanager.webhook.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | certmanager.webhook.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | certmanager.webhook.containerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
+| certmanager.webhook.enableClientVerification | bool | `false` |  |
 | certmanager.webhook.enableServiceLinks | bool | `false` |  |
 | certmanager.webhook.extraArgs | list | `[]` |  |
 | certmanager.webhook.extraEnv | list | `[]` |  |
 | certmanager.webhook.featureGates | string | `""` |  |
 | certmanager.webhook.hostNetwork | bool | `false` |  |
+| certmanager.webhook.image.name | string | `"cert-manager-webhook"` |  |
 | certmanager.webhook.image.pullPolicy | string | `"IfNotPresent"` |  |
-| certmanager.webhook.image.repository | string | `"quay.io/jetstack/cert-manager-webhook"` |  |
+| certmanager.webhook.image.repository | string | `""` |  |
 | certmanager.webhook.livenessProbe.failureThreshold | int | `3` |  |
 | certmanager.webhook.livenessProbe.initialDelaySeconds | int | `60` |  |
 | certmanager.webhook.livenessProbe.periodSeconds | int | `10` |  |
@@ -196,11 +235,13 @@ A Helm chart for cert-manager
 | certmanager.webhook.networkPolicy.egress[0].ports[3].protocol | string | `"UDP"` |  |
 | certmanager.webhook.networkPolicy.egress[0].ports[4].port | int | `6443` |  |
 | certmanager.webhook.networkPolicy.egress[0].ports[4].protocol | string | `"TCP"` |  |
-| certmanager.webhook.networkPolicy.egress[0].to[0].ipBlock.cidr | string | `"0.0.0.0/0"` |  |
-| certmanager.webhook.networkPolicy.egress[0].to[1].ipBlock.cidr | string | `"::/0"` |  |
 | certmanager.webhook.networkPolicy.enabled | bool | `false` |  |
-| certmanager.webhook.networkPolicy.ingress[0].from[0].ipBlock.cidr | string | `"0.0.0.0/0"` |  |
-| certmanager.webhook.networkPolicy.ingress[0].from[1].ipBlock.cidr | string | `"::/0"` |  |
+| certmanager.webhook.networkPolicy.ingress[0].ports[0].port | string | `"https"` |  |
+| certmanager.webhook.networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
+| certmanager.webhook.networkPolicy.ingress[0].ports[1].port | string | `"healthcheck"` |  |
+| certmanager.webhook.networkPolicy.ingress[0].ports[1].protocol | string | `"TCP"` |  |
+| certmanager.webhook.networkPolicy.ingress[0].ports[2].port | string | `"http-metrics"` |  |
+| certmanager.webhook.networkPolicy.ingress[0].ports[2].protocol | string | `"TCP"` |  |
 | certmanager.webhook.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | certmanager.webhook.podDisruptionBudget.enabled | bool | `false` |  |
 | certmanager.webhook.podLabels | object | `{}` |  |
@@ -276,7 +317,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.6"
+    targetRevision: "0.1.7"
     chart: cert-manager
     path: ''
     helm:
