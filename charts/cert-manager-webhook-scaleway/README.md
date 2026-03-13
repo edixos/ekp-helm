@@ -20,38 +20,44 @@
 | edixos |  |  |
 
 ## Description
-
-A Helm chart for cert-manager-webhook-scaleway
-
-## Values
-
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| webhook.groupName | string | `"acme.scaleway.com"` | Name under which the webhook will be available |
+| clusterIssuer.email | string | `"user@example.com"` | Email address used for ACME registration |
+| clusterIssuer.enabled | bool | `true` |  |
+| clusterIssuer.name | string | `"letsencrypt-prod"` | Name of the ClusterIssuer |
+| clusterIssuer.privateKeySecretRef | string | `"letsencrypt-prod"` | Name of the secret used to store the ACME account private key |
+| clusterIssuer.server | string | `"https://acme-v02.api.letsencrypt.org/directory"` | Server URL for the ACME CA |
+| webhook.affinity | object | `{}` | Affinities |
 | webhook.certManager.namespace | string | `"cert-manager"` | Namespace under which cert-manager is installed |
 | webhook.certManager.serviceAccountName | string | `"cert-manager"` | Name of the cert-manager service account |
-| webhook.pki.caDuration | string | `"43800h"` | Webhook ca duration |
-| webhook.pki.servingCertificateDuration | string | `"8760h"` | Webhook certificate duration |
-| webhook.secret.accessKey | string | `""` | Default scaleway access key (optional) |
-| webhook.secret.secretKey | string | `""` | Default scaleway secret key (optional) |
-| webhook.secret.name | string | `"scaleway-webhook-secret"` | Secret name for the default scaleway credentials |
-| webhook.secret.externalSecretName | string | `""` | Existing secret name for the default scaleway credentials |
-| webhook.nameOverride | string | `""` | Override charts name |
+| webhook.extraEnv | list | `[]` | Additional environment variables to pass to the webhook deployment |
 | webhook.fullnameOverride | string | `""` | Override charts and release name |
-| webhook.replicaCount | int | `1` | Number of replica |
-| webhook.image.repository | string | `"scaleway/cert-manager-webhook-scaleway"` | Repository for the webhook image |
-| webhook.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| webhook.groupName | string | `"acme.scaleway.com"` | Name under which the webhook will be available |
 | webhook.image.imagePullSecrets | list | `[]` | Image pull secrets |
+| webhook.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| webhook.image.repository | string | `"scaleway/cert-manager-webhook-scaleway"` | Repository for the webhook image |
 | webhook.image.tag | string | `""` | Tag for the webhook image, defaults to AppVersion |
 | webhook.extraEnv | list | `[]` | Additional environment variables to pass to the webhook deployment |
 | webhook.listenPort | int | `443` | Port the webhook listens on |
-| webhook.service.type | string | `"ClusterIP"` | Service type exposing the webhook |
-| webhook.service.port | int | `443` | Service port exposing the webhook |
-| webhook.service.ipFamilyPolicy | string | `""` | Service ipFamilyPolicy set the ip family policy to configure dual-stack |
-| webhook.service.ipFamilies | list | `[]` | Service ipFamilies. Can be IPv4 and/or IPv6. |
-| webhook.resources | object | `{}` | Resources definition |
-| webhook.podLabels | object | `{}` | Pod labels |
+| webhook.nameOverride | string | `""` | Override charts name |
 | webhook.nodeSelector | object | `{}` | Node selector |
+| webhook.pki.caDuration | string | `"43800h"` | Webhook ca duration |
+| webhook.pki.servingCertificateDuration | string | `"8760h"` | Webhook certificate duration |
+| webhook.podLabels | object | `{}` | Pod labels |
+| webhook.podSecurityContext | object | `{}` | Pod security context |
+| webhook.replicaCount | int | `1` | Number of replica |
+| webhook.resources | object | `{}` | Resources definition |
+| webhook.secret.accessKey | string | `""` | Default scaleway access key (optional) |
+| webhook.secret.externalSecretName | string | `""` | Existing secret name for the default scaleway credentials |
+| webhook.secret.name | string | `"scaleway-webhook-secret"` | Secret name for the default scaleway credentials |
+| webhook.secret.secretKey | string | `""` | Default scaleway secret key (optional) |
+| webhook.securityContext | object | `{}` | Container security context |
+| webhook.service.ipFamilies | list | `[]` | Service ipFamilies. Can be IPv4 and/or IPv6. |
+| webhook.service.ipFamilyPolicy | string | `""` | Service ipFamilyPolicy set the ip family policy to configure dual-stack |
+| webhook.service.port | int | `443` | Service port exposing the webhook |
+| webhook.service.type | string | `"ClusterIP"` | Service type exposing the webhook |
+| webhook.tolerations | list | `[]` | Tolerations |
+
 | webhook.tolerations | list | `[]` | Tolerations |
 | webhook.affinity | object | `{}` | Affinities |
 | webhook.securityContext | object | `{}` | Container security context |

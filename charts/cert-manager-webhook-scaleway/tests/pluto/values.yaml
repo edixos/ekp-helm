@@ -1,0 +1,6 @@
+# Minimal values for pluto rendering
+webhook:
+  replicaCount: 1
+
+clusterIssuer:
+  enabled: false

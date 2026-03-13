@@ -19,6 +19,7 @@ chart-repos:
   - ory=https://k8s.ory.sh/helm/charts
   - kube-ovn=https://kubeovn.github.io/kube-ovn/
   - cloudtty=https://cloudtty.github.io/cloudtty/
+  - scaleway=https://helm.scw.cloud/
 
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
