@@ -1,0 +1,13 @@
+apiVersion: v2
+name: cert-manager-webhook-scaleway
+description: A Helm chart for cert-manager-webhook-scaleway
+type: application
+version: 0.1.0
+appVersion: "v0.1.1"
+maintainers:
+  - name: edixos
+dependencies:
+  - name: scaleway-certmanager-webhook
+    version: "0.4.1"
+    repository: "https://helm.scw.cloud/"
+    alias: webhook
