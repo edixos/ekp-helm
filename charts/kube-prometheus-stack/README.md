@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.89.0](https://img.shields.io/badge/AppVersion-v0.89.0-informational?style=flat-square)
+![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.89.0](https://img.shields.io/badge/AppVersion-v0.89.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 82.8.0 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 82.10.3 |
 
 ## Description
 
@@ -913,6 +913,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.service.nodePort | int | `30090` |  |
 | kubePrometheusStack.prometheus.service.port | int | `9090` |  |
 | kubePrometheusStack.prometheus.service.publishNotReadyAddresses | bool | `false` |  |
+| kubePrometheusStack.prometheus.service.reloaderWebNodePort | string | `nil` |  |
 | kubePrometheusStack.prometheus.service.reloaderWebPort | int | `8080` |  |
 | kubePrometheusStack.prometheus.service.sessionAffinity | string | `"None"` |  |
 | kubePrometheusStack.prometheus.service.sessionAffinityConfig.clientIP.timeoutSeconds | int | `10800` |  |
@@ -1358,7 +1359,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.9"
+    targetRevision: "0.1.10"
     chart: kube-prometheus-stack
     path: ''
     helm:

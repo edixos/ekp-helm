@@ -1207,7 +1207,7 @@ argocd:
       # -- Dex image repository
       repository: ghcr.io/dexidp/dex
       # -- Dex image tag
-      tag: v2.44.0
+      tag: v2.45.1
       # -- Dex imagePullPolicy
       # @default -- `""` (defaults to global.image.imagePullPolicy)
       imagePullPolicy: ""
@@ -1326,6 +1326,7 @@ argocd:
     # @default -- See [values.yaml]
     containerSecurityContext:
       runAsNonRoot: true
+      runAsUser: 1001
       readOnlyRootFilesystem: true
       allowPrivilegeEscalation: false
       seccompProfile:
@@ -1498,7 +1499,7 @@ argocd:
         # -- Repository to use for the redis-exporter
         repository: ghcr.io/oliver006/redis_exporter
         # -- Tag to use for the redis-exporter
-        tag: v1.81.0
+        tag: v1.82.0
         # -- Image pull policy for the redis-exporter
         # @default -- `""` (defaults to global.image.imagePullPolicy)
         imagePullPolicy: ""
