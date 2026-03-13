@@ -117,6 +117,25 @@ entries:
     version: 0.1.0
   argocd:
   - apiVersion: v2
+    appVersion: v3.3.3
+    created: "2026-03-13T08:06:22.491148605Z"
+    dependencies:
+    - alias: argocd
+      name: argo-cd
+      repository: https://argoproj.github.io/argo-helm
+      version: 9.4.10
+    description: A Helm chart for Kubernetes
+    digest: c6f4ecf588ea0665fe96487320654522d49314a2ac319123c0a1a78067fc9c6a
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: argocd
+    type: application
+    urls:
+    - argocd-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
     appVersion: v3.3.2
     created: "2026-03-04T10:47:21.880172065Z"
     dependencies:
@@ -306,6 +325,40 @@ entries:
     - https://edixos.github.io/ekp-helm/bucket-0.1.0.tgz
     version: 0.1.0
   cert-manager:
+  - apiVersion: v2
+    appVersion: v1.20.0
+    created: "2026-03-13T08:06:22.637717029Z"
+    dependencies:
+    - alias: certmanager
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: v1.20.0
+    - alias: workloadIdentity
+      name: gcp-workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    - alias: iamPolicyMembers
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.2
+    description: A Helm chart for cert-manager
+    digest: e03aaf6659038330677a64a6de32a7681041b002198c928ebc4cd22b8ea68492
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: cert-manager
+    type: application
+    urls:
+    - cert-manager-0.1.7.tgz
+    version: 0.1.7
   - apiVersion: v2
     appVersion: v1.19.4
     created: "2026-03-04T10:47:22.248083414Z"
@@ -853,6 +906,28 @@ entries:
     - envoy-gateway-0.1.0.tgz
     version: 0.1.0
   eso:
+  - apiVersion: v2
+    appVersion: v2.1.0
+    created: "2026-03-13T08:06:22.80690064Z"
+    dependencies:
+    - alias: eso
+      name: external-secrets
+      repository: https://charts.external-secrets.io
+      version: 2.1.0
+    description: A Helm chart ESO for Kubernetes
+    digest: eeb1cfc957c907887c93cdb4e042e148e97991e6f19d1003fd0cb21fe198acdf
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: eso
+    type: application
+    urls:
+    - eso-0.1.9.tgz
+    version: 0.1.9
   - apiVersion: v2
     appVersion: v2.0.1
     created: "2026-03-04T10:47:22.608601457Z"
@@ -1786,6 +1861,25 @@ entries:
     version: 0.1.0
   ingress-nginx:
   - apiVersion: v2
+    appVersion: 1.15.0
+    created: "2026-03-13T08:06:22.958430597Z"
+    dependencies:
+    - alias: ingressNginx
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 4.15.0
+    description: A Helm chart for Kubernetes
+    digest: 2f43f83164dbdc14d25d63725944b738ced8173536dad3a76bcab5376b7a4b6c
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: ingress-nginx
+    type: application
+    urls:
+    - ingress-nginx-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v2
     appVersion: 1.14.3
     created: "2026-02-11T09:02:05.174718908Z"
     dependencies:
@@ -1977,6 +2071,21 @@ entries:
     - kube-ovn-0.1.0.tgz
     version: 0.1.0
   kube-prometheus-stack:
+  - apiVersion: v2
+    appVersion: v0.89.0
+    created: "2026-03-13T08:06:23.191380259Z"
+    dependencies:
+    - alias: kubePrometheusStack
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 82.10.3
+    description: A Helm chart for Kubernetes
+    digest: 41cca0b2478307353b9066c43c54b7e68f36515a726212a9a0e8d831e890cee7
+    name: kube-prometheus-stack
+    type: application
+    urls:
+    - kube-prometheus-stack-0.1.10.tgz
+    version: 0.1.10
   - apiVersion: v2
     appVersion: v0.89.0
     created: "2026-03-04T10:47:22.926436681Z"
@@ -2831,4 +2940,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-04T10:47:23.685804462Z"
+generated: "2026-03-13T08:06:23.191591161Z"
