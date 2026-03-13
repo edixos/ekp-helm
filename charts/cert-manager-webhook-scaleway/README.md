@@ -20,6 +20,11 @@
 | edixos |  |  |
 
 ## Description
+
+A Helm chart for cert-manager-webhook-scaleway
+
+## Values
+
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | clusterIssuer.email | string | `"user@example.com"` | Email address used for ACME registration |
@@ -37,7 +42,6 @@
 | webhook.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | webhook.image.repository | string | `"scaleway/cert-manager-webhook-scaleway"` | Repository for the webhook image |
 | webhook.image.tag | string | `""` | Tag for the webhook image, defaults to AppVersion |
-| webhook.extraEnv | list | `[]` | Additional environment variables to pass to the webhook deployment |
 | webhook.listenPort | int | `443` | Port the webhook listens on |
 | webhook.nameOverride | string | `""` | Override charts name |
 | webhook.nodeSelector | object | `{}` | Node selector |
@@ -57,11 +61,6 @@
 | webhook.service.port | int | `443` | Service port exposing the webhook |
 | webhook.service.type | string | `"ClusterIP"` | Service type exposing the webhook |
 | webhook.tolerations | list | `[]` | Tolerations |
-
-| webhook.tolerations | list | `[]` | Tolerations |
-| webhook.affinity | object | `{}` | Affinities |
-| webhook.securityContext | object | `{}` | Container security context |
-| webhook.podSecurityContext | object | `{}` | Pod security context |
 
 ## Installing the Chart
 
