@@ -1,0 +1,95 @@
+webhook:
+  # +docs:section=Configuration
+
+  # -- Name under which the webhook will be available
+  groupName: acme.scaleway.com
+
+  certManager:
+    # -- Namespace under which cert-manager is installed
+    namespace: cert-manager
+    # -- Name of the cert-manager service account
+    serviceAccountName: cert-manager
+
+  pki:
+    # -- Webhook ca duration
+    caDuration: 43800h # 5y
+    # -- Webhook certificate duration
+    servingCertificateDuration: 8760h # 1y
+
+  secret:
+    # -- Default scaleway access key (optional)
+    accessKey: ""
+    # -- Default scaleway secret key (optional)
+    secretKey: ""
+    # -- Secret name for the default scaleway credentials
+    name: scaleway-webhook-secret
+    # -- Existing secret name for the default scaleway credentials
+    externalSecretName: ""
+
+  # +docs:section=Common configuration
+
+  # -- Override charts name
+  nameOverride: ""
+  # -- Override charts and release name
+  fullnameOverride: ""
+
+  # -- Number of replica
+  replicaCount: 1
+
+  image:
+    # -- Repository for the webhook image
+    repository: scaleway/cert-manager-webhook-scaleway
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Image pull secrets
+    imagePullSecrets: []
+    # -- Tag for the webhook image, defaults to AppVersion
+    tag: ""
+
+  # -- Additional environment variables to pass to the webhook deployment
+  extraEnv: []
+
+  # -- Port the webhook listens on
+  listenPort: 443
+
+  service:
+    # -- Service type exposing the webhook
+    type: ClusterIP
+    # -- Service port exposing the webhook
+    port: 443
+    # -- Service ipFamilyPolicy set the ip family policy to configure dual-stack
+    ipFamilyPolicy: ""
+    # -- Service ipFamilies. Can be IPv4 and/or IPv6.
+    ipFamilies: []
+
+  # -- Resources definition
+  resources: {}
+
+  # -- Pod labels
+  podLabels: {}
+
+  # -- Node selector
+  nodeSelector: {}
+
+  # -- Tolerations
+  tolerations: []
+
+  # -- Affinities
+  affinity: {}
+
+  # -- Container security context
+  securityContext: {}
+
+  # -- Pod security context
+  podSecurityContext: {}
+
+clusterIssuer:
+  enabled: true
+  # -- Name of the ClusterIssuer
+  name: letsencrypt-prod
+  # -- Email address used for ACME registration
+  email: user@example.com
+  # -- Server URL for the ACME CA
+  server: https://acme-v02.api.letsencrypt.org/directory
+  # -- Name of the secret used to store the ACME account private key
+  privateKeySecretRef: letsencrypt-prod
