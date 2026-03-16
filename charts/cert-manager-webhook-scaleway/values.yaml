@@ -93,3 +93,6 @@ clusterIssuer:
   server: https://acme-v02.api.letsencrypt.org/directory
   # -- Name of the secret used to store the ACME account private key
   privateKeySecretRef: letsencrypt-prod
+
+# -- List of ExternalSecret resources to create alongside the webhook.
+externalSecrets: []

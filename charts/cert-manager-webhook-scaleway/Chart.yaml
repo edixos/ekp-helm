@@ -2,7 +2,7 @@ apiVersion: v2
 name: cert-manager-webhook-scaleway
 description: A Helm chart for cert-manager-webhook-scaleway
 type: application
-version: 0.1.0
+version: 0.2.0
 appVersion: "v0.1.1"
 maintainers:
   - name: edixos
