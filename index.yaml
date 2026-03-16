@@ -588,6 +588,23 @@ entries:
   cert-manager-webhook-scaleway:
   - apiVersion: v2
     appVersion: v0.1.1
+    created: "2026-03-16T13:51:31.082629566Z"
+    dependencies:
+    - alias: webhook
+      name: scaleway-certmanager-webhook
+      repository: https://helm.scw.cloud/
+      version: 0.4.1
+    description: A Helm chart for cert-manager-webhook-scaleway
+    digest: 518ef0f16fcfab2b1fbb9e84c9a41762ee9ba73e72dc7bc73794986a4c022af9
+    maintainers:
+    - name: edixos
+    name: cert-manager-webhook-scaleway
+    type: application
+    urls:
+    - cert-manager-webhook-scaleway-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: v0.1.1
     created: "2026-03-13T09:55:54.359901016Z"
     dependencies:
     - alias: webhook
@@ -2980,4 +2997,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-16T11:51:39.958174025Z"
+generated: "2026-03-16T13:51:31.082825603Z"
