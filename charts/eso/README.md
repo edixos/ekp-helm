@@ -1,6 +1,6 @@
 # eso
 
-![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.1.0](https://img.shields.io/badge/AppVersion-v2.1.0-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.1.0](https://img.shields.io/badge/AppVersion-v2.1.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -28,6 +28,7 @@ A Helm chart ESO for Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| clusterSecretStores | list | `[]` | List of ClusterSecretStore resources to create alongside ESO. Each entry requires a `name` and a `spec` block (provider-agnostic). Example (Scaleway): clusterSecretStores:   - name: scaleway-secret-manager     spec:       provider:         scaleway:           region: fr-par           projectId: <project-id>           accessKey:             secretRef:               name: scaleway-secret               key: SCW_ACCESS_KEY               namespace: kube-system           secretKey:             secretRef:               name: scaleway-secret               key: SCW_SECRET_KEY               namespace: kube-system |
 | eso.affinity | object | `{}` |  |
 | eso.bitwarden-sdk-server.enabled | bool | `false` |  |
 | eso.bitwarden-sdk-server.namespaceOverride | string | `""` |  |
@@ -311,7 +312,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.9"
+    targetRevision: "0.2.0"
     chart: eso
     path: ''
 
