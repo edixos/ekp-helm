@@ -758,3 +758,25 @@ eso:
 
   # -- Any extra pod spec on the deployment
   podSpecExtra: {}
+
+# -- List of ClusterSecretStore resources to create alongside ESO.
+# Each entry requires a `name` and a `spec` block (provider-agnostic).
+# Example (Scaleway):
+# clusterSecretStores:
+#   - name: scaleway-secret-manager
+#     spec:
+#       provider:
+#         scaleway:
+#           region: fr-par
+#           projectId: <project-id>
+#           accessKey:
+#             secretRef:
+#               name: scaleway-secret
+#               key: SCW_ACCESS_KEY
+#               namespace: kube-system
+#           secretKey:
+#             secretRef:
+#               name: scaleway-secret
+#               key: SCW_SECRET_KEY
+#               namespace: kube-system
+clusterSecretStores: []
