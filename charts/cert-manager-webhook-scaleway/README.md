@@ -1,6 +1,6 @@
 # cert-manager-webhook-scaleway
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.1](https://img.shields.io/badge/AppVersion-v0.1.1-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.1](https://img.shields.io/badge/AppVersion-v0.1.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -32,6 +32,7 @@ A Helm chart for cert-manager-webhook-scaleway
 | clusterIssuer.name | string | `"letsencrypt-prod"` | Name of the ClusterIssuer |
 | clusterIssuer.privateKeySecretRef | string | `"letsencrypt-prod"` | Name of the secret used to store the ACME account private key |
 | clusterIssuer.server | string | `"https://acme-v02.api.letsencrypt.org/directory"` | Server URL for the ACME CA |
+| externalSecrets | list | `[]` | List of ExternalSecret resources to create alongside the webhook. |
 | webhook.affinity | object | `{}` | Affinities |
 | webhook.certManager.namespace | string | `"cert-manager"` | Namespace under which cert-manager is installed |
 | webhook.certManager.serviceAccountName | string | `"cert-manager"` | Name of the cert-manager service account |
@@ -87,7 +88,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.2.0"
     chart: cert-manager-webhook-scaleway
     path: ''
     helm:
