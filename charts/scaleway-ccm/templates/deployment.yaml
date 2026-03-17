@@ -38,6 +38,7 @@ spec:
             - --allow-untagged-cloud
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.envFrom }}
           envFrom:
-            - secretRef:
-                name: {{ .Values.eso.targetSecretName }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

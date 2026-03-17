@@ -8,10 +8,7 @@ A Helm chart for Scaleway Cloud Controller Manager
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| eso.clusterSecretStoreName | string | `"scaleway-secret-manager"` |  |
-| eso.enabled | bool | `true` |  |
-| eso.sourceSecretName | string | `"eso-secret"` |  |
-| eso.targetSecretName | string | `"scaleway-secret"` |  |
+| envFrom | list | `[]` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"scaleway/scaleway-cloud-controller-manager"` |  |
@@ -20,11 +17,6 @@ A Helm chart for Scaleway Cloud Controller Manager
 | replicaCount | int | `1` |  |
 | resources.requests.cpu | string | `"100m"` |  |
 | resources.requests.memory | string | `"50Mi"` |  |
-| scaleway.clusterName | string | `""` |  |
-| scaleway.privateNetworkId | string | `""` |  |
-| scaleway.projectId | string | `""` |  |
-| scaleway.region | string | `""` |  |
-| scaleway.zone | string | `""` |  |
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `"cloud-controller-manager"` |  |
 | tolerations | list | `[]` |  |

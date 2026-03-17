@@ -19,15 +19,4 @@ serviceAccount:
   create: true
   name: "cloud-controller-manager"
 
-eso:
-  enabled: true
-  clusterSecretStoreName: "scaleway-secret-manager"
-  sourceSecretName: "eso-secret"
-  targetSecretName: "scaleway-secret"
-
-scaleway:
-  region: ""
-  projectId: ""
-  zone: ""
-  clusterName: ""
-  privateNetworkId: ""
+envFrom: []
