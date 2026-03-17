@@ -1,0 +1,23 @@
+{{- if .Values.rbac }}
+{{- range .Values.rbac.clusterRoles }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .name }}
+rules:
+{{ toYaml .rules | nindent 2 }}
+{{- end }}
+
+{{- range .Values.rbac.clusterRoleBindings }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .name }}
+roleRef:
+{{ toYaml .roleRef | nindent 2 }}
+subjects:
+{{ toYaml .subjects | nindent 2 }}
+{{- end }}
+{{- end }}
