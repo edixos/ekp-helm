@@ -2704,6 +2704,17 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/prometheus-0.1.0.tgz
     version: 0.1.0
+  scaleway-ccm:
+  - apiVersion: v2
+    appVersion: v0.35.1
+    created: "2026-03-17T13:12:50.751494553Z"
+    description: A Helm chart for Scaleway Cloud Controller Manager
+    digest: 5167153bfb81637804c55a4a8ba028a9b6cb98b45a1cf45c398cbcec6bdf28c7
+    name: scaleway-ccm
+    type: application
+    urls:
+    - scaleway-ccm-0.1.0.tgz
+    version: 0.1.0
   velero:
   - apiVersion: v2
     appVersion: 1.17.1
@@ -3014,4 +3025,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-16T15:36:29.321572026Z"
+generated: "2026-03-17T13:12:50.751741965Z"
