@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  repository: scaleway/scaleway-cloud-controller-manager
+  pullPolicy: IfNotPresent
+  tag: "v0.35.1"
+
+nameOverride: ""
+fullnameOverride: ""
+
+tolerations: []
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 50Mi
+
+serviceAccount:
+  create: true
+  name: "cloud-controller-manager"
+
+eso:
+  enabled: true
+  clusterSecretStoreName: "scaleway-secret-manager"
+  sourceSecretName: "eso-secret"
+  targetSecretName: "scaleway-secret"
+
+scaleway:
+  region: ""
+  projectId: ""
+  zone: ""
+  clusterName: ""
+  privateNetworkId: ""

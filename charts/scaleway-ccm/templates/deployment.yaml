@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scaleway-cloud-controller-manager
+  namespace: kube-system
+  labels:
+    app: scaleway-cloud-controller-manager
+    {{- include "scaleway-ccm.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: scaleway-cloud-controller-manager
+      {{- include "scaleway-ccm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: scaleway-cloud-controller-manager
+        {{- include "scaleway-ccm.selectorLabels" . | nindent 8 }}
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+    spec:
+      serviceAccountName: cloud-controller-manager
+      hostNetwork: true
+      dnsPolicy: Default
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: scaleway-cloud-controller-manager
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - --cloud-provider=scaleway
+            - --leader-elect=true
+            - --allow-untagged-cloud
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.eso.targetSecretName }}
