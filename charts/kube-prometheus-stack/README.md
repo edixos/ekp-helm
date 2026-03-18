@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.89.0](https://img.shields.io/badge/AppVersion-v0.89.0-informational?style=flat-square)
+![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.89.0](https://img.shields.io/badge/AppVersion-v0.89.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 82.10.3 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 82.10.5 |
 
 ## Description
 
@@ -44,6 +44,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.alertmanagerSpec.dnsPolicy | string | `""` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.externalUrl | string | `nil` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.forceEnableClusterMode | bool | `false` |  |
+| kubePrometheusStack.alertmanager.alertmanagerSpec.hostNetwork | bool | `false` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.pullPolicy | string | `"IfNotPresent"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.repository | string | `"prometheus/alertmanager"` |  |
@@ -1359,7 +1360,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.10"
+    targetRevision: "0.1.11"
     chart: kube-prometheus-stack
     path: ''
     helm:
