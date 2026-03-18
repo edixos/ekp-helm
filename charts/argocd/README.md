@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.3.3](https://img.shields.io/badge/AppVersion-v3.3.3-informational?style=flat-square)
+![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.3.4](https://img.shields.io/badge/AppVersion-v3.3.4-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 9.4.10 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 9.4.13 |
 
 ## Maintainers
 
@@ -336,7 +336,7 @@ A Helm chart for Kubernetes
 | argocd.controller.vpa.labels | object | `{}` | Labels to be added to application controller vpa |
 | argocd.controller.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.crds.additionalLabels | object | `{}` | Additional labels to be added to all CRDs |
-| argocd.crds.annotations | object | `{}` | Annotations to be added to all CRDs |
+| argocd.crds.annotations | object | `{"argocd.argoproj.io/sync-options":"ServerSideApply=true"}` | Annotations to be added to all CRDs |
 | argocd.crds.install | bool | `true` | Install and upgrade CRDs |
 | argocd.crds.keep | bool | `true` | Keep CRDs on chart uninstall |
 | argocd.createAggregateRoles | bool | `false` | Create aggregated roles that extend existing cluster roles to interact with argo-cd resources # Ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles |
@@ -1025,7 +1025,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.9"
+    targetRevision: "0.1.10"
     chart: argocd
     path: ''
     helm:
