@@ -29,6 +29,7 @@ Deploys external-dns and its monitoring
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| externalSecrets | list | `[]` |  |
 | externaldns.affinity | object | `{}` | Affinity settings for `Pod` [scheduling](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/). If an explicit label selector is not provided for pod affinity or pod anti-affinity one will be created from the pod selector labels. |
 | externaldns.annotationFilter | string | `nil` | Filter resources queried for endpoints by annotation selector. |
 | externaldns.annotationPrefix | string | `nil` | Annotation prefix for external-dns annotations (useful for split horizon DNS with multiple instances). |
