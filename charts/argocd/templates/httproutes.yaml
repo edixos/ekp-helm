@@ -1,0 +1,21 @@
+{{- range $name, $config := .Values.httpRoutes -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $name }}
+  namespace: {{ $config.namespace | default $.Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ $name }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+spec:
+{{- if $config.hostnames }}
+  hostnames:
+{{ toYaml $config.hostnames | indent 4 }}
+{{- end }}
+  parentRefs:
+{{ toYaml $config.parentRefs | indent 4 }}
+  rules:
+{{ toYaml $config.rules | indent 4 }}
+---
+{{ end -}}
