@@ -200,3 +200,22 @@ envoy-gateway:
   topologyInjector:
     enabled: true
     annotations: {}
+
+gatewayClass:
+  enabled: true
+  name: envoy-gateway
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+
+envoyProxy:
+  enabled: true
+  name: custom-proxy-config
+  namespace: envoy-gateway-system
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+
+gateways: {}
+
+certificates: {}
+
+httpRoutes: {}
+
