@@ -5,6 +5,8 @@ global:
   # global.abandon -- Activate abandon of the resources (If true, the GCP resources will be keep after deleting k8s resources)
   abandon: false
 
+externalSecrets: []
+
 
 prometheus:
   # -- Enables Prometheus Operator monitoring
