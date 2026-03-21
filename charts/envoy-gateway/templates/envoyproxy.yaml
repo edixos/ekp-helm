@@ -1,0 +1,16 @@
+{{- if .Values.envoyProxy.enabled -}}
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: {{ .Values.envoyProxy.name }}
+  namespace: {{ .Values.envoyProxy.namespace }}
+  labels:
+    {{- include "envoy-gateway.labels" . | nindent 4 }}
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        type: {{ .Values.envoyProxy.type }}
+        externalTrafficPolicy: {{ .Values.envoyProxy.externalTrafficPolicy }}
+{{- end }}

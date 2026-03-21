@@ -1,0 +1,16 @@
+{{- range $name, $config := .Values.certificates -}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $name }}
+  namespace: {{ $config.namespace }}
+  labels:
+    {{- include "envoy-gateway.labels" $ | nindent 4 }}
+spec:
+  issuerRef:
+{{ toYaml $config.issuerRef | indent 4 }}
+  secretName: {{ $config.secretName }}
+  dnsNames:
+{{ toYaml $config.dnsNames | indent 4 }}
+---
+{{ end -}}

@@ -1,6 +1,6 @@
 # external-dns
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![AppVersion: 0.16.1](https://img.shields.io/badge/AppVersion-0.16.1-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![AppVersion: 0.16.1](https://img.shields.io/badge/AppVersion-0.16.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -29,6 +29,7 @@ Deploys external-dns and its monitoring
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| externalSecrets | list | `[]` |  |
 | externaldns.affinity | object | `{}` | Affinity settings for `Pod` [scheduling](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/). If an explicit label selector is not provided for pod affinity or pod anti-affinity one will be created from the pod selector labels. |
 | externaldns.annotationFilter | string | `nil` | Filter resources queried for endpoints by annotation selector. |
 | externaldns.annotationPrefix | string | `nil` | Annotation prefix for external-dns annotations (useful for split horizon DNS with multiple instances). |
@@ -167,7 +168,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: external-dns
     path: ''
     helm:

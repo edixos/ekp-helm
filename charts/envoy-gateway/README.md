@@ -27,6 +27,7 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| certificates | object | `{}` |  |
 | envoy-gateway.certgen | object | `{"job":{"affinity":{},"annotations":{},"args":[],"nodeSelector":{},"pod":{"annotations":{},"labels":{}},"resources":{},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65532,"runAsNonRoot":true,"runAsUser":65532,"seccompProfile":{"type":"RuntimeDefault"}},"tolerations":[],"ttlSecondsAfterFinished":30},"rbac":{"annotations":{},"labels":{}}}` | Certgen is used to generate the certificates required by EnvoyGateway. If you want to construct a custom certificate, you can generate a custom certificate through Cert-Manager before installing EnvoyGateway. Certgen will not overwrite the custom certificate. Please do not manually modify `values.yaml` to disable certgen, it may cause EnvoyGateway OIDC,OAuth2,etc. to not work as expected. |
 | envoy-gateway.config.envoyGateway | object | `{"extensionApis":{},"gateway":{"controllerName":"gateway.envoyproxy.io/gatewayclass-controller"},"logging":{"level":{"default":"info"}},"provider":{"type":"Kubernetes"}}` | EnvoyGateway configuration. Visit https://gateway.envoyproxy.io/docs/api/extension_types/#envoygateway to view all options. |
 | envoy-gateway.createNamespace | bool | `false` |  |
@@ -86,6 +87,16 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | envoy-gateway.service.type | string | `"ClusterIP"` | Service type. Can be set to LoadBalancer with specific IP, e.g.: type: LoadBalancer loadBalancerIP: 10.236.90.20 |
 | envoy-gateway.topologyInjector.annotations | object | `{}` |  |
 | envoy-gateway.topologyInjector.enabled | bool | `true` |  |
+| envoyProxy.enabled | bool | `true` |  |
+| envoyProxy.externalTrafficPolicy | string | `"Local"` |  |
+| envoyProxy.name | string | `"custom-proxy-config"` |  |
+| envoyProxy.namespace | string | `"envoy-gateway-system"` |  |
+| envoyProxy.type | string | `"LoadBalancer"` |  |
+| gatewayClass.controllerName | string | `"gateway.envoyproxy.io/gatewayclass-controller"` |  |
+| gatewayClass.enabled | bool | `true` |  |
+| gatewayClass.name | string | `"envoy-gateway"` |  |
+| gateways | object | `{}` |  |
+| httpRoutes | object | `{}` |  |
 | prometheus.enabled | bool | `false` | Enables prometheus operator resources |
 | prometheus.grafanaDashboard.enabled | bool | `false` | If `true`, deploy grafana dashboard |
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | Labels to apply to dashboard configmap |
