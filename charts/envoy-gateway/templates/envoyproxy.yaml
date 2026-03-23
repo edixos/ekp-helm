@@ -7,10 +7,15 @@ metadata:
   labels:
     {{- include "envoy-gateway.labels" . | nindent 4 }}
 spec:
+{{- if .Values.envoyProxy.provider }}
+  provider:
+    {{- toYaml .Values.envoyProxy.provider | nindent 4 }}
+{{- else }}
   provider:
     type: Kubernetes
     kubernetes:
       envoyService:
         type: {{ .Values.envoyProxy.type }}
         externalTrafficPolicy: {{ .Values.envoyProxy.externalTrafficPolicy }}
+{{- end }}
 {{- end }}
