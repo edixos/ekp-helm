@@ -1,6 +1,6 @@
 # external-dns
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![AppVersion: 0.16.1](https://img.shields.io/badge/AppVersion-0.16.1-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![AppVersion: 0.16.1](https://img.shields.io/badge/AppVersion-0.16.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -168,7 +168,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: external-dns
     path: ''
     helm:
