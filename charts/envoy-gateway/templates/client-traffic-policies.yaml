@@ -1,0 +1,18 @@
+{{- range $name, $policy := .Values.clientTrafficPolicies }}
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  {{- if $policy.annotations }}
+  annotations:
+    {{- toYaml $policy.annotations | nindent 4 }}
+  {{- end }}
+  {{- if $policy.labels }}
+  labels:
+    {{- toYaml $policy.labels | nindent 4 }}
+  {{- end }}
+spec:
+  {{- toYaml $policy.spec | nindent 2 }}
+---
+{{- end }}
