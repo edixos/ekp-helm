@@ -117,6 +117,25 @@ entries:
     version: 0.1.0
   argocd:
   - apiVersion: v2
+    appVersion: v3.3.4
+    created: "2026-03-23T08:59:15.890806605Z"
+    dependencies:
+    - alias: argocd
+      name: argo-cd
+      repository: https://argoproj.github.io/argo-helm
+      version: 9.4.13
+    description: A Helm chart for Kubernetes
+    digest: 73a5374cfc10650e8ca13a8a8b873bcd1aa8ba3117577dba86f8df0bbad3d75e
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: argocd
+    type: application
+    urls:
+    - argocd-0.1.10.tgz
+    version: 0.1.10
+  - apiVersion: v2
     appVersion: v3.3.3
     created: "2026-03-13T08:06:22.491148605Z"
     dependencies:
@@ -2156,6 +2175,25 @@ entries:
     version: 0.1.0
   kube-ovn:
   - apiVersion: v2
+    appVersion: 1.15.6
+    created: "2026-03-23T08:59:16.334855334Z"
+    dependencies:
+    - alias: kube-ovn
+      name: kube-ovn
+      repository: https://kubeovn.github.io/kube-ovn/
+      version: v1.15.6
+    description: A Helm chart for Kubernetes
+    digest: c0308600c945c85fc5abab6234bc881e973888d7c5fa77a8e3e853913911748d
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: kube-ovn
+    type: application
+    urls:
+    - kube-ovn-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
     appVersion: 1.15.4
     created: "2026-02-18T12:27:57.777427544Z"
     dependencies:
@@ -2194,6 +2232,21 @@ entries:
     - kube-ovn-0.1.0.tgz
     version: 0.1.0
   kube-prometheus-stack:
+  - apiVersion: v2
+    appVersion: v0.89.0
+    created: "2026-03-23T08:59:16.606555688Z"
+    dependencies:
+    - alias: kubePrometheusStack
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 82.10.5
+    description: A Helm chart for Kubernetes
+    digest: af1391e81dd3cfa5cd6e5c51169ff31171359b4c555813bea105874bd659b349
+    name: kube-prometheus-stack
+    type: application
+    urls:
+    - kube-prometheus-stack-0.1.11.tgz
+    version: 0.1.11
   - apiVersion: v2
     appVersion: v0.89.0
     created: "2026-03-13T08:06:23.191380259Z"
@@ -2766,6 +2819,51 @@ entries:
     version: 0.1.0
   velero:
   - apiVersion: v2
+    appVersion: 1.18.0
+    created: "2026-03-23T08:59:16.850713524Z"
+    dependencies:
+    - name: velero
+      repository: https://vmware-tanzu.github.io/helm-charts
+      version: 12.0.0
+    - alias: workloadIdentity
+      name: gcp-workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    - alias: iamPolicyMembers
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.2
+    - alias: iamCustomRole
+      name: gcp-iam-custom-role
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.0
+    - alias: gcpbucket
+      name: gcp-bucket
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.0
+    description: A Helm chart for velero
+    digest: 2ff40868812475e4ca031ef51fca7b9d4a0453e374ddd63996395583fecc47c6
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: velero
+    type: application
+    urls:
+    - velero-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
     appVersion: 1.17.1
     created: "2026-03-04T10:47:23.685579934Z"
     dependencies:
@@ -3074,4 +3172,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-21T15:02:22.283743729Z"
+generated: "2026-03-23T08:59:16.850967318Z"
