@@ -70,11 +70,11 @@ kube-ovn:
     images:
       kubeovn:
         repository: kube-ovn
-        tag: v1.15.4
+        tag: v1.15.6
       natgateway:
         repository: vpc-nat-gateway
         # Falls back to the same tag as kubeovn if empty
-        tag: v1.15.4
+        tag: v1.15.6
 
   image:
     pullPolicy: IfNotPresent
