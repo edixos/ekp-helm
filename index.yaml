@@ -118,6 +118,25 @@ entries:
   argocd:
   - apiVersion: v2
     appVersion: v3.3.4
+    created: "2026-03-23T17:25:27.455529811Z"
+    dependencies:
+    - alias: argocd
+      name: argo-cd
+      repository: https://argoproj.github.io/argo-helm
+      version: 9.4.13
+    description: A Helm chart for Kubernetes
+    digest: 4490ac12d00059cd63ac69a8ab37b51bd387fde8c4c83cb1432c9a3d7c816fdb
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: argocd
+    type: application
+    urls:
+    - argocd-0.1.11.tgz
+    version: 0.1.11
+  - apiVersion: v2
+    appVersion: v3.3.4
     created: "2026-03-23T08:59:15.890806605Z"
     dependencies:
     - alias: argocd
@@ -938,6 +957,25 @@ entries:
     - https://edixos.github.io/ekp-helm/dns-zone-0.1.0.tgz
     version: 0.1.0
   envoy-gateway:
+  - apiVersion: v2
+    appVersion: v1.7.1
+    created: "2026-03-23T17:25:27.69786959Z"
+    dependencies:
+    - alias: envoy-gateway
+      name: gateway-helm
+      repository: oci://docker.io/envoyproxy
+      version: 1.7.1
+    description: Helm chart to deploy Envoy Gateway on Kubernetes
+    digest: 40e7f2de0aca7350e04e3667742e19d47d1f6551d943ef23c8d525442be2b281
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: envoy-gateway
+    type: application
+    urls:
+    - envoy-gateway-0.1.4.tgz
+    version: 0.1.4
   - apiVersion: v2
     appVersion: v1.7.1
     created: "2026-03-23T14:32:45.538315358Z"
@@ -3221,4 +3259,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-23T14:32:45.538627914Z"
+generated: "2026-03-23T17:25:27.698029719Z"
