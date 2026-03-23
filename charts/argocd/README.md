@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.3.4](https://img.shields.io/badge/AppVersion-v3.3.4-informational?style=flat-square)
+![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.3.4](https://img.shields.io/badge/AppVersion-v3.3.4-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -999,6 +999,7 @@ A Helm chart for Kubernetes
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
 | prometheus.rules.enabled | bool | `true` | Enables prometheus operator rules |
 | prometheus.rules.labels | object | `{"prometheus":"prometheus-operator-prometheus"}` | Labels to affect to the Prometheus Rules |
+| securityPolicies | object | `{}` |  |
 
 ## Installing the Chart
 
@@ -1025,7 +1026,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.10"
+    targetRevision: "0.1.11"
     chart: argocd
     path: ''
     helm:

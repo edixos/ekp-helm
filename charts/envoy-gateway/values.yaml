@@ -218,3 +218,5 @@ gateways: {}
 certificates: {}
 
 httpRoutes: {}
+
+clientTrafficPolicies: {}
