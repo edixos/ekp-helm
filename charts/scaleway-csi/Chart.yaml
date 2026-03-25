@@ -1,0 +1,15 @@
+apiVersion: v2
+name: scaleway-csi
+description: A Helm chart for deploying Scaleway Container Storage Interface (CSI)
+type: application
+version: 0.1.0
+appVersion: "0.2.1"
+dependencies:
+  - name: scaleway-csi
+    version: 0.2.1
+    repository: https://helm.scw.cloud/
+    condition: scaleway-csi.enabled
+maintainers:
+  - name: ilyasabdellaoui
+    email: ilyas.abdellaoui21@gmail.com
+    url: https://github.com/ilyasabdellaoui

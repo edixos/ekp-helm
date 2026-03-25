@@ -1,0 +1,15 @@
+scaleway-csi:
+  enabled: true
+
+externalSecret:
+  name: scaleway-csi-secret
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: scaleway-secret-manager
+  remoteRef:
+    key: "" # Configure per env
+
+region: "fr-par"
+zone: "fr-par-1"
+projectId: ""
