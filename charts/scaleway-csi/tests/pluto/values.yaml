@@ -10,4 +10,3 @@ externalSecret:
     key: "test-key"
 region: "test-region"
 zone: "test-zone"
-projectId: "test-project"

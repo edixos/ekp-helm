@@ -27,12 +27,11 @@ A Helm chart for deploying Scaleway Container Storage Interface (CSI)
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| externalSecret.name | string | `"scaleway-csi-secret"` |  |
+| externalSecret.name | string | `"csi-mock-secret"` |  |
 | externalSecret.refreshInterval | string | `"1h"` |  |
 | externalSecret.remoteRef.key | string | `""` |  |
 | externalSecret.secretStoreRef.kind | string | `"ClusterSecretStore"` |  |
-| externalSecret.secretStoreRef.name | string | `"scaleway-secret-manager"` |  |
-| projectId | string | `""` |  |
+| externalSecret.secretStoreRef.name | string | `"mock-secret-manager"` |  |
 | region | string | `"fr-par"` |  |
 | scaleway-csi.enabled | bool | `true` |  |
 | zone | string | `"fr-par-1"` |  |
