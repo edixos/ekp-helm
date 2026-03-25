@@ -31,6 +31,9 @@ process_file() {
     if [ "$FIX_COMMENTS" = "yes" ]; then
         # Fix comment spacing on non-comment lines only
         $SED -i '/^[ \t]*#/!s/\([^ \t]\)[ \t]*#/\1  #/g' "$file"
+        
+        # Fix missing space after # for both full-line and inline comments (e.g. #- -> # -)
+        $SED -i 's/\(^[ \t]*#\|[ \t][ \t]*#\)\([^ \t#!]\)/\1 \2/g' "$file"
     fi
     
     # Ensure file ends with a newline
