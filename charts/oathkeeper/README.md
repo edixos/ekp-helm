@@ -1,6 +1,6 @@
 # oathkeeper
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v25.4.0](https://img.shields.io/badge/AppVersion-v25.4.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://k8s.ory.sh/helm/charts | oathkeeper(oathkeeper) | 0.60.1 |
+| https://k8s.ory.sh/helm/charts | oathkeeper(oathkeeper) | 0.61.0 |
 
 ## Maintainers
 
@@ -64,14 +64,16 @@ A Helm chart for Kubernetes
 | oathkeeper.deployment.tolerations | list | `[]` | Configure node tolerations. |
 | oathkeeper.deployment.topologySpreadConstraints | list | `[]` | Configure pod topologySpreadConstraints. |
 | oathkeeper.fullnameOverride | string | `""` | Full chart name override |
-| oathkeeper.global | object | `{"ory":{"oathkeeper":{"maester":{"mode":"controller"}}},"podMetadata":{"annotations":{},"labels":{}}}` | Global setting, passed down to all pods |
+| oathkeeper.global | object | `{"imageRegistry":null,"ory":{"oathkeeper":{"maester":{"mode":"controller"}}},"podMetadata":{"annotations":{},"labels":{}}}` | Global setting, passed down to all pods |
+| oathkeeper.global.imageRegistry | string | `nil` | Overrides the Docker registry globally for all images |
 | oathkeeper.global.podMetadata | object | `{"annotations":{},"labels":{}}` | Specify pod metadata, this metadata is added directly to the pod, and not higher objects |
 | oathkeeper.global.podMetadata.annotations | object | `{}` | Extra pod level annotations |
 | oathkeeper.global.podMetadata.labels | object | `{}` | Extra pod level labels |
-| oathkeeper.image.initContainer | object | `{"repository":"busybox","tag":1}` | use a busybox image from another repository |
+| oathkeeper.image.initContainer | object | `{"repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
 | oathkeeper.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| oathkeeper.image.registry | string | `"docker.io"` | ORY Oathkeeper image registry |
 | oathkeeper.image.repository | string | `"oryd/oathkeeper"` | ORY Oathkeeper image |
-| oathkeeper.image.tag | string | `"v25.4.0"` | ORY Oathkeeper version |
+| oathkeeper.image.tag | string | `"v26.2.0"` | ORY Oathkeeper version |
 | oathkeeper.imagePullSecrets | list | `[]` | Image pull secrets |
 | oathkeeper.ingress.api.annotations | object | `{}` |  |
 | oathkeeper.ingress.api.className | string | `""` |  |
@@ -162,8 +164,8 @@ A Helm chart for Kubernetes
 | oathkeeper.serviceMonitor.tlsConfig | object | `{}` | TLS configuration to use when scraping the endpoint |
 | oathkeeper.sidecar.envs | object | `{}` |  |
 | oathkeeper.sidecar.image.repository | string | `"oryd/oathkeeper-maester"` |  |
-| oathkeeper.sidecar.image.tag | string | `"v0.1.12"` |  |
-| oathkeeper.test.busybox | object | `{"repository":"busybox","tag":1}` | use a busybox image from another repository |
+| oathkeeper.sidecar.image.tag | string | `"v0.1.13"` |  |
+| oathkeeper.test.busybox | object | `{"repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
 | oathkeeper.test.labels | object | `{}` | Provide additional labels to the test pod |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `false` | Add grafana dashboard as a configmap |
@@ -196,7 +198,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: oathkeeper
     path: ''
     helm:
