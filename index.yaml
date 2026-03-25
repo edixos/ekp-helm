@@ -2924,6 +2924,26 @@ entries:
     urls:
     - scaleway-ccm-0.1.0.tgz
     version: 0.1.0
+  scaleway-csi:
+  - apiVersion: v2
+    appVersion: 0.2.1
+    created: "2026-03-25T10:49:37.734064515Z"
+    dependencies:
+    - condition: scaleway-csi.enabled
+      name: scaleway-csi
+      repository: https://helm.scw.cloud/
+      version: 0.2.1
+    description: A Helm chart for deploying Scaleway Container Storage Interface (CSI)
+    digest: c78586de28d38610990d770dba98fd6d37ef9d2f2a4daf531c10cb83a0468672
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: scaleway-csi
+    type: application
+    urls:
+    - scaleway-csi-0.1.0.tgz
+    version: 0.1.0
   velero:
   - apiVersion: v2
     appVersion: 1.18.0
@@ -3279,4 +3299,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-25T09:39:25.242817414Z"
+generated: "2026-03-25T10:49:37.734237136Z"
