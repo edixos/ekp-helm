@@ -20,6 +20,7 @@ chart-repos:
   - kube-ovn=https://kubeovn.github.io/kube-ovn/
   - cloudtty=https://cloudtty.github.io/cloudtty/
   - scaleway=https://helm.scw.cloud/
+  - cilium=https://helm.cilium.io/
 
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false

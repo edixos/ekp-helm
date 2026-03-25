@@ -1,0 +1,5 @@
+# Minimal values for pluto test
+# This file exists to satisfy CI which expects a values.yaml for the pluto test
+
+cilium:
+  enabled: true
