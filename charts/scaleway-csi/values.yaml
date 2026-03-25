@@ -1,0 +1,14 @@
+scaleway-csi:
+  enabled: true
+
+externalSecret:
+  name: csi-mock-secret
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: mock-secret-manager
+  remoteRef:
+    key: "" # Configure per env
+
+region: "fr-par"
+zone: "fr-par-1"

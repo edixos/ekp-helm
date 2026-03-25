@@ -1,0 +1,12 @@
+scaleway-csi:
+  enabled: true
+externalSecret:
+  name: test-secret
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: test-store
+  remoteRef:
+    key: "test-key"
+region: "test-region"
+zone: "test-zone"

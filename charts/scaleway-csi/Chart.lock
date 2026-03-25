@@ -1,0 +1,6 @@
+dependencies:
+- name: scaleway-csi
+  repository: https://helm.scw.cloud/
+  version: 0.2.1
+digest: sha256:f344d2ed111db2319c7e4ff306fd637a400766a987b1e75293d5be45a78e11e2
+generated: "2026-03-25T11:14:45.761033+01:00"
