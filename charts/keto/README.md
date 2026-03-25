@@ -1,6 +1,6 @@
 # keto
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![AppVersion: v25.4.0](https://img.shields.io/badge/AppVersion-v25.4.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://k8s.ory.sh/helm/charts | keto(keto) | 0.60.1 |
+| https://k8s.ory.sh/helm/charts | keto(keto) | 0.61.0 |
 
 ## Maintainers
 
@@ -72,13 +72,15 @@ A Helm chart for Kubernetes
 | keto.deployment.topologySpreadConstraints | list | `[]` | Configure pod topologySpreadConstraints. |
 | keto.extraServices | object | `{}` |  |
 | keto.fullnameOverride | string | `""` |  |
-| keto.global | object | `{"podMetadata":{"annotations":{},"labels":{}}}` | Global setting, passed down to all pods |
+| keto.global | object | `{"imageRegistry":null,"podMetadata":{"annotations":{},"labels":{}}}` | Global setting, passed down to all pods |
+| keto.global.imageRegistry | string | `nil` | Overrides the Docker registry globally for all images |
 | keto.global.podMetadata | object | `{"annotations":{},"labels":{}}` | Specify pod metadata, this metadata is added directly to the pod, and not higher objects |
 | keto.global.podMetadata.annotations | object | `{}` | Extra pod level annotations |
 | keto.global.podMetadata.labels | object | `{}` | Extra pod level labels |
 | keto.image.pullPolicy | string | `"IfNotPresent"` | Default image pull policy |
+| keto.image.registry | string | `"docker.io"` | Ory KETO image registry |
 | keto.image.repository | string | `"oryd/keto"` | Ory KETO image |
-| keto.image.tag | string | `"v25.4.0"` | Ory KETO version |
+| keto.image.tag | string | `"v26.2.0"` | Ory KETO version |
 | keto.imagePullSecrets | list | `[]` |  |
 | keto.ingress.read.annotations | object | `{}` |  |
 | keto.ingress.read.className | string | `""` |  |
@@ -194,11 +196,11 @@ A Helm chart for Kubernetes
 | keto.serviceMonitor.scrapeInterval | string | `"60s"` | Interval at which metrics should be scraped |
 | keto.serviceMonitor.scrapeTimeout | string | `"30s"` | Timeout after which the scrape is ended |
 | keto.serviceMonitor.tlsConfig | object | `{}` | TLS configuration to use when scraping the endpoint |
-| keto.test.busybox | object | `{"repository":"busybox","tag":1}` | use a busybox image from another repository |
+| keto.test.busybox | object | `{"repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
 | keto.test.labels | object | `{}` | Provide additional labels to the test pod |
 | keto.watcher.automountServiceAccountToken | bool | `true` |  |
 | keto.watcher.enabled | bool | `false` |  |
-| keto.watcher.image | string | `"oryd/k8s-toolbox:v0.0.7"` |  |
+| keto.watcher.image | string | `"oryd/k8s-toolbox:v0.0.10"` |  |
 | keto.watcher.mountFile | string | `""` | Path to mounted file, which wil be monitored for changes. eg: /etc/secrets/my-secret/foo |
 | keto.watcher.podMetadata | object | `{"annotations":{},"labels":{}}` | Specify pod metadata, this metadata is added directly to the pod, and not higher objects |
 | keto.watcher.podMetadata.annotations | object | `{}` | Extra pod level annotations |
@@ -237,7 +239,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: keto
     path: ''
     helm:
