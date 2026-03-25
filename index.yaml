@@ -675,6 +675,26 @@ entries:
     urls:
     - cert-manager-webhook-scaleway-0.1.0.tgz
     version: 0.1.0
+  cilium:
+  - apiVersion: v2
+    appVersion: 1.18.0
+    created: "2026-03-25T09:39:25.242667063Z"
+    dependencies:
+    - condition: cilium.enabled
+      name: cilium
+      repository: https://helm.cilium.io/
+      version: 1.18.0
+    description: A Helm chart for Kubernetes
+    digest: d17ba75401638cdf5b37f3a242c81cd8ddc10f5e2fa13bc3457608ae0c2895dc
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: cilium
+    type: application
+    urls:
+    - cilium-0.1.0.tgz
+    version: 0.1.0
   cloudtty:
   - apiVersion: v2
     appVersion: 0.8.9
@@ -3259,4 +3279,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-23T17:25:27.698029719Z"
+generated: "2026-03-25T09:39:25.242817414Z"
