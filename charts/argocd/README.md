@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.3.4](https://img.shields.io/badge/AppVersion-v3.3.4-informational?style=flat-square)
+![Version: 0.1.12](https://img.shields.io/badge/Version-0.1.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.3.4](https://img.shields.io/badge/AppVersion-v3.3.4-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -439,6 +439,7 @@ A Helm chart for Kubernetes
 | argocd.externalRedis.port | int | `6379` | External Redis server port |
 | argocd.externalRedis.secretAnnotations | object | `{}` | External Redis Secret annotations |
 | argocd.externalRedis.username | string | `""` | External Redis username |
+| argocd.externalSecrets | list | `[]` |  |
 | argocd.extraObjects | list | `[]` | Array of extra K8s manifests to deploy # Note: Supports use of custom Helm templates |
 | argocd.fullnameOverride | string | `""` | String to fully override `"argo-cd.fullname"` |
 | argocd.global.addPrometheusAnnotations | bool | `false` | Add Prometheus scrape annotations to all metrics services. This can be used as an alternative to the ServiceMonitors. |
@@ -1026,7 +1027,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.11"
+    targetRevision: "0.1.12"
     chart: argocd
     path: ''
     helm:
