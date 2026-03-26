@@ -364,6 +364,13 @@ dex:
     #    ports:
     #      - port: 636
     #        protocol: TCP
+
+  httproute:
+    enabled: false
+    hostnames: []
+    parentRefs: []
+    rules: []
+
 tags:
   # -- Enables Config Connector features
   configConnector: false
@@ -395,8 +402,4 @@ workloadIdentity:
       # global.ksa.name -- Name of the Kubernetes Service Account
       name: default
 
-httproute:
-  enabled: false
-  hostnames: []
-  parentRefs: []
-  rules: []
+

@@ -44,6 +44,10 @@ A Helm chart for Dex - OpenID Connect Identity (OIDC) and OAuth 2.0 Provider wit
 | dex.fullnameOverride | string | `""` | A name to substitute for the full names of resources. |
 | dex.grpc.enabled | bool | `false` | Enable the gRPC endpoint. Read more in the [documentation](https://dexidp.io/docs/api/). |
 | dex.hostAliases | list | `[]` | A list of hosts and IPs that will be injected into the pod's hosts file if specified. See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#hostname-and-name-resolution) |
+| dex.httproute.enabled | bool | `false` |  |
+| dex.httproute.hostnames | list | `[]` |  |
+| dex.httproute.parentRefs | list | `[]` |  |
+| dex.httproute.rules | list | `[]` |  |
 | dex.https.enabled | bool | `false` | Enable the HTTPS endpoint. |
 | dex.image.digest | string | `""` | When digest is set to a non-empty value, images will be pulled by digest (regardless of tag value). |
 | dex.image.pullPolicy | string | `"IfNotPresent"` | [Image pull policy](https://kubernetes.io/docs/concepts/containers/images/#updating-images) for updating already existing images on a node. |
@@ -104,10 +108,6 @@ A Helm chart for Dex - OpenID Connect Identity (OIDC) and OAuth 2.0 Provider wit
 | dex.topologySpreadConstraints | list | `[]` | [TopologySpreadConstraints](https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/) configuration. See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling) for details. |
 | dex.volumeMounts | list | `[]` | Additional [volume mounts](https://kubernetes.io/docs/tasks/configure-pod-container/configure-volume-storage/). See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1) for details. |
 | dex.volumes | list | `[]` | Additional storage [volumes](https://kubernetes.io/docs/concepts/storage/volumes/). See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1) for details. |
-| httproute.enabled | bool | `false` |  |
-| httproute.hostnames | list | `[]` |  |
-| httproute.parentRefs | list | `[]` |  |
-| httproute.rules | list | `[]` |  |
 | iamPolicyMembers.members[0].member | string | `""` |  |
 | iamPolicyMembers.members[0].name | string | `"ekp-dex-groups-reader"` |  |
 | iamPolicyMembers.members[0].resourceRef.external | string | `""` |  |
