@@ -118,6 +118,25 @@ entries:
   argocd:
   - apiVersion: v2
     appVersion: v3.3.4
+    created: "2026-03-26T16:01:27.863939641Z"
+    dependencies:
+    - alias: argocd
+      name: argo-cd
+      repository: https://argoproj.github.io/argo-helm
+      version: 9.4.13
+    description: A Helm chart for Kubernetes
+    digest: 0065e52a06e0370ba9f70973c1c2f07615c5e3d3e67d37fca57a3831c6a05ff1
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: argocd
+    type: application
+    urls:
+    - argocd-0.1.12.tgz
+    version: 0.1.12
+  - apiVersion: v2
+    appVersion: v3.3.4
     created: "2026-03-23T17:25:27.455529811Z"
     dependencies:
     - alias: argocd
@@ -761,6 +780,41 @@ entries:
     - https://edixos.github.io/ekp-helm/configconnector-operator-0.1.0.tgz
     version: 0.1.0
   dex:
+  - apiVersion: v2
+    appVersion: 2.42.0
+    created: "2026-03-26T16:01:28.086812756Z"
+    dependencies:
+    - alias: dex
+      name: dex
+      repository: https://charts.dexidp.io
+      version: 0.24.0
+    - alias: workloadIdentity
+      name: gcp-workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    - alias: iamPolicyMembers
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.2
+    description: A Helm chart for Dex - OpenID Connect Identity (OIDC) and OAuth 2.0
+      Provider with Pluggable Connectors
+    digest: d5b35d7e1ebf95843154797d02510ccffcab6c66b2a5250e1551e10a07641bcb
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: dex
+    type: application
+    urls:
+    - dex-0.1.9.tgz
+    version: 0.1.9
   - apiVersion: v2
     appVersion: 2.42.0
     created: "2026-03-26T14:12:45.003689527Z"
@@ -3404,4 +3458,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-26T14:12:45.003937711Z"
+generated: "2026-03-26T16:01:28.087092527Z"
