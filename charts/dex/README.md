@@ -44,6 +44,10 @@ A Helm chart for Dex - OpenID Connect Identity (OIDC) and OAuth 2.0 Provider wit
 | dex.fullnameOverride | string | `""` | A name to substitute for the full names of resources. |
 | dex.grpc.enabled | bool | `false` | Enable the gRPC endpoint. Read more in the [documentation](https://dexidp.io/docs/api/). |
 | dex.hostAliases | list | `[]` | A list of hosts and IPs that will be injected into the pod's hosts file if specified. See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#hostname-and-name-resolution) |
+| dex.httproute.enabled | bool | `false` |  |
+| dex.httproute.hostnames | list | `[]` |  |
+| dex.httproute.parentRefs | list | `[]` |  |
+| dex.httproute.rules | list | `[]` |  |
 | dex.https.enabled | bool | `false` | Enable the HTTPS endpoint. |
 | dex.image.digest | string | `""` | When digest is set to a non-empty value, images will be pulled by digest (regardless of tag value). |
 | dex.image.pullPolicy | string | `"IfNotPresent"` | [Image pull policy](https://kubernetes.io/docs/concepts/containers/images/#updating-images) for updating already existing images on a node. |

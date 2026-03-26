@@ -364,6 +364,13 @@ dex:
     #    ports:
     #      - port: 636
     #        protocol: TCP
+
+  httproute:
+    enabled: false
+    hostnames: []
+    parentRefs: []
+    rules: []
+
 tags:
   # -- Enables Config Connector features
   configConnector: false
