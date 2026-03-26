@@ -401,5 +401,3 @@ workloadIdentity:
       namespace: ""
       # global.ksa.name -- Name of the Kubernetes Service Account
       name: default
-
-
