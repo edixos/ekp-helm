@@ -439,6 +439,7 @@ A Helm chart for Kubernetes
 | argocd.externalRedis.port | int | `6379` | External Redis server port |
 | argocd.externalRedis.secretAnnotations | object | `{}` | External Redis Secret annotations |
 | argocd.externalRedis.username | string | `""` | External Redis username |
+| argocd.externalSecrets | list | `[]` |  |
 | argocd.extraObjects | list | `[]` | Array of extra K8s manifests to deploy # Note: Supports use of custom Helm templates |
 | argocd.fullnameOverride | string | `""` | String to fully override `"argo-cd.fullname"` |
 | argocd.global.addPrometheusAnnotations | bool | `false` | Add Prometheus scrape annotations to all metrics services. This can be used as an alternative to the ServiceMonitors. |

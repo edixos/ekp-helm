@@ -17,6 +17,7 @@ prometheus:
 
 # Default values for argocd.
 argocd:
+  externalSecrets: []
   ## Argo CD configuration
   ## Ref: https://github.com/argoproj/argo-cd
   ##
