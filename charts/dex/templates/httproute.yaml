@@ -7,9 +7,9 @@ metadata:
 {{ include "call-nested" (list . "dex" "dex.labels") | indent 4 }}
 spec:
   parentRefs:
-{{ toYaml .Values.httproute.parentRefs | indent 4 }}
+{{ toYaml .Values.dex.httproute.parentRefs | indent 4 }}
   hostnames:
-{{ toYaml .Values.httproute.hostnames | indent 4 }}
+{{ toYaml .Values.dex.httproute.hostnames | indent 4 }}
   rules:
-{{ toYaml .Values.httproute.rules | indent 4 }}
+{{ toYaml .Values.dex.httproute.rules | indent 4 }}
 {{- end }}
