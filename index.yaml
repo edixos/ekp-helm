@@ -3,6 +3,25 @@ entries:
   alertmanager:
   - apiVersion: v2
     appVersion: v0.27.0
+    created: "2026-03-28T10:06:53.546835279Z"
+    dependencies:
+    - alias: oidc
+      condition: oidc.enabled
+      name: oauth2-proxy
+      repository: https://oauth2-proxy.github.io/manifests
+      version: 10.3.0
+    description: Deploies Alertmanager through Prometheus-Operator
+    digest: 3f4916def1082de1e51d04f95ce6fc01f51d731ee2bdaaa1cdc1f88dbc684d45
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: alertmanager
+    urls:
+    - alertmanager-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v2
+    appVersion: v0.27.0
     created: "2026-02-18T12:27:57.3112803Z"
     dependencies:
     - alias: oidc
@@ -1233,6 +1252,28 @@ entries:
     version: 0.1.0
   eso:
   - apiVersion: v2
+    appVersion: v2.2.0
+    created: "2026-03-28T10:06:53.830485607Z"
+    dependencies:
+    - alias: eso
+      name: external-secrets
+      repository: https://charts.external-secrets.io
+      version: 2.2.0
+    description: A Helm chart ESO for Kubernetes
+    digest: 87fdf08762e8cc4d57fdff97db79c98d549c9df187ad7b48cbebd174c8e5ad91
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: eso
+    type: application
+    urls:
+    - eso-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
     appVersion: v2.1.0
     created: "2026-03-16T11:51:39.95798354Z"
     dependencies:
@@ -2249,6 +2290,25 @@ entries:
     version: 0.1.0
   hydra:
   - apiVersion: v2
+    appVersion: v26.2.0
+    created: "2026-03-28T10:06:53.965534942Z"
+    dependencies:
+    - alias: hydra
+      name: hydra
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.61.0
+    description: A Helm chart for Kubernetes
+    digest: d825f7a31323bd05ce507862635f272db822951bf6516c8502c274a1d6c8454c
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: hydra
+    type: application
+    urls:
+    - hydra-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: v25.4.0
     created: "2026-01-30T08:45:10.479863732Z"
     dependencies:
@@ -2268,6 +2328,25 @@ entries:
     - hydra-0.1.0.tgz
     version: 0.1.0
   ingress-nginx:
+  - apiVersion: v2
+    appVersion: 1.15.1
+    created: "2026-03-28T10:06:54.106429603Z"
+    dependencies:
+    - alias: ingressNginx
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 4.15.1
+    description: A Helm chart for Kubernetes
+    digest: 125d7da9c158938428a65a108d86f8578a8532752dd3ceaf6349d8eed3a96ca0
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: ingress-nginx
+    type: application
+    urls:
+    - ingress-nginx-0.1.7.tgz
+    version: 0.1.7
   - apiVersion: v2
     appVersion: 1.15.0
     created: "2026-03-13T08:06:22.958430597Z"
@@ -2403,6 +2482,24 @@ entries:
     version: 0.1.0
   keto:
   - apiVersion: v2
+    appVersion: v26.2.0
+    created: "2026-03-28T10:06:54.224611554Z"
+    dependencies:
+    - alias: keto
+      name: keto
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.61.0
+    description: A Helm chart for Kubernetes
+    digest: 3ebcdb6d58c0bd4a4bcf518179bdca1dd5c838e847ada1cbcbe064791e2186a0
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: keto
+    urls:
+    - keto-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: v25.4.0
     created: "2026-01-30T08:45:10.724023442Z"
     dependencies:
@@ -2440,6 +2537,25 @@ entries:
     - kratos-0.1.0.tgz
     version: 0.1.0
   kube-ovn:
+  - apiVersion: v2
+    appVersion: 1.15.7
+    created: "2026-03-28T10:06:54.347058998Z"
+    dependencies:
+    - alias: kube-ovn
+      name: kube-ovn
+      repository: https://kubeovn.github.io/kube-ovn/
+      version: v1.15.7
+    description: A Helm chart for Kubernetes
+    digest: 118f5f2af89228134d19030b59c073df3d70d762fa96f3dda73f2942a7e57bda
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: kube-ovn
+    type: application
+    urls:
+    - kube-ovn-0.1.3.tgz
+    version: 0.1.3
   - apiVersion: v2
     appVersion: 1.15.6
     created: "2026-03-23T08:59:16.334855334Z"
@@ -2498,6 +2614,21 @@ entries:
     - kube-ovn-0.1.0.tgz
     version: 0.1.0
   kube-prometheus-stack:
+  - apiVersion: v2
+    appVersion: v0.89.0
+    created: "2026-03-28T10:06:54.548908775Z"
+    dependencies:
+    - alias: kubePrometheusStack
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 82.14.0
+    description: A Helm chart for Kubernetes
+    digest: 7ae593ee617b16e124eac1f15f29751440bfff952a9a604eb6bdd92b8e931a84
+    name: kube-prometheus-stack
+    type: application
+    urls:
+    - kube-prometheus-stack-0.1.12.tgz
+    version: 0.1.12
   - apiVersion: v2
     appVersion: v0.89.0
     created: "2026-03-23T08:59:16.606555688Z"
@@ -2958,6 +3089,25 @@ entries:
     version: 0.1.0
   oathkeeper:
   - apiVersion: v2
+    appVersion: v26.2.0
+    created: "2026-03-28T10:06:54.669168532Z"
+    dependencies:
+    - alias: oathkeeper
+      name: oathkeeper
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.61.0
+    description: A Helm chart for Kubernetes
+    digest: d98fd6e49c20b03bb35c1c3d4f17d300e205224b25deb33ddf1b1a060501ddde
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: oathkeeper
+    type: application
+    urls:
+    - oathkeeper-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: v25.4.0
     created: "2026-01-30T08:45:12.01157545Z"
     dependencies:
@@ -2977,6 +3127,25 @@ entries:
     - oathkeeper-0.1.0.tgz
     version: 0.1.0
   prometheus:
+  - apiVersion: v2
+    appVersion: v3.0.1
+    created: "2026-03-28T10:06:54.822508168Z"
+    dependencies:
+    - alias: oidc
+      condition: oidc.enabled
+      name: oauth2-proxy
+      repository: https://oauth2-proxy.github.io/manifests
+      version: 10.3.0
+    description: Deploys Prometheus through prometheus operator
+    digest: eb2ce7539409b6fbfbf859d5960e5dedc192c22f01ae65c76cc8b5bcadbf09ba
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: prometheus
+    urls:
+    - prometheus-0.1.5.tgz
+    version: 0.1.5
   - apiVersion: v2
     appVersion: v3.0.1
     created: "2026-02-18T12:27:58.326992766Z"
@@ -3458,4 +3627,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-26T16:01:28.087092527Z"
+generated: "2026-03-28T10:06:54.822823614Z"
