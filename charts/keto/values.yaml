@@ -19,6 +19,8 @@ prometheus:
 keto:
   # -- Global setting, passed down to all pods
   global:
+    # -- Overrides the Docker registry globally for all images
+    imageRegistry: null
     # -- Specify pod metadata, this metadata is added directly to the pod, and not higher objects
     podMetadata:
       # -- Extra pod level labels
@@ -31,13 +33,15 @@ keto:
 
   ## -- Image configuration
   image:
+    # -- Ory KETO image registry
+    registry: "docker.io"
     # -- Ory KETO image
     repository: oryd/keto
     # -- Default image pull policy
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     # -- Ory KETO version
-    tag: "v25.4.0"
+    tag: "v26.2.0"
 
   imagePullSecrets: []
   nameOverride: ""
@@ -316,8 +320,7 @@ keto:
         #      -- Example of custom migration job
         example-job:
           enabled: false
-          customArgs:
-            ["migrate", "up", "-y", "--config", "/etc/config/keto.yaml"]
+          customArgs: ["migrate", "up", "-y", "--config", "/etc/config/keto.yaml"]
           nodeSelector: {}
           resources: {}
           extraEnv: []
@@ -477,7 +480,7 @@ keto:
   ## -- Watcher sidecar configuration
   watcher:
     enabled: false
-    image: oryd/k8s-toolbox:v0.0.7
+    image: oryd/k8s-toolbox:v0.0.10
     # -- Path to mounted file, which wil be monitored for changes. eg: /etc/secrets/my-secret/foo
     mountFile: ""
     # -- Specify pod metadata, this metadata is added directly to the pod, and not higher objects
@@ -530,4 +533,4 @@ keto:
     # -- use a busybox image from another repository
     busybox:
       repository: busybox
-      tag: 1
+      tag: stable

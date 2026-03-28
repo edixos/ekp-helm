@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 9.4.13 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 9.4.15 |
 
 ## Maintainers
 

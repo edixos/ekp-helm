@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.89.0](https://img.shields.io/badge/AppVersion-v0.89.0-informational?style=flat-square)
+![Version: 0.1.12](https://img.shields.io/badge/Version-0.1.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.89.0](https://img.shields.io/badge/AppVersion-v0.89.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 82.10.5 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 82.14.0 |
 
 ## Description
 
@@ -45,6 +45,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.alertmanagerSpec.externalUrl | string | `nil` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.forceEnableClusterMode | bool | `false` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.hostNetwork | bool | `false` |  |
+| kubePrometheusStack.alertmanager.alertmanagerSpec.hostUsers | string | `nil` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.pullPolicy | string | `"IfNotPresent"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.repository | string | `"prometheus/alertmanager"` |  |
@@ -60,6 +61,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.alertmanagerSpec.persistentVolumeClaimRetentionPolicy | object | `{}` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.podAntiAffinity | string | `"soft"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.podAntiAffinityTopologyKey | string | `"kubernetes.io/hostname"` |  |
+| kubePrometheusStack.alertmanager.alertmanagerSpec.podManagementPolicy | string | `""` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.podMetadata | object | `{}` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.portName | string | `"http-web"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.priorityClassName | string | `""` |  |
@@ -76,9 +78,11 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.alertmanagerSpec.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.serviceName | string | `nil` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.storage | object | `{}` |  |
+| kubePrometheusStack.alertmanager.alertmanagerSpec.terminationGracePeriodSeconds | string | `nil` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.tlsConfig | object | `{}` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.tolerations | list | `[]` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.topologySpreadConstraints | list | `[]` |  |
+| kubePrometheusStack.alertmanager.alertmanagerSpec.updateStrategy | object | `{}` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.useExistingSecret | bool | `false` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.volumeMounts | list | `[]` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.volumes | list | `[]` |  |
@@ -810,6 +814,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.externalUrl | string | `""` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.hostAliases | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.hostNetwork | bool | `false` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.hostUsers | string | `nil` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.ignoreNamespaceSelectors | bool | `false` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.pullPolicy | string | `"IfNotPresent"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.registry | string | `"quay.io"` |  |
@@ -831,6 +836,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.persistentVolumeClaimRetentionPolicy | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.podAntiAffinity | string | `"soft"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.podAntiAffinityTopologyKey | string | `"kubernetes.io/hostname"` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.podManagementPolicy | string | `""` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.podMetadata | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.podMonitorNamespaceSelector | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.podMonitorSelector | object | `{}` |  |
@@ -883,11 +889,13 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.serviceName | string | `nil` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.shards | int | `1` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.storageSpec | object | `{}` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.terminationGracePeriodSeconds | string | `nil` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.thanos | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.tolerations | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.topologySpreadConstraints | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.tracingConfig | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.tsdb.outOfOrderTimeWindow | string | `"0s"` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.updateStrategy | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.version | string | `""` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.volumeMounts | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.volumes | list | `[]` |  |
@@ -1093,7 +1101,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.registry | string | `"ghcr.io"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.repository | string | `"jkroepke/kube-webhook-certgen"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"1.7.8"` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"1.7.9"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.nodeSelector | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.priorityClassName | string | `""` |  |
@@ -1293,6 +1301,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.evaluationInterval | string | `""` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.externalPrefix | string | `nil` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.externalPrefixNilUsesHelmValues | bool | `true` |  |
+| kubePrometheusStack.thanosRuler.thanosRulerSpec.hostUsers | string | `nil` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.image.repository | string | `"thanos/thanos"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.image.sha | string | `""` |  |
@@ -1308,6 +1317,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.paused | bool | `false` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.podAntiAffinity | string | `"soft"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.podAntiAffinityTopologyKey | string | `"kubernetes.io/hostname"` |  |
+| kubePrometheusStack.thanosRuler.thanosRulerSpec.podManagementPolicy | string | `""` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.podMetadata | object | `{}` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.portName | string | `"web"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.priorityClassName | string | `""` |  |
@@ -1328,8 +1338,10 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.serviceName | string | `nil` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.storage | object | `{}` |  |
+| kubePrometheusStack.thanosRuler.thanosRulerSpec.terminationGracePeriodSeconds | string | `nil` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.tolerations | list | `[]` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.topologySpreadConstraints | list | `[]` |  |
+| kubePrometheusStack.thanosRuler.thanosRulerSpec.updateStrategy | object | `{}` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.volumeMounts | list | `[]` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.volumes | list | `[]` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.web | object | `{}` |  |
@@ -1360,7 +1372,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.11"
+    targetRevision: "0.1.12"
     chart: kube-prometheus-stack
     path: ''
     helm:

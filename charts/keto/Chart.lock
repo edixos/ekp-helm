@@ -1,6 +1,6 @@
 dependencies:
 - name: keto
   repository: https://k8s.ory.sh/helm/charts
-  version: 0.60.1
-digest: sha256:0beb099119b17546cc373dd745a75db48360fcf2309a5e5abe0b374f12687546
-generated: "2026-01-28T01:41:34.315458677+01:00"
+  version: 0.61.0
+digest: sha256:3efad8c19c285498edc3bae26d76035558e76739175defc242127a61714e90a4
+generated: "2026-03-25T10:53:02.99296256Z"

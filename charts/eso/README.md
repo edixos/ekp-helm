@@ -1,6 +1,6 @@
 # eso
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.1.0](https://img.shields.io/badge/AppVersion-v2.1.0-informational?style=flat-square)
+![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.2.0](https://img.shields.io/badge/AppVersion-v2.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.external-secrets.io | eso(external-secrets) | 2.1.0 |
+| https://charts.external-secrets.io | eso(external-secrets) | 2.2.0 |
 
 ## Maintainers
 
@@ -140,14 +140,14 @@ A Helm chart ESO for Kubernetes
 | eso.leaderElect | bool | `false` | If true, external-secrets will perform leader election between instances to ensure no more than one instance of external-secrets operates at a time. |
 | eso.livenessProbe.enabled | bool | `false` | Enabled determines if the liveness probe should be used or not. By default it's disabled. |
 | eso.livenessProbe.spec | object | `{"address":"","failureThreshold":5,"httpGet":{"path":"/healthz","port":"live"},"initialDelaySeconds":10,"periodSeconds":10,"port":8082,"successThreshold":1,"timeoutSeconds":5}` | The body of the liveness probe settings. |
-| eso.livenessProbe.spec.address | string | `""` | Address for liveness probe. |
+| eso.livenessProbe.spec.address | string | `""` | Bind address for the health server used by both liveness and readiness probes (--live-addr flag). |
 | eso.livenessProbe.spec.failureThreshold | int | `5` | Number of consecutive probe failures that should occur before considering the probe as failed. |
 | eso.livenessProbe.spec.httpGet | object | `{"path":"/healthz","port":"live"}` | Handler for liveness probe. |
 | eso.livenessProbe.spec.httpGet.path | string | `"/healthz"` | Path for liveness probe. |
 | eso.livenessProbe.spec.httpGet.port | string | `"live"` | Set this value to 'live' (for named port) or an an integer for liveness probes. @schema type: [string, integer] |
 | eso.livenessProbe.spec.initialDelaySeconds | int | `10` | Delay in seconds for the container to start before performing the initial probe. |
 | eso.livenessProbe.spec.periodSeconds | int | `10` | Period in seconds for K8s to start performing probes. |
-| eso.livenessProbe.spec.port | int | `8082` | Named port for liveness probe. |
+| eso.livenessProbe.spec.port | int | `8082` | Port for the health server used by both liveness and readiness probes (--live-addr flag). |
 | eso.livenessProbe.spec.successThreshold | int | `1` | Number of successful probes to mark probe successful. |
 | eso.livenessProbe.spec.timeoutSeconds | int | `5` | Specify the maximum amount of time to wait for a probe to respond before considering it fails. |
 | eso.log | object | `{"level":"info","timeEncoding":"epoch"}` | Specifies Log Params to the External Secrets Operator |
@@ -179,6 +179,16 @@ A Helm chart ESO for Kubernetes
 | eso.rbac.aggregateToView | bool | `true` | Specifies whether permissions are aggregated to the view ClusterRole |
 | eso.rbac.create | bool | `true` | Specifies whether role and rolebinding resources should be created. |
 | eso.rbac.servicebindings.create | bool | `true` | Specifies whether a clusterrole to give servicebindings read access should be created. |
+| eso.readinessProbe.enabled | bool | `false` | Determines whether the readiness probe is enabled. Disabled by default. Enabling this will auto-start the health server (--live-addr) even if livenessProbe is disabled. Health server address/port are configured via livenessProbe.spec.address and livenessProbe.spec.port. |
+| eso.readinessProbe.spec | object | `{"failureThreshold":3,"httpGet":{"path":"/readyz","port":"live"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | The body of the readiness probe settings (standard Kubernetes probe spec). |
+| eso.readinessProbe.spec.failureThreshold | int | `3` | Number of consecutive probe failures that should occur before considering the probe as failed. |
+| eso.readinessProbe.spec.httpGet | object | `{"path":"/readyz","port":"live"}` | Handler for readiness probe. |
+| eso.readinessProbe.spec.httpGet.path | string | `"/readyz"` | Path for readiness probe. |
+| eso.readinessProbe.spec.httpGet.port | string | `"live"` | Set this value to 'live' (for named port) or an integer for readiness probes. @schema type: [string, integer] |
+| eso.readinessProbe.spec.initialDelaySeconds | int | `10` | Delay in seconds for the container to start before performing the initial probe. |
+| eso.readinessProbe.spec.periodSeconds | int | `10` | Period in seconds for K8s to start performing probes. |
+| eso.readinessProbe.spec.successThreshold | int | `1` | Number of successful probes to mark probe successful. |
+| eso.readinessProbe.spec.timeoutSeconds | int | `5` | Specify the maximum amount of time to wait for a probe to respond before considering it fails. |
 | eso.replicaCount | int | `1` |  |
 | eso.resources | object | `{}` |  |
 | eso.revisionHistoryLimit | int | `10` | Specifies the amount of historic ReplicaSets k8s should keep (see https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy) |
@@ -312,7 +322,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.2.0"
+    targetRevision: "0.2.1"
     chart: eso
     path: ''
 

@@ -1,6 +1,6 @@
 # hydra
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v25.4.0](https://img.shields.io/badge/AppVersion-v25.4.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://k8s.ory.sh/helm/charts | hydra(hydra) | 0.60.1 |
+| https://k8s.ory.sh/helm/charts | hydra(hydra) | 0.61.0 |
 
 ## Maintainers
 
@@ -108,7 +108,8 @@ A Helm chart for Kubernetes
 | hydra.deployment.tolerations | list | `[]` | Configure node tolerations. |
 | hydra.deployment.topologySpreadConstraints | list | `[]` | Configure pod topologySpreadConstraints. |
 | hydra.fullnameOverride | string | `""` | Full chart name override |
-| hydra.global | object | `{"podMetadata":{"annotations":{},"labels":{}}}` | Global setting, passed down to all pods |
+| hydra.global | object | `{"imageRegistry":null,"podMetadata":{"annotations":{},"labels":{}}}` | Global setting, passed down to all pods |
+| hydra.global.imageRegistry | string | `nil` | Overrides the Docker registry globally for all images |
 | hydra.global.podMetadata | object | `{"annotations":{},"labels":{}}` | Specify pod metadata, this metadata is added directly to the pod, and not higher objects |
 | hydra.global.podMetadata.annotations | object | `{}` | Extra pod level annotations |
 | hydra.global.podMetadata.labels | object | `{}` | Extra pod level labels |
@@ -136,8 +137,9 @@ A Helm chart for Kubernetes
 | hydra.hydra.customMigrations.jobs.oel-postgresql-ttl.resources | object | `{}` |  |
 | hydra.hydra.dev | bool | `false` | Enable dev mode, not secure in production environments |
 | hydra.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| hydra.image.registry | string | `"docker.io"` | ORY Hydra image registry |
 | hydra.image.repository | string | `"oryd/hydra"` | ORY Hydra image |
-| hydra.image.tag | string | `"v25.4.0"` | ORY Hydra version |
+| hydra.image.tag | string | `"v26.2.0"` | ORY Hydra version |
 | hydra.imagePullSecrets | list | `[]` | Image pull secrets |
 | hydra.ingress.admin.annotations | object | `{}` |  |
 | hydra.ingress.admin.className | string | `""` |  |
@@ -212,11 +214,11 @@ A Helm chart for Kubernetes
 | hydra.serviceMonitor.scrapeInterval | string | `"60s"` | Interval at which metrics should be scraped |
 | hydra.serviceMonitor.scrapeTimeout | string | `"30s"` | Timeout after which the scrape is ended |
 | hydra.serviceMonitor.tlsConfig | object | `{}` | TLS configuration to use when scraping the endpoint |
-| hydra.test.busybox | object | `{"repository":"busybox","tag":1}` | use a busybox image from another repository |
+| hydra.test.busybox | object | `{"repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
 | hydra.test.labels | object | `{}` | Provide additional labels to the test pod |
 | hydra.watcher.automountServiceAccountToken | bool | `true` |  |
 | hydra.watcher.enabled | bool | `false` |  |
-| hydra.watcher.image | string | `"oryd/k8s-toolbox:v0.0.7"` |  |
+| hydra.watcher.image | string | `"oryd/k8s-toolbox:v0.0.10"` |  |
 | hydra.watcher.mountFile | string | `""` | Path to mounted file, which wil be monitored for changes. eg: /etc/secrets/my-secret/foo |
 | hydra.watcher.podMetadata | object | `{"annotations":{},"labels":{}}` | Specify pod metadata, this metadata is added directly to the pod, and not higher objects |
 | hydra.watcher.podMetadata.annotations | object | `{}` | Extra pod level annotations |
@@ -257,7 +259,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: hydra
     path: ''
     helm:

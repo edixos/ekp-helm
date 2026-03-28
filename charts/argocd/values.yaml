@@ -4324,5 +4324,4 @@ argocd:
       # -- Default network policy rules used by commit server
       # @default -- `false` (defaults to global.networkPolicy.create)
       create: false
-
 securityPolicies: {}

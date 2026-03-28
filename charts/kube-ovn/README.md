@@ -1,6 +1,6 @@
 # kube-ovn
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.15.6](https://img.shields.io/badge/AppVersion-1.15.6-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.15.7](https://img.shields.io/badge/AppVersion-1.15.7-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn) | v1.15.6 |
+| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn) | v1.15.7 |
 
 ## Maintainers
 
@@ -82,9 +82,9 @@ A Helm chart for Kubernetes
 | kube-ovn.func.SET_VXLAN_TX_OFF | bool | `false` |  |
 | kube-ovn.func.U2O_INTERCONNECTION | bool | `false` |  |
 | kube-ovn.global.images.kubeovn.repository | string | `"kube-ovn"` |  |
-| kube-ovn.global.images.kubeovn.tag | string | `"v1.15.6"` |  |
+| kube-ovn.global.images.kubeovn.tag | string | `"v1.15.7"` |  |
 | kube-ovn.global.images.natgateway.repository | string | `"vpc-nat-gateway"` |  |
-| kube-ovn.global.images.natgateway.tag | string | `"v1.15.6"` |  |
+| kube-ovn.global.images.natgateway.tag | string | `"v1.15.7"` |  |
 | kube-ovn.global.registry.address | string | `"docker.io/kubeovn"` |  |
 | kube-ovn.global.registry.imagePullSecrets | list | `[]` |  |
 | kube-ovn.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -209,7 +209,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: kube-ovn
     path: ''
     helm:
