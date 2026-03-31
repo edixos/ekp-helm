@@ -8,6 +8,7 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
+affinity: {}
 tolerations: []
 
 resources:
