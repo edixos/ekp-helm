@@ -128,24 +128,13 @@ rm -rf "$TEMPLATE_DIR"/*
 # --- Step 3: Update Chart.yaml ---
 CHART_YAML="$CHART_DIR/$CHART_NAME/Chart.yaml"
 
-# For OCI repositories, the repository field should contain the full OCI path
-if [[ "$IS_OCI" == true ]]; then
-  # Append dependency section for OCI
-  cat <<EOF >> "$CHART_YAML"
+# Append dependency section (same format for both OCI and HTTP)
+cat <<EOF >> "$CHART_YAML"
 dependencies:
   - name: ${DEP_CHART_NAME}
     version: ${DEP_CHART_VERSION}
     repository: "${DEP_URL}"
 EOF
-else
-  # Append dependency section for HTTP repositories
-  cat <<EOF >> "$CHART_YAML"
-dependencies:
-  - name: ${DEP_CHART_NAME}
-    version: ${DEP_CHART_VERSION}
-    repository: "${DEP_URL}"
-EOF
-fi
 
 if [[ -n "$DEP_ALIAS" ]]; then
   echo "    alias: ${DEP_ALIAS}" >> "$CHART_YAML"
