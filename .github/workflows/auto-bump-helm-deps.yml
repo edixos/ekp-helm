@@ -71,7 +71,7 @@ jobs:
           sudo apt install gh -y
 
       - name: Create Pull Request using GitHub CLI
-        if: steps.bump-dependencies.outputs.updated == 'true' && ${{ env.SKIP_PR == 'false' && env.DRY_RUN == 'false' }}
+        if: steps.bump-dependencies.outputs.updated == 'true' && env.SKIP_PR == 'false' && env.DRY_RUN == 'false'
         run: |
           BRANCH="${{ steps.bump-dependencies.outputs.branch }}"
           PR_TITLE="chore(deps-bump): auto bumped helm dependencies"

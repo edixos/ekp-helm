@@ -8,7 +8,6 @@ import logging
 import requests
 import semver
 import subprocess
-import textwrap
 from datetime import datetime
 from ruamel.yaml import YAML
 
@@ -310,15 +309,21 @@ class HelmChartUpdater:
         # Get the parent chart name
         parent_chart_name = chart_data.get('name', '').lower()
         
+        def normalize(name):
+            """Normalize chart name by removing non-alphanumeric characters for fuzzy matching."""
+            return re.sub(r'[^a-z0-9]', '', name.lower())
+
+        normalized_parent = normalize(parent_chart_name)
+
         matching_dep = None
         for dep in updated_deps:
-            dep_name = dep['name'].lower()
-            dep_alias = dep['alias'].lower()
+            dep_name = dep['name']
+            dep_alias = dep['alias']
             
-            # Check if dependency name or alias matches the parent chart name
-            if dep_name == parent_chart_name or dep_alias == parent_chart_name:
+            # Check if dependency name or alias matches the parent chart name (fuzzy)
+            if normalize(dep_name) == normalized_parent or normalize(dep_alias) == normalized_parent:
                 matching_dep = dep
-                logger.info(f"Found matching dependency for appVersion update: {dep['name']} (alias: {dep['alias']})")
+                logger.info(f"Found matching dependency for appVersion update: {dep_name} (alias: {dep_alias})")
                 break
         
         if not matching_dep:
@@ -564,29 +569,24 @@ class HelmChartUpdater:
             search_response.raise_for_status()
             existing_issues = search_response.json().get("items", [])                
             title = f"Chart linting failed: {chart_name}"            
-            body = textwrap.dedent(f"""
-            ## Chart Linting Failed
-
-            The Helm chart **{chart_name}** failed linting during the automated dependency update process.
-
-            ### Error Details
-            ```yaml
-            {error_message}
-            ```
-
-            This issue was automatically created by the dependency update workflow.
-            Please investigate and fix the issue to ensure the chart can be properly updated in the future.
-            """).strip()
+            body = (
+                f"## Chart Linting Failed\n\n"
+                f"The Helm chart **{chart_name}** failed linting during the automated dependency update process.\n\n"
+                f"### Error Details\n"
+                f"```yaml\n"
+                f"{error_message}\n"
+                f"```\n\n"
+                f"This issue was automatically created by the dependency update workflow.\n"
+                f"Please investigate and fix the issue to ensure the chart can be properly updated in the future."
+            )
             
-            comment_body = textwrap.dedent(f"""
-            ### ⚠️ New Failure Detected on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-
-            ```yaml
-            {error_message}
-            ```
-
-            The chart failed checking again in the latest automation run.
-            """).strip()
+            comment_body = (
+                f"### ⚠️ New Failure Detected on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+                f"```yaml\n"
+                f"{error_message}\n"
+                f"```\n\n"
+                f"The chart failed checking again in the latest automation run."
+            )
 
             if existing_issues:
                 issue = existing_issues[0]
