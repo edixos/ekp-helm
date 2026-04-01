@@ -70,11 +70,11 @@ kube-ovn:
     images:
       kubeovn:
         repository: kube-ovn
-        tag: v1.15.7
+        tag: v1.15.8
       natgateway:
         repository: vpc-nat-gateway
         # Falls back to the same tag as kubeovn if empty
-        tag: v1.15.7
+        tag: v1.15.8
 
   image:
     pullPolicy: IfNotPresent
@@ -202,19 +202,6 @@ kube-ovn:
 
   nameOverride: ""
   fullnameOverride: ""
-
-  # Optional: load additional/override values from a ConfigMap.
-  # The referenced ConfigMap should contain a YAML document (or multiple YAML documents)
-  # under the specified key. Values provided there will be merged into the
-  # chart's values for the `kube-ovn` subchart (top-level merge).
-  # Example:
-  # valuesFrom:
-  #   configMapKeyRef:
-  #     name: kube-ovn-values
-  #     key: values.yaml
-  #     namespace: kube-system
-  #     optional: true
-  valuesFrom: {}
 
   # hybrid dpdk
   HYBRID_DPDK: false
