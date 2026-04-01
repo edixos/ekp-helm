@@ -1,6 +1,6 @@
 # prometheus
 
-![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![AppVersion: v3.0.1](https://img.shields.io/badge/AppVersion-v3.0.1-informational?style=flat-square)
+![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![AppVersion: v3.0.1](https://img.shields.io/badge/AppVersion-v3.0.1-informational?style=flat-square)
 
 ----
 
@@ -17,7 +17,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://oauth2-proxy.github.io/manifests | oidc(oauth2-proxy) | 10.3.0 |
+| https://oauth2-proxy.github.io/manifests | oidc(oauth2-proxy) | 10.4.2 |
 
 ## Maintainers
 
@@ -74,13 +74,17 @@ Deploys Prometheus through prometheus operator
 | oidc.config.annotations | object | `{}` |  |
 | oidc.config.clientID | string | `"XXXXXXX"` |  |
 | oidc.config.clientSecret | string | `"XXXXXXXX"` |  |
-| oidc.config.configFile | string | `"email_domains = [ \"*\" ]\nupstreams = [ \"file:///dev/null\" ]"` |  |
+| oidc.config.configFile | string | `""` |  |
 | oidc.config.cookieName | string | `""` |  |
 | oidc.config.cookieSecret | string | `"XXXXXXXXXXXXXXXX"` |  |
+| oidc.config.emailDomains[0] | string | `"*"` |  |
+| oidc.config.existingConfig | string | `nil` |  |
+| oidc.config.forceLegacyConfig | bool | `true` |  |
 | oidc.config.google | object | `{}` |  |
 | oidc.config.requiredSecretKeys[0] | string | `"client-id"` |  |
 | oidc.config.requiredSecretKeys[1] | string | `"client-secret"` |  |
 | oidc.config.requiredSecretKeys[2] | string | `"cookie-secret"` |  |
+| oidc.config.upstreams[0] | string | `"file:///dev/null"` |  |
 | oidc.customLabels | object | `{}` | Custom labels to add into metadata |
 | oidc.deploymentAnnotations | object | `{}` |  |
 | oidc.enableServiceLinks | bool | `true` |  |
@@ -325,7 +329,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.5"
+    targetRevision: "0.1.6"
     chart: prometheus
     path: ''
 
