@@ -2539,6 +2539,25 @@ entries:
   kube-ovn:
   - apiVersion: v2
     appVersion: 1.15.7
+    created: "2026-04-01T16:12:48.081111658Z"
+    dependencies:
+    - alias: kube-ovn
+      name: kube-ovn
+      repository: https://kubeovn.github.io/kube-ovn/
+      version: v1.15.7
+    description: A Helm chart for Kubernetes
+    digest: b2915b61beffd58fb06e28ef143cb5d6eb135fb515c1b15a389a7ae34fb5482e
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: kube-ovn
+    type: application
+    urls:
+    - kube-ovn-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: 1.15.7
     created: "2026-03-28T10:06:54.347058998Z"
     dependencies:
     - alias: kube-ovn
@@ -3627,4 +3646,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-28T10:06:54.822823614Z"
+generated: "2026-04-01T16:12:48.250663418Z"
