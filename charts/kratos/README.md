@@ -1,6 +1,6 @@
 # kratos
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![AppVersion: v25.4.0](https://img.shields.io/badge/AppVersion-v25.4.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://k8s.ory.sh/helm/charts | kratos(kratos) | 0.60.1 |
+| https://k8s.ory.sh/helm/charts | kratos(kratos) | 0.61.0 |
 
 ## Maintainers
 
@@ -103,13 +103,15 @@ A Helm chart for Kubernetes
 | kratos.deployment.tolerations | list | `[]` | Configure node tolerations. |
 | kratos.deployment.topologySpreadConstraints | list | `[]` | Configure pod topologySpreadConstraints. |
 | kratos.fullnameOverride | string | `""` |  |
-| kratos.global | object | `{"podMetadata":{"annotations":{},"labels":{}}}` | Global setting, passed down to all pods |
+| kratos.global | object | `{"imageRegistry":null,"podMetadata":{"annotations":{},"labels":{}}}` | Global setting, passed down to all pods |
+| kratos.global.imageRegistry | string | `nil` | Overrides the Docker registry globally for all images |
 | kratos.global.podMetadata | object | `{"annotations":{},"labels":{}}` | Specify pod metadata, this metadata is added directly to the pod, and not higher objects |
 | kratos.global.podMetadata.annotations | object | `{}` | Extra pod level annotations |
 | kratos.global.podMetadata.labels | object | `{}` | Extra pod level labels |
 | kratos.image.pullPolicy | string | `"IfNotPresent"` |  |
+| kratos.image.registry | string | `"docker.io"` | ORY KRATOS image registry |
 | kratos.image.repository | string | `"oryd/kratos"` | ORY KRATOS image |
-| kratos.image.tag | string | `"v25.4.0"` | ORY KRATOS VERSION Alternative format: image: oryd/kratos:v0.6.3-alpha.1 |
+| kratos.image.tag | string | `"v26.2.0"` | ORY KRATOS VERSION Alternative format: image: oryd/kratos:v0.6.3-alpha.1 |
 | kratos.imagePullSecrets | list | `[]` |  |
 | kratos.ingress.admin.annotations | object | `{}` |  |
 | kratos.ingress.admin.className | string | `""` |  |
@@ -252,10 +254,10 @@ A Helm chart for Kubernetes
 | kratos.strategy.rollingUpdate.maxSurge | string | `"25%"` |  |
 | kratos.strategy.rollingUpdate.maxUnavailable | string | `"25%"` |  |
 | kratos.strategy.type | string | `"RollingUpdate"` |  |
-| kratos.test.busybox | object | `{"repository":"busybox","tag":1}` | use a busybox image from another repository |
+| kratos.test.busybox | object | `{"repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
 | kratos.watcher.automountServiceAccountToken | bool | `true` |  |
 | kratos.watcher.enabled | bool | `false` |  |
-| kratos.watcher.image | string | `"oryd/k8s-toolbox:v0.0.7"` |  |
+| kratos.watcher.image | string | `"oryd/k8s-toolbox:v0.0.10"` |  |
 | kratos.watcher.mountFile | string | `""` | Path to mounted file, which wil be monitored for changes. eg: /etc/secrets/my-secret/foo |
 | kratos.watcher.podMetadata | object | `{"annotations":{},"labels":{}}` | Specify pod metadata, this metadata is added directly to the pod, and not higher objects |
 | kratos.watcher.podMetadata.annotations | object | `{}` | Extra pod level annotations |
@@ -294,7 +296,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: kratos
     path: ''
     helm:
