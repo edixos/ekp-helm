@@ -1,6 +1,6 @@
 # kube-ovn
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.15.7](https://img.shields.io/badge/AppVersion-1.15.7-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.15.8](https://img.shields.io/badge/AppVersion-1.15.8-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn) | v1.15.7 |
+| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn) | v1.15.8 |
 
 ## Maintainers
 
@@ -82,9 +82,9 @@ A Helm chart for Kubernetes
 | kube-ovn.func.SET_VXLAN_TX_OFF | bool | `false` |  |
 | kube-ovn.func.U2O_INTERCONNECTION | bool | `false` |  |
 | kube-ovn.global.images.kubeovn.repository | string | `"kube-ovn"` |  |
-| kube-ovn.global.images.kubeovn.tag | string | `"v1.15.7"` |  |
+| kube-ovn.global.images.kubeovn.tag | string | `"v1.15.8"` |  |
 | kube-ovn.global.images.natgateway.repository | string | `"vpc-nat-gateway"` |  |
-| kube-ovn.global.images.natgateway.tag | string | `"v1.15.7"` |  |
+| kube-ovn.global.images.natgateway.tag | string | `"v1.15.8"` |  |
 | kube-ovn.global.registry.address | string | `"docker.io/kubeovn"` |  |
 | kube-ovn.global.registry.imagePullSecrets | list | `[]` |  |
 | kube-ovn.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -165,7 +165,6 @@ A Helm chart for Kubernetes
 | kube-ovn.performance.GC_INTERVAL | int | `360` |  |
 | kube-ovn.performance.INSPECT_INTERVAL | int | `20` |  |
 | kube-ovn.performance.OVS_VSCTL_CONCURRENCY | int | `100` |  |
-| kube-ovn.valuesFrom | object | `{}` |  |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `false` | Add grafana dashboard as a configmap |
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
@@ -210,7 +209,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: kube-ovn
     path: ''
     helm:

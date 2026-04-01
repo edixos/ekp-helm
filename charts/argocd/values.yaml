@@ -17,7 +17,6 @@ prometheus:
 
 # Default values for argocd.
 argocd:
-  externalSecrets: []
   ## Argo CD configuration
   ## Ref: https://github.com/argoproj/argo-cd
   ##
@@ -748,7 +747,7 @@ argocd:
     styles: ""
     # styles: |
     #  .sidebar {
-    #    background: linear-gradient(to bottom, #999, #777, #333, #222, #111);
+    #    background: linear-gradient(to bottom, # 999, # 777, # 333, # 222, # 111);
     #  }
 
   # -- Array of extra K8s manifests to deploy

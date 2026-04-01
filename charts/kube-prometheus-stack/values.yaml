@@ -2989,7 +2989,7 @@ kubePrometheusStack:
         image:
           registry: ghcr.io
           repository: jkroepke/kube-webhook-certgen
-          tag: 1.7.9
+          tag: 1.8.0
           sha: ""
           pullPolicy: IfNotPresent
         resources: {}
