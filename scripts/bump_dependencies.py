@@ -114,9 +114,7 @@ class HelmChartUpdater:
         if self.is_oci_repo(repo_url):
             oci_ref = f"{repo_url}/{chart_name}"
             
-            result = self.run_command(['helm', 'show', 'chart', oci_ref, '--version', 'latest'])
-            if not result:
-                result = self.run_command(['helm', 'show', 'chart', oci_ref])
+            result = self.run_command(['helm', 'show', 'chart', oci_ref])
             
             if not result:
                 logger.warning(f"Could not fetch chart info from OCI: {oci_ref}")
@@ -815,8 +813,9 @@ class HelmChartUpdater:
             open('.gitignore', 'a').close()
         with open('.gitignore', 'a') as f:
             f.write('CHANGELOG.md\n')
-        self.run_command(['git', 'reset', '--', 'etc/'])
-        self.run_command(['git', 'checkout', '--', 'etc/'])
+        if os.path.isdir('etc/'):
+            self.run_command(['git', 'reset', '--', 'etc/'])
+            self.run_command(['git', 'checkout', '--', 'etc/'])
         for chart_name, updates in chart_updates.items():
             chart_path = os.path.join(charts_dir, chart_name)
             for filename in ["Chart.yaml", "values.yaml", "README.md"]:
