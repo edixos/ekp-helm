@@ -25,19 +25,26 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install helm-docs
+      - name: Install tools (helm-docs, ct, pluto, promtool)
         run: |
           HELM_DOCS_VERSION="1.14.2"
-          curl -L "https://github.com/norwoodj/helm-docs/releases/download/v${HELM_DOCS_VERSION}/helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz" | tar -xz
-          chmod +x helm-docs
-          sudo mv helm-docs /usr/local/bin/helm-docs
-
-      - name: Install chart-testing
-        run: |
           CT_VERSION="3.12.0"
-          curl -L "https://github.com/helm/chart-testing/releases/download/v${CT_VERSION}/chart-testing_${CT_VERSION}_linux_amd64.tar.gz" | tar -xz
-          chmod +x ct
-          sudo mv ct /usr/local/bin/ct
+          PLUTO_VERSION="5.20.3"
+          PROMTOOL_VERSION="3.4.1"
+
+          # Download all tools in parallel
+          curl -fsSL "https://github.com/norwoodj/helm-docs/releases/download/v${HELM_DOCS_VERSION}/helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz" -o /tmp/helm-docs.tar.gz &
+          curl -fsSL "https://github.com/helm/chart-testing/releases/download/v${CT_VERSION}/chart-testing_${CT_VERSION}_linux_amd64.tar.gz" -o /tmp/ct.tar.gz &
+          curl -fsSL "https://github.com/FairwindsOps/pluto/releases/download/v${PLUTO_VERSION}/pluto_${PLUTO_VERSION}_linux_amd64.tar.gz" -o /tmp/pluto.tar.gz &
+          curl -fsSL "https://github.com/prometheus/prometheus/releases/download/v${PROMTOOL_VERSION}/prometheus-${PROMTOOL_VERSION}.linux-amd64.tar.gz" -o /tmp/promtool.tar.gz &
+          wait
+
+          # Extract and install all tools
+          tar -xzf /tmp/helm-docs.tar.gz -C /tmp helm-docs
+          tar -xzf /tmp/ct.tar.gz -C /tmp ct
+          tar -xzf /tmp/pluto.tar.gz -C /tmp pluto
+          tar -xzf /tmp/promtool.tar.gz -C /tmp --strip-components=1 "prometheus-${PROMTOOL_VERSION}.linux-amd64/promtool"
+          sudo mv /tmp/helm-docs /tmp/ct /tmp/pluto /tmp/promtool /usr/local/bin/
 
       - name: Add our Helm repo
         run: |
@@ -48,11 +55,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+          cache: 'pip'
+          cache-dependency-path: scripts/requirements.txt
 
       - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install semver ruamel.yaml yamllint requests
+        run: pip install -r scripts/requirements.txt
 
       - name: Run bump-dependencies script
         id: bump-dependencies
@@ -61,23 +68,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install GitHub CLI
-        run: |
-          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-          sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-          sudo apt update
-          sudo apt install gh -y
-
       - name: Create Pull Request using GitHub CLI
         if: steps.bump-dependencies.outputs.updated == 'true' && env.SKIP_PR == 'false' && env.DRY_RUN == 'false'
         run: |
           BRANCH="${{ steps.bump-dependencies.outputs.branch }}"
           PR_TITLE="chore(deps-bump): auto bumped helm dependencies"
           
-          # Create a PR body file directly from the script output
-          echo "${{ steps.bump-dependencies.outputs.pr_body }}" | sed 's/%0A/\n/g' | sed 's/%25/%/g' > pr_body.md
+          # Write PR body from multiline output
+          printf '%s\n' "$PR_BODY" > pr_body.md
           
           TOKEN="${GITHUB_TOKEN}"
           unset GITHUB_TOKEN
@@ -88,3 +86,4 @@ jobs:
           echo "Created PR: $PR_URL"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_BODY: ${{ steps.bump-dependencies.outputs.pr_body }}

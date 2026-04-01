@@ -4,10 +4,13 @@ import os
 import re
 import sys
 import json
+import shutil
 import logging
+import tempfile
 import requests
 import semver
 import subprocess
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from ruamel.yaml import YAML
 
@@ -20,14 +23,16 @@ yaml.indent(mapping=2, sequence=4, offset=2)
 yaml.width = 120
 
 class HelmChartUpdater:
-    def __init__(self, dry_run=False, skip_pr=True, update_values=True):
+    def __init__(self, dry_run=False, skip_pr=True, update_values=True, target_chart=None):
         self.dry_run = dry_run
         self.skip_pr = skip_pr
         self.update_values = update_values
+        self.target_chart = target_chart
         self.chart_updates = []
         self.repo_cache = {}
+        self.version_cache = {}
         self.branch_name = f"chore/bump-helm-deps-{datetime.now().strftime('%Y-%m-%d')}"
-        logger.info(f"Running with: dry_run={dry_run}, skip_pr={skip_pr}, update_values={update_values}")
+        logger.info(f"Running with: dry_run={dry_run}, skip_pr={skip_pr}, update_values={update_values}, target_chart={target_chart}")
     
     def is_oci_repo(self, repo_url):
         """Check if a repository URL is OCI-based."""
@@ -54,11 +59,54 @@ class HelmChartUpdater:
         repo_name = clean_url.split('/')[0].replace('.', '-').lower()
         
         logger.info(f"Adding Helm repo {repo_name}: {repo_url}")
-        if self.run_command(f"helm repo add {repo_name} {repo_url} --force-update"):
-            self.run_command("helm repo update")
+        if self.run_command(['helm', 'repo', 'add', repo_name, repo_url, '--force-update']):
             self.repo_cache[repo_url] = repo_name
             return repo_name
         return None
+
+    def update_all_repos(self):
+        """Run a single 'helm repo update' after all repos have been added."""
+        if self.repo_cache:
+            logger.info("Running helm repo update for all repositories")
+            self.run_command(['helm', 'repo', 'update'])
+
+    def _prefetch_latest_versions(self, charts_dir):
+        """Fetch latest versions for all dependencies in parallel using threads."""
+        tasks = []
+        for chart_name in sorted(os.listdir(charts_dir)):
+            if self.target_chart and chart_name != self.target_chart:
+                continue
+            chart_path = os.path.join(charts_dir, chart_name)
+            chart_yaml_path = os.path.join(chart_path, 'Chart.yaml')
+            if not os.path.isdir(chart_path) or not os.path.exists(chart_yaml_path):
+                continue
+            with open(chart_yaml_path) as f:
+                chart_data = yaml.load(f)
+            for dep in chart_data.get('dependencies', []):
+                repo_url = dep['repository']
+                dep_name = dep['name']
+                repo_name = self.repo_cache.get(repo_url)
+                cache_key = (repo_url, dep_name)
+                if cache_key not in self.version_cache:
+                    tasks.append((repo_url, dep_name, repo_name, cache_key))
+
+        if not tasks:
+            return
+
+        logger.info(f"Prefetching latest versions for {len(tasks)} dependencies in parallel")
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            futures = {
+                executor.submit(self.get_latest_version, repo_url, dep_name, repo_name): cache_key
+                for repo_url, dep_name, repo_name, cache_key in tasks
+            }
+            for future in as_completed(futures):
+                cache_key = futures[future]
+                try:
+                    version = future.result()
+                    self.version_cache[cache_key] = version
+                except Exception as e:
+                    logger.warning(f"Failed to prefetch version for {cache_key}: {e}")
+                    self.version_cache[cache_key] = None
     
     # STEP 2: Get latest version of a chart
     def get_latest_version(self, repo_url, chart_name, repo_name=None):
@@ -66,7 +114,9 @@ class HelmChartUpdater:
         if self.is_oci_repo(repo_url):
             oci_ref = f"{repo_url}/{chart_name}"
             
-            result = self.run_command(f"helm show chart {oci_ref} --version latest 2>/dev/null || helm show chart {oci_ref}")
+            result = self.run_command(['helm', 'show', 'chart', oci_ref, '--version', 'latest'])
+            if not result:
+                result = self.run_command(['helm', 'show', 'chart', oci_ref])
             
             if not result:
                 logger.warning(f"Could not fetch chart info from OCI: {oci_ref}")
@@ -83,7 +133,7 @@ class HelmChartUpdater:
                 logger.error("repo_name is required for HTTP repositories")
                 return None
                 
-            result = self.run_command(f"helm search repo {repo_name}/{chart_name} -o json")
+            result = self.run_command(['helm', 'search', 'repo', f'{repo_name}/{chart_name}', '-o', 'json'])
             if not result: return None
             
             try:
@@ -134,13 +184,18 @@ class HelmChartUpdater:
             alias = dep.get('alias', name)
             
             is_oci = self.is_oci_repo(repo_url)
+            repo_name = self.repo_cache.get(repo_url) if not is_oci else None
             
-            if is_oci:
+            # Use prefetched version from cache, fall back to live fetch
+            cache_key = (repo_url, name)
+            if cache_key in self.version_cache:
+                latest_version = self.version_cache[cache_key]
+            elif is_oci:
                 logger.info(f"Processing OCI dependency: {name} from {repo_url}")
-                repo_name = None
                 latest_version = self.get_latest_version(repo_url, name)
             else:
-                repo_name = self.add_helm_repo(repo_url)
+                if not repo_name:
+                    repo_name = self.add_helm_repo(repo_url)
                 if not repo_name: continue
                 latest_version = self.get_latest_version(repo_url, name, repo_name)
             
@@ -258,10 +313,10 @@ class HelmChartUpdater:
             if dep['is_oci']:
                 # For OCI repositories, we use the full OCI reference
                 oci_ref = f"{dep['repo_url']}/{dep['name']}"
-                output = self.run_command(f"helm show values {oci_ref} --version {dep['version']}")
+                output = self.run_command(['helm', 'show', 'values', oci_ref, '--version', dep['version']])
             else:
                 # For HTTP repositories, we use repo_name/chart_name
-                output = self.run_command(f"helm show values {dep['repo_name']}/{dep['name']} --version {dep['version']}")
+                output = self.run_command(['helm', 'show', 'values', f"{dep['repo_name']}/{dep['name']}", '--version', dep['version']])
             
             if not output:
                 return ""
@@ -285,11 +340,11 @@ class HelmChartUpdater:
             if dep['is_oci']:
                 # For OCI repositories
                 oci_ref = f"{dep['repo_url']}/{dep['name']}"
-                result = self.run_command(f"helm show chart {oci_ref} --version {dep['version']}")
+                result = self.run_command(['helm', 'show', 'chart', oci_ref, '--version', dep['version']])
             else:
                 # For HTTP repositories
                 result = self.run_command(
-                    f"helm show chart {dep['repo_name']}/{dep['name']} --version {dep['version']}"
+                    ['helm', 'show', 'chart', f"{dep['repo_name']}/{dep['name']}", '--version', dep['version']]
                 )
             
             if not result:
@@ -355,7 +410,7 @@ class HelmChartUpdater:
     
     def _update_chart_dependencies(self, chart_path, chart_name):
         logger.info(f"Running helm dependency update for {chart_name}")
-        if self.run_command("helm dependency update", cwd=chart_path):
+        if self.run_command(['helm', 'dependency', 'update'], cwd=chart_path):
             logger.info(f"Successfully updated dependencies for {chart_name}")
     
     def _run_chart_tools(self, chart_path, chart_name):
@@ -388,7 +443,7 @@ class HelmChartUpdater:
             file_path = os.path.join(chart_path, filename)
 
             if os.path.exists(file_path):
-                if self.run_command(f"bash {fix_lint_script} {file_path}"):
+                if self.run_command(['bash', fix_lint_script, file_path]):
                     logger.info(f"Fixed lint for {chart_name}/{filename}")
                 else:
                     logger.warning(f"Failed to fix lint for {chart_name}/{filename}")
@@ -397,7 +452,7 @@ class HelmChartUpdater:
 
     def _run_helm_docs(self, chart_path, chart_name):
         logger.info(f"Running helm-docs for {chart_name}")        
-        if self.run_command("helm-docs", cwd=chart_path):
+        if self.run_command(['helm-docs'], cwd=chart_path):
             readme_path = os.path.join(chart_path, "README.md")
             if os.path.exists(readme_path):
                 logger.info(f"README.md exists at {readme_path}")
@@ -410,18 +465,16 @@ class HelmChartUpdater:
         global_ct_config = os.path.join(chart_dir, ".github/configs/ct.yaml")
         global_lint_config = os.path.join(chart_dir, ".github/configs/lintconf.yaml")
         local_ct_config = os.path.join(chart_path, "ct.yaml")        
-        config_param = ""
+        ct_cmd = ['ct', 'lint', '--charts', rel_chart_path]
         if os.path.exists(global_ct_config):
-            config_param = f"--config {os.path.relpath(global_ct_config, chart_dir)}"
+            ct_cmd.extend(['--config', os.path.relpath(global_ct_config, chart_dir)])
         elif os.path.exists(local_ct_config):
-            config_param = f"--config {os.path.relpath(local_ct_config, chart_dir)}"        
-        lint_param = ""
+            ct_cmd.extend(['--config', os.path.relpath(local_ct_config, chart_dir)])
         if os.path.exists(global_lint_config):
-            lint_param = f"--lint-conf {os.path.relpath(global_lint_config, chart_dir)}"        
-        ct_cmd = f"ct lint --charts {rel_chart_path} {config_param} {lint_param}"
+            ct_cmd.extend(['--lint-conf', os.path.relpath(global_lint_config, chart_dir)])
         try:
             result = subprocess.run(ct_cmd, cwd=chart_dir, check=True, 
-                                capture_output=True, text=True, shell=isinstance(ct_cmd, str))
+                                capture_output=True, text=True)
             logger.info(f"Linting completed for {chart_name}")
             return True
         except subprocess.CalledProcessError as e:
@@ -435,15 +488,19 @@ class HelmChartUpdater:
     def _run_pluto_check(self, chart_path, chart_name):
         """Run Pluto to check for deprecated API versions"""
         logger.info(f"Running Pluto checks for {chart_name}")
+        tmp_dir = tempfile.mkdtemp(prefix=f"pluto-{chart_name}-")
         try:
-            volume_name = f"pluto-{chart_name.replace('/', '-')}"            
-            render_cmd = f"docker run --rm -v {os.path.abspath(chart_path)}:/apps -v {volume_name}:/pluto alpine/helm:3.17 template {chart_name} /apps -f /apps/tests/pluto/values.yaml --output-dir /pluto"
-            result = self.run_command(render_cmd)
+            pluto_values = os.path.join(chart_path, "tests/pluto/values.yaml")
+            template_cmd = ['helm', 'template', chart_name, chart_path, '--output-dir', tmp_dir]
+            if os.path.exists(pluto_values):
+                template_cmd.extend(['-f', pluto_values])
+
+            result = self.run_command(template_cmd)
             if result is None:
                 logger.warning(f"Helm template rendering failed for {chart_name}, skipping this chart")
                 self.chart_updates = [update for update in self.chart_updates if update['chart'] != chart_name]
                 try:
-                    cmd_result = subprocess.run(render_cmd, shell=True, capture_output=True, text=True)
+                    cmd_result = subprocess.run(template_cmd, capture_output=True, text=True)
                     error_message = cmd_result.stderr or cmd_result.stdout
                 except Exception:
                     error_message = "Failed to render Helm templates for Pluto check"
@@ -451,18 +508,19 @@ class HelmChartUpdater:
                     chart_name,
                     f"Helm template rendering failed for Pluto check:\n\n```\n{error_message}\n```"
                 )
-                try:
-                    self.run_command(f"docker volume rm {volume_name}")
-                except:
-                    pass
-                
-                return False                
-            pluto_cmd = f"docker run --rm -v {volume_name}:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /data -o yaml --ignore-deprecations -t \"k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0\" -o wide"
-            result = subprocess.run(pluto_cmd, shell=True, check=True, capture_output=True, text=True)            
-            self.run_command(f"docker volume rm {volume_name}")            
+                return False
+
+            pluto_cmd = [
+                'pluto', 'detect-files', '-d', tmp_dir,
+                '--ignore-deprecations',
+                '-t', 'k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0',
+                '-o', 'wide'
+            ]
+            result = subprocess.run(pluto_cmd, check=True, capture_output=True, text=True)
+
             if "Deprecated APIs:" in result.stdout and "No deprecated resource" not in result.stdout:
-                logger.warning(f"Pluto found deprecated APIs in {chart_name}")                
-                self.chart_updates = [update for update in self.chart_updates if update['chart'] != chart_name]                
+                logger.warning(f"Pluto found deprecated APIs in {chart_name}")
+                self.chart_updates = [update for update in self.chart_updates if update['chart'] != chart_name]
                 self.create_github_issue(
                     chart_name,
                     f"Pluto detected deprecated Kubernetes APIs:\n\n```\n{result.stdout}\n```"
@@ -473,29 +531,35 @@ class HelmChartUpdater:
         except subprocess.CalledProcessError as e:
             error_message = e.stderr or e.stdout
             logger.warning(f"Pluto checks failed for {chart_name}, skipping this chart")
-            logger.warning(f"Error: {error_message}")            
-            try:
-                volume_name = f"pluto-{chart_name.replace('/', '-')}"
-                self.run_command(f"docker volume rm {volume_name}")
-            except:
-                pass            
-            self.chart_updates = [update for update in self.chart_updates if update['chart'] != chart_name]            
+            logger.warning(f"Error: {error_message}")
+            self.chart_updates = [update for update in self.chart_updates if update['chart'] != chart_name]
             self.create_github_issue(
                 chart_name,
                 f"Pluto checks failed:\n\n```\n{error_message}\n```"
             )
             return False
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
 
     def _check_prometheus_rules(self, chart_path, chart_name):
-        """Check Prometheus rules for validity"""
+        """Check Prometheus rules for validity using native promtool."""
         rules_dir = os.path.join(chart_path, "resources/prometheus-rules")
         if not os.path.exists(rules_dir) or not os.listdir(rules_dir):
             logger.info(f"No Prometheus rules found for {chart_name}, skipping check")
             return True
         logger.info(f"Checking Prometheus rules for {chart_name}")
         try:
-            cmd = f"docker run --rm --entrypoint /bin/sh -v {os.path.abspath(chart_path)}:/workdir -w /workdir prom/prometheus -c -- \"promtool check rules resources/prometheus-rules/*\""
-            result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+            rule_files = [
+                os.path.join(rules_dir, f)
+                for f in os.listdir(rules_dir)
+                if os.path.isfile(os.path.join(rules_dir, f))
+            ]
+            if not rule_files:
+                return True
+            result = subprocess.run(
+                ['promtool', 'check', 'rules'] + rule_files,
+                check=True, capture_output=True, text=True
+            )
             logger.info(f"Prometheus rules check passed for {chart_name}")
             return True
         except subprocess.CalledProcessError as e:
@@ -510,15 +574,24 @@ class HelmChartUpdater:
             return False
 
     def _test_prometheus_rules(self, chart_path, chart_name):
-        """Run tests for Prometheus rules"""
+        """Run tests for Prometheus rules using native promtool."""
         tests_dir = os.path.join(chart_path, "tests/prometheus")
         if not os.path.exists(tests_dir) or not os.listdir(tests_dir):
             logger.info(f"No Prometheus tests found for {chart_name}, skipping tests")
             return True
         logger.info(f"Testing Prometheus rules for {chart_name}")
         try:
-            cmd = f"docker run --rm --entrypoint /bin/sh -v {os.path.abspath(chart_path)}:/workdir -w /workdir prom/prometheus -c -- \"promtool test rules tests/prometheus/*\""
-            result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+            test_files = [
+                os.path.join(tests_dir, f)
+                for f in os.listdir(tests_dir)
+                if os.path.isfile(os.path.join(tests_dir, f))
+            ]
+            if not test_files:
+                return True
+            result = subprocess.run(
+                ['promtool', 'test', 'rules'] + test_files,
+                check=True, capture_output=True, text=True
+            )
             logger.info(f"Prometheus tests passed for {chart_name}")
             return True
         except subprocess.CalledProcessError as e:
@@ -542,7 +615,7 @@ class HelmChartUpdater:
             logger.error("Neither GH_TOKEN nor GITHUB_TOKEN environment variables are set, cannot create issue")
             return
         try:
-            remote_url = self.run_command("git config --get remote.origin.url")
+            remote_url = self.run_command(['git', 'config', '--get', 'remote.origin.url'])
             if remote_url:
                 if remote_url.startswith('git@github.com:'):
                     remote_url = remote_url.replace('git@github.com:', '')
@@ -625,7 +698,7 @@ class HelmChartUpdater:
                 chart_updates[chart_name] = []
             chart_updates[chart_name].append(update)
         try:
-            remote_url = self.run_command("git config --get remote.origin.url")
+            remote_url = self.run_command(['git', 'config', '--get', 'remote.origin.url'])
             if remote_url:
                 if remote_url.startswith('git@github.com:'):
                     remote_url = remote_url.replace('git@github.com:', 'https://github.com/')
@@ -645,7 +718,7 @@ class HelmChartUpdater:
             pr_body += "| Dependency | Previous Version | New Version | Commit |\n"
             pr_body += "|------------|-----------------|------------|--------|\n"
 
-            commit_hash = self.run_command(f"git log -n 1 --pretty=format:%H -- charts/{chart_name}")            
+            commit_hash = self.run_command(['git', 'log', '-n', '1', '--pretty=format:%H', '--', f'charts/{chart_name}'])            
             for update in updates:
                 dep_name = update['dependency']
                 from_ver = update['from_version']
@@ -667,8 +740,30 @@ class HelmChartUpdater:
             logger.error("Charts directory not found")
             return False
         
+        # Phase 1: Pre-register all helm repos before fetching versions
+        for chart_name in sorted(os.listdir(charts_dir)):
+            if self.target_chart and chart_name != self.target_chart:
+                continue
+            chart_path = os.path.join(charts_dir, chart_name)
+            chart_yaml_path = os.path.join(chart_path, 'Chart.yaml')
+            if not os.path.isdir(chart_path) or not os.path.exists(chart_yaml_path):
+                continue
+            with open(chart_yaml_path) as f:
+                chart_data = yaml.load(f)
+            for dep in chart_data.get('dependencies', []):
+                self.add_helm_repo(dep['repository'])
+
+        # Phase 2: Single bulk repo update
+        self.update_all_repos()
+
+        # Phase 3: Prefetch latest versions in parallel
+        self._prefetch_latest_versions(charts_dir)
+
+        # Phase 4: Process each chart (uses cached versions)
         updates_found = False
-        for chart_name in os.listdir(charts_dir):
+        for chart_name in sorted(os.listdir(charts_dir)):
+            if self.target_chart and chart_name != self.target_chart:
+                continue
             chart_path = os.path.join(charts_dir, chart_name)
             if os.path.isdir(chart_path) and self.update_single_chart(chart_path):
                 updates_found = True
@@ -689,18 +784,18 @@ class HelmChartUpdater:
         return False
     
     def _setup_git_config(self):
-        self.run_command('git config --global user.name "GitHub Actions"')
-        self.run_command('git config --global user.email "actions@github.com"')
+        self.run_command(['git', 'config', '--global', 'user.name', 'GitHub Actions'])
+        self.run_command(['git', 'config', '--global', 'user.email', 'actions@github.com'])
     
     def _create_branch(self):
-        current_branch = self.run_command('git branch --show-current')
+        current_branch = self.run_command(['git', 'branch', '--show-current'])
         if current_branch == "main":
-            return self.run_command(f'git checkout -b {self.branch_name}') is not None        
-        self.run_command('git add -A')
-        self.run_command('git stash')        
-        self.run_command('git checkout main')
-        result = self.run_command(f'git checkout -b {self.branch_name}') is not None        
-        self.run_command('git stash pop')
+            return self.run_command(['git', 'checkout', '-b', self.branch_name]) is not None        
+        self.run_command(['git', 'add', '-A'])
+        self.run_command(['git', 'stash'])        
+        self.run_command(['git', 'checkout', 'main'])
+        result = self.run_command(['git', 'checkout', '-b', self.branch_name]) is not None        
+        self.run_command(['git', 'stash', 'pop'])
         return result
     
     def _commit_changes(self):
@@ -715,36 +810,45 @@ class HelmChartUpdater:
         all_commits_succeeded = True        
         if os.path.exists('CHANGELOG.md'):
             os.remove('CHANGELOG.md')
-        self.run_command('git rm -f --cached CHANGELOG.md 2>/dev/null || true')
-        self.run_command('touch .gitignore')
-        self.run_command('echo "CHANGELOG.md" >> .gitignore')
-        self.run_command('git reset -- etc/')
-        self.run_command('git checkout -- etc/ || true')
+        self.run_command(['git', 'rm', '-f', '--cached', 'CHANGELOG.md', '--ignore-unmatch'])
+        if not os.path.exists('.gitignore'):
+            open('.gitignore', 'a').close()
+        with open('.gitignore', 'a') as f:
+            f.write('CHANGELOG.md\n')
+        self.run_command(['git', 'reset', '--', 'etc/'])
+        self.run_command(['git', 'checkout', '--', 'etc/'])
         for chart_name, updates in chart_updates.items():
             chart_path = os.path.join(charts_dir, chart_name)
             for filename in ["Chart.yaml", "values.yaml", "README.md"]:
                 filepath = os.path.join(chart_path, filename)
-                if os.path.exists(filepath): self.run_command(f'git add {filepath}')
+                if os.path.exists(filepath): self.run_command(['git', 'add', filepath])
             dep_dir = os.path.join(chart_path, "charts")
-            if os.path.isdir(dep_dir): self.run_command(f'git add {dep_dir}')
+            if os.path.isdir(dep_dir): self.run_command(['git', 'add', dep_dir])
             lock_file = os.path.join(chart_path, "Chart.lock")
-            if os.path.exists(lock_file): self.run_command(f'git add {lock_file}')
+            if os.path.exists(lock_file): self.run_command(['git', 'add', lock_file])
             deps = [f"{u['dependency']} ({u['from_version']} → {u['to_version']})" for u in updates]
             commit_msg = f"chore(helm): update {chart_name} dependencies\n\nUpdates: {', '.join(deps)}"
-            if self.run_command(f'git commit -m "{commit_msg}"') is None:
+            if self.run_command(['git', 'commit', '-m', commit_msg]) is None:
                 all_commits_succeeded = False
-        self.run_command("git checkout -- .gitignore || true")
+        self.run_command(['git', 'checkout', '--', '.gitignore'])
         return all_commits_succeeded
 
     def _push_branch(self):
-        return self.run_command(f'git push -u origin {self.branch_name}') is not None
+        return self.run_command(['git', 'push', '-u', 'origin', self.branch_name]) is not None
 
 def main():
     dry_run = os.getenv('DRY_RUN', 'false').lower() == 'true'
     skip_pr = os.getenv('SKIP_PR', 'true').lower() == 'true'
     update_values = os.getenv('UPDATE_VALUES', 'true').lower() == 'true'
-    
-    updater = HelmChartUpdater(dry_run, skip_pr, update_values)
+    target_chart = os.getenv('TARGET_CHART', '').strip() or None
+
+    # CLI --chart flag overrides env var
+    if '--chart' in sys.argv:
+        idx = sys.argv.index('--chart')
+        if idx + 1 < len(sys.argv):
+            target_chart = sys.argv[idx + 1]
+
+    updater = HelmChartUpdater(dry_run, skip_pr, update_values, target_chart)
     updates_found = updater.process_all_charts()
     
     if updates_found:
@@ -760,8 +864,7 @@ def main():
                 f.write(f"commit_message=chore: update helm dependencies\n")
                 f.write(f"branch={updater.branch_name}\n")
                 if pr_body:
-                    escaped_body = pr_body.replace('%', '%25').replace('\n', '%0A').replace('\r', '%0D')
-                    f.write(f"pr_body={escaped_body}\n")
+                    f.write(f"pr_body<<EOF\n{pr_body}\nEOF\n")
 
 if __name__ == "__main__":
     main()
