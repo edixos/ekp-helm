@@ -165,6 +165,7 @@ A Helm chart for Kubernetes
 | kube-ovn.performance.GC_INTERVAL | int | `360` |  |
 | kube-ovn.performance.INSPECT_INTERVAL | int | `20` |  |
 | kube-ovn.performance.OVS_VSCTL_CONCURRENCY | int | `100` |  |
+| kube-ovn.valuesFrom | object | `{}` |  |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `false` | Add grafana dashboard as a configmap |
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
