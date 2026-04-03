@@ -5,7 +5,7 @@ kube-ovn:
     images:
       kubeovn:
         repository: kube-ovn
-        tag: v1.14.0
+        tag: v1.15.8
         support_arm: true
 
   image:
@@ -34,8 +34,37 @@ kube-ovn:
     enableNatGateways: true
     enableKeepVmIps: true
 
-  masterNodes:
-    - "192.168.1.10"
-    - "192.168.1.11"
-
+  masterNodes: []
   masterNodesLabels: {}
+
+  central:
+    extraEnv:
+      - name: OVN_DB_IPS
+        valueFrom:
+          configMapKeyRef:
+            name: kube-ovn-master-nodes
+            key: MASTER_NODES
+
+  controller:
+    extraEnv:
+      - name: OVN_DB_IPS
+        valueFrom:
+          configMapKeyRef:
+            name: kube-ovn-master-nodes
+            key: MASTER_NODES
+
+  ovsOvn:
+    extraEnv:
+      - name: OVN_DB_IPS
+        valueFrom:
+          configMapKeyRef:
+            name: kube-ovn-master-nodes
+            key: MASTER_NODES
+
+  agent:
+    extraEnv:
+      - name: OVN_DB_IPS
+        valueFrom:
+          configMapKeyRef:
+            name: kube-ovn-master-nodes
+            key: MASTER_NODES
