@@ -39,32 +39,32 @@ kube-ovn:
 
   central:
     extraEnv:
-      - name: OVN_DB_IPS
+      - name: NODE_IPS
         valueFrom:
           configMapKeyRef:
             name: kube-ovn-master-nodes
             key: MASTER_NODES
 
-  controller:
-    extraEnv:
-      - name: OVN_DB_IPS
-        valueFrom:
-          configMapKeyRef:
-            name: kube-ovn-master-nodes
-            key: MASTER_NODES
+    controller:
+      extraEnv:
+        - name: NODE_IPS
+          valueFrom:
+            configMapKeyRef:
+              name: kube-ovn-master-nodes
+              key: MASTER_NODES
 
-  ovsOvn:
-    extraEnv:
-      - name: OVN_DB_IPS
-        valueFrom:
-          configMapKeyRef:
-            name: kube-ovn-master-nodes
-            key: MASTER_NODES
+    ovsOvn:
+      extraEnv:
+        - name: NODE_IPS
+          valueFrom:
+            configMapKeyRef:
+              name: kube-ovn-master-nodes
+              key: MASTER_NODES
 
-  agent:
-    extraEnv:
-      - name: OVN_DB_IPS
-        valueFrom:
-          configMapKeyRef:
-            name: kube-ovn-master-nodes
-            key: MASTER_NODES
+    agent:
+      extraEnv:
+        - name: NODE_IPS
+          valueFrom:
+            configMapKeyRef:
+              name: kube-ovn-master-nodes
+              key: MASTER_NODES
