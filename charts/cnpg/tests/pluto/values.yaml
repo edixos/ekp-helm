@@ -1,0 +1,62 @@
+cnpg:
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/cloudnative-pg/cloudnative-pg
+    pullPolicy: IfNotPresent
+
+  crds:
+    create: true
+
+  webhook:
+    port: 9443
+    mutating:
+      create: true
+      failurePolicy: Fail
+    validating:
+      create: true
+      failurePolicy: Fail
+    livenessProbe:
+      initialDelaySeconds: 3
+    readinessProbe:
+      initialDelaySeconds: 3
+
+  config:
+    create: true
+    name: cnpg-controller-manager-config
+    secret: false
+    clusterWide: true
+    maxConcurrentReconciles: 10
+
+  serviceAccount:
+    create: true
+
+  rbac:
+    create: true
+    aggregateClusterRoles: false
+
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+    capabilities:
+      drop:
+        - "ALL"
+
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  service:
+    type: ClusterIP
+    name: cnpg-webhook-service
+    port: 443
+
+  monitoring:
+    podMonitorEnabled: false
+    grafanaDashboard:
+      create: false
