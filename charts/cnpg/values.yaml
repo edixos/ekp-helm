@@ -1,7 +1,5 @@
 # Default values for cnpg.
 cnpg:
-  # -- List of CloudNativePG clusters to deploy
-  clusters: []
   #
   # Copyright The CloudNativePG Contributors
   #
@@ -641,3 +639,6 @@ cnpg:
           - setting:
               usage: "GAUGE"
               description: "Setting value"
+
+# -- List of CloudNativePG clusters to deploy
+clusters: []

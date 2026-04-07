@@ -1,4 +1,4 @@
-{{- range .Values.cnpg.clusters }}
+{{- range .Values.clusters }}
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
