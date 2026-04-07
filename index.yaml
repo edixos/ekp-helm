@@ -844,6 +844,22 @@ entries:
     urls:
     - cloudtty-0.1.0.tgz
     version: 0.1.0
+  cnpg:
+  - apiVersion: v2
+    appVersion: 1.29.0
+    created: "2026-04-07T10:13:28.048652634Z"
+    dependencies:
+    - alias: cnpg
+      name: cloudnative-pg
+      repository: https://cloudnative-pg.github.io/charts
+      version: 0.23.0
+    description: A Helm chart for Kubernetes
+    digest: 3647a07caf500d7b2614d7132b53bd8bbaf8155c7d75e90555f498588b4d3fa5
+    name: cnpg
+    type: application
+    urls:
+    - cnpg-0.1.0.tgz
+    version: 0.1.0
   configconnector:
   - apiVersion: v2
     appVersion: 1.129.2
@@ -3827,4 +3843,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-03T10:12:49.546452618Z"
+generated: "2026-04-07T10:13:28.048822794Z"
