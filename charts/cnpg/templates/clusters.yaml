@@ -1,0 +1,21 @@
+{{- range .Values.clusters }}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "cnpg.labels" $ | nindent 4 }}
+spec:
+  instances: {{ .instances | default 3 }}
+  storage:
+    size: {{ .storage.size | default "10Gi" }}
+    {{- if .storage.storageClass }}
+    storageClass: {{ .storage.storageClass }}
+    {{- end }}
+  {{- range $key, $val := omit . "name" "instances" "storage" }}
+  {{ $key }}:
+    {{- toYaml $val | nindent 4 }}
+  {{- end }}
+{{- end }}

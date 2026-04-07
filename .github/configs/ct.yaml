@@ -21,7 +21,8 @@ chart-repos:
   - cloudtty=https://cloudtty.github.io/cloudtty/
   - scaleway=https://helm.scw.cloud/
   - cilium=https://helm.cilium.io/
-
+  - cloudnative-pg=https://cloudnative-pg.github.io/charts
+  
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
 validate-maintainers: false
