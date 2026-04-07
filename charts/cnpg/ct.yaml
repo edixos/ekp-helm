@@ -1,0 +1,7 @@
+remote: origin
+chart-dirs:
+  - charts
+helm-extra-args: --timeout=500
+chart-repos:
+  - cloudnative-pg=https://cloudnative-pg.github.io/charts
+check-version-increment: true
