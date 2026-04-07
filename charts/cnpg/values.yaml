@@ -20,27 +20,27 @@ cnpg:
   # Default values for CloudNativePG.
   # This is a YAML-formatted file.
   # Please declare variables to be passed to your templates.
-  
+
   replicaCount: 1
-  
+
   image:
     repository: ghcr.io/cloudnative-pg/cloudnative-pg
     pullPolicy: IfNotPresent
     # -- Overrides the image tag whose default is the chart appVersion.
     tag: ""
-  
+
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
   namespaceOverride: ""
-  
+
   hostNetwork: false
   dnsPolicy: ""
-  
+
   crds:
     # -- Specifies whether the CRDs should be created when installing the chart.
     create: true
-  
+
   # -- The webhook configuration.
   webhook:
     port: 9443
@@ -54,7 +54,7 @@ cnpg:
       initialDelaySeconds: 3
     readinessProbe:
       initialDelaySeconds: 3
-  
+
   # Operator configuration.
   config:
     # -- Specifies whether the secret should be created.
@@ -76,10 +76,10 @@ cnpg:
     # WATCH_NAMESPACE: namespace-a,namespace-b
     # -- The maximum number of concurrent reconciles. Defaults to 10.
     maxConcurrentReconciles: 10
-  
+
   # -- Additinal arguments to be added to the operator's args list.
   additionalArgs: []
-  
+
   # -- Array containing extra environment variables which can be templated.
   # For example:
   #  - name: RELEASE_NAME
@@ -87,28 +87,28 @@ cnpg:
   #  - name: MY_VAR
   #    value: "mySpecialKey"
   additionalEnv: []
-  
+
   serviceAccount:
     # -- Specifies whether the service account should be created.
     create: true
     # -- The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template.
     name: ""
-  
+
   rbac:
     # -- Specifies whether ClusterRole and ClusterRoleBinding should be created.
     create: true
     # -- Aggregate ClusterRoles to Kubernetes default user-facing roles.
     # Ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles
     aggregateClusterRoles: false
-  
+
   # -- Annotations to be added to all other resources.
   commonAnnotations: {}
   # -- Annotations to be added to the pod.
   podAnnotations: {}
   # -- Labels to be added to the pod.
   podLabels: {}
-  
+
   # -- Container Security Context.
   containerSecurityContext:
     allowPrivilegeEscalation: false
@@ -120,17 +120,17 @@ cnpg:
     capabilities:
       drop:
         - "ALL"
-  
+
   # -- Security Context for the whole pod.
   podSecurityContext:
     runAsNonRoot: true
     seccompProfile:
       type: RuntimeDefault
     # fsGroup: 2000
-  
+
   # -- Priority indicates the importance of a Pod relative to other Pods.
   priorityClassName: ""
-  
+
   service:
     type: ClusterIP
     # -- DO NOT CHANGE THE SERVICE NAME as it is currently used to generate the certificate
@@ -141,7 +141,7 @@ cnpg:
     ipFamilyPolicy: ""
     # -- Sets the families that should be supported and the order in which they should be applied to ClusterIP as well. Can be IPv4 and/or IPv6.
     ipFamilies: []
-  
+
   resources: {}
     # If you want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
@@ -152,18 +152,18 @@ cnpg:
     # requests:
     #   cpu: 100m
     #   memory: 100Mi
-  
+
   # -- Nodeselector for the operator to be installed.
   nodeSelector: {}
-  
+
   # -- Tolerations for the operator to be installed.
   tolerations: []
-  
+
   # -- Affinity for the operator to be installed.
   affinity: {}
-  
+
   monitoring:
-  
+
     # -- Specifies whether the monitoring should be enabled. Requires Prometheus Operator CRDs.
     podMonitorEnabled: false
     # -- Metrics relabel configurations to apply to samples before ingestion.
@@ -172,7 +172,7 @@ cnpg:
     podMonitorRelabelings: []
     # -- Additional labels for the podMonitor
     podMonitorAdditionalLabels: {}
-  
+
     grafanaDashboard:
       create: false
       # -- Allows overriding the namespace where the ConfigMap will be created, defaulting to the same one as the Release.
@@ -187,7 +187,7 @@ cnpg:
       labels: {}
       # -- Annotations that ConfigMaps can have to get configured in Grafana.
       annotations: {}
-  
+
   # Default monitoring queries
   monitoringQueriesConfigMap:
     # -- The name of the default monitoring configmap.
@@ -239,7 +239,7 @@ cnpg:
           - max_tx_duration_seconds:
               usage: "GAUGE"
               description: "Maximum duration of a transaction in seconds"
-  
+
       backends_waiting:
         query: |
          SELECT count(*) AS total
@@ -262,7 +262,7 @@ cnpg:
           - total:
               usage: "GAUGE"
               description: "Total number of backends that are currently waiting on other queries"
-  
+
       pg_database:
         query: |
           SELECT datname
@@ -284,7 +284,7 @@ cnpg:
           - mxid_age:
               usage: "GAUGE"
               description: "Number of multiple transactions (Multixact) from the frozen XID to the current one"
-  
+
       pg_postmaster:
         query: |
           SELECT EXTRACT(EPOCH FROM pg_postmaster_start_time) AS start_time
@@ -293,7 +293,7 @@ cnpg:
           - start_time:
               usage: "GAUGE"
               description: "Time at which postgres started (based on epoch)"
-  
+
       pg_replication:
         query: "SELECT CASE WHEN (
                   NOT pg_catalog.pg_is_in_recovery()
@@ -318,7 +318,7 @@ cnpg:
           - streaming_replicas:
               usage: "GAUGE"
               description: "Number of streaming replicas connected to the instance"
-  
+
       pg_replication_slots:
         query: |
           SELECT slot_name,
@@ -347,7 +347,7 @@ cnpg:
           - pg_wal_lsn_diff:
               usage: "GAUGE"
               description: "Replication lag in bytes"
-  
+
       pg_stat_archiver:
         query: |
           SELECT archived_count
@@ -388,7 +388,7 @@ cnpg:
           - stats_reset_time:
               usage: "GAUGE"
               description: "Time at which these statistics were last reset"
-  
+
       pg_stat_bgwriter:
         runonserver: "<17.0.0"
         query: |
@@ -434,7 +434,7 @@ cnpg:
           - buffers_alloc:
               usage: "COUNTER"
               description: "Number of buffers allocated"
-  
+
       pg_stat_bgwriter_17:
         runonserver: ">=17.0.0"
         name: pg_stat_bgwriter
@@ -457,7 +457,7 @@ cnpg:
           - stats_reset_time:
               usage: "GAUGE"
               description: "Time at which these statistics were last reset"
-  
+
       pg_stat_checkpointer:
         runonserver: ">=17.0.0"
         query: |
@@ -499,7 +499,7 @@ cnpg:
           - stats_reset_time:
               usage: "GAUGE"
               description: "Time at which these statistics were last reset"
-  
+
       pg_stat_database:
         query: |
           SELECT datname
@@ -568,7 +568,7 @@ cnpg:
           - blk_write_time:
               usage: "COUNTER"
               description: "Time spent writing data file blocks by backends in this database, in milliseconds"
-  
+
       pg_stat_replication:
         primary: true
         query: |
@@ -626,7 +626,7 @@ cnpg:
           - replay_lag_seconds:
               usage: "GAUGE"
               description: "Time elapsed between flushing recent WAL locally and receiving notification that this standby server has written, flushed and applied it"
-  
+
       pg_settings:
         query: |
           SELECT name,
