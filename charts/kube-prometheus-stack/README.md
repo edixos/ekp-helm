@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.13](https://img.shields.io/badge/Version-0.1.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.89.0](https://img.shields.io/badge/AppVersion-v0.89.0-informational?style=flat-square)
+![Version: 0.1.14](https://img.shields.io/badge/Version-0.1.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.90.1](https://img.shields.io/badge/AppVersion-v0.90.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 82.16.0 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 83.1.0 |
 
 ## Description
 
@@ -240,6 +240,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.crds.enabled | bool | `true` |  |
 | kubePrometheusStack.crds.upgradeJob.affinity | object | `{}` |  |
 | kubePrometheusStack.crds.upgradeJob.annotations | object | `{}` |  |
+| kubePrometheusStack.crds.upgradeJob.automountServiceAccountToken | bool | `true` |  |
 | kubePrometheusStack.crds.upgradeJob.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | kubePrometheusStack.crds.upgradeJob.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | kubePrometheusStack.crds.upgradeJob.containerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
@@ -820,7 +821,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.repository | string | `"prometheus/prometheus"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.10.0"` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.11.1"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.listenLocal | bool | `false` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.logFormat | string | `"logfmt"` |  |
@@ -1372,7 +1373,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.13"
+    targetRevision: "0.1.14"
     chart: kube-prometheus-stack
     path: ''
     helm:
