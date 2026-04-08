@@ -69,7 +69,7 @@ kube-ovn:
     images:
       kubeovn:
         repository: kube-ovn
-        tag: v1.15.8
+        tag: v1.15.9
 
   # -- Image configuration.
   # @section -- Global parameters
@@ -371,7 +371,7 @@ kube-ovn:
       repository: docker.io/kubeovn/vpc-nat-gateway
       # -- Image tag.
       # @section -- NAT gateways configuration
-      tag: v1.15.8
+      tag: v1.15.9
       # -- Image pull policy.
       # @section -- NAT gateways configuration
       pullPolicy: IfNotPresent
@@ -388,7 +388,7 @@ kube-ovn:
         repository: docker.io/kubeovn/kube-ovn
         # -- Image tag.
         # @section -- NAT gateways configuration
-        tag: v1.15.8
+        tag: v1.15.9
         # -- Image pull policy.
         # @section -- NAT gateways configuration
         pullPolicy: IfNotPresent
@@ -527,7 +527,7 @@ kube-ovn:
       enabled: false
       # -- DPDK image tag.
       # @section -- OVS/OVN daemons configuration
-      tag: v1.15.8
+      tag: v1.15.9
       # -- Affinity for the ovs-ovn-dpdk DaemonSet.
       # @section -- OVS/OVN daemons configuration
       affinity: {}
