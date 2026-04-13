@@ -839,3 +839,6 @@ kratos:
     busybox:
       repository: busybox
       tag: stable
+
+  # -- Define custom HTTP routes to be added to the Kratos configuration.
+  httproutes: []

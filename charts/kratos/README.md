@@ -1,6 +1,6 @@
 # kratos
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -108,6 +108,7 @@ A Helm chart for Kubernetes
 | kratos.global.podMetadata | object | `{"annotations":{},"labels":{}}` | Specify pod metadata, this metadata is added directly to the pod, and not higher objects |
 | kratos.global.podMetadata.annotations | object | `{}` | Extra pod level annotations |
 | kratos.global.podMetadata.labels | object | `{}` | Extra pod level labels |
+| kratos.httproutes | list | `[]` | Define custom HTTP routes to be added to the Kratos configuration. |
 | kratos.image.pullPolicy | string | `"IfNotPresent"` |  |
 | kratos.image.registry | string | `"docker.io"` | ORY KRATOS image registry |
 | kratos.image.repository | string | `"oryd/kratos"` | ORY KRATOS image |
@@ -296,7 +297,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: kratos
     path: ''
     helm:
