@@ -1,6 +1,6 @@
 # oathkeeper
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -69,6 +69,7 @@ A Helm chart for Kubernetes
 | oathkeeper.global.podMetadata | object | `{"annotations":{},"labels":{}}` | Specify pod metadata, this metadata is added directly to the pod, and not higher objects |
 | oathkeeper.global.podMetadata.annotations | object | `{}` | Extra pod level annotations |
 | oathkeeper.global.podMetadata.labels | object | `{}` | Extra pod level labels |
+| oathkeeper.httproutes | list | `[]` |  |
 | oathkeeper.image.initContainer | object | `{"repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
 | oathkeeper.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | oathkeeper.image.registry | string | `"docker.io"` | ORY Oathkeeper image registry |
@@ -198,7 +199,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: oathkeeper
     path: ''
     helm:
