@@ -2627,6 +2627,24 @@ entries:
   kratos:
   - apiVersion: v2
     appVersion: v26.2.0
+    created: "2026-04-13T09:40:38.963567755Z"
+    dependencies:
+    - alias: kratos
+      name: kratos
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.61.0
+    description: A Helm chart for Kubernetes
+    digest: 61044a670d0a67b8d5c368db1b0d114186dd64f0786df468c12646613558b353
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: kratos
+    urls:
+    - kratos-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: v26.2.0
     created: "2026-04-01T17:16:41.126892786Z"
     dependencies:
     - alias: kratos
@@ -3843,4 +3861,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-07T10:13:28.048822794Z"
+generated: "2026-04-13T09:40:38.964124401Z"
