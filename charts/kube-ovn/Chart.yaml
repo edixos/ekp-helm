@@ -9,7 +9,7 @@ maintainers:
     email: hamzatalbi831@gmail.com
     url: https://github.com/TalbiHamza
 dependencies:
-  - name: kube-ovn-v2
+  - name: kube-ovn
     version: v1.16.0
     repository: "https://kubeovn.github.io/kube-ovn/"
     alias: kube-ovn

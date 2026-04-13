@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn-v2) | v1.16.0 |
+| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn) | v1.16.0 |
 
 ## Maintainers
 
