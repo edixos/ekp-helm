@@ -1,6 +1,6 @@
-# kube-ovn
+# kube-ovn-v2
 
-![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.15.8](https://img.shields.io/badge/AppVersion-v1.15.8-informational?style=flat-square)
+![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.16.0](https://img.shields.io/badge/AppVersion-v1.16.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn-v2) | v1.15.8 |
+| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn-v2) | v1.16.0 |
 
 ## Maintainers
 
@@ -21,7 +21,7 @@
 
 ## Description
 
-A Helm chart for Kubernetes
+Helm chart for Kube-OVN
 
 ## Values
 
@@ -385,7 +385,7 @@ To install the chart with the release name `my-release`:
 
 ```bash
 helm repo add ekp-helm https://edixos.github.io/ekp-helm
-helm install ekp-helm/kube-ovn
+helm install ekp-helm/kube-ovn-v2
 ```
 
 ### With ArgoCD
@@ -396,14 +396,14 @@ Add new application as:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kube-ovn
+  name: kube-ovn-v2
 spec:
   project: infra
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.6"
-    chart: kube-ovn
+    targetRevision: "0.1.7"
+    chart: kube-ovn-v2
     path: ''
     helm:
       values: |
@@ -430,7 +430,7 @@ docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 h
 ### Run linter
 
 ```bash
-docker run --rm -it -w /charts -v $(pwd)/../../:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts /charts/charts/kube-ovn --config /charts/charts/kube-ovn/ct.yaml
+docker run --rm -it -w /charts -v $(pwd)/../../:/charts quay.io/helmpack/chart-testing:v3.12.0 ct lint --charts /charts/charts/kube-ovn-v2 --config /charts/charts/kube-ovn-v2/ct.yaml
 ```
 
 ### Run pluto
@@ -438,7 +438,7 @@ docker run --rm -it -w /charts -v $(pwd)/../../:/charts quay.io/helmpack/chart-t
 In order to check if the api-version used in this chart are not deprecated, or worse, removed, we use pluto to check it:
 
 ```
-docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:3.17 template kube-ovn . -f tests/pluto/values.yaml --output-dir /pluto
+docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:3.17 template kube-ovn-v2 . -f tests/pluto/values.yaml --output-dir /pluto
 docker run --rm -it -v pluto:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /data -o yaml --ignore-deprecations -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0" -o wide
 docker volume rm pluto
 ```
