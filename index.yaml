@@ -3305,6 +3305,25 @@ entries:
   oathkeeper:
   - apiVersion: v2
     appVersion: v26.2.0
+    created: "2026-04-13T09:40:52.26620986Z"
+    dependencies:
+    - alias: oathkeeper
+      name: oathkeeper
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.61.0
+    description: A Helm chart for Kubernetes
+    digest: eb6a54199440a02c83f95a6e0d4574ae07fc4c40f706b7cdfc4c12e2e883a542
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: oathkeeper
+    type: application
+    urls:
+    - oathkeeper-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: v26.2.0
     created: "2026-03-28T10:06:54.669168532Z"
     dependencies:
     - alias: oathkeeper
@@ -3861,4 +3880,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-13T09:40:38.964124401Z"
+generated: "2026-04-13T09:40:52.266443691Z"
