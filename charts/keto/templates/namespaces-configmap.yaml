@@ -1,0 +1,10 @@
+{{- if .Values.keto.namespacesConfig }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keto-namespaces
+  namespace: {{ .Release.Namespace }}
+data:
+  namespaces.keto.ts: |
+{{ .Values.keto.namespacesConfig | indent 4 }}
+{{- end }}

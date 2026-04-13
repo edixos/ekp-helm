@@ -534,3 +534,5 @@ keto:
     busybox:
       repository: busybox
       tag: stable
+
+  namespacesConfig: ""

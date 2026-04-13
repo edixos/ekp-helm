@@ -1,6 +1,6 @@
 # keto
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -132,6 +132,7 @@ A Helm chart for Kubernetes
 | keto.keto.customMigrations.jobs.example-job.nodeSelector | object | `{}` |  |
 | keto.keto.customMigrations.jobs.example-job.resources | object | `{}` |  |
 | keto.nameOverride | string | `""` |  |
+| keto.namespacesConfig | string | `""` |  |
 | keto.pdb.enabled | bool | `false` |  |
 | keto.pdb.spec.maxUnavailable | string | `""` |  |
 | keto.pdb.spec.minAvailable | string | `""` |  |
@@ -239,7 +240,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: keto
     path: ''
     helm:
