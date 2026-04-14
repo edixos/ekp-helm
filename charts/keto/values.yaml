@@ -535,4 +535,8 @@ keto:
       repository: busybox
       tag: stable
 
+  # -- Namespaces configuration
   namespacesConfig: ""
+
+  # -- External secrets configuration. This is used to create ExternalSecret resources when using the helm chart with the external-secrets operator.
+  externalSecrets: []

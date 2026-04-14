@@ -1,6 +1,6 @@
 # keto
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -70,6 +70,7 @@ A Helm chart for Kubernetes
 | keto.deployment.terminationGracePeriodSeconds | int | `60` |  |
 | keto.deployment.tolerations | list | `[]` |  |
 | keto.deployment.topologySpreadConstraints | list | `[]` | Configure pod topologySpreadConstraints. |
+| keto.externalSecrets | list | `[]` | External secrets configuration. This is used to create ExternalSecret resources when using the helm chart with the external-secrets operator. |
 | keto.extraServices | object | `{}` |  |
 | keto.fullnameOverride | string | `""` |  |
 | keto.global | object | `{"imageRegistry":null,"podMetadata":{"annotations":{},"labels":{}}}` | Global setting, passed down to all pods |
@@ -132,7 +133,7 @@ A Helm chart for Kubernetes
 | keto.keto.customMigrations.jobs.example-job.nodeSelector | object | `{}` |  |
 | keto.keto.customMigrations.jobs.example-job.resources | object | `{}` |  |
 | keto.nameOverride | string | `""` |  |
-| keto.namespacesConfig | string | `""` |  |
+| keto.namespacesConfig | string | `""` | Namespaces configuration |
 | keto.pdb.enabled | bool | `false` |  |
 | keto.pdb.spec.maxUnavailable | string | `""` |  |
 | keto.pdb.spec.minAvailable | string | `""` |  |
@@ -240,7 +241,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: keto
     path: ''
     helm:
