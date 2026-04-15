@@ -837,8 +837,6 @@ kratos:
   test:
     # -- use a busybox image from another repository
     busybox:
+      registry: "docker.io"
       repository: busybox
       tag: stable
-
-  # -- Define custom HTTP routes to be added to the Kratos configuration.
-  httproutes: []
