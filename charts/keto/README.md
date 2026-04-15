@@ -1,6 +1,6 @@
 # keto
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://k8s.ory.sh/helm/charts | keto(keto) | 0.61.0 |
+| https://k8s.ory.sh/helm/charts | keto(keto) | 0.61.1 |
 
 ## Maintainers
 
@@ -70,7 +70,6 @@ A Helm chart for Kubernetes
 | keto.deployment.terminationGracePeriodSeconds | int | `60` |  |
 | keto.deployment.tolerations | list | `[]` |  |
 | keto.deployment.topologySpreadConstraints | list | `[]` | Configure pod topologySpreadConstraints. |
-| keto.externalSecrets | list | `[]` | External secrets configuration. This is used to create ExternalSecret resources when using the helm chart with the external-secrets operator. |
 | keto.extraServices | object | `{}` |  |
 | keto.fullnameOverride | string | `""` |  |
 | keto.global | object | `{"imageRegistry":null,"podMetadata":{"annotations":{},"labels":{}}}` | Global setting, passed down to all pods |
@@ -133,7 +132,6 @@ A Helm chart for Kubernetes
 | keto.keto.customMigrations.jobs.example-job.nodeSelector | object | `{}` |  |
 | keto.keto.customMigrations.jobs.example-job.resources | object | `{}` |  |
 | keto.nameOverride | string | `""` |  |
-| keto.namespacesConfig | string | `""` | Namespaces configuration |
 | keto.pdb.enabled | bool | `false` |  |
 | keto.pdb.spec.maxUnavailable | string | `""` |  |
 | keto.pdb.spec.minAvailable | string | `""` |  |
@@ -198,7 +196,7 @@ A Helm chart for Kubernetes
 | keto.serviceMonitor.scrapeInterval | string | `"60s"` | Interval at which metrics should be scraped |
 | keto.serviceMonitor.scrapeTimeout | string | `"30s"` | Timeout after which the scrape is ended |
 | keto.serviceMonitor.tlsConfig | object | `{}` | TLS configuration to use when scraping the endpoint |
-| keto.test.busybox | object | `{"repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
+| keto.test.busybox | object | `{"registry":"docker.io","repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
 | keto.test.labels | object | `{}` | Provide additional labels to the test pod |
 | keto.watcher.automountServiceAccountToken | bool | `true` |  |
 | keto.watcher.enabled | bool | `false` |  |
@@ -241,7 +239,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: keto
     path: ''
     helm:
