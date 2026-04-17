@@ -842,3 +842,6 @@ kratos:
 
   # -- Define custom HTTP routes to be added to the Kratos configuration.
   httproutes: []
+
+  # -- External secrets configuration. This is used to create ExternalSecret resources when using the helm chart with the external-secrets operator.
+  externalSecrets: []

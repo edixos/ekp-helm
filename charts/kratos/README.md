@@ -1,6 +1,6 @@
 # kratos
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -102,6 +102,7 @@ A Helm chart for Kubernetes
 | kratos.deployment.terminationGracePeriodSeconds | int | `60` |  |
 | kratos.deployment.tolerations | list | `[]` | Configure node tolerations. |
 | kratos.deployment.topologySpreadConstraints | list | `[]` | Configure pod topologySpreadConstraints. |
+| kratos.externalSecrets | list | `[]` | External secrets configuration. This is used to create ExternalSecret resources when using the helm chart with the external-secrets operator. |
 | kratos.fullnameOverride | string | `""` |  |
 | kratos.global | object | `{"imageRegistry":null,"podMetadata":{"annotations":{},"labels":{}}}` | Global setting, passed down to all pods |
 | kratos.global.imageRegistry | string | `nil` | Overrides the Docker registry globally for all images |
@@ -297,7 +298,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: kratos
     path: ''
     helm:
