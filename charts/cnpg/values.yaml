@@ -1,3 +1,4 @@
+---
 # Default values for cnpg.
 cnpg:
   #
@@ -36,7 +37,8 @@ cnpg:
   dnsPolicy: ""
 
   crds:
-    # -- Specifies whether the CRDs should be created when installing the chart.
+    # -- Specifies whether the CRDs should be created when installing the
+    # chart.
     create: true
 
   # -- The webhook configuration.
@@ -59,14 +61,16 @@ cnpg:
     create: true
     # -- The name of the configmap/secret to use.
     name: cnpg-controller-manager-config
-    # -- Specifies whether it should be stored in a secret, instead of a configmap.
+    # -- Specifies whether it should be stored in a secret, instead of a
+    # configmap.
     secret: false
     # -- This option determines if the operator is responsible for observing
     # events across the entire Kubernetes cluster or if its focus should be
     # narrowed down to the specific namespace within which it has been deployed.
     clusterWide: true
     # -- The content of the configmap/secret, see
-    # https://cloudnative-pg.io/documentation/current/operator_conf/#available-options
+    # https://cloudnative-pg.io/documentation/current/
+    # operator_conf/#available-options
     # for all the available options.
     data: {}
     # INHERITED_ANNOTATIONS: categories
@@ -90,14 +94,16 @@ cnpg:
     # -- Specifies whether the service account should be created.
     create: true
     # -- The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template.
+    # If not set and create is true, a name is generated using the fullname
+    # template.
     name: ""
 
   rbac:
     # -- Specifies whether ClusterRole and ClusterRoleBinding should be created.
     create: true
     # -- Aggregate ClusterRoles to Kubernetes default user-facing roles.
-    # Ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles
+    # Ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+    # #user-facing-roles
     aggregateClusterRoles: false
 
   # -- Annotations to be added to all other resources.
@@ -121,35 +127,38 @@ cnpg:
 
   # -- Security Context for the whole pod.
   podSecurityContext:
+    # fsGroup: 2000
     runAsNonRoot: true
     seccompProfile:
       type: RuntimeDefault
-    # fsGroup: 2000
 
   # -- Priority indicates the importance of a Pod relative to other Pods.
   priorityClassName: ""
 
   service:
     type: ClusterIP
-    # -- DO NOT CHANGE THE SERVICE NAME as it is currently used to generate the certificate
-    # and can not be configured
+    # -- DO NOT CHANGE THE SERVICE NAME as it is currently used to generate
+    # the certificate and can not be configured
     name: cnpg-webhook-service
     port: 443
-    # -- Set the ip family policy to configure dual-stack see [Configure dual-stack](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services)
+    # -- Set the ip family policy to configure dual-stack see
+    # https://kubernetes.io/docs/concepts/services-networking/dual-stack/
     ipFamilyPolicy: ""
-    # -- Sets the families that should be supported and the order in which they should be applied to ClusterIP as well. Can be IPv4 and/or IPv6.
+    # -- Sets the families that should be supported and the order in which
+    # they should be applied to ClusterIP as well. Can be IPv4 and/or IPv6.
     ipFamilies: []
 
   resources: {}
-    # If you want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    #
-    # limits:
-    #   cpu: 100m
-    #   memory: 200Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 100Mi
+  # If you want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after
+  # 'resources:'.
+  #
+  # limits:
+  #   cpu: 100m
+  #   memory: 200Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 100Mi
 
   # -- Nodeselector for the operator to be installed.
   nodeSelector: {}
@@ -161,8 +170,8 @@ cnpg:
   affinity: {}
 
   monitoring:
-
-    # -- Specifies whether the monitoring should be enabled. Requires Prometheus Operator CRDs.
+    # -- Specifies whether the monitoring should be enabled. Requires Prometheus
+    # Operator CRDs.
     podMonitorEnabled: false
     # -- Metrics relabel configurations to apply to samples before ingestion.
     podMonitorMetricRelabelings: []
@@ -173,13 +182,16 @@ cnpg:
 
     grafanaDashboard:
       create: false
-      # -- Allows overriding the namespace where the ConfigMap will be created, defaulting to the same one as the Release.
+      # -- Allows overriding the namespace where the ConfigMap will be created,
+      # defaulting to the same one as the Release.
       namespace: ""
       # -- The name of the ConfigMap containing the dashboard.
       configMapName: "cnpg-grafana-dashboard"
-      # -- Label that ConfigMaps should have to be loaded as dashboards.  DEPRECATED: Use labels instead.
+      # -- Label that ConfigMaps should have to be loaded as dashboards.
+      # DEPRECATED: Use labels instead.
       sidecarLabel: "grafana_dashboard"
-      # -- Label value that ConfigMaps should have to be loaded as dashboards.  DEPRECATED: Use labels instead.
+      # -- Label value that ConfigMaps should have to be loaded as dashboards.
+      # DEPRECATED: Use labels instead.
       sidecarLabelValue: "1"
       # -- Labels that ConfigMaps should have to get configured in Grafana.
       labels: {}
@@ -213,7 +225,8 @@ cnpg:
                      , usename
                      , COALESCE(application_name, '') AS application_name
                      , COUNT(*)
-                     , COALESCE(EXTRACT (EPOCH FROM (max(now() - xact_start))), 0) AS max_tx_secs
+                     , COALESCE(EXTRACT (EPOCH FROM (max(now() - xact_start))),
+                                0) AS max_tx_secs
                  FROM pg_catalog.pg_stat_activity
                  GROUP BY datname, state, usename, application_name
              ) sa ON states.state = sa.state
@@ -236,7 +249,8 @@ cnpg:
               description: "Number of backends"
           - max_tx_duration_seconds:
               usage: "GAUGE"
-              description: "Maximum duration of a transaction in seconds"
+              description: >-
+                Maximum duration of a transaction in seconds
 
       backends_waiting:
         query: |
@@ -244,22 +258,31 @@ cnpg:
          FROM pg_catalog.pg_locks blocked_locks
          JOIN pg_catalog.pg_locks blocking_locks
            ON blocking_locks.locktype = blocked_locks.locktype
-           AND blocking_locks.database IS NOT DISTINCT FROM blocked_locks.database
-           AND blocking_locks.relation IS NOT DISTINCT FROM blocked_locks.relation
+           AND blocking_locks.database IS NOT DISTINCT FROM
+               blocked_locks.database
+           AND blocking_locks.relation IS NOT DISTINCT FROM
+               blocked_locks.relation
            AND blocking_locks.page IS NOT DISTINCT FROM blocked_locks.page
            AND blocking_locks.tuple IS NOT DISTINCT FROM blocked_locks.tuple
-           AND blocking_locks.virtualxid IS NOT DISTINCT FROM blocked_locks.virtualxid
-           AND blocking_locks.transactionid IS NOT DISTINCT FROM blocked_locks.transactionid
-           AND blocking_locks.classid IS NOT DISTINCT FROM blocked_locks.classid
+           AND blocking_locks.virtualxid IS NOT DISTINCT FROM
+               blocked_locks.virtualxid
+           AND blocking_locks.transactionid IS NOT DISTINCT FROM
+               blocked_locks.transactionid
+           AND blocking_locks.classid IS NOT DISTINCT FROM
+               blocked_locks.classid
            AND blocking_locks.objid IS NOT DISTINCT FROM blocked_locks.objid
-           AND blocking_locks.objsubid IS NOT DISTINCT FROM blocked_locks.objsubid
+           AND blocking_locks.objsubid IS NOT DISTINCT FROM
+               blocked_locks.objsubid
            AND blocking_locks.pid != blocked_locks.pid
-         JOIN pg_catalog.pg_stat_activity blocking_activity ON blocking_activity.pid = blocking_locks.pid
+         JOIN pg_catalog.pg_stat_activity blocking_activity
+           ON blocking_activity.pid = blocking_locks.pid
          WHERE NOT blocked_locks.granted
         metrics:
           - total:
               usage: "GAUGE"
-              description: "Total number of backends that are currently waiting on other queries"
+              description: >-
+                Total number of backends that are currently waiting on other
+                queries
 
       pg_database:
         query: |
@@ -278,10 +301,13 @@ cnpg:
               description: "Disk space used by the database"
           - xid_age:
               usage: "GAUGE"
-              description: "Number of transactions from the frozen XID to the current one"
+              description: >-
+                Number of transactions from the frozen XID to the current one
           - mxid_age:
               usage: "GAUGE"
-              description: "Number of multiple transactions (Multixact) from the frozen XID to the current one"
+              description: >-
+                Number of multiple transactions (Multixact) from the frozen XID
+                to the current one
 
       pg_postmaster:
         query: |
@@ -293,16 +319,20 @@ cnpg:
               description: "Time at which postgres started (based on epoch)"
 
       pg_replication:
-        query: "SELECT CASE WHEN (
-                  NOT pg_catalog.pg_is_in_recovery()
-                  OR pg_catalog.pg_last_wal_receive_lsn() = pg_catalog.pg_last_wal_replay_lsn())
-                THEN 0
-                ELSE GREATEST (0,
-                  EXTRACT(EPOCH FROM (now() - pg_catalog.pg_last_xact_replay_timestamp())))
-                END AS lag,
-                pg_catalog.pg_is_in_recovery() AS in_recovery,
-                EXISTS (TABLE pg_stat_wal_receiver) AS is_wal_receiver_up,
-                (SELECT count(*) FROM pg_catalog.pg_stat_replication) AS streaming_replicas"
+        query: >-
+          SELECT CASE WHEN (
+            NOT pg_catalog.pg_is_in_recovery()
+            OR pg_catalog.pg_last_wal_receive_lsn() =
+               pg_catalog.pg_last_wal_replay_lsn())
+          THEN 0
+          ELSE GREATEST (0,
+            EXTRACT(EPOCH FROM (now() -
+              pg_catalog.pg_last_xact_replay_timestamp())))
+          END AS lag,
+          pg_catalog.pg_is_in_recovery() AS in_recovery,
+          EXISTS (TABLE pg_stat_wal_receiver) AS is_wal_receiver_up,
+          (SELECT count(*) FROM pg_catalog.pg_stat_replication)
+            AS streaming_replicas
         metrics:
           - lag:
               usage: "GAUGE"
@@ -315,7 +345,8 @@ cnpg:
               description: "Whether the instance wal_receiver is up"
           - streaming_replicas:
               usage: "GAUGE"
-              description: "Number of streaming replicas connected to the instance"
+              description: >-
+                Number of streaming replicas connected to the instance
 
       pg_replication_slots:
         query: |
@@ -324,8 +355,10 @@ cnpg:
             database,
             active,
             (CASE pg_catalog.pg_is_in_recovery()
-              WHEN TRUE THEN pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_receive_lsn(), restart_lsn)
-              ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_lsn(), restart_lsn)
+              WHEN TRUE THEN pg_catalog.pg_wal_lsn_diff(
+                pg_catalog.pg_last_wal_receive_lsn(), restart_lsn)
+              ELSE pg_catalog.pg_wal_lsn_diff(
+                pg_catalog.pg_current_wal_lsn(), restart_lsn)
             END) as pg_wal_lsn_diff
           FROM pg_catalog.pg_replication_slots
           WHERE NOT temporary
@@ -350,33 +383,49 @@ cnpg:
         query: |
           SELECT archived_count
             , failed_count
-            , COALESCE(EXTRACT(EPOCH FROM (now() - last_archived_time)), -1) AS seconds_since_last_archival
-            , COALESCE(EXTRACT(EPOCH FROM (now() - last_failed_time)), -1) AS seconds_since_last_failure
-            , COALESCE(EXTRACT(EPOCH FROM last_archived_time), -1) AS last_archived_time
-            , COALESCE(EXTRACT(EPOCH FROM last_failed_time), -1) AS last_failed_time
-            , COALESCE(CAST(CAST('x'||pg_catalog.right(pg_catalog.split_part(last_archived_wal, '.', 1), 16) AS pg_catalog.bit(64)) AS pg_catalog.int8), -1) AS last_archived_wal_start_lsn
-            , COALESCE(CAST(CAST('x'||pg_catalog.right(pg_catalog.split_part(last_failed_wal, '.', 1), 16) AS pg_catalog.bit(64)) AS pg_catalog.int8), -1) AS last_failed_wal_start_lsn
+            , COALESCE(EXTRACT(EPOCH FROM (now() - last_archived_time)), -1)
+                AS seconds_since_last_archival
+            , COALESCE(EXTRACT(EPOCH FROM (now() - last_failed_time)), -1)
+                AS seconds_since_last_failure
+            , COALESCE(EXTRACT(EPOCH FROM last_archived_time), -1)
+                AS last_archived_time
+            , COALESCE(EXTRACT(EPOCH FROM last_failed_time), -1)
+                AS last_failed_time
+            , COALESCE(CAST(CAST('x'||pg_catalog.right(
+                pg_catalog.split_part(last_archived_wal, '.', 1), 16)
+                AS pg_catalog.bit(64)) AS pg_catalog.int8), -1)
+                AS last_archived_wal_start_lsn
+            , COALESCE(CAST(CAST('x'||pg_catalog.right(
+                pg_catalog.split_part(last_failed_wal, '.', 1), 16)
+                AS pg_catalog.bit(64)) AS pg_catalog.int8), -1)
+                AS last_failed_wal_start_lsn
             , EXTRACT(EPOCH FROM stats_reset) AS stats_reset_time
           FROM pg_catalog.pg_stat_archiver
         metrics:
           - archived_count:
               usage: "COUNTER"
-              description: "Number of WAL files that have been successfully archived"
+              description: >-
+                Number of WAL files that have been successfully archived
           - failed_count:
               usage: "COUNTER"
-              description: "Number of failed attempts for archiving WAL files"
+              description: >-
+                Number of failed attempts for archiving WAL files
           - seconds_since_last_archival:
               usage: "GAUGE"
-              description: "Seconds since the last successful archival operation"
+              description: >-
+                Seconds since the last successful archival operation
           - seconds_since_last_failure:
               usage: "GAUGE"
-              description: "Seconds since the last failed archival operation"
+              description: >-
+                Seconds since the last failed archival operation
           - last_archived_time:
               usage: "GAUGE"
-              description: "Epoch of the last time WAL archiving succeeded"
+              description: >-
+                Epoch of the last time WAL archiving succeeded
           - last_failed_time:
               usage: "GAUGE"
-              description: "Epoch of the last time WAL archiving failed"
+              description: >-
+                Epoch of the last time WAL archiving failed
           - last_archived_wal_start_lsn:
               usage: "GAUGE"
               description: "Archived WAL start LSN"
@@ -385,7 +434,8 @@ cnpg:
               description: "Last failed WAL LSN"
           - stats_reset_time:
               usage: "GAUGE"
-              description: "Time at which these statistics were last reset"
+              description: >-
+                Time at which these statistics were last reset
 
       pg_stat_bgwriter:
         runonserver: "<17.0.0"
@@ -404,34 +454,51 @@ cnpg:
         metrics:
           - checkpoints_timed:
               usage: "COUNTER"
-              description: "Number of scheduled checkpoints that have been performed"
+              description: >-
+                Number of scheduled checkpoints that have been performed
           - checkpoints_req:
               usage: "COUNTER"
-              description: "Number of requested checkpoints that have been performed"
+              description: >-
+                Number of requested checkpoints that have been performed
           - checkpoint_write_time:
               usage: "COUNTER"
-              description: "Total amount of time that has been spent in the portion of checkpoint processing where files are written to disk, in milliseconds"
+              description: >-
+                Total amount of time that has been spent in the portion of
+                checkpoint processing where files are written to disk, in
+                milliseconds
           - checkpoint_sync_time:
               usage: "COUNTER"
-              description: "Total amount of time that has been spent in the portion of checkpoint processing where files are synchronized to disk, in milliseconds"
+              description: >-
+                Total amount of time that has been spent in the portion of
+                checkpoint processing where files are synchronized to disk, in
+                milliseconds
           - buffers_checkpoint:
               usage: "COUNTER"
-              description: "Number of buffers written during checkpoints"
+              description: >-
+                Number of buffers written during checkpoints
           - buffers_clean:
               usage: "COUNTER"
-              description: "Number of buffers written by the background writer"
+              description: >-
+                Number of buffers written by the background writer
           - maxwritten_clean:
               usage: "COUNTER"
-              description: "Number of times the background writer stopped a cleaning scan because it had written too many buffers"
+              description: >-
+                Number of times the background writer stopped a cleaning scan
+                because it had written too many buffers
           - buffers_backend:
               usage: "COUNTER"
-              description: "Number of buffers written directly by a backend"
+              description: >-
+                Number of buffers written directly by a backend
           - buffers_backend_fsync:
               usage: "COUNTER"
-              description: "Number of times a backend had to execute its own fsync call (normally the background writer handles those even when the backend does its own write)"
+              description: >-
+                Number of times a backend had to execute its own fsync call
+                (normally the background writer handles those even when the
+                backend does its own write)
           - buffers_alloc:
               usage: "COUNTER"
-              description: "Number of buffers allocated"
+              description: >-
+                Number of buffers allocated
 
       pg_stat_bgwriter_17:
         runonserver: ">=17.0.0"
@@ -445,16 +512,21 @@ cnpg:
         metrics:
           - buffers_clean:
               usage: "COUNTER"
-              description: "Number of buffers written by the background writer"
+              description: >-
+                Number of buffers written by the background writer
           - maxwritten_clean:
               usage: "COUNTER"
-              description: "Number of times the background writer stopped a cleaning scan because it had written too many buffers"
+              description: >-
+                Number of times the background writer stopped a cleaning scan
+                because it had written too many buffers
           - buffers_alloc:
               usage: "COUNTER"
-              description: "Number of buffers allocated"
+              description: >-
+                Number of buffers allocated
           - stats_reset_time:
               usage: "GAUGE"
-              description: "Time at which these statistics were last reset"
+              description: >-
+                Time at which these statistics were last reset
 
       pg_stat_checkpointer:
         runonserver: ">=17.0.0"
@@ -472,31 +544,45 @@ cnpg:
         metrics:
           - checkpoints_timed:
               usage: "COUNTER"
-              description: "Number of scheduled checkpoints that have been performed"
+              description: >-
+                Number of scheduled checkpoints that have been performed
           - checkpoints_req:
               usage: "COUNTER"
-              description: "Number of requested checkpoints that have been performed"
+              description: >-
+                Number of requested checkpoints that have been performed
           - restartpoints_timed:
               usage: "COUNTER"
-              description: "Number of scheduled restartpoints due to timeout or after a failed attempt to perform it"
+              description: >-
+                Number of scheduled restartpoints due to timeout or after a
+                failed attempt to perform it
           - restartpoints_req:
               usage: "COUNTER"
-              description: "Number of requested restartpoints that have been performed"
+              description: >-
+                Number of requested restartpoints that have been performed
           - restartpoints_done:
               usage: "COUNTER"
-              description: "Number of restartpoints that have been performed"
+              description: >-
+                Number of restartpoints that have been performed
           - write_time:
               usage: "COUNTER"
-              description: "Total amount of time that has been spent in the portion of processing checkpoints and restartpoints where files are written to disk, in milliseconds"
+              description: >-
+                Total amount of time that has been spent in the portion of
+                processing checkpoints and restartpoints where files are written
+                to disk, in milliseconds
           - sync_time:
               usage: "COUNTER"
-              description: "Total amount of time that has been spent in the portion of processing checkpoints and restartpoints where files are synchronized to disk, in milliseconds"
+              description: >-
+                Total amount of time that has been spent in the portion of
+                processing checkpoints and restartpoints where files are
+                synchronized to disk, in milliseconds
           - buffers_written:
               usage: "COUNTER"
-              description: "Number of buffers written during checkpoints and restartpoints"
+              description: >-
+                Number of buffers written during checkpoints and restartpoints
           - stats_reset_time:
               usage: "GAUGE"
-              description: "Time at which these statistics were last reset"
+              description: >-
+                Time at which these statistics were last reset
 
       pg_stat_database:
         query: |
@@ -523,49 +609,72 @@ cnpg:
               description: "Name of this database"
           - xact_commit:
               usage: "COUNTER"
-              description: "Number of transactions in this database that have been committed"
+              description: >-
+                Number of transactions in this database that have been committed
           - xact_rollback:
               usage: "COUNTER"
-              description: "Number of transactions in this database that have been rolled back"
+              description: >-
+                Number of transactions in this database that have been rolled
+                back
           - blks_read:
               usage: "COUNTER"
-              description: "Number of disk blocks read in this database"
+              description: >-
+                Number of disk blocks read in this database
           - blks_hit:
               usage: "COUNTER"
-              description: "Number of times disk blocks were found already in the buffer cache, so that a read was not necessary (this only includes hits in the PostgreSQL buffer cache, not the operating system's file system cache)"
+              description: >-
+                Number of times disk blocks were found already in the buffer
+                cache, so that a read was not necessary (this only includes hits
+                in the PostgreSQL buffer cache, not the operating system's file
+                system cache)
           - tup_returned:
               usage: "COUNTER"
-              description: "Number of rows returned by queries in this database"
+              description: >-
+                Number of rows returned by queries in this database
           - tup_fetched:
               usage: "COUNTER"
-              description: "Number of rows fetched by queries in this database"
+              description: >-
+                Number of rows fetched by queries in this database
           - tup_inserted:
               usage: "COUNTER"
-              description: "Number of rows inserted by queries in this database"
+              description: >-
+                Number of rows inserted by queries in this database
           - tup_updated:
               usage: "COUNTER"
-              description: "Number of rows updated by queries in this database"
+              description: >-
+                Number of rows updated by queries in this database
           - tup_deleted:
               usage: "COUNTER"
-              description: "Number of rows deleted by queries in this database"
+              description: >-
+                Number of rows deleted by queries in this database
           - conflicts:
               usage: "COUNTER"
-              description: "Number of queries canceled due to conflicts with recovery in this database"
+              description: >-
+                Number of queries canceled due to conflicts with recovery in
+                this database
           - temp_files:
               usage: "COUNTER"
-              description: "Number of temporary files created by queries in this database"
+              description: >-
+                Number of temporary files created by queries in this database
           - temp_bytes:
               usage: "COUNTER"
-              description: "Total amount of data written to temporary files by queries in this database"
+              description: >-
+                Total amount of data written to temporary files by queries in
+                this database
           - deadlocks:
               usage: "COUNTER"
-              description: "Number of deadlocks detected in this database"
+              description: >-
+                Number of deadlocks detected in this database
           - blk_read_time:
               usage: "COUNTER"
-              description: "Time spent reading data file blocks by backends in this database, in milliseconds"
+              description: >-
+                Time spent reading data file blocks by backends in this
+                database, in milliseconds
           - blk_write_time:
               usage: "COUNTER"
-              description: "Time spent writing data file blocks by backends in this database, in milliseconds"
+              description: >-
+                Time spent writing data file blocks by backends in this
+                database, in milliseconds
 
       pg_stat_replication:
         primary: true
@@ -576,13 +685,21 @@ cnpg:
            , COALESCE(client_port::text, '') AS client_port
            , EXTRACT(EPOCH FROM backend_start) AS backend_start
            , COALESCE(pg_catalog.age(backend_xmin), 0) AS backend_xmin_age
-           , pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_lsn(), sent_lsn) AS sent_diff_bytes
-           , pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_lsn(), write_lsn) AS write_diff_bytes
-           , pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_lsn(), flush_lsn) AS flush_diff_bytes
-           , COALESCE(pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_lsn(), replay_lsn),0) AS replay_diff_bytes
-           , COALESCE((EXTRACT(EPOCH FROM write_lag)),0)::float AS write_lag_seconds
-           , COALESCE((EXTRACT(EPOCH FROM flush_lag)),0)::float AS flush_lag_seconds
-           , COALESCE((EXTRACT(EPOCH FROM replay_lag)),0)::float AS replay_lag_seconds
+           , pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_lsn(),
+               sent_lsn) AS sent_diff_bytes
+           , pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_lsn(),
+               write_lsn) AS write_diff_bytes
+           , pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_lsn(),
+               flush_lsn) AS flush_diff_bytes
+           , COALESCE(pg_catalog.pg_wal_lsn_diff(
+               pg_catalog.pg_current_wal_lsn(), replay_lsn),0)
+               AS replay_diff_bytes
+           , COALESCE((EXTRACT(EPOCH FROM write_lag)),0)::float
+               AS write_lag_seconds
+           , COALESCE((EXTRACT(EPOCH FROM flush_lag)),0)::float
+               AS flush_lag_seconds
+           , COALESCE((EXTRACT(EPOCH FROM replay_lag)),0)::float
+               AS replay_lag_seconds
          FROM pg_catalog.pg_stat_replication
         metrics:
           - usename:
@@ -605,30 +722,46 @@ cnpg:
               description: "The age of this standby's xmin horizon"
           - sent_diff_bytes:
               usage: "GAUGE"
-              description: "Difference in bytes from the last write-ahead log location sent on this connection"
+              description: >-
+                Difference in bytes from the last write-ahead log location sent
+                on this connection
           - write_diff_bytes:
               usage: "GAUGE"
-              description: "Difference in bytes from the last write-ahead log location written to disk by this standby server"
+              description: >-
+                Difference in bytes from the last write-ahead log location
+                written to disk by this standby server
           - flush_diff_bytes:
               usage: "GAUGE"
-              description: "Difference in bytes from the last write-ahead log location flushed to disk by this standby server"
+              description: >-
+                Difference in bytes from the last write-ahead log location
+                flushed to disk by this standby server
           - replay_diff_bytes:
               usage: "GAUGE"
-              description: "Difference in bytes from the last write-ahead log location replayed into the database on this standby server"
+              description: >-
+                Difference in bytes from the last write-ahead log location
+                replayed into the database on this standby server
           - write_lag_seconds:
               usage: "GAUGE"
-              description: "Time elapsed between flushing recent WAL locally and receiving notification that this standby server has written it"
+              description: >-
+                Time elapsed between flushing recent WAL locally and receiving
+                notification that this standby server has written it
           - flush_lag_seconds:
               usage: "GAUGE"
-              description: "Time elapsed between flushing recent WAL locally and receiving notification that this standby server has written and flushed it"
+              description: >-
+                Time elapsed between flushing recent WAL locally and receiving
+                notification that this standby server has written and flushed it
           - replay_lag_seconds:
               usage: "GAUGE"
-              description: "Time elapsed between flushing recent WAL locally and receiving notification that this standby server has written, flushed and applied it"
+              description: >-
+                Time elapsed between flushing recent WAL locally and receiving
+                notification that this standby server has written, flushed and
+                applied it
 
       pg_settings:
         query: |
           SELECT name,
-          CASE setting WHEN 'on' THEN '1' WHEN 'off' THEN '0' ELSE setting END AS setting
+          CASE setting WHEN 'on' THEN '1' WHEN 'off' THEN '0' ELSE setting END
+          AS setting
           FROM pg_catalog.pg_settings
           WHERE vartype IN ('integer', 'real', 'bool')
           ORDER BY 1
@@ -640,5 +773,5 @@ cnpg:
               usage: "GAUGE"
               description: "Setting value"
 
-# -- List of CloudNativePG clusters to deploy
-clusters: []
+  # -- List of CloudNativePG clusters to deploy
+  clusters: []
