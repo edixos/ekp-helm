@@ -1,6 +1,6 @@
 # keto
 
-![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
+![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -27,6 +27,8 @@ A Helm chart for Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| databases | list | `[]` | Databases configuration. This is used to create PostgreSQL Database resources for the application. |
+| externalSecrets | list | `[]` | External secrets configuration. This is used to create ExternalSecret resources when using the helm chart with the external-secrets operator. |
 | keto.configmap.hashSumEnabled | bool | `true` | switch to false to prevent checksum annotations being maintained and propogated to the pods |
 | keto.deployment.affinity | object | `{}` |  |
 | keto.deployment.annotations | object | `{}` |  |
@@ -70,7 +72,6 @@ A Helm chart for Kubernetes
 | keto.deployment.terminationGracePeriodSeconds | int | `60` |  |
 | keto.deployment.tolerations | list | `[]` |  |
 | keto.deployment.topologySpreadConstraints | list | `[]` | Configure pod topologySpreadConstraints. |
-| keto.externalSecrets | list | `[]` | External secrets configuration. This is used to create ExternalSecret resources when using the helm chart with the external-secrets operator. |
 | keto.extraServices | object | `{}` |  |
 | keto.fullnameOverride | string | `""` |  |
 | keto.global | object | `{"imageRegistry":null,"podMetadata":{"annotations":{},"labels":{}}}` | Global setting, passed down to all pods |
@@ -133,7 +134,6 @@ A Helm chart for Kubernetes
 | keto.keto.customMigrations.jobs.example-job.nodeSelector | object | `{}` |  |
 | keto.keto.customMigrations.jobs.example-job.resources | object | `{}` |  |
 | keto.nameOverride | string | `""` |  |
-| keto.namespacesConfig | string | `""` | Namespaces configuration |
 | keto.pdb.enabled | bool | `false` |  |
 | keto.pdb.spec.maxUnavailable | string | `""` |  |
 | keto.pdb.spec.minAvailable | string | `""` |  |
@@ -210,6 +210,8 @@ A Helm chart for Kubernetes
 | keto.watcher.resources | object | `{}` |  |
 | keto.watcher.revisionHistoryLimit | int | `5` | Number of revisions kept in history |
 | keto.watcher.watchLabelKey | string | `"ory.sh/watcher"` | Label key used for managing applications |
+| namespacesConfig | string | `""` |  |
+| passwords | list | `[]` | Passwords configuration. This is used to create Password resources using external-secrets. |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `false` | Add grafana dashboard as a configmap |
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
@@ -241,7 +243,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.5"
+    targetRevision: "0.1.6"
     chart: keto
     path: ''
     helm:

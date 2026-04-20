@@ -1,6 +1,6 @@
 # cnpg
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.29.0](https://img.shields.io/badge/AppVersion-1.29.0-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.29.0](https://img.shields.io/badge/AppVersion-1.29.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -21,10 +21,10 @@ A Helm chart for Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| clusters | list | `[]` | List of CloudNativePG clusters to deploy |
 | cnpg.additionalArgs | list | `[]` | Additinal arguments to be added to the operator's args list. |
 | cnpg.additionalEnv | list | `[]` | Array containing extra environment variables which can be templated. For example:  - name: RELEASE_NAME    value: "{{ .Release.Name }}"  - name: MY_VAR    value: "mySpecialKey" |
 | cnpg.affinity | object | `{}` | Affinity for the operator to be installed. |
-| cnpg.clusters | list | `[]` | List of CloudNativePG clusters to deploy |
 | cnpg.commonAnnotations | object | `{}` | Annotations to be added to all other resources. |
 | cnpg.config.clusterWide | bool | `true` | This option determines if the operator is responsible for observing events across the entire Kubernetes cluster or if its focus should be narrowed down to the specific namespace within which it has been deployed. |
 | cnpg.config.create | bool | `true` | Specifies whether the secret should be created. |
@@ -100,7 +100,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: cnpg
     path: ''
     helm:

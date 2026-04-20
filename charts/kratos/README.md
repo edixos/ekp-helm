@@ -1,6 +1,6 @@
 # kratos
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -27,6 +27,8 @@ A Helm chart for Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| databases | list | `[]` | Databases configuration. This is used to create PostgreSQL Database resources for the application. |
+| externalSecrets | list | `[]` |  |
 | kratos.autoscaling.behavior | object | `{}` | Set custom behavior https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#configurable-scaling-behavior |
 | kratos.autoscaling.enabled | bool | `false` |  |
 | kratos.autoscaling.extraMetrics | list | `[]` | Add extraContainer container resource metrics https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#container-resource-metrics |
@@ -102,7 +104,6 @@ A Helm chart for Kubernetes
 | kratos.deployment.terminationGracePeriodSeconds | int | `60` |  |
 | kratos.deployment.tolerations | list | `[]` | Configure node tolerations. |
 | kratos.deployment.topologySpreadConstraints | list | `[]` | Configure pod topologySpreadConstraints. |
-| kratos.externalSecrets | list | `[]` | External secrets configuration. This is used to create ExternalSecret resources when using the helm chart with the external-secrets operator. |
 | kratos.fullnameOverride | string | `""` |  |
 | kratos.global | object | `{"imageRegistry":null,"podMetadata":{"annotations":{},"labels":{}}}` | Global setting, passed down to all pods |
 | kratos.global.imageRegistry | string | `nil` | Overrides the Docker registry globally for all images |
@@ -267,6 +268,7 @@ A Helm chart for Kubernetes
 | kratos.watcher.resources | object | `{}` |  |
 | kratos.watcher.revisionHistoryLimit | int | `5` | Number of revisions kept in history |
 | kratos.watcher.watchLabelKey | string | `"ory.sh/watcher"` | Label key used for managing applications |
+| passwords | list | `[]` | Passwords configuration. This is used to create Password resources using external-secrets. |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `false` | Add grafana dashboard as a configmap |
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
@@ -298,7 +300,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: kratos
     path: ''
     helm:

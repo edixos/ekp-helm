@@ -1,4 +1,4 @@
-{{- range .Values.kratos.databases }}
+{{- range .Values.databases }}
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
