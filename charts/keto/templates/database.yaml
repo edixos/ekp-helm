@@ -1,0 +1,14 @@
+{{- range .Values.keto.databases }}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+{{- if .labels }}
+  labels:
+{{ toYaml .labels | indent 4 }}
+{{- end }}
+spec:
+{{ toYaml .spec | indent 2 }}
+{{- end }}
