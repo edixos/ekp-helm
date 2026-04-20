@@ -2605,6 +2605,24 @@ entries:
   keto:
   - apiVersion: v2
     appVersion: v26.2.0
+    created: "2026-04-20T09:54:48.298039731Z"
+    dependencies:
+    - alias: keto
+      name: keto
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.61.0
+    description: A Helm chart for Kubernetes
+    digest: 7becbf6c55ce39707ed9dca889eb933d58405f0a15e8262b187f32c74ae88b10
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: keto
+    urls:
+    - keto-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
+    appVersion: v26.2.0
     created: "2026-04-15T07:37:02.303270009Z"
     dependencies:
     - alias: keto
@@ -3987,4 +4005,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-20T09:53:59.380675722Z"
+generated: "2026-04-20T09:54:48.298273569Z"
