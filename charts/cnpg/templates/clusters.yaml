@@ -14,7 +14,7 @@ spec:
     {{- if .storage.storageClass }}
     storageClass: {{ .storage.storageClass }}
     {{- end }}
-  {{- range $key, $val := omit . "name" "instances" "storage" }}
+  {{- range $key, $val := omit . "name" "namespace" "instances" "storage" }}
   {{ $key }}:
     {{- toYaml $val | nindent 4 }}
   {{- end }}
