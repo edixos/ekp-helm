@@ -21,10 +21,10 @@ A Helm chart for Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| clusters | list | `[]` | List of CloudNativePG clusters to deploy |
 | cnpg.additionalArgs | list | `[]` | Additinal arguments to be added to the operator's args list. |
 | cnpg.additionalEnv | list | `[]` | Array containing extra environment variables which can be templated. For example:  - name: RELEASE_NAME    value: "{{ .Release.Name }}"  - name: MY_VAR    value: "mySpecialKey" |
 | cnpg.affinity | object | `{}` | Affinity for the operator to be installed. |
-| cnpg.clusters | list | `[]` | List of CloudNativePG clusters to deploy |
 | cnpg.commonAnnotations | object | `{}` | Annotations to be added to all other resources. |
 | cnpg.config.clusterWide | bool | `true` | This option determines if the operator is responsible for observing events across the entire Kubernetes cluster or if its focus should be narrowed down to the specific namespace within which it has been deployed. |
 | cnpg.config.create | bool | `true` | Specifies whether the secret should be created. |

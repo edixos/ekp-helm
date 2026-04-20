@@ -773,5 +773,5 @@ cnpg:
               usage: "GAUGE"
               description: "Setting value"
 
-  # -- List of CloudNativePG clusters to deploy
-  clusters: []
+# -- List of CloudNativePG clusters to deploy
+clusters: []
