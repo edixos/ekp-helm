@@ -9,6 +9,10 @@ metadata:
   labels:
 {{ toYaml .labels | indent 4 }}
 {{- end }}
+{{- if .annotations }}
+  annotations:
+{{ toYaml .annotations | indent 4 }}
+{{- end }}
 spec:
 {{ toYaml .spec | indent 2 }}
 {{- end }}
