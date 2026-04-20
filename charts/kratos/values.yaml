@@ -851,4 +851,3 @@ databases: []
 
 # -- Passwords configuration. This is used to create Password resources using external-secrets.
 passwords: []
-
