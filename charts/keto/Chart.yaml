@@ -1,7 +1,7 @@
 apiVersion: v2
 name: keto
 description: A Helm chart for Kubernetes
-version: 0.1.4
+version: 0.1.5
 appVersion: "v26.2.0"
 maintainers:
   - name: hamzatalbi
