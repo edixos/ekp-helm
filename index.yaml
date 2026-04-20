@@ -847,6 +847,21 @@ entries:
   cnpg:
   - apiVersion: v2
     appVersion: 1.29.0
+    created: "2026-04-20T12:47:49.845082004Z"
+    dependencies:
+    - alias: cnpg
+      name: cloudnative-pg
+      repository: https://cloudnative-pg.github.io/charts
+      version: 0.23.0
+    description: A Helm chart for Kubernetes
+    digest: 95036b3d963a86b173dd3e07854d9034aa99dd878076bad6e9897af075084439
+    name: cnpg
+    type: application
+    urls:
+    - cnpg-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 1.29.0
     created: "2026-04-20T10:52:24.359566394Z"
     dependencies:
     - alias: cnpg
@@ -2620,6 +2635,24 @@ entries:
   keto:
   - apiVersion: v2
     appVersion: v26.2.0
+    created: "2026-04-20T12:47:49.996158339Z"
+    dependencies:
+    - alias: keto
+      name: keto
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.61.0
+    description: A Helm chart for Kubernetes
+    digest: fb81a6923acf06c16ba23f0b21edb4cf26f3938d3b00faa8369d8892231d4634
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: keto
+    urls:
+    - keto-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v2
+    appVersion: v26.2.0
     created: "2026-04-20T09:54:48.298039731Z"
     dependencies:
     - alias: keto
@@ -2727,6 +2760,24 @@ entries:
     - keto-0.1.0.tgz
     version: 0.1.0
   kratos:
+  - apiVersion: v2
+    appVersion: v26.2.0
+    created: "2026-04-20T12:47:50.185865041Z"
+    dependencies:
+    - alias: kratos
+      name: kratos
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.61.0
+    description: A Helm chart for Kubernetes
+    digest: c6502b7fc73fe41e02666817cdf24413c62276c54ab393c398ab69a023ec9afb
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: kratos
+    urls:
+    - kratos-0.1.5.tgz
+    version: 0.1.5
   - apiVersion: v2
     appVersion: v26.2.0
     created: "2026-04-17T07:30:48.862518447Z"
@@ -4020,4 +4071,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-20T10:52:24.359765567Z"
+generated: "2026-04-20T12:47:50.186151396Z"
