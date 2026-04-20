@@ -844,4 +844,11 @@ kratos:
   httproutes: []
 
   # -- External secrets configuration. This is used to create ExternalSecret resources when using the helm chart with the external-secrets operator.
-  externalSecrets: []
+externalSecrets: []
+
+# -- Databases configuration. This is used to create PostgreSQL Database resources for the application.
+databases: []
+
+# -- Passwords configuration. This is used to create Password resources using external-secrets.
+passwords: []
+
