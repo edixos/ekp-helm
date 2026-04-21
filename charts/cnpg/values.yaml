@@ -773,5 +773,14 @@ cnpg:
               usage: "GAUGE"
               description: "Setting value"
 
+# -- List of CloudNativePG databases to deploy
+databases: []
+
+# -- List of External Secrets password generators to deploy
+passwords: []
+
+# -- List of ExternalSecrets to deploy
+externalSecrets: []
+
 # -- List of CloudNativePG clusters to deploy
 clusters: []
