@@ -1,6 +1,6 @@
 # cnpg
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.29.0](https://img.shields.io/badge/AppVersion-1.29.0-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.29.0](https://img.shields.io/badge/AppVersion-1.29.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -74,6 +74,9 @@ A Helm chart for Kubernetes
 | cnpg.serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template. |
 | cnpg.tolerations | list | `[]` | Tolerations for the operator to be installed. |
 | cnpg.webhook | object | `{"livenessProbe":{"initialDelaySeconds":3},"mutating":{"create":true,"failurePolicy":"Fail"},"port":9443,"readinessProbe":{"initialDelaySeconds":3},"validating":{"create":true,"failurePolicy":"Fail"}}` | The webhook configuration. |
+| databases | list | `[]` | List of CloudNativePG databases to deploy |
+| externalSecrets | list | `[]` | List of ExternalSecrets to deploy |
+| passwords | list | `[]` | List of External Secrets password generators to deploy |
 
 ## Installing the Chart
 
@@ -100,7 +103,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: cnpg
     path: ''
     helm:
