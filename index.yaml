@@ -847,6 +847,21 @@ entries:
   cnpg:
   - apiVersion: v2
     appVersion: 1.29.0
+    created: "2026-04-21T15:24:36.798635607Z"
+    dependencies:
+    - alias: cnpg
+      name: cloudnative-pg
+      repository: https://cloudnative-pg.github.io/charts
+      version: 0.23.0
+    description: A Helm chart for Kubernetes
+    digest: 5b5c30440d4d906b56893dd4a3874f9b46f0f0299ec45152f9cf46f98c00e085
+    name: cnpg
+    type: application
+    urls:
+    - cnpg-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: 1.29.0
     created: "2026-04-20T12:47:49.845082004Z"
     dependencies:
     - alias: cnpg
@@ -4107,4 +4122,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-20T14:03:56.678723849Z"
+generated: "2026-04-21T15:24:36.798873321Z"
