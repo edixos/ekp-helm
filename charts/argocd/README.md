@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.13](https://img.shields.io/badge/Version-0.1.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.3.6](https://img.shields.io/badge/AppVersion-v3.3.6-informational?style=flat-square)
+![Version: 0.1.14](https://img.shields.io/badge/Version-0.1.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.3.8](https://img.shields.io/badge/AppVersion-v3.3.8-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 9.4.17 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 9.5.3 |
 
 ## Maintainers
 
@@ -135,6 +135,11 @@ A Helm chart for Kubernetes
 | argocd.applicationSet.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds for container lifecycle hook |
 | argocd.applicationSet.tolerations | list | `[]` (defaults to global.tolerations) | [Tolerations] for use with node taints |
 | argocd.applicationSet.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to the ApplicationSet controller # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
+| argocd.applicationSet.vpa.annotations | object | `{}` | Annotations to be added to ApplicationSet controller vpa |
+| argocd.applicationSet.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for ApplicationSet controller container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.applicationSet.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the ApplicationSet controller |
+| argocd.applicationSet.vpa.labels | object | `{}` | Labels to be added to ApplicationSet controller vpa |
+| argocd.applicationSet.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.commitServer.affinity | object | `{}` (defaults to global.affinity preset) | Assign custom [affinity] rules |
 | argocd.commitServer.automountServiceAccountToken | bool | `false` | Automount API credentials for the Service Account into the pod. |
 | argocd.commitServer.containerSecurityContext | object | See [values.yaml] | commit server container-level security context |
@@ -189,6 +194,11 @@ A Helm chart for Kubernetes
 | argocd.commitServer.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds for container lifecycle hook |
 | argocd.commitServer.tolerations | list | `[]` (defaults to global.tolerations) | [Tolerations] for use with node taints |
 | argocd.commitServer.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to the commit server # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
+| argocd.commitServer.vpa.annotations | object | `{}` | Annotations to be added to commit server vpa |
+| argocd.commitServer.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for commit server container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.commitServer.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the commit server |
+| argocd.commitServer.vpa.labels | object | `{}` | Labels to be added to commit server vpa |
+| argocd.commitServer.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.configs.clusterCredentials | object | `{}` (See [values.yaml]) | Provide one or multiple [external cluster credentials] # Ref: # - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#clusters # - https://argo-cd.readthedocs.io/en/stable/operator-manual/security/#external-cluster-credentials # - https://argo-cd.readthedocs.io/en/stable/user-guide/projects/#project-scoped-repositories-and-clusters |
 | argocd.configs.cm."admin.enabled" | bool | `true` | Enable local admin user # Ref: https://argo-cd.readthedocs.io/en/latest/faq/#how-to-disable-admin-user |
 | argocd.configs.cm."application.instanceLabelKey" | string | `"argocd.argoproj.io/instance"` | The name of tracking label used by Argo CD for resource pruning |
@@ -433,6 +443,11 @@ A Helm chart for Kubernetes
 | argocd.dex.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to dex # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
 | argocd.dex.volumeMounts | list | `[]` | Additional volumeMounts to the dex main container |
 | argocd.dex.volumes | list | `[]` | Additional volumes to the dex pod |
+| argocd.dex.vpa.annotations | object | `{}` | Annotations to be added to Dex server vpa |
+| argocd.dex.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for Dex server container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.dex.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Dex server |
+| argocd.dex.vpa.labels | object | `{}` | Labels to be added to Dex server vpa |
+| argocd.dex.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.externalRedis.existingSecret | string | `""` | The name of an existing secret with Redis (must contain key `redis-password`. And should contain `redis-username` if username is not `default`) and Sentinel credentials. When it's set, the `externalRedis.username` and `externalRedis.password` parameters are ignored |
 | argocd.externalRedis.host | string | `""` | External Redis server host |
 | argocd.externalRedis.password | string | `""` | External Redis password |
@@ -562,6 +577,11 @@ A Helm chart for Kubernetes
 | argocd.notifications.tolerations | list | `[]` (defaults to global.tolerations) | [Tolerations] for use with node taints |
 | argocd.notifications.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to the application controller # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
 | argocd.notifications.triggers | object | `{}` | The trigger defines the condition when the notification should be sent # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/triggers/ |
+| argocd.notifications.vpa.annotations | object | `{}` | Annotations to be added to notifications controller vpa |
+| argocd.notifications.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for notifications controller container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.notifications.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the notifications controller |
+| argocd.notifications.vpa.labels | object | `{}` | Labels to be added to notifications controller vpa |
+| argocd.notifications.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.openshift.enabled | bool | `false` | enables using arbitrary uid for argo repo server |
 | argocd.redis-ha.additionalAffinities | object | `{}` | Additional affinities to add to the Redis server pods. |
 | argocd.redis-ha.affinity | string | `""` | Assign custom [affinity] rules to the Redis pods. |
@@ -688,6 +708,11 @@ A Helm chart for Kubernetes
 | argocd.redis.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to redis # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
 | argocd.redis.volumeMounts | list | `[]` | Additional volumeMounts to the redis container |
 | argocd.redis.volumes | list | `[]` | Additional volumes to the redis pod |
+| argocd.redis.vpa.annotations | object | `{}` | Annotations to be added to Redis vpa |
+| argocd.redis.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for Redis container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.redis.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Redis |
+| argocd.redis.vpa.labels | object | `{}` | Labels to be added to Redis vpa |
+| argocd.redis.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.redisSecretInit.affinity | object | `{}` | Assign custom [affinity] rules to the Redis secret-init Job |
 | argocd.redisSecretInit.containerSecurityContext | object | See [values.yaml] | Application controller container-level security context |
 | argocd.redisSecretInit.enabled | bool | `true` | Enable Redis secret initialization. If disabled, secret must be provisioned by alternative methods |
@@ -730,6 +755,7 @@ A Helm chart for Kubernetes
 | argocd.repoServer.containerPorts.metrics | int | `8084` | Metrics container port |
 | argocd.repoServer.containerPorts.server | int | `8081` | Repo server container port |
 | argocd.repoServer.containerSecurityContext | object | See [values.yaml] | Repo server container-level security context |
+| argocd.repoServer.copyutil.extraArgs | string | `"--update=none"` | Extra arguments for the cp command in the repo server copyutil initContainer |
 | argocd.repoServer.copyutil.resources | object | `{}` | Resource limits and requests for the repo server copyutil initContainer |
 | argocd.repoServer.deploymentAnnotations | object | `{}` | Annotations to be added to repo server Deployment |
 | argocd.repoServer.deploymentLabels | object | `{}` | Labels for the repo server Deployment |
@@ -811,6 +837,11 @@ A Helm chart for Kubernetes
 | argocd.repoServer.useEphemeralHelmWorkingDir | bool | `true` | Toggle the usage of a ephemeral Helm working directory |
 | argocd.repoServer.volumeMounts | list | `[]` | Additional volumeMounts to the repo server main container |
 | argocd.repoServer.volumes | list | `[]` | Additional volumes to the repo server pod |
+| argocd.repoServer.vpa.annotations | object | `{}` | Annotations to be added to repo server vpa |
+| argocd.repoServer.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for repo server container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.repoServer.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the repo server |
+| argocd.repoServer.vpa.labels | object | `{}` | Labels to be added to repo server vpa |
+| argocd.repoServer.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.server.affinity | object | `{}` (defaults to global.affinity preset) | Assign custom [affinity] rules to the deployment |
 | argocd.server.automountServiceAccountToken | bool | `true` | Automount API credentials for the Service Account into the pod. |
 | argocd.server.autoscaling.behavior | object | `{}` | Configures the scaling behavior of the target in both Up and Down directions. |
@@ -863,7 +894,7 @@ A Helm chart for Kubernetes
 | argocd.server.extensions.extensionList | list | `[]` (See [values.yaml]) | Extensions for Argo CD # Ref: https://github.com/argoproj-labs/argocd-extension-metrics#install-ui-extension |
 | argocd.server.extensions.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for extensions |
 | argocd.server.extensions.image.repository | string | `"quay.io/argoprojlabs/argocd-extension-installer"` | Repository to use for extension installer image |
-| argocd.server.extensions.image.tag | string | `"v0.0.9"` | Tag to use for extension installer image |
+| argocd.server.extensions.image.tag | string | `"v1.0.0"` | Tag to use for extension installer image |
 | argocd.server.extensions.resources | object | `{}` | Resource limits and requests for the argocd-extensions container |
 | argocd.server.extraArgs | list | `[]` | Additional command line arguments to pass to Argo CD server |
 | argocd.server.extraContainers | list | `[]` | Additional containers to be added to the server pod # Note: Supports use of custom Helm templates |
@@ -994,6 +1025,11 @@ A Helm chart for Kubernetes
 | argocd.server.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to the Argo CD server # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
 | argocd.server.volumeMounts | list | `[]` | Additional volumeMounts to the server main container |
 | argocd.server.volumes | list | `[]` | Additional volumes to the server pod |
+| argocd.server.vpa.annotations | object | `{}` | Annotations to be added to Argo CD server vpa |
+| argocd.server.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for Argo CD server container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.server.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Argo CD server |
+| argocd.server.vpa.labels | object | `{}` | Labels to be added to Argo CD server vpa |
+| argocd.server.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
@@ -1026,7 +1062,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.13"
+    targetRevision: "0.1.14"
     chart: argocd
     path: ''
     helm:
