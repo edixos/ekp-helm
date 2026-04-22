@@ -837,13 +837,9 @@ kratos:
   test:
     # -- use a busybox image from another repository
     busybox:
+      registry: "docker.io"
       repository: busybox
       tag: stable
-
-  # -- Define custom HTTP routes to be added to the Kratos configuration.
-  httproutes: []
-
-  # -- External secrets configuration. This is used to create ExternalSecret resources when using the helm chart with the external-secrets operator.
 externalSecrets: []
 
 # -- Databases configuration. This is used to create PostgreSQL Database resources for the application.
