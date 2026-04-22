@@ -1,6 +1,6 @@
 # eso
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.2.0](https://img.shields.io/badge/AppVersion-v2.2.0-informational?style=flat-square)
+![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.3.0](https://img.shields.io/badge/AppVersion-v2.3.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.external-secrets.io | eso(external-secrets) | 2.2.0 |
+| https://charts.external-secrets.io | eso(external-secrets) | 2.3.0 |
 
 ## Maintainers
 
@@ -221,6 +221,9 @@ A Helm chart ESO for Kubernetes
 | eso.systemAuthDelegator | bool | `false` | If true the system:auth-delegator ClusterRole will be added to RBAC |
 | eso.tolerations | list | `[]` |  |
 | eso.topologySpreadConstraints | list | `[]` |  |
+| eso.vault | object | `{"enableTokenCache":false,"tokenCacheSize":262144}` | Vault token cache configuration |
+| eso.vault.enableTokenCache | bool | `false` | Enable Vault token cache. External secrets will reuse the Vault token without creating a new one on each request. |
+| eso.vault.tokenCacheSize | int | `262144` | Maximum size of Vault token cache. Only used if enableTokenCache is true. |
 | eso.webhook.affinity | object | `{}` |  |
 | eso.webhook.annotations | object | `{}` | Annotations to place on validating webhook configuration. |
 | eso.webhook.certCheckInterval | string | `"5m"` | Specifies the time to check if the cert is valid |
@@ -322,7 +325,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.2.1"
+    targetRevision: "0.2.2"
     chart: eso
     path: ''
 
