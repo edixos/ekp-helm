@@ -3269,6 +3269,28 @@ entries:
   kubevirt:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2026-04-28T09:24:35.528683317Z"
+    description: A Helm chart for KubeVirt - Virtual Machine Management on Kubernetes
+    digest: 4b84321377c980a105606a6b66a6bf58d0be3115ef006c2206b7072b45d79ab6
+    home: https://kubevirt.io
+    keywords:
+    - kubevirt
+    - virtualization
+    - virtual-machines
+    - kvm
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: kubevirt
+    sources:
+    - https://github.com/kubevirt/kubevirt
+    type: application
+    urls:
+    - kubevirt-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2026-01-30T08:45:11.468228728Z"
     description: A Helm chart for KubeVirt - Virtual Machine Management on Kubernetes
     digest: 96c9e44eef24c77a8439288b717d81c36a4be45bdfb81f61c5eb36242c3526cc
@@ -4122,4 +4144,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-21T15:24:36.798873321Z"
+generated: "2026-04-28T09:24:35.528817378Z"
