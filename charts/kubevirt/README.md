@@ -1,5 +1,5 @@
 # kubevirt
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 **Homepage:** <https://kubevirt.io>
 
@@ -34,6 +34,12 @@ This chart deploys **KubeVirt** — a Kubernetes add-on that allows running and 
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| cdi | object | `{"config":{"featureGates":["HonorWaitForFirstConsumer","WebhookPvcRendering"]},"enabled":false,"imagePullPolicy":"IfNotPresent","infra":{"nodeSelector":{"kubernetes.io/os":"linux"}},"workload":{"nodeSelector":{"kubernetes.io/os":"linux"}}}` | CDI configuration |
+| cdi.config | object | `{"featureGates":["HonorWaitForFirstConsumer","WebhookPvcRendering"]}` | CDI configuration options |
+| cdi.enabled | bool | `false` | Enable CDI (Containerized Data Importer) |
+| cdi.imagePullPolicy | string | `"IfNotPresent"` | Image pull policy for CDI components |
+| cdi.infra | object | `{"nodeSelector":{"kubernetes.io/os":"linux"}}` | Infrastructure components placement for CDI |
+| cdi.workload | object | `{"nodeSelector":{"kubernetes.io/os":"linux"}}` | Workload components placement for CDI |
 | commonAnnotations | object | `{}` | Additional annotations to add to all resources |
 | commonLabels | object | `{}` | Additional labels to add to all resources |
 | fullnameOverride | string | `""` | Override the full name of the chart |
@@ -139,7 +145,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: kubevirt
     path: ''
 
