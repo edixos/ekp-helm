@@ -247,3 +247,27 @@ commonLabels: {}
 
 # -- Additional annotations to add to all resources
 commonAnnotations: {}
+
+# -- CDI configuration
+cdi:
+  # -- Enable CDI (Containerized Data Importer)
+  enabled: false
+
+  # -- Image pull policy for CDI components
+  imagePullPolicy: IfNotPresent
+
+  # -- CDI configuration options
+  config:
+    featureGates:
+      - HonorWaitForFirstConsumer
+      - WebhookPvcRendering
+
+  # -- Infrastructure components placement for CDI
+  infra:
+    nodeSelector:
+      kubernetes.io/os: linux
+
+  # -- Workload components placement for CDI
+  workload:
+    nodeSelector:
+      kubernetes.io/os: linux
