@@ -106,6 +106,12 @@ eso:
   # than one instance of external-secrets operates at a time.
   leaderElect: false
 
+  # -- ID of the lease object used for leader election.
+  # Leave empty to use the default ('external-secrets-controller').
+  # Set to a unique value when running multiple independent ESO deployments in the same namespace.
+  # @default -- "external-secrets-controller"
+  leaderElectionID: ""
+
   # -- If set external secrets will filter matching
   # Secret Stores with the appropriate controller values.
   controllerClass: ""
@@ -169,6 +175,13 @@ eso:
 
   # -- if true, HTTP2 will be enabled for the services created by all controllers, curently metrics and webhook.
   enableHTTP2: false
+
+  # -- Vault token cache configuration
+  vault:
+    # -- Enable Vault token cache. External secrets will reuse the Vault token without creating a new one on each request.
+    enableTokenCache: false
+    # -- Maximum size of Vault token cache. Only used if enableTokenCache is true.
+    tokenCacheSize: 262144
 
   # -- Specifies the number of concurrent ExternalSecret Reconciles external-secret executes at
   # a time.
@@ -566,11 +579,28 @@ eso:
         annotations: {}
 
 
-    readinessProbe:
-      # -- Address for readiness probe
-      address: ""
-      # -- ReadinessProbe port for kubelet
+    livenessProbe:
+      enabled: false
+      # -- Set this value to 'live' (for named port) or an integer for liveness probes.
+      # @schema type: [string, integer]
       port: 8081
+      timeoutSeconds: 5
+      failureThreshold: 5
+      periodSeconds: 10
+      successThreshold: 1
+      initialDelaySeconds: 10
+
+    readinessProbe:
+      enabled: true
+      address: ""
+      # -- Set this value to 'ready' (for named port) or an integer for readiness probes.
+      # @schema type: [string, integer]
+      port: 8081
+      timeoutSeconds: 5
+      failureThreshold: 3
+      periodSeconds: 5
+      successThreshold: 1
+      initialDelaySeconds: 20
 
 
       ## -- Extra environment variables to add to container.
@@ -712,11 +742,28 @@ eso:
         # -- Additional service annotations
         annotations: {}
 
-    readinessProbe:
-      # -- Address for readiness probe
-      address: ""
-      # -- ReadinessProbe port for kubelet
+    livenessProbe:
+      enabled: false
+      # -- Set this value to 'live' (for named port) or an integer for liveness probes.
+      # @schema type: [string, integer]
       port: 8081
+      timeoutSeconds: 5
+      failureThreshold: 5
+      periodSeconds: 10
+      successThreshold: 1
+      initialDelaySeconds: 10
+
+    readinessProbe:
+      enabled: true
+      address: ""
+      # -- Set this value to 'ready' (for named port) or an integer for readiness probes.
+      # @schema type: [string, integer]
+      port: 8081
+      timeoutSeconds: 5
+      failureThreshold: 3
+      periodSeconds: 5
+      successThreshold: 1
+      initialDelaySeconds: 20
 
     startupProbe:
       # -- Enabled determines if the startup probe should be used or not. By default it's enabled
