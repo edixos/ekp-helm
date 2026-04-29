@@ -1,7 +1,7 @@
 apiVersion: v2
 name: kratos
 description: A Helm chart for Kubernetes
-version: 0.1.6
+version: 0.1.7
 appVersion: "v26.2.0"
 maintainers:
   - name: hamzatalbi
@@ -9,6 +9,6 @@ maintainers:
     url: https://github.com/TalbiHamza
 dependencies:
   - name: kratos
-    version: 0.61.0
+    version: 0.61.1
     repository: "https://k8s.ory.sh/helm/charts"
     alias: kratos
