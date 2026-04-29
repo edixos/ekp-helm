@@ -1,6 +1,6 @@
 # oathkeeper
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://k8s.ory.sh/helm/charts | oathkeeper(oathkeeper) | 0.61.0 |
+| https://k8s.ory.sh/helm/charts | oathkeeper(oathkeeper) | 0.61.1 |
 
 ## Maintainers
 
@@ -69,7 +69,6 @@ A Helm chart for Kubernetes
 | oathkeeper.global.podMetadata | object | `{"annotations":{},"labels":{}}` | Specify pod metadata, this metadata is added directly to the pod, and not higher objects |
 | oathkeeper.global.podMetadata.annotations | object | `{}` | Extra pod level annotations |
 | oathkeeper.global.podMetadata.labels | object | `{}` | Extra pod level labels |
-| oathkeeper.httproutes | list | `[]` |  |
 | oathkeeper.image.initContainer | object | `{"repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
 | oathkeeper.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | oathkeeper.image.registry | string | `"docker.io"` | ORY Oathkeeper image registry |
@@ -166,7 +165,7 @@ A Helm chart for Kubernetes
 | oathkeeper.sidecar.envs | object | `{}` |  |
 | oathkeeper.sidecar.image.repository | string | `"oryd/oathkeeper-maester"` |  |
 | oathkeeper.sidecar.image.tag | string | `"v0.1.13"` |  |
-| oathkeeper.test.busybox | object | `{"repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
+| oathkeeper.test.busybox | object | `{"registry":"docker.io","repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
 | oathkeeper.test.labels | object | `{}` | Provide additional labels to the test pod |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `false` | Add grafana dashboard as a configmap |
@@ -199,7 +198,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: oathkeeper
     path: ''
     helm:
