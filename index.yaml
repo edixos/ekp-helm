@@ -3542,6 +3542,22 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/kyverno-policies-0.1.0.tgz
     version: 0.1.0
+  longhorn:
+  - apiVersion: v2
+    appVersion: 1.11.1
+    created: "2026-04-30T13:25:09.037127511Z"
+    dependencies:
+    - alias: longhorn
+      name: longhorn
+      repository: https://charts.longhorn.io
+      version: 1.11.1
+    description: A Helm chart for Longhorn
+    digest: 2147cd43b4e36795c5f0b355189b8fda5530e4b0a06201cf0bb8e10b1d2beb20
+    name: longhorn
+    type: application
+    urls:
+    - longhorn-0.1.0.tgz
+    version: 0.1.0
   multus:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -4144,4 +4160,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-28T09:24:35.528817378Z"
+generated: "2026-04-30T13:25:09.037628218Z"
