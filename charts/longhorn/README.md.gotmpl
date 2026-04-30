@@ -1,0 +1,35 @@
+# {{ .Name }}
+
+{{ template "chart.versionBadge" .}}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Prerequisites
+
+- Helm v{{ if eq .ApiVersion "v2" }}3{{ else }}2{{end}}
+- Kubernetes 1.21+
+- open-iscsi installed on all nodes
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+## Description
+
+{{ template "chart.description" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+## Installing the Chart
+
+### With Helm
+
+To install the chart with the release name `my-release`:
+
+```bash
+helm repo add ekp-helm https://edixos.github.io/ekp-helm
+helm install ekp-helm/{{ .Name }}

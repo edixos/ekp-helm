@@ -1,0 +1,40 @@
+longhorn:
+  defaultSettings:
+    defaultDataPath: /var/lib/longhorn
+    replicaCount: 3
+    createDefaultDiskLabeledNodes: true
+  
+  ingress:
+    enabled: false
+    ingressClassName: nginx
+    host: longhorn.local
+    tls: false
+
+  persistence:
+    defaultClass: true
+    defaultClassReplicaCount: 3
+
+  csi:
+    kubeletRootDir: /var/lib/kubelet
+    attacherReplicaCount: 3
+    provisionerReplicaCount: 3
+    resizerReplicaCount: 3
+    snapshotterReplicaCount: 3
+
+# -- List of StorageClasses to deploy
+storageClasses: []
+# Example:
+# - name: longhorn-fast
+#   allowVolumeExpansion: true
+#   reclaimPolicy: Delete
+#   parameters:
+#     numberOfReplicas: "3"
+#     staleReplicaTimeout: "2880"
+#     fromBackup: ""
+#     fsType: "ext4"
+
+# -- List of VolumeSnapshotClasses to deploy
+volumeSnapshotClasses: []
+# Example:
+# - name: longhorn-snapshot-class
+#   deletionPolicy: Delete
