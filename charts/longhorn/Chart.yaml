@@ -8,5 +8,5 @@ appVersion: "1.6.0"
 dependencies:
   - name: longhorn
     version: 1.6.0
-    repository: "[https://charts.longhorn.io](https://charts.longhorn.io)"
+    repository: "https://charts.longhorn.io"
     alias: longhorn
