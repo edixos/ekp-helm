@@ -3,7 +3,7 @@ longhorn:
     defaultDataPath: /var/lib/longhorn
     replicaCount: 3
     createDefaultDiskLabeledNodes: true
-  
+
   ingress:
     enabled: false
     ingressClassName: nginx

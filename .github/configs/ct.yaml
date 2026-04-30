@@ -22,6 +22,7 @@ chart-repos:
   - scaleway=https://helm.scw.cloud/
   - cilium=https://helm.cilium.io/
   - cloudnative-pg=https://cloudnative-pg.github.io/charts
+  - longhorn=https://charts.longhorn.io
   
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false

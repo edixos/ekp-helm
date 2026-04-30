@@ -1,12 +1,12 @@
 ---
 apiVersion: v2
-name: longhorn-wrapper
-description: A Helm wrapper chart for Longhorn and associated resources
+name: longhorn
+description: A Helm chart for Longhorn
 type: application
 version: 0.1.0
-appVersion: "1.6.0"
+appVersion: "1.11.1"
 dependencies:
   - name: longhorn
-    version: 1.6.0
+    version: 1.11.1
     repository: "https://charts.longhorn.io"
     alias: longhorn

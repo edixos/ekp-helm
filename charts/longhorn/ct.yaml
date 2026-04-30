@@ -3,5 +3,5 @@ chart-dirs:
   - charts
 helm-extra-args: --timeout=500
 chart-repos:
-  - longhorn=[https://charts.longhorn.io](https://charts.longhorn.io)
+  - longhorn=https://charts.longhorn.io
 check-version-increment: true
