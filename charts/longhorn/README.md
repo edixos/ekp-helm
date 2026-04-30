@@ -12,7 +12,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| [https://charts.longhorn.io](https://charts.longhorn.io) | longhorn(longhorn) | 1.6.0 |
+| https://charts.longhorn.io | longhorn(longhorn) | 1.6.0 |
 
 ## Description
 
