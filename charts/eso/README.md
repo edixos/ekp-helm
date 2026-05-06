@@ -1,6 +1,6 @@
 # eso
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.2.0](https://img.shields.io/badge/AppVersion-v2.2.0-informational?style=flat-square)
+![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.4.1](https://img.shields.io/badge/AppVersion-v2.4.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.external-secrets.io | eso(external-secrets) | 2.2.0 |
+| https://charts.external-secrets.io | eso(external-secrets) | 2.4.1 |
 
 ## Maintainers
 
@@ -48,6 +48,13 @@ A Helm chart ESO for Kubernetes
 | eso.certController.image.repository | string | `"ghcr.io/external-secrets/external-secrets"` |  |
 | eso.certController.image.tag | string | `""` |  |
 | eso.certController.imagePullSecrets | list | `[]` |  |
+| eso.certController.livenessProbe.enabled | bool | `false` |  |
+| eso.certController.livenessProbe.failureThreshold | int | `5` |  |
+| eso.certController.livenessProbe.initialDelaySeconds | int | `10` |  |
+| eso.certController.livenessProbe.periodSeconds | int | `10` |  |
+| eso.certController.livenessProbe.port | int | `8081` | Set this value to 'live' (for named port) or an integer for liveness probes. @schema type: [string, integer] |
+| eso.certController.livenessProbe.successThreshold | int | `1` |  |
+| eso.certController.livenessProbe.timeoutSeconds | int | `5` |  |
 | eso.certController.log | object | `{"level":"info","timeEncoding":"epoch"}` | Specifies Log Params to the Certificate Controller |
 | eso.certController.metrics.listen.port | int | `8080` |  |
 | eso.certController.metrics.service.annotations | object | `{}` | Additional service annotations |
@@ -60,8 +67,14 @@ A Helm chart ESO for Kubernetes
 | eso.certController.podSecurityContext.enabled | bool | `true` |  |
 | eso.certController.priorityClassName | string | `""` | Pod priority class name. |
 | eso.certController.rbac.create | bool | `true` | Specifies whether role and rolebinding resources should be created. |
-| eso.certController.readinessProbe.address | string | `""` | Address for readiness probe |
-| eso.certController.readinessProbe.port | int | `8081` | ReadinessProbe port for kubelet |
+| eso.certController.readinessProbe.address | string | `""` |  |
+| eso.certController.readinessProbe.enabled | bool | `true` |  |
+| eso.certController.readinessProbe.failureThreshold | int | `3` |  |
+| eso.certController.readinessProbe.initialDelaySeconds | int | `20` |  |
+| eso.certController.readinessProbe.periodSeconds | int | `5` |  |
+| eso.certController.readinessProbe.port | int | `8081` | Set this value to 'ready' (for named port) or an integer for readiness probes. @schema type: [string, integer] |
+| eso.certController.readinessProbe.successThreshold | int | `1` |  |
+| eso.certController.readinessProbe.timeoutSeconds | int | `5` |  |
 | eso.certController.replicaCount | int | `1` |  |
 | eso.certController.requeueInterval | string | `"5m"` |  |
 | eso.certController.resources | object | `{}` |  |
@@ -138,6 +151,7 @@ A Helm chart ESO for Kubernetes
 | eso.imagePullSecrets | list | `[]` |  |
 | eso.installCRDs | bool | `true` | If set, install and upgrade CRDs through helm chart. |
 | eso.leaderElect | bool | `false` | If true, external-secrets will perform leader election between instances to ensure no more than one instance of external-secrets operates at a time. |
+| eso.leaderElectionID | string | "external-secrets-controller" | ID of the lease object used for leader election. Leave empty to use the default ('external-secrets-controller'). Set to a unique value when running multiple independent ESO deployments in the same namespace. |
 | eso.livenessProbe.enabled | bool | `false` | Enabled determines if the liveness probe should be used or not. By default it's disabled. |
 | eso.livenessProbe.spec | object | `{"address":"","failureThreshold":5,"httpGet":{"path":"/healthz","port":"live"},"initialDelaySeconds":10,"periodSeconds":10,"port":8082,"successThreshold":1,"timeoutSeconds":5}` | The body of the liveness probe settings. |
 | eso.livenessProbe.spec.address | string | `""` | Bind address for the health server used by both liveness and readiness probes (--live-addr flag). |
@@ -221,6 +235,9 @@ A Helm chart ESO for Kubernetes
 | eso.systemAuthDelegator | bool | `false` | If true the system:auth-delegator ClusterRole will be added to RBAC |
 | eso.tolerations | list | `[]` |  |
 | eso.topologySpreadConstraints | list | `[]` |  |
+| eso.vault | object | `{"enableTokenCache":false,"tokenCacheSize":262144}` | Vault token cache configuration |
+| eso.vault.enableTokenCache | bool | `false` | Enable Vault token cache. External secrets will reuse the Vault token without creating a new one on each request. |
+| eso.vault.tokenCacheSize | int | `262144` | Maximum size of Vault token cache. Only used if enableTokenCache is true. |
 | eso.webhook.affinity | object | `{}` |  |
 | eso.webhook.annotations | object | `{}` | Annotations to place on validating webhook configuration. |
 | eso.webhook.certCheckInterval | string | `"5m"` | Specifies the time to check if the cert is valid |
@@ -251,6 +268,13 @@ A Helm chart ESO for Kubernetes
 | eso.webhook.image.repository | string | `"ghcr.io/external-secrets/external-secrets"` |  |
 | eso.webhook.image.tag | string | `""` | The image tag to use. The default is the chart appVersion. |
 | eso.webhook.imagePullSecrets | list | `[]` |  |
+| eso.webhook.livenessProbe.enabled | bool | `false` |  |
+| eso.webhook.livenessProbe.failureThreshold | int | `5` |  |
+| eso.webhook.livenessProbe.initialDelaySeconds | int | `10` |  |
+| eso.webhook.livenessProbe.periodSeconds | int | `10` |  |
+| eso.webhook.livenessProbe.port | int | `8081` | Set this value to 'live' (for named port) or an integer for liveness probes. @schema type: [string, integer] |
+| eso.webhook.livenessProbe.successThreshold | int | `1` |  |
+| eso.webhook.livenessProbe.timeoutSeconds | int | `5` |  |
 | eso.webhook.log | object | `{"level":"info","timeEncoding":"epoch"}` | Specifies Log Params to the Webhook |
 | eso.webhook.lookaheadInterval | string | `""` | Specifies the lookaheadInterval for certificate validity |
 | eso.webhook.metrics.listen.port | int | `8080` |  |
@@ -264,8 +288,14 @@ A Helm chart ESO for Kubernetes
 | eso.webhook.podSecurityContext.enabled | bool | `true` |  |
 | eso.webhook.port | int | `10250` | The port the webhook will listen to |
 | eso.webhook.priorityClassName | string | `""` | Pod priority class name. |
-| eso.webhook.readinessProbe.address | string | `""` | Address for readiness probe |
-| eso.webhook.readinessProbe.port | int | `8081` | ReadinessProbe port for kubelet |
+| eso.webhook.readinessProbe.address | string | `""` |  |
+| eso.webhook.readinessProbe.enabled | bool | `true` |  |
+| eso.webhook.readinessProbe.failureThreshold | int | `3` |  |
+| eso.webhook.readinessProbe.initialDelaySeconds | int | `20` |  |
+| eso.webhook.readinessProbe.periodSeconds | int | `5` |  |
+| eso.webhook.readinessProbe.port | int | `8081` | Set this value to 'ready' (for named port) or an integer for readiness probes. @schema type: [string, integer] |
+| eso.webhook.readinessProbe.successThreshold | int | `1` |  |
+| eso.webhook.readinessProbe.timeoutSeconds | int | `5` |  |
 | eso.webhook.replicaCount | int | `1` |  |
 | eso.webhook.resources | object | `{}` |  |
 | eso.webhook.revisionHistoryLimit | int | `10` | Specifies the amount of historic ReplicaSets k8s should keep (see https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy) |
@@ -322,7 +352,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.2.1"
+    targetRevision: "0.2.2"
     chart: eso
     path: ''
 
