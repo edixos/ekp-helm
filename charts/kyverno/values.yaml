@@ -55,6 +55,9 @@ kyverno:
       #   path: /etc/pki/tls/ca-certificates.crt
       #   type: File
 
+    # -- Global priority class name for pod priority. Non-global values will override the global value.
+    priorityClassName: ''
+
     # -- Additional container environment variables to apply to all containers and init containers
     extraEnvVars: []
     # Example setting proxy
@@ -257,8 +260,34 @@ kyverno:
           memory: 64Mi
 
       serviceAccount:
-        # -- Toggle automounting of the ServiceAccount
+        # -- Toggle automounting of the ServiceAccount.
+        # When set to false, a projected service account token is used instead
+        # which provides time-limited and audience-bound tokens for improved security.
         automountServiceAccountToken: true
+
+        # -- Projected service account token configuration (only used when automountServiceAccountToken is false)
+        projectedServiceAccountToken:
+          # -- Token expiration time in seconds.
+          # The kubelet will request a new token before the token expires.
+          expirationSeconds: 3600
+          # -- Audience for the projected service account token.
+          # If not set, the token will have no audience restriction.
+          audience: ""
+
+  # -- Scoped token injected into outbound APICall and CEL http requests.
+  # This token carries a custom audience so that if leaked to an external service
+  # it cannot be replayed against the Kubernetes API server.
+  apiCallToken:
+    # -- Audience for the projected token used in outbound requests.
+    # Set this to the audience your receiving service validates in the OIDC token's
+    # `aud` claim. The default is `kyverno-svc.kyverno.io`, which is a Kyverno-specific
+    # audience and prevents the token from being accepted by the Kubernetes API server.
+    audience: "kyverno-svc.kyverno.io"
+    # -- Token lifetime in seconds for the projected outbound API call token.
+    # The default is `3600` (1 hour). The kubelet requests a replacement before the
+    # token expires, so lowering this reduces token lifetime while increasing rotation
+    # frequency.
+    expirationSeconds: 3600
 
   # Configuration
   config:
@@ -297,6 +326,14 @@ kyverno:
 
     # -- Generate success events.
     generateSuccessEvents: false
+
+    # -- Comma-separated list of event actions for which success events should be generated.
+    # When set, only success events matching the specified actions are emitted.
+    # Requires `generateSuccessEvents` to be `true`.
+    # Valid values: "Resource Mutated", "Resource Passed", "Resource Generated", "Resource Cleaned Up".
+    # Example: "Resource Mutated" or "Resource Mutated,Resource Generated".
+    # @default -- "" (empty, all success events are emitted when generateSuccessEvents is true)
+    successEventActions: ""
 
     # -- Maximum cumulative size of context data during policy evaluation.
     # Supports Kubernetes quantity format (e.g., 100Mi, 2Gi) or plain bytes (e.g., 2097152).
@@ -552,7 +589,7 @@ kyverno:
       repository: kyverno/readiness-checker
       # -- Image tag
       # Defaults to `latest` if omitted
-      tag: 'v0.1.0'
+      tag: ~
       # -- (string) Image pull policy
       # Defaults to image.pullPolicy if omitted
       pullPolicy: ~
@@ -585,8 +622,19 @@ kyverno:
       seccompProfile:
         type: RuntimeDefault
 
-    # -- Toggle automounting of the ServiceAccount
+    # -- Toggle automounting of the ServiceAccount.
+    # When set to false, a projected service account token is used instead
+    # which provides time-limited and audience-bound tokens for improved security.
     automountServiceAccountToken: true
+
+    # -- Projected service account token configuration (only used when automountServiceAccountToken is false)
+    projectedServiceAccountToken:
+      # -- Token expiration time in seconds.
+      # The kubelet will request a new token before the token expires.
+      expirationSeconds: 3600
+      # -- Audience for the projected service account token.
+      # If not set, the token will have no audience restriction.
+      audience: ""
 
     # -- Node labels for pod assignment
     nodeSelector: {}
@@ -605,18 +653,14 @@ kyverno:
     # -- Create a helm pre-delete hook to cleanup webhooks.
     enabled: true
 
-    autoDeleteWebhooks:
-      # -- Allow webhooks controller to delete webhooks using finalizers
-      enabled: false
-
     image:
       # -- (string) Image registry
-      registry: registry.k8s.io
+      registry: ghcr.io
       # -- Image repository
-      repository: kubectl
+      repository: kyverno/readiness-checker
       # -- Image tag
       # Defaults to `latest` if omitted
-      tag: 'v1.34.3'
+      tag: ~
       # -- (string) Image pull policy
       # Defaults to image.pullPolicy if omitted
       pullPolicy: ~
@@ -673,8 +717,19 @@ kyverno:
         memory: 64Mi
 
     serviceAccount:
-      # -- Toggle automounting of the ServiceAccount
+      # -- Toggle automounting of the ServiceAccount.
+      # When set to false, a projected service account token is used instead
+      # which provides time-limited and audience-bound tokens for improved security.
       automountServiceAccountToken: true
+
+      # -- Projected service account token configuration (only used when automountServiceAccountToken is false)
+      projectedServiceAccountToken:
+        # -- Token expiration time in seconds.
+        # The kubelet will request a new token before the token expires.
+        expirationSeconds: 3600
+        # -- Audience for the projected service account token.
+        # If not set, the token will have no audience restriction.
+        audience: ""
 
   grafana:
     # -- Enable grafana dashboard creation.
@@ -770,6 +825,8 @@ kyverno:
     globalContext:
       # -- Maximum allowed response size from API Calls. A value of 0 bypasses checks (not recommended)
       maxApiCallResponseLength: 2000000
+      # -- Timeout for HTTP API calls made by policies. A value of 0s means no timeout.
+      apiCallTimeout: 30s
     logging:
       # -- Logging format
       format: text
@@ -829,6 +886,9 @@ kyverno:
       # -- Target CPU utilization percentage
       targetCPUUtilizationPercentage: 80
 
+      # -- (int) Target memory utilization percentage
+      targetMemoryUtilizationPercentage: ~
+
       # -- Configurable scaling behavior
       behavior: {}
 
@@ -856,8 +916,19 @@ kyverno:
         annotations: {}
           # example.com/annotation: value
 
-        # -- Toggle automounting of the ServiceAccount
+        # -- Toggle automounting of the ServiceAccount.
+        # When set to false, a projected service account token is used instead
+        # which provides time-limited and audience-bound tokens for improved security.
         automountServiceAccountToken: true
+
+        # -- Projected service account token configuration (only used when automountServiceAccountToken is false)
+        projectedServiceAccountToken:
+          # -- Token expiration time in seconds.
+          # The kubelet will request a new token before the token expires.
+          expirationSeconds: 3600
+          # -- Audience for the projected service account token.
+          # If not set, the token will have no audience restriction.
+          audience: ""
 
       coreClusterRole:
         # -- Extra resource permissions to add in the core cluster role.
@@ -943,6 +1014,9 @@ kyverno:
     # -- Additional annotations to add to each pod
     podAnnotations: {}
       # example.com/annotation: foo
+
+    # -- Deployment labels.
+    labels: {}
 
     # -- Deployment annotations.
     annotations: {}
@@ -1144,6 +1218,8 @@ kyverno:
 
       # -- Container security context
       securityContext:
+        runAsUser: 65534
+        runAsGroup: 65534
         runAsNonRoot: true
         privileged: false
         allowPrivilegeEscalation: false
@@ -1189,6 +1265,8 @@ kyverno:
 
       # -- Container security context
       securityContext:
+        runAsUser: 65534
+        runAsGroup: 65534
         runAsNonRoot: true
         privileged: false
         allowPrivilegeEscalation: false
@@ -1220,6 +1298,16 @@ kyverno:
       # - name: myapp-container
       #   image: busybox
       #   command: ['sh', '-c', 'echo Hello && sleep 3600']
+
+    # -- Additional volumes to be mounted in the pod
+    extraVolumes: []
+      # - name: my-volume
+      #   emptyDir: {}
+
+    # -- Additional volumeMounts to be mounted to the main container
+    extraVolumeMounts: []
+      # - name: my-volume
+      #   mountPath: /path/to/mount
 
     service:
       # -- Service port.
@@ -1298,6 +1386,11 @@ kyverno:
       config: prometheus
       # -- Prometheus endpoint port
       port: 8000
+      # -- Is TLS required for endpoint
+      secure: false
+      # -- Key algorithm for self-signed TLS certificates.
+      # Supported values: RSA, ECDSA, Ed25519
+      tlsKeyAlgorithm: RSA
       # -- Otel collector endpoint
       collector: ''
       # -- Otel collector credentials
@@ -1341,8 +1434,19 @@ kyverno:
         annotations: {}
           # example.com/annotation: value
 
-        # -- Toggle automounting of the ServiceAccount
+        # -- Toggle automounting of the ServiceAccount.
+        # When set to false, a projected service account token is used instead
+        # which provides time-limited and audience-bound tokens for improved security.
         automountServiceAccountToken: true
+
+        # -- Projected service account token configuration (only used when automountServiceAccountToken is false)
+        projectedServiceAccountToken:
+          # -- Token expiration time in seconds.
+          # The kubelet will request a new token before the token expires.
+          expirationSeconds: 3600
+          # -- Audience for the projected service account token.
+          # If not set, the token will have no audience restriction.
+          audience: ""
 
       coreClusterRole:
         # -- Extra resource permissions to add in the core cluster role.
@@ -1438,6 +1542,9 @@ kyverno:
     podAnnotations: {}
     # example.com/annotation: foo
 
+    # -- Deployment labels.
+    labels: {}
+
     # -- Deployment annotations.
     annotations: {}
 
@@ -1529,6 +1636,8 @@ kyverno:
 
     # -- Security context for the containers
     securityContext:
+      runAsUser: 65534
+      runAsGroup: 65534
       runAsNonRoot: true
       privileged: false
       allowPrivilegeEscalation: false
@@ -1564,6 +1673,16 @@ kyverno:
       # hostPath:
       #   path: /etc/pki/tls/ca-certificates.crt
       #   type: File
+
+    # -- Additional volumes to be mounted in the pod
+    extraVolumes: []
+      # - name: my-volume
+      #   emptyDir: {}
+
+    # -- Additional volumeMounts to be mounted to the main container
+    extraVolumeMounts: []
+      # - name: my-volume
+      #   mountPath: /path/to/mount
 
     metricsService:
       # -- Create service.
@@ -1630,6 +1749,11 @@ kyverno:
       config: prometheus
       # -- Prometheus endpoint port
       port: 8000
+      # -- Is TLS required for endpoint
+      secure: false
+      # -- Key algorithm for self-signed TLS certificates.
+      # Supported values: RSA, ECDSA, Ed25519
+      tlsKeyAlgorithm: RSA
       # -- Otel collector endpoint
       collector: ''
       # -- Otel collector credentials
@@ -1672,8 +1796,19 @@ kyverno:
         annotations: {}
           # example.com/annotation: value
 
-        # -- Toggle automounting of the ServiceAccount
+        # -- Toggle automounting of the ServiceAccount.
+        # When set to false, a projected service account token is used instead
+        # which provides time-limited and audience-bound tokens for improved security.
         automountServiceAccountToken: true
+
+        # -- Projected service account token configuration (only used when automountServiceAccountToken is false)
+        projectedServiceAccountToken:
+          # -- Token expiration time in seconds.
+          # The kubelet will request a new token before the token expires.
+          expirationSeconds: 3600
+          # -- Audience for the projected service account token.
+          # If not set, the token will have no audience restriction.
+          audience: ""
 
       clusterRole:
         # -- Extra resource permissions to add in the cluster role
@@ -1766,6 +1901,9 @@ kyverno:
     # -- Additional annotations to add to each pod
     podAnnotations: {}
     # example.com/annotation: foo
+
+    # -- Deployment labels.
+    labels: {}
 
     # -- Deployment annotations.
     annotations: {}
@@ -1906,6 +2044,8 @@ kyverno:
 
     # -- Security context for the containers
     securityContext:
+      runAsUser: 65534
+      runAsGroup: 65534
       runAsNonRoot: true
       privileged: false
       allowPrivilegeEscalation: false
@@ -1929,6 +2069,16 @@ kyverno:
       # -- Unhealthy pod eviction policy to be used.
       # Possible values are `IfHealthyBudget` or `AlwaysAllow`.
       unhealthyPodEvictionPolicy:
+
+    # -- Additional volumes to be mounted in the pod
+    extraVolumes: []
+      # - name: my-volume
+      #   emptyDir: {}
+
+    # -- Additional volumeMounts to be mounted to the main container
+    extraVolumeMounts: []
+      # - name: my-volume
+      #   mountPath: /path/to/mount
 
     service:
       # -- Service port.
@@ -2009,6 +2159,11 @@ kyverno:
       config: prometheus
       # -- Prometheus endpoint port
       port: 8000
+      # -- Is TLS required for endpoint
+      secure: false
+      # -- Key algorithm for self-signed TLS certificates.
+      # Supported values: RSA, ECDSA, Ed25519
+      tlsKeyAlgorithm: RSA
       # -- Otel collector endpoint
       collector: ''
       # -- Otel collector credentials
@@ -2052,8 +2207,19 @@ kyverno:
         annotations: {}
           # example.com/annotation: value
 
-        # -- Toggle automounting of the ServiceAccount
+        # -- Toggle automounting of the ServiceAccount.
+        # When set to false, a projected service account token is used instead
+        # which provides time-limited and audience-bound tokens for improved security.
         automountServiceAccountToken: true
+
+        # -- Projected service account token configuration (only used when automountServiceAccountToken is false)
+        projectedServiceAccountToken:
+          # -- Token expiration time in seconds.
+          # The kubelet will request a new token before the token expires.
+          expirationSeconds: 3600
+          # -- Audience for the projected service account token.
+          # If not set, the token will have no audience restriction.
+          audience: ""
 
       coreClusterRole:
         # -- Extra resource permissions to add in the core cluster role.
@@ -2101,6 +2267,9 @@ kyverno:
     # -- Additional annotations to add to each pod
     podAnnotations: {}
     # example.com/annotation: foo
+
+    # -- Deployment labels.
+    labels: {}
 
     # -- Deployment annotations.
     annotations: {}
@@ -2211,6 +2380,8 @@ kyverno:
 
     # -- Security context for the containers
     securityContext:
+      runAsUser: 65534
+      runAsGroup: 65534
       runAsNonRoot: true
       privileged: false
       allowPrivilegeEscalation: false
@@ -2254,6 +2425,15 @@ kyverno:
       #   path: /etc/pki/tls/ca-certificates.crt
       #   type: File
 
+    # -- Additional volumes to be mounted in the pod
+    extraVolumes: []
+      # - name: my-volume
+      #   emptyDir: {}
+
+    # -- Additional volumeMounts to be mounted to the main container
+    extraVolumeMounts: []
+      # - name: my-volume
+      #   mountPath: /path/to/mount
 
     metricsService:
       # -- Create service.
@@ -2320,6 +2500,11 @@ kyverno:
       config: prometheus
       # -- Prometheus endpoint port
       port: 8000
+      # -- Is TLS required for endpoint
+      secure: false
+      # -- Key algorithm for self-signed TLS certificates.
+      # Supported values: RSA, ECDSA, Ed25519
+      tlsKeyAlgorithm: RSA
       # -- (string) Otel collector endpoint
       collector: ~
       # -- (string) Otel collector credentials
