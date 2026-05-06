@@ -1,6 +1,6 @@
 # alertmanager
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![AppVersion: v0.27.0](https://img.shields.io/badge/AppVersion-v0.27.0-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![AppVersion: v0.27.0](https://img.shields.io/badge/AppVersion-v0.27.0-informational?style=flat-square)
 
 ----
 
@@ -17,7 +17,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://oauth2-proxy.github.io/manifests | oidc(oauth2-proxy) | 10.4.2 |
+| https://oauth2-proxy.github.io/manifests | oidc(oauth2-proxy) | 10.4.3 |
 
 ## Maintainers
 
@@ -319,7 +319,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.7"
+    targetRevision: "0.1.8"
     chart: alertmanager
     path: ''
 

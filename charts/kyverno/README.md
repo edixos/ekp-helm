@@ -1,6 +1,6 @@
 # kyverno
 
-![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.17.1](https://img.shields.io/badge/AppVersion-v1.17.1-informational?style=flat-square)
+![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.18.0](https://img.shields.io/badge/AppVersion-v1.18.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kyverno.github.io/kyverno/ | kyverno | 3.7.1 |
+| https://kyverno.github.io/kyverno/ | kyverno | 3.8.0 |
 
 ## Maintainers
 
@@ -36,6 +36,7 @@ A Helm chart for kyverno
 | kyverno.admissionController.autoscaling.maxReplicas | int | `10` | Maximum number of pods |
 | kyverno.admissionController.autoscaling.minReplicas | int | `1` | Minimum number of pods |
 | kyverno.admissionController.autoscaling.targetCPUUtilizationPercentage | int | `80` | Target CPU utilization percentage |
+| kyverno.admissionController.autoscaling.targetMemoryUtilizationPercentage | int | `nil` | Target memory utilization percentage |
 | kyverno.admissionController.caCertificates.data | string | `nil` | CA certificates to use with Kyverno deployments This value is expected to be one large string of CA certificates |
 | kyverno.admissionController.caCertificates.volume | object | `{}` | Volume to be mounted for CA certificates Not used when `.Values.admissionController.caCertificates.data` is defined |
 | kyverno.admissionController.certManager | object | `{"algorithm":"RSA","ca":{"duration":"87600h","renewBefore":"720h"},"createSelfSignedIssuer":true,"enabled":false,"issuerRef":{"group":"cert-manager.io","kind":"ClusterIssuer","name":""},"size":2048,"tls":{"duration":"8760h","renewBefore":"720h"}}` | Configure cert-manager to manage TLS certificates. When enabled, cert-manager Certificate resources will be created to provision the TLS certificates for the admission controller. Requires cert-manager to be installed in the cluster. Takes precedence over createSelfSignedCert when enabled. |
@@ -62,13 +63,15 @@ A Helm chart for kyverno
 | kyverno.admissionController.container.image.tag | string | `nil` | Image tag Defaults to appVersion in Chart.yaml if omitted |
 | kyverno.admissionController.container.resources.limits | object | `{"memory":"384Mi"}` | Pod resource limits |
 | kyverno.admissionController.container.resources.requests | object | `{"cpu":"100m","memory":"128Mi"}` | Pod resource requests |
-| kyverno.admissionController.container.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Container security context |
+| kyverno.admissionController.container.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Container security context |
 | kyverno.admissionController.crdWatcher | bool | `false` | Enable/Disable custom resource watcher to invalidate cache |
 | kyverno.admissionController.createSelfSignedCert | bool | `false` | Create self-signed certificates at deployment time. The certificates won't be automatically renewed if this is set to `true`. |
 | kyverno.admissionController.dnsConfig | object | `{}` | `dnsConfig` allows to specify DNS configuration for the pod. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config. |
 | kyverno.admissionController.dnsPolicy | string | `"ClusterFirst"` | `dnsPolicy` determines the manner in which DNS resolution happens in the cluster. In case of `hostNetwork: true`, usually, the `dnsPolicy` is suitable to be `ClusterFirstWithHostNet`. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy. |
 | kyverno.admissionController.extraContainers | list | `[]` | Array of extra containers to run alongside kyverno |
 | kyverno.admissionController.extraInitContainers | list | `[]` | Array of extra init containers |
+| kyverno.admissionController.extraVolumeMounts | list | `[]` | Additional volumeMounts to be mounted to the main container |
+| kyverno.admissionController.extraVolumes | list | `[]` | Additional volumes to be mounted in the pod |
 | kyverno.admissionController.featuresOverride | object | `{"admissionReports":{"backPressureThreshold":1000}}` | Overrides features defined at the root level |
 | kyverno.admissionController.featuresOverride.admissionReports.backPressureThreshold | int | `1000` | Max number of admission reports allowed in flight until the admission controller stops creating new ones |
 | kyverno.admissionController.hostNetwork | bool | `false` | Change `hostNetwork` to `true` when you want the pod to share its host's network namespace. Useful for situations like when you end up dealing with a custom CNI over Amazon EKS. Update the `dnsPolicy` accordingly as well to suit the host network mode. |
@@ -82,13 +85,16 @@ A Helm chart for kyverno
 | kyverno.admissionController.initContainer.image.tag | string | `nil` | Image tag If missing, defaults to image.tag |
 | kyverno.admissionController.initContainer.resources.limits | object | `{"cpu":"100m","memory":"256Mi"}` | Pod resource limits |
 | kyverno.admissionController.initContainer.resources.requests | object | `{"cpu":"10m","memory":"64Mi"}` | Pod resource requests |
-| kyverno.admissionController.initContainer.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Container security context |
+| kyverno.admissionController.initContainer.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Container security context |
+| kyverno.admissionController.labels | object | `{}` | Deployment labels. |
 | kyverno.admissionController.livenessProbe | object | See [values.yaml](values.yaml) | Liveness probe. The block is directly forwarded into the deployment, so you can use whatever livenessProbe configuration you want. ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/ |
 | kyverno.admissionController.metering.collector | string | `""` | Otel collector endpoint |
 | kyverno.admissionController.metering.config | string | `"prometheus"` | Otel configuration, can be `prometheus` or `grpc` |
 | kyverno.admissionController.metering.creds | string | `""` | Otel collector credentials |
 | kyverno.admissionController.metering.disabled | bool | `false` | Disable metrics export |
 | kyverno.admissionController.metering.port | int | `8000` | Prometheus endpoint port |
+| kyverno.admissionController.metering.secure | bool | `false` | Is TLS required for endpoint |
+| kyverno.admissionController.metering.tlsKeyAlgorithm | string | `"RSA"` | Key algorithm for self-signed TLS certificates. Supported values: RSA, ECDSA, Ed25519 |
 | kyverno.admissionController.metricsService.annotations | object | `{}` | Service annotations. |
 | kyverno.admissionController.metricsService.create | bool | `true` | Create service. |
 | kyverno.admissionController.metricsService.nodePort | string | `nil` | Service node port. Only used if `type` is `NodePort`. |
@@ -119,8 +125,11 @@ A Helm chart for kyverno
 | kyverno.admissionController.rbac.create | bool | `true` | Create RBAC resources |
 | kyverno.admissionController.rbac.createViewRoleBinding | bool | `true` | Create rolebinding to view role |
 | kyverno.admissionController.rbac.serviceAccount.annotations | object | `{}` | Annotations for the ServiceAccount |
-| kyverno.admissionController.rbac.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
+| kyverno.admissionController.rbac.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount. When set to false, a projected service account token is used instead which provides time-limited and audience-bound tokens for improved security. |
 | kyverno.admissionController.rbac.serviceAccount.name | string | `nil` | The ServiceAccount name |
+| kyverno.admissionController.rbac.serviceAccount.projectedServiceAccountToken | object | `{"audience":"","expirationSeconds":3600}` | Projected service account token configuration (only used when automountServiceAccountToken is false) |
+| kyverno.admissionController.rbac.serviceAccount.projectedServiceAccountToken.audience | string | `""` | Audience for the projected service account token. If not set, the token will have no audience restriction. |
+| kyverno.admissionController.rbac.serviceAccount.projectedServiceAccountToken.expirationSeconds | int | `3600` | Token expiration time in seconds. The kubelet will request a new token before the token expires. |
 | kyverno.admissionController.rbac.viewRoleName | string | `"view"` | The view role to use in the rolebinding |
 | kyverno.admissionController.readinessProbe | object | See [values.yaml](values.yaml) | Readiness Probe. The block is directly forwarded into the deployment, so you can use whatever readinessProbe configuration you want. ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/ |
 | kyverno.admissionController.replicas | int | `nil` | Desired number of pods |
@@ -153,6 +162,9 @@ A Helm chart for kyverno
 | kyverno.admissionController.tufRootMountPath | string | `"/.sigstore"` | A writable volume to use for the TUF root initialization. |
 | kyverno.admissionController.updateStrategy | object | See [values.yaml](values.yaml) | Deployment update strategy. Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy |
 | kyverno.admissionController.webhookServer | object | `{"port":9443}` | admissionController webhook server port in case you are using hostNetwork: true, you might want to change the port the webhookServer is listening to |
+| kyverno.apiCallToken | object | `{"audience":"kyverno-svc.kyverno.io","expirationSeconds":3600}` | Scoped token injected into outbound APICall and CEL http requests. This token carries a custom audience so that if leaked to an external service it cannot be replayed against the Kubernetes API server. |
+| kyverno.apiCallToken.audience | string | `"kyverno-svc.kyverno.io"` | Audience for the projected token used in outbound requests. Set this to the audience your receiving service validates in the OIDC token's `aud` claim. The default is `kyverno-svc.kyverno.io`, which is a Kyverno-specific audience and prevents the token from being accepted by the Kubernetes API server. |
+| kyverno.apiCallToken.expirationSeconds | int | `3600` | Token lifetime in seconds for the projected outbound API call token. The default is `3600` (1 hour). The kubelet requests a replacement before the token expires, so lowering this reduces token lifetime while increasing rotation frequency. |
 | kyverno.apiVersionOverride.podDisruptionBudget | string | `nil` | Override api version used to create `PodDisruptionBudget`` resources. When not specified the chart will check if `policy/v1/PodDisruptionBudget` is available to determine the api version automatically. |
 | kyverno.backgroundController.annotations | object | `{}` | Deployment annotations. |
 | kyverno.backgroundController.antiAffinity.enabled | bool | `true` | Pod antiAffinities toggle. Enabled by default but can be disabled if you want to schedule pods to the same node. |
@@ -163,6 +175,8 @@ A Helm chart for kyverno
 | kyverno.backgroundController.enabled | bool | `true` | Enable background controller. |
 | kyverno.backgroundController.extraArgs | object | `{}` | Extra arguments passed to the container on the command line |
 | kyverno.backgroundController.extraEnvVars | list | `[]` | Additional container environment variables. |
+| kyverno.backgroundController.extraVolumeMounts | list | `[]` | Additional volumeMounts to be mounted to the main container |
+| kyverno.backgroundController.extraVolumes | list | `[]` | Additional volumes to be mounted in the pod |
 | kyverno.backgroundController.featuresOverride | object | `{}` | Overrides features defined at the root level |
 | kyverno.backgroundController.hostNetwork | bool | `false` | Change `hostNetwork` to `true` when you want the pod to share its host's network namespace. Useful for situations like when you end up dealing with a custom CNI over Amazon EKS. Update the `dnsPolicy` accordingly as well to suit the host network mode. |
 | kyverno.backgroundController.image.defaultRegistry | string | `"reg.kyverno.io"` |  |
@@ -171,11 +185,14 @@ A Helm chart for kyverno
 | kyverno.backgroundController.image.repository | string | `"kyverno/background-controller"` | Image repository |
 | kyverno.backgroundController.image.tag | string | `nil` | Image tag Defaults to appVersion in Chart.yaml if omitted |
 | kyverno.backgroundController.imagePullSecrets | list | `[]` | Image pull secrets |
+| kyverno.backgroundController.labels | object | `{}` | Deployment labels. |
 | kyverno.backgroundController.metering.collector | string | `""` | Otel collector endpoint |
 | kyverno.backgroundController.metering.config | string | `"prometheus"` | Otel configuration, can be `prometheus` or `grpc` |
 | kyverno.backgroundController.metering.creds | string | `""` | Otel collector credentials |
 | kyverno.backgroundController.metering.disabled | bool | `false` | Disable metrics export |
 | kyverno.backgroundController.metering.port | int | `8000` | Prometheus endpoint port |
+| kyverno.backgroundController.metering.secure | bool | `false` | Is TLS required for endpoint |
+| kyverno.backgroundController.metering.tlsKeyAlgorithm | string | `"RSA"` | Key algorithm for self-signed TLS certificates. Supported values: RSA, ECDSA, Ed25519 |
 | kyverno.backgroundController.metricsService.annotations | object | `{}` | Service annotations. |
 | kyverno.backgroundController.metricsService.create | bool | `true` | Create service. |
 | kyverno.backgroundController.metricsService.nodePort | string | `nil` | Service node port. Only used if `metricsService.type` is `NodePort`. |
@@ -205,15 +222,18 @@ A Helm chart for kyverno
 | kyverno.backgroundController.rbac.create | bool | `true` | Create RBAC resources |
 | kyverno.backgroundController.rbac.createViewRoleBinding | bool | `true` | Create rolebinding to view role |
 | kyverno.backgroundController.rbac.serviceAccount.annotations | object | `{}` | Annotations for the ServiceAccount |
-| kyverno.backgroundController.rbac.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
+| kyverno.backgroundController.rbac.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount. When set to false, a projected service account token is used instead which provides time-limited and audience-bound tokens for improved security. |
 | kyverno.backgroundController.rbac.serviceAccount.name | string | `nil` | Service account name |
+| kyverno.backgroundController.rbac.serviceAccount.projectedServiceAccountToken | object | `{"audience":"","expirationSeconds":3600}` | Projected service account token configuration (only used when automountServiceAccountToken is false) |
+| kyverno.backgroundController.rbac.serviceAccount.projectedServiceAccountToken.audience | string | `""` | Audience for the projected service account token. If not set, the token will have no audience restriction. |
+| kyverno.backgroundController.rbac.serviceAccount.projectedServiceAccountToken.expirationSeconds | int | `3600` | Token expiration time in seconds. The kubelet will request a new token before the token expires. |
 | kyverno.backgroundController.rbac.viewRoleName | string | `"view"` | The view role to use in the rolebinding |
 | kyverno.backgroundController.replicas | int | `nil` | Desired number of pods |
 | kyverno.backgroundController.resources.limits | object | `{"memory":"128Mi"}` | Pod resource limits |
 | kyverno.backgroundController.resources.requests | object | `{"cpu":"100m","memory":"64Mi"}` | Pod resource requests |
 | kyverno.backgroundController.resyncPeriod | string | `"15m"` | Resync period for informers |
 | kyverno.backgroundController.revisionHistoryLimit | int | `10` | The number of revisions to keep |
-| kyverno.backgroundController.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the containers |
+| kyverno.backgroundController.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the containers |
 | kyverno.backgroundController.server | object | `{"port":9443}` | backgroundController server port in case you are using hostNetwork: true, you might want to change the port the backgroundController is listening to |
 | kyverno.backgroundController.serviceMonitor.additionalAnnotations | object | `{}` | Additional annotations |
 | kyverno.backgroundController.serviceMonitor.additionalLabels | object | `{}` | Additional labels |
@@ -255,6 +275,8 @@ A Helm chart for kyverno
 | kyverno.cleanupController.enabled | bool | `true` | Enable cleanup controller. |
 | kyverno.cleanupController.extraArgs | object | `{}` | Extra arguments passed to the container on the command line |
 | kyverno.cleanupController.extraEnvVars | list | `[]` | Additional container environment variables. |
+| kyverno.cleanupController.extraVolumeMounts | list | `[]` | Additional volumeMounts to be mounted to the main container |
+| kyverno.cleanupController.extraVolumes | list | `[]` | Additional volumes to be mounted in the pod |
 | kyverno.cleanupController.featuresOverride | object | `{}` | Overrides features defined at the root level |
 | kyverno.cleanupController.hostNetwork | bool | `false` | Change `hostNetwork` to `true` when you want the pod to share its host's network namespace. Useful for situations like when you end up dealing with a custom CNI over Amazon EKS. Update the `dnsPolicy` accordingly as well to suit the host network mode. |
 | kyverno.cleanupController.image.defaultRegistry | string | `"reg.kyverno.io"` |  |
@@ -263,12 +285,15 @@ A Helm chart for kyverno
 | kyverno.cleanupController.image.repository | string | `"kyverno/cleanup-controller"` | Image repository |
 | kyverno.cleanupController.image.tag | string | `nil` | Image tag Defaults to appVersion in Chart.yaml if omitted |
 | kyverno.cleanupController.imagePullSecrets | list | `[]` | Image pull secrets |
+| kyverno.cleanupController.labels | object | `{}` | Deployment labels. |
 | kyverno.cleanupController.livenessProbe | object | See [values.yaml](values.yaml) | Liveness probe. The block is directly forwarded into the deployment, so you can use whatever livenessProbe configuration you want. ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/ |
 | kyverno.cleanupController.metering.collector | string | `""` | Otel collector endpoint |
 | kyverno.cleanupController.metering.config | string | `"prometheus"` | Otel configuration, can be `prometheus` or `grpc` |
 | kyverno.cleanupController.metering.creds | string | `""` | Otel collector credentials |
 | kyverno.cleanupController.metering.disabled | bool | `false` | Disable metrics export |
 | kyverno.cleanupController.metering.port | int | `8000` | Prometheus endpoint port |
+| kyverno.cleanupController.metering.secure | bool | `false` | Is TLS required for endpoint |
+| kyverno.cleanupController.metering.tlsKeyAlgorithm | string | `"RSA"` | Key algorithm for self-signed TLS certificates. Supported values: RSA, ECDSA, Ed25519 |
 | kyverno.cleanupController.metricsService.annotations | object | `{}` | Service annotations. |
 | kyverno.cleanupController.metricsService.create | bool | `true` | Create service. |
 | kyverno.cleanupController.metricsService.nodePort | string | `nil` | Service node port. Only used if `metricsService.type` is `NodePort`. |
@@ -296,15 +321,18 @@ A Helm chart for kyverno
 | kyverno.cleanupController.rbac.clusterRole.extraResources | list | `[]` | Extra resource permissions to add in the cluster role |
 | kyverno.cleanupController.rbac.create | bool | `true` | Create RBAC resources |
 | kyverno.cleanupController.rbac.serviceAccount.annotations | object | `{}` | Annotations for the ServiceAccount |
-| kyverno.cleanupController.rbac.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
+| kyverno.cleanupController.rbac.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount. When set to false, a projected service account token is used instead which provides time-limited and audience-bound tokens for improved security. |
 | kyverno.cleanupController.rbac.serviceAccount.name | string | `nil` | Service account name |
+| kyverno.cleanupController.rbac.serviceAccount.projectedServiceAccountToken | object | `{"audience":"","expirationSeconds":3600}` | Projected service account token configuration (only used when automountServiceAccountToken is false) |
+| kyverno.cleanupController.rbac.serviceAccount.projectedServiceAccountToken.audience | string | `""` | Audience for the projected service account token. If not set, the token will have no audience restriction. |
+| kyverno.cleanupController.rbac.serviceAccount.projectedServiceAccountToken.expirationSeconds | int | `3600` | Token expiration time in seconds. The kubelet will request a new token before the token expires. |
 | kyverno.cleanupController.readinessProbe | object | See [values.yaml](values.yaml) | Readiness Probe. The block is directly forwarded into the deployment, so you can use whatever readinessProbe configuration you want. ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/ |
 | kyverno.cleanupController.replicas | int | `nil` | Desired number of pods |
 | kyverno.cleanupController.resources.limits | object | `{"memory":"128Mi"}` | Pod resource limits |
 | kyverno.cleanupController.resources.requests | object | `{"cpu":"100m","memory":"64Mi"}` | Pod resource requests |
 | kyverno.cleanupController.resyncPeriod | string | `"15m"` | Resync period for informers |
 | kyverno.cleanupController.revisionHistoryLimit | int | `10` | The number of revisions to keep |
-| kyverno.cleanupController.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the containers |
+| kyverno.cleanupController.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the containers |
 | kyverno.cleanupController.server | object | `{"port":9443}` | cleanupController server port in case you are using hostNetwork: true, you might want to change the port the cleanupController is listening to |
 | kyverno.cleanupController.service.annotations | object | `{}` | Service annotations. |
 | kyverno.cleanupController.service.nodePort | string | `nil` | Service node port. Only used if `service.type` is `NodePort`. |
@@ -349,6 +377,7 @@ A Helm chart for kyverno
 | kyverno.config.resourceFiltersExcludeNamespaces | list | `[]` | resourceFilter namespace exclude Namespaces to exclude from the default resourceFilters |
 | kyverno.config.resourceFiltersInclude | list | `[]` | resourceFilters include list Items to include to config.resourceFilters |
 | kyverno.config.resourceFiltersIncludeNamespaces | list | `[]` | resourceFilter namespace include Namespaces to include to the default resourceFilters |
+| kyverno.config.successEventActions | string | "" (empty, all success events are emitted when generateSuccessEvents is true) | Comma-separated list of event actions for which success events should be generated. When set, only success events matching the specified actions are emitted. Requires `generateSuccessEvents` to be `true`. Valid values: "Resource Mutated", "Resource Passed", "Resource Generated", "Resource Cleaned Up". Example: "Resource Mutated" or "Resource Mutated,Resource Generated". |
 | kyverno.config.updateRequestThreshold | int | `1000` | Sets the threshold for the total number of UpdateRequests generated for mutateExisitng and generate policies. |
 | kyverno.config.webhookAnnotations | object | `{"admissions.enforcer/disabled":"true"}` | Defines annotations to set on webhook configurations. |
 | kyverno.config.webhookLabels | object | `{}` | Defines labels to set on webhook configurations. |
@@ -378,7 +407,10 @@ A Helm chart for kyverno
 | kyverno.crds.migration.podSecurityContext | object | `{}` | Security context for the pod |
 | kyverno.crds.migration.resources | list | `["cleanuppolicies.kyverno.io","clustercleanuppolicies.kyverno.io","clusterpolicies.kyverno.io","globalcontextentries.kyverno.io","policies.kyverno.io","policyexceptions.kyverno.io","updaterequests.kyverno.io","deletingpolicies.policies.kyverno.io","generatingpolicies.policies.kyverno.io","imagevalidatingpolicies.policies.kyverno.io","mutatingpolicies.policies.kyverno.io","namespaceddeletingpolicies.policies.kyverno.io","namespacedgeneratingpolicies.policies.kyverno.io","namespacedimagevalidatingpolicies.policies.kyverno.io","namespacedmutatingpolicies.policies.kyverno.io","namespacedvalidatingpolicies.policies.kyverno.io","policyexceptions.policies.kyverno.io","validatingpolicies.policies.kyverno.io"]` | Resources to migrate |
 | kyverno.crds.migration.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the hook containers |
-| kyverno.crds.migration.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
+| kyverno.crds.migration.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount. When set to false, a projected service account token is used instead which provides time-limited and audience-bound tokens for improved security. |
+| kyverno.crds.migration.serviceAccount.projectedServiceAccountToken | object | `{"audience":"","expirationSeconds":3600}` | Projected service account token configuration (only used when automountServiceAccountToken is false) |
+| kyverno.crds.migration.serviceAccount.projectedServiceAccountToken.audience | string | `""` | Audience for the projected service account token. If not set, the token will have no audience restriction. |
+| kyverno.crds.migration.serviceAccount.projectedServiceAccountToken.expirationSeconds | int | `3600` | Token expiration time in seconds. The kubelet will request a new token before the token expires. |
 | kyverno.crds.migration.tolerations | list | `[]` | List of node taints to tolerate |
 | kyverno.crds.reportsServer.enabled | bool | `false` | Kyverno reports-server is used in your cluster |
 | kyverno.customLabels | object | `{}` | Additional labels |
@@ -398,6 +430,7 @@ A Helm chart for kyverno
 | kyverno.features.forceFailurePolicyIgnore.enabled | bool | `false` | Enables the feature |
 | kyverno.features.generateMutatingAdmissionPolicy.enabled | bool | `false` | Enables the feature |
 | kyverno.features.generateValidatingAdmissionPolicy.enabled | bool | `true` | Enables the feature |
+| kyverno.features.globalContext.apiCallTimeout | string | `"30s"` | Timeout for HTTP API calls made by policies. A value of 0s means no timeout. |
 | kyverno.features.globalContext.maxApiCallResponseLength | int | `2000000` | Maximum allowed response size from API Calls. A value of 0 bypasses checks (not recommended) |
 | kyverno.features.logging.format | string | `"text"` | Logging format |
 | kyverno.features.logging.verbosity | int | `2` | Logging verbosity |
@@ -428,6 +461,7 @@ A Helm chart for kyverno
 | kyverno.global.image.registry | string | `nil` | Global value that allows to set a single image registry across all deployments. When set, it will override any values set under `.image.registry` across the chart. |
 | kyverno.global.imagePullSecrets | list | `[]` | Global list of Image pull secrets When set, it will override any values set under `imagePullSecrets` under different components across the chart. |
 | kyverno.global.nodeSelector | object | `{}` | Global node labels for pod assignment. Non-global values will override the global value. |
+| kyverno.global.priorityClassName | string | `""` | Global priority class name for pod priority. Non-global values will override the global value. |
 | kyverno.global.resyncPeriod | string | `"15m"` | Resync period for informers |
 | kyverno.global.tolerations | list | `[]` | Global List of node taints to tolerate. Non-global values will override the global value. |
 | kyverno.grafana.annotations | object | `{}` | Grafana dashboard configmap annotations. |
@@ -460,6 +494,8 @@ A Helm chart for kyverno
 | kyverno.reportsController.enabled | bool | `true` | Enable reports controller. |
 | kyverno.reportsController.extraArgs | object | `{}` | Extra arguments passed to the container on the command line |
 | kyverno.reportsController.extraEnvVars | list | `[]` | Additional container environment variables. |
+| kyverno.reportsController.extraVolumeMounts | list | `[]` | Additional volumeMounts to be mounted to the main container |
+| kyverno.reportsController.extraVolumes | list | `[]` | Additional volumes to be mounted in the pod |
 | kyverno.reportsController.featuresOverride | object | `{}` | Overrides features defined at the root level |
 | kyverno.reportsController.hostNetwork | bool | `false` | Change `hostNetwork` to `true` when you want the pod to share its host's network namespace. Useful for situations like when you end up dealing with a custom CNI over Amazon EKS. Update the `dnsPolicy` accordingly as well to suit the host network mode. |
 | kyverno.reportsController.image.defaultRegistry | string | `"reg.kyverno.io"` |  |
@@ -468,11 +504,14 @@ A Helm chart for kyverno
 | kyverno.reportsController.image.repository | string | `"kyverno/reports-controller"` | Image repository |
 | kyverno.reportsController.image.tag | string | `nil` | Image tag Defaults to appVersion in Chart.yaml if omitted |
 | kyverno.reportsController.imagePullSecrets | list | `[]` | Image pull secrets |
+| kyverno.reportsController.labels | object | `{}` | Deployment labels. |
 | kyverno.reportsController.metering.collector | string | `nil` | Otel collector endpoint |
 | kyverno.reportsController.metering.config | string | `"prometheus"` | Otel configuration, can be `prometheus` or `grpc` |
 | kyverno.reportsController.metering.creds | string | `nil` | Otel collector credentials |
 | kyverno.reportsController.metering.disabled | bool | `false` | Disable metrics export |
 | kyverno.reportsController.metering.port | int | `8000` | Prometheus endpoint port |
+| kyverno.reportsController.metering.secure | bool | `false` | Is TLS required for endpoint |
+| kyverno.reportsController.metering.tlsKeyAlgorithm | string | `"RSA"` | Key algorithm for self-signed TLS certificates. Supported values: RSA, ECDSA, Ed25519 |
 | kyverno.reportsController.metricsService.annotations | object | `{}` | Service annotations. |
 | kyverno.reportsController.metricsService.create | bool | `true` | Create service. |
 | kyverno.reportsController.metricsService.nodePort | string | `nil` | Service node port. Only used if `type` is `NodePort`. |
@@ -503,8 +542,11 @@ A Helm chart for kyverno
 | kyverno.reportsController.rbac.create | bool | `true` | Create RBAC resources |
 | kyverno.reportsController.rbac.createViewRoleBinding | bool | `true` | Create rolebinding to view role |
 | kyverno.reportsController.rbac.serviceAccount.annotations | object | `{}` | Annotations for the ServiceAccount |
-| kyverno.reportsController.rbac.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
+| kyverno.reportsController.rbac.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount. When set to false, a projected service account token is used instead which provides time-limited and audience-bound tokens for improved security. |
 | kyverno.reportsController.rbac.serviceAccount.name | string | `nil` | Service account name |
+| kyverno.reportsController.rbac.serviceAccount.projectedServiceAccountToken | object | `{"audience":"","expirationSeconds":3600}` | Projected service account token configuration (only used when automountServiceAccountToken is false) |
+| kyverno.reportsController.rbac.serviceAccount.projectedServiceAccountToken.audience | string | `""` | Audience for the projected service account token. If not set, the token will have no audience restriction. |
+| kyverno.reportsController.rbac.serviceAccount.projectedServiceAccountToken.expirationSeconds | int | `3600` | Token expiration time in seconds. The kubelet will request a new token before the token expires. |
 | kyverno.reportsController.rbac.viewRoleName | string | `"view"` | The view role to use in the rolebinding |
 | kyverno.reportsController.replicas | int | `nil` | Desired number of pods |
 | kyverno.reportsController.resources.limits | object | `{"memory":"128Mi"}` | Pod resource limits |
@@ -512,7 +554,7 @@ A Helm chart for kyverno
 | kyverno.reportsController.resyncPeriod | string | `"15m"` | Resync period for informers |
 | kyverno.reportsController.revisionHistoryLimit | int | `10` | The number of revisions to keep |
 | kyverno.reportsController.sanityChecks | bool | `true` | Enable sanity check for reports CRDs |
-| kyverno.reportsController.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the containers |
+| kyverno.reportsController.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the containers |
 | kyverno.reportsController.server | object | `{"port":9443}` | reportsController server port in case you are using hostNetwork: true, you might want to change the port the reportsController is listening to |
 | kyverno.reportsController.serviceMonitor.additionalAnnotations | object | `{}` | Additional annotations |
 | kyverno.reportsController.serviceMonitor.additionalLabels | object | `{}` | Additional labels |
@@ -536,26 +578,28 @@ A Helm chart for kyverno
 | kyverno.reportsServer.enabled | bool | `false` | Enable reports-server deployment alongside Kyverno |
 | kyverno.reportsServer.readinessTimeout | string | `"300s"` | Timeout for waiting for reports-server readiness (as duration string, e.g. 300s, 5m) |
 | kyverno.reportsServer.waitForReady | bool | `true` | Wait for reports-server to be ready before starting Kyverno components |
-| kyverno.test.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
+| kyverno.test.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount. When set to false, a projected service account token is used instead which provides time-limited and audience-bound tokens for improved security. |
 | kyverno.test.image.pullPolicy | string | `nil` | Image pull policy Defaults to image.pullPolicy if omitted |
 | kyverno.test.image.registry | string | `"ghcr.io"` | Image registry |
 | kyverno.test.image.repository | string | `"kyverno/readiness-checker"` | Image repository |
-| kyverno.test.image.tag | string | `"v0.1.0"` | Image tag Defaults to `latest` if omitted |
+| kyverno.test.image.tag | string | `nil` | Image tag Defaults to `latest` if omitted |
 | kyverno.test.imagePullSecrets | list | `[]` | Image pull secrets |
 | kyverno.test.nodeSelector | object | `{}` | Node labels for pod assignment |
 | kyverno.test.podAnnotations | object | `{}` | Additional Pod annotations |
+| kyverno.test.projectedServiceAccountToken | object | `{"audience":"","expirationSeconds":3600}` | Projected service account token configuration (only used when automountServiceAccountToken is false) |
+| kyverno.test.projectedServiceAccountToken.audience | string | `""` | Audience for the projected service account token. If not set, the token will have no audience restriction. |
+| kyverno.test.projectedServiceAccountToken.expirationSeconds | int | `3600` | Token expiration time in seconds. The kubelet will request a new token before the token expires. |
 | kyverno.test.resources.limits | object | `{"cpu":"100m","memory":"256Mi"}` | Pod resource limits |
 | kyverno.test.resources.requests | object | `{"cpu":"10m","memory":"64Mi"}` | Pod resource requests |
 | kyverno.test.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the test containers |
 | kyverno.test.sleep | int | `20` | Sleep time before running test |
 | kyverno.test.tolerations | list | `[]` | List of node taints to tolerate |
 | kyverno.upgrade.fromV2 | bool | `false` | Upgrading from v2 to v3 is not allowed by default, set this to true once changes have been reviewed. |
-| kyverno.webhooksCleanup.autoDeleteWebhooks.enabled | bool | `false` | Allow webhooks controller to delete webhooks using finalizers |
 | kyverno.webhooksCleanup.enabled | bool | `true` | Create a helm pre-delete hook to cleanup webhooks. |
 | kyverno.webhooksCleanup.image.pullPolicy | string | `nil` | Image pull policy Defaults to image.pullPolicy if omitted |
-| kyverno.webhooksCleanup.image.registry | string | `"registry.k8s.io"` | Image registry |
-| kyverno.webhooksCleanup.image.repository | string | `"kubectl"` | Image repository |
-| kyverno.webhooksCleanup.image.tag | string | `"v1.34.3"` | Image tag Defaults to `latest` if omitted |
+| kyverno.webhooksCleanup.image.registry | string | `"ghcr.io"` | Image registry |
+| kyverno.webhooksCleanup.image.repository | string | `"kyverno/readiness-checker"` | Image repository |
+| kyverno.webhooksCleanup.image.tag | string | `nil` | Image tag Defaults to `latest` if omitted |
 | kyverno.webhooksCleanup.imagePullSecrets | list | `[]` | Image pull secrets |
 | kyverno.webhooksCleanup.nodeAffinity | object | `{}` | Node affinity constraints. |
 | kyverno.webhooksCleanup.nodeSelector | object | `{}` | Node labels for pod assignment |
@@ -567,7 +611,10 @@ A Helm chart for kyverno
 | kyverno.webhooksCleanup.resources.limits | object | `{"cpu":"100m","memory":"256Mi"}` | Pod resource limits |
 | kyverno.webhooksCleanup.resources.requests | object | `{"cpu":"10m","memory":"64Mi"}` | Pod resource requests |
 | kyverno.webhooksCleanup.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the hook containers |
-| kyverno.webhooksCleanup.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount |
+| kyverno.webhooksCleanup.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount. When set to false, a projected service account token is used instead which provides time-limited and audience-bound tokens for improved security. |
+| kyverno.webhooksCleanup.serviceAccount.projectedServiceAccountToken | object | `{"audience":"","expirationSeconds":3600}` | Projected service account token configuration (only used when automountServiceAccountToken is false) |
+| kyverno.webhooksCleanup.serviceAccount.projectedServiceAccountToken.audience | string | `""` | Audience for the projected service account token. If not set, the token will have no audience restriction. |
+| kyverno.webhooksCleanup.serviceAccount.projectedServiceAccountToken.expirationSeconds | int | `3600` | Token expiration time in seconds. The kubelet will request a new token before the token expires. |
 | kyverno.webhooksCleanup.tolerations | list | `[]` | List of node taints to tolerate |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
@@ -600,7 +647,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.5"
+    targetRevision: "0.1.6"
     chart: kyverno
     path: ''
     helm:
