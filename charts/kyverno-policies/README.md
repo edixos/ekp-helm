@@ -1,6 +1,6 @@
 # kyverno-policies
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.17.1](https://img.shields.io/badge/AppVersion-v1.17.1-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.18.0](https://img.shields.io/badge/AppVersion-v1.18.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kyverno.github.io/kyverno/ | kyvernopolicies(kyverno-policies) | 3.7.1 |
+| https://kyverno.github.io/kyverno/ | kyvernopolicies(kyverno-policies) | 3.8.0 |
 
 ## Maintainers
 
@@ -28,9 +28,12 @@ A Helm chart for Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| kyvernopolicies.auditAnnotations | object | `{}` | Default audit annotations applied to all ValidatingPolicy policies (policyType: ValidatingPolicy only). Map of annotation key to CEL valueExpression. Audit annotations are recorded in the API server audit log. For more info https://kyverno.io/docs/policy-types/validating-policy/#using-auditannotations-to-add-custom-data |
+| kyvernopolicies.auditAnnotationsByPolicy | object | `{}` | Define audit annotations for specific ValidatingPolicy policies (policyType: ValidatingPolicy only). Per-policy entries override defaults when they share the same key. |
 | kyvernopolicies.autogenControllers | string | `""` | Customize the target Pod controllers for the auto-generated rules. (Eg. `none`, `Deployment`, `DaemonSet,Deployment,StatefulSet`) For more info https://kyverno.io/docs/policy-types/cluster-policy/autogen/. |
 | kyvernopolicies.background | bool | `true` | Policies background mode |
 | kyvernopolicies.customAnnotations | object | `{}` | Additional Annotations. |
+| kyvernopolicies.customAnnotationsByPolicy | object | `{}` | Define custom annotations for specific policies. Per-policy entries override defaults when they share the same key. |
 | kyvernopolicies.customLabels | object | `{}` | Additional labels. |
 | kyvernopolicies.customPolicies | list | `[]` | Additional custom policies to include. |
 | kyvernopolicies.failurePolicy | string | `"Fail"` | API server behavior if the webhook fails to respond ('Ignore', 'Fail') For more info: https://kyverno.io/docs/policy-types/cluster-policy/policy-settings/ |
@@ -40,9 +43,10 @@ A Helm chart for Kubernetes
 | kyvernopolicies.kyvernoVersion | string | `"autodetect"` | Kyverno version The default of "autodetect" will try to determine the currently installed version from the deployment |
 | kyvernopolicies.nameOverride | string | `nil` | Name override. |
 | kyvernopolicies.podSecurityPolicies | list | `[]` | Policies to include when `podSecurityStandard` is `custom`. |
-| kyvernopolicies.podSecuritySeverity | string | `"medium"` | Pod Security Standard (`low`, `medium`, `high`). |
+| kyvernopolicies.podSecuritySeverity | string | `"medium"` | Pod Security Standard severity (`low`, `medium`, `high`). |
+| kyvernopolicies.podSecuritySeverityByPolicy | object | `{}` | Define podSecuritySeverity overrides for specific policies. Override the global `podSecuritySeverity` with an individual severity for individual policies. An empty string per-policy entry suppresses the annotation entirely. |
 | kyvernopolicies.podSecurityStandard | string | `"baseline"` | Pod Security Standard profile (`baseline`, `restricted`, `privileged`, `custom`). For more info https://kyverno.io/policies/pod-security. |
-| kyvernopolicies.policyExclude | object | `{}` | Exclude resources from individual policies. Policies with multiple rules can have individual rules excluded by using the name of the rule as the key in the `policyExclude` map. |
+| kyvernopolicies.policyExclude | object | `{}` | Exclude resources from individual policies (policyType: ClusterPolicy only). Policies with multiple rules can have individual rules excluded by using the name of the rule as the key in the `policyExclude` map. NOTE: This setting only applies when policyType is set to ClusterPolicy. For ValidatingPolicy, use vpolExclude/vpolExcludeByPolicy instead. |
 | kyvernopolicies.policyKind | string | `"ClusterPolicy"` | Policy kind (`ClusterPolicy`, `Policy`) Set to `Policy` if you need namespaced policies and not cluster policies |
 | kyvernopolicies.policyPreconditions | object | `{}` | Add preconditions to individual policies. Policies with multiple rules can have individual rules excluded by using the name of the rule as the key in the `policyPreconditions` map. |
 | kyvernopolicies.policyType | string | `"ClusterPolicy"` | Policy engine type (`ClusterPolicy`, `ValidatingPolicy`) Set to `ValidatingPolicy` to use CEL-based policies (requires Kyverno 1.17+) ClusterPolicy will be deprecated in Kyverno 1.17 Default: ClusterPolicy (for backward compatibility) |
@@ -51,6 +55,8 @@ A Helm chart for Kubernetes
 | kyvernopolicies.validationFailureAction | string | `"Audit"` | Validation failure action (`Audit`, `Enforce`). For more info https://kyverno.io/docs/policy-types/cluster-policy/validate. |
 | kyvernopolicies.validationFailureActionByPolicy | object | `{}` | Define validationFailureActionByPolicy for specific policies. Override the defined `validationFailureAction` with a individual validationFailureAction for individual Policies. |
 | kyvernopolicies.validationFailureActionOverrides | object | `{"all":[]}` | Define validationFailureActionOverrides for specific policies. The overrides for `all` will apply to all policies. |
+| kyvernopolicies.vpolExclude | object | `{}` | Default excludes applied to ALL ValidatingPolicy policies (policyType: ValidatingPolicy only). NOTE: This setting only applies when policyType is set to ValidatingPolicy. For ClusterPolicy, use policyExclude instead. Supports the following optional keys:   excludeResourceRules: list of Kubernetes NamedRuleWithOperations (native VAP excludes)   excludeNamespaces:    list of namespace names to exclude (generates CEL matchCondition)   excludeSubjects:      list of subjects to exclude (generates CEL matchCondition)   matchConditions:      list of CEL matchConditions for advanced filtering (passthrough of custom condition) Per-policy overrides via vpolExcludeByPolicy replace these defaults entirely for that policy. |
+| kyvernopolicies.vpolExcludeByPolicy | object | `{}` | Per-policy excludes for individual ValidatingPolicy policies (policyType: ValidatingPolicy only). When set for a policy, it completely replaces the global vpolExclude defaults for that policy. NOTE: This setting only applies when policyType is set to ValidatingPolicy. For ClusterPolicy, use policyExclude instead. Each policy name maps to an object with the same keys as vpolExclude. |
 
 ## Installing the Chart
 
@@ -77,7 +83,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: kyverno-policies
     path: ''
     helm:
