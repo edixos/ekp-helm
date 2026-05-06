@@ -1,6 +1,6 @@
 # envoy-gateway
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.7.1](https://img.shields.io/badge/AppVersion-v1.7.1-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.7.2](https://img.shields.io/badge/AppVersion-v1.7.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://docker.io/envoyproxy | envoy-gateway(gateway-helm) | 1.7.1 |
+| oci://docker.io/envoyproxy | envoy-gateway(gateway-helm) | 1.7.2 |
 
 ## Maintainers
 
@@ -70,10 +70,10 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | envoy-gateway.deployment.replicas | int | `1` |  |
 | envoy-gateway.global.imagePullSecrets | list | `[]` | Global override for image pull secrets |
 | envoy-gateway.global.imageRegistry | string | `""` | Global override for image registry |
-| envoy-gateway.global.images.envoyGateway.image | string | `"docker.io/envoyproxy/gateway:v1.7.1"` |  |
+| envoy-gateway.global.images.envoyGateway.image | string | `"docker.io/envoyproxy/gateway:v1.7.2"` |  |
 | envoy-gateway.global.images.envoyGateway.pullPolicy | string | `"IfNotPresent"` |  |
 | envoy-gateway.global.images.envoyGateway.pullSecrets | list | `[]` |  |
-| envoy-gateway.global.images.ratelimit.image | string | `"docker.io/envoyproxy/ratelimit:c8765e89"` |  |
+| envoy-gateway.global.images.ratelimit.image | string | `"docker.io/envoyproxy/ratelimit:05c08d03"` |  |
 | envoy-gateway.global.images.ratelimit.pullPolicy | string | `"IfNotPresent"` |  |
 | envoy-gateway.global.images.ratelimit.pullSecrets | list | `[]` |  |
 | envoy-gateway.hpa.behavior | object | `{}` |  |
@@ -138,7 +138,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: envoy-gateway
     path: ''
     helm:
