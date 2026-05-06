@@ -826,6 +826,25 @@ entries:
     version: 0.1.0
   cloudtty:
   - apiVersion: v2
+    appVersion: 0.5.0
+    created: "2026-05-06T16:05:16.136247143Z"
+    dependencies:
+    - alias: cloudtty
+      name: cloudtty
+      repository: https://cloudtty.github.io/cloudtty
+      version: 0.5.0
+    description: A Helm chart for Kubernetes
+    digest: b0e2b8dd7a5faa55f10582e547b1d081acd29063216647ca8d291b3cd822b513
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: cloudtty
+    type: application
+    urls:
+    - cloudtty-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 0.8.9
     created: "2026-01-30T08:45:10.106197983Z"
     dependencies:
@@ -4160,4 +4179,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-30T13:25:09.037628218Z"
+generated: "2026-05-06T16:05:16.13654534Z"
