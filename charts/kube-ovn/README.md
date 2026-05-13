@@ -1,6 +1,6 @@
 # kube-ovn-v2
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.16.0](https://img.shields.io/badge/AppVersion-v1.16.0-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.1](https://img.shields.io/badge/AppVersion-1.16.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn-v2) | v1.16.0 |
+| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn-v2) | v1.16.1 |
 
 ## Maintainers
 
@@ -32,7 +32,7 @@ Helm chart for Kube-OVN
 | kube-ovn.agent | object | "{}" | Configuration for kube-ovn-cni, the agent responsible for handling CNI requests from the CRI. |
 | kube-ovn.agent.annotations | object | `{}` | Annotations to be added to all top-level agent objects (resources under templates/agent) |
 | kube-ovn.agent.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-cni pods. |
-| kube-ovn.agent.labels | object | `{"app":"kube-ovn-cni"}` | Labels to be added to all top-level agent objects (resources under templates/agent) |
+| kube-ovn.agent.labels | object | `{}` | Labels to be added to all top-level agent objects (resources under templates/agent) |
 | kube-ovn.agent.metrics | object | "{}" | Agent metrics configuration. |
 | kube-ovn.agent.metrics.port | int | `10665` | Configure the port on which the agent service will serve metrics. |
 | kube-ovn.agent.mirroring | object | "{}" | Mirroring of the traffic for debug or analysis. https://kubeovn.github.io/docs/stable/en/guide/mirror/ |
@@ -86,7 +86,7 @@ Helm chart for Kube-OVN
 | kube-ovn.central | object | "{}" | Configuration for ovn-central, the daemon containing the northbound/southbound DBs and northd. |
 | kube-ovn.central.annotations | object | `{}` | Annotations to be added to all top-level ovn-central objects (resources under templates/central) |
 | kube-ovn.central.extraEnv | list | `[]` | Extra environment variables to be added to ovn-central pods. |
-| kube-ovn.central.labels | object | `{"app":"kube-ovn-central"}` | Labels to be added to all top-level ovn-central objects (resources under templates/central) |
+| kube-ovn.central.labels | object | `{}` | Labels to be added to all top-level ovn-central objects (resources under templates/central) |
 | kube-ovn.central.nodeAffinity | object | `{"preferredDuringSchedulingIgnoredDuringExecution":[],"requiredDuringSchedulingIgnoredDuringExecution":[]}` | More information on formatting nodeAffinity can be found at https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity |
 | kube-ovn.central.podAnnotations | object | `{}` | Annotations to be added to ovn-central pods. |
 | kube-ovn.central.podLabels | object | `{}` | Labels to be added to ovn-central pods. |
@@ -106,7 +106,7 @@ Helm chart for Kube-OVN
 |-----|------|---------|-------------|
 | kube-ovn.clusterDomain | string | `"cluster.local"` | Domain used by the cluster. |
 | kube-ovn.fullnameOverride | string | `""` | Full name override. |
-| kube-ovn.global | object | `{"images":{"kubeovn":{"repository":"kube-ovn","tag":"v1.15.8"}},"registry":{"address":"docker.io/kubeovn","imagePullSecrets":[]}}` | Global configuration. |
+| kube-ovn.global | object | `{"images":{"kubeovn":{"repository":"kube-ovn","tag":"v1.16.1"}},"registry":{"address":"docker.io/kubeovn","imagePullSecrets":[]}}` | Global configuration. |
 | kube-ovn.image | object | "{}" | Image configuration. |
 | kube-ovn.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for all images. |
 | kube-ovn.masterNodes | list | `[]` | Comma-separated list of IPs for each master node. If not specified, fallback to auto-identifying masters based on "masterNodesLabels" |
@@ -135,7 +135,7 @@ Helm chart for Kube-OVN
 | kube-ovn.controller | object | "{}" | Configuration for kube-ovn-controller, the controller responsible for syncing K8s with OVN. |
 | kube-ovn.controller.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-controller objects (resources under templates/controller) |
 | kube-ovn.controller.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-controller pods. |
-| kube-ovn.controller.labels | object | `{"app":"kube-ovn-controller"}` | Labels to be added to all top-level kube-ovn-controller objects (resources under templates/controller) |
+| kube-ovn.controller.labels | object | `{}` | Labels to be added to all top-level kube-ovn-controller objects (resources under templates/controller) |
 | kube-ovn.controller.metrics | object | "{}" | Controller metrics configuration. |
 | kube-ovn.controller.metrics.port | int | `10660` | Configure the port on which the controller service will serve metrics. |
 | kube-ovn.controller.nodeAffinity | object | `{"preferredDuringSchedulingIgnoredDuringExecution":[],"requiredDuringSchedulingIgnoredDuringExecution":[]}` | More information on formatting nodeAffinity can be found at https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity |
@@ -199,7 +199,7 @@ Helm chart for Kube-OVN
 | kube-ovn.monitor | object | "{}" | Configuration for kube-ovn-monitor, the agent monitoring and returning metrics for the northbound/southbound DBs and northd. |
 | kube-ovn.monitor.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-monitor objects (resources under templates/monitor) |
 | kube-ovn.monitor.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-monitor pods. |
-| kube-ovn.monitor.labels | object | `{"app":"kube-ovn-monitor"}` | Labels to be added to all top-level kube-ovn-monitor objects (resources under templates/monitor) |
+| kube-ovn.monitor.labels | object | `{}` | Labels to be added to all top-level kube-ovn-monitor objects (resources under templates/monitor) |
 | kube-ovn.monitor.metrics | object | "{}" | kube-ovn-monitor metrics configuration. |
 | kube-ovn.monitor.metrics.port | int | `10661` | Configure the port on which the kube-ovn-monitor service will serve metrics. |
 | kube-ovn.monitor.nodeAffinity | object | `{"preferredDuringSchedulingIgnoredDuringExecution":[],"requiredDuringSchedulingIgnoredDuringExecution":[]}` | More information on formatting nodeAffinity can be found at https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity |
@@ -219,11 +219,11 @@ Helm chart for Kube-OVN
 | kube-ovn.natGw.bgpSpeaker.image | object | "{}" | Image used by the NAT gateway sidecar. |
 | kube-ovn.natGw.bgpSpeaker.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | kube-ovn.natGw.bgpSpeaker.image.repository | string | `"docker.io/kubeovn/kube-ovn"` | Image repository. |
-| kube-ovn.natGw.bgpSpeaker.image.tag | string | `"v1.15.8"` | Image tag. |
+| kube-ovn.natGw.bgpSpeaker.image.tag | string | `"v1.16.1"` | Image tag. |
 | kube-ovn.natGw.image | object | "{}" | Image used by the NAT gateway. |
 | kube-ovn.natGw.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | kube-ovn.natGw.image.repository | string | `"docker.io/kubeovn/vpc-nat-gateway"` | Image repository. |
-| kube-ovn.natGw.image.tag | string | `"v1.15.8"` | Image tag. |
+| kube-ovn.natGw.image.tag | string | `"v1.16.1"` | Image tag. |
 | kube-ovn.natGw.namePrefix | string | `"vpc-nat-gw"` | Prefix appended to the name of the NAT gateways when generating the Pods. If this value is changed after NAT GWs have been provisioned, every NAT gateway will need to be manually destroyed and recreated. |
 
 ### Network Policies
@@ -246,6 +246,7 @@ Helm chart for Kube-OVN
 | kube-ovn.networking.enableSsl | bool | `false` | Deploy the CNI with SSL encryption in between components. |
 | kube-ovn.networking.exchangeLinkName | bool | `false` | "" |
 | kube-ovn.networking.excludeIps | string | `""` | IPs to exclude from IPAM in the default subnet. |
+| kube-ovn.networking.externalGatewayConfigNs | string | `""` | Namespace where ovn-external-gw-config ConfigMap is located. Empty means it will use the same namespace as the controller (PodNamespace). |
 | kube-ovn.networking.join | object | "{}" | Configuration of the "join" subnet, used by the nodes to contact (join) the pods in the default subnet. If .networking.stack is set to IPv4, only the .v4 key is used. If .networking.stack is set to IPv6, only the .v6 key is used. If .networking.stack is set to Dual, both keys are used. |
 | kube-ovn.networking.join.cidr | object | "{}" | CIDR used by the join subnet. |
 | kube-ovn.networking.join.cidr.v4 | string | `"100.64.0.0/16"` | IPv4 CIDR. |
@@ -287,7 +288,7 @@ Helm chart for Kube-OVN
 | kube-ovn.ovsOvn.dpdkHybrid.enabled | bool | `false` | Enables DPDK-hybrid support on OVS. |
 | kube-ovn.ovsOvn.dpdkHybrid.nodeSelector | object | `{"kubernetes.io/os":"linux","ovn.kubernetes.io/ovs_dp_type":"userspace"}` | Node selector to restrict the deployment of DPDK-hybrid OVS to specific nodes. |
 | kube-ovn.ovsOvn.dpdkHybrid.resources | object | `{"limits":{"cpu":"2","ephemeral-storage":"1Gi","hugepages-2Mi":"1Gi","memory":"1000Mi"},"requests":{"cpu":"200m","memory":"200Mi"}}` | ovs-ovn resource limits & requests when DPDK-hybrid is enabled. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
-| kube-ovn.ovsOvn.dpdkHybrid.tag | string | `"v1.15.8"` | DPDK image tag. |
+| kube-ovn.ovsOvn.dpdkHybrid.tag | string | `"v1.16.1"` | DPDK image tag. |
 | kube-ovn.ovsOvn.extraEnv | list | `[]` | Extra environment variables to be added to ovs-ovn pods. |
 | kube-ovn.ovsOvn.labels | object | `{}` | Labels to be added to all top-level ovs-ovn objects (resources under templates/ovs-ovn) |
 | kube-ovn.ovsOvn.nodeSelector | object | `{"kubernetes.io/os":"linux"}` | Node selector to restrict the deployment of ovs-ovn to specific nodes. |
@@ -315,7 +316,7 @@ Helm chart for Kube-OVN
 | kube-ovn.pinger | object | "{}" | Configuration for kube-ovn-pinger, the agent monitoring and returning metrics for OVS/external connectivity. |
 | kube-ovn.pinger.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-pinger objects (resources under templates/pinger) |
 | kube-ovn.pinger.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-pinger pods. |
-| kube-ovn.pinger.labels | object | `{"app":"kube-ovn-pinger"}` | Labels to be added to all top-level kube-ovn-pinger objects (resources under templates/pinger) |
+| kube-ovn.pinger.labels | object | `{}` | Labels to be added to all top-level kube-ovn-pinger objects (resources under templates/pinger) |
 | kube-ovn.pinger.metrics | object | "{}" | kube-ovn-pinger metrics configuration. |
 | kube-ovn.pinger.metrics.port | int | `8080` | Configure the port on which the kube-ovn-monitor service will serve metrics. |
 | kube-ovn.pinger.podAnnotations | object | `{}` | Annotations to be added to kube-ovn-pinger pods. |
@@ -402,7 +403,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.7"
+    targetRevision: "0.1.8"
     chart: kube-ovn-v2
     path: ''
     helm:
