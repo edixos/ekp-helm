@@ -1,2 +1,5 @@
 # Minimal values for pluto rendering
-kargo: {}
+kargo: 
+  api:
+    adminAccount:
+      passwordHash: "dummy-hash-for-testing"
