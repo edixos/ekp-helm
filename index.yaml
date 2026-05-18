@@ -2666,6 +2666,22 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/ingress-nginx-0.1.0.tgz
     version: 0.1.0
+  kargo:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2026-05-18T18:45:46.928813609Z"
+    dependencies:
+    - alias: kargo
+      name: kargo
+      repository: oci://ghcr.io/akuity/kargo-charts
+      version: 1.10.4
+    description: A Helm chart for Kubernetes
+    digest: 13e8ef51cc697f761ca5e64f22dea93f41eb09214c2227a68db3515dad3702d7
+    name: kargo
+    type: application
+    urls:
+    - kargo-0.1.0.tgz
+    version: 0.1.0
   keto:
   - apiVersion: v2
     appVersion: v26.2.0
@@ -4179,4 +4195,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-05-06T16:05:16.13654534Z"
+generated: "2026-05-18T18:45:46.929092335Z"
