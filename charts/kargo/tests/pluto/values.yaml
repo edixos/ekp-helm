@@ -2,5 +2,6 @@
 kargo: 
   api:
     adminAccount:
-      passwordHash: "dummy-hash-for-testing"
+      passwordHash: >-
+        $2b$12$qvkOxcQGZCzXcSAmdMIXcuUsofdJYE/behRanuRcVqD/8pBORj.Ze
       tokenSigningKey: "dummy-token-signing-key-for-testing"
