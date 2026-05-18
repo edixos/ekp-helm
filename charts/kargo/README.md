@@ -22,8 +22,8 @@ A Helm chart for Kubernetes
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | kargo.api.adminAccount.enabled | bool | `true` |  |
-| kargo.api.adminAccount.passwordHash | string | `""` |  |
-| kargo.api.adminAccount.tokenSigningKey | string | `""` |  |
+| kargo.api.adminAccount.passwordHash | string | `"$2b$12$qvkOxcQGZCzXcSAmdMIXcuUsofdJYE/behRanuRcVqD/8pBORj.Ze"` |  |
+| kargo.api.adminAccount.tokenSigningKey | string | `"dummy-token-signing-key"` |  |
 | kargo.api.adminAccount.tokenTTL | string | `"24h"` |  |
 | kargo.api.affinity | object | `{}` |  |
 | kargo.api.annotations | object | `{}` |  |
