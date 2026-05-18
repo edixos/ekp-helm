@@ -153,7 +153,7 @@ kargo:
       ## @param api.adminAccount.passwordHash Bcrypt password hash for the admin account. A value **must** be provided for this field unless `api.secret.name` is specified.
       passwordHash: "$2b$12$qvkOxcQGZCzXcSAmdMIXcuUsofdJYE/behRanuRcVqD/8pBORj.Ze"
       ## @param api.adminAccount.tokenSigningKey Key used to sign ID tokens (JWTs) for the admin account. It is suggested that you generate this using a password manager or a command like: `openssl rand -base64 29 \| tr -d "=+/" \| cut`. A value **must** be provided for this field, unless `api.secret.name` is specified.
-      tokenSigningKey: ""
+      tokenSigningKey: "dummy-token-signing-key"
       ## @param api.adminAccount.tokenTTL Specifies how long ID tokens for the admin account are valid. (i.e. The expiry will be the time of issue plus this duration.)
       tokenTTL: 24h
   

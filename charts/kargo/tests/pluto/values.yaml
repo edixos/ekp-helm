@@ -3,3 +3,4 @@ kargo:
   api:
     adminAccount:
       passwordHash: "dummy-hash-for-testing"
+      tokenSigningKey: "dummy-token-signing-key-for-testing"
