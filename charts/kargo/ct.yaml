@@ -1,0 +1,7 @@
+remote: origin
+chart-dirs:
+  - charts
+helm-extra-args: --timeout=500
+chart-repos:
+  - kargo=oci://ghcr.io/akuity/kargo-charts
+check-version-increment: true
