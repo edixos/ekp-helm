@@ -188,7 +188,6 @@ A Helm chart for Kubernetes
 | kargo.externalWebhooksServer.tls.selfSignedCert | bool | `true` |  |
 | kargo.externalWebhooksServer.tls.terminatedUpstream | bool | `false` |  |
 | kargo.externalWebhooksServer.tolerations | list | `[]` |  |
-| kargo.extraObjects | list | `[]` |  |
 | kargo.garbageCollector.affinity | object | `{}` |  |
 | kargo.garbageCollector.annotations | object | `{}` |  |
 | kargo.garbageCollector.enabled | bool | `true` |  |
@@ -258,27 +257,17 @@ A Helm chart for Kubernetes
 | kargo.rbac.installClusterRoleBindings | bool | `true` |  |
 | kargo.rbac.installClusterRoles | bool | `true` |  |
 | kargo.webhooks.register | bool | `true` |  |
-| kargo.webhooksServer.affinity | object | `{}` |  |
 | kargo.webhooksServer.annotations | object | `{}` |  |
 | kargo.webhooksServer.controlplaneUserRegex | string | `""` |  |
 | kargo.webhooksServer.enabled | bool | `true` |  |
-| kargo.webhooksServer.env | list | `[]` |  |
-| kargo.webhooksServer.envFrom | list | `[]` |  |
 | kargo.webhooksServer.labels | object | `{}` |  |
 | kargo.webhooksServer.logFormat | string | `"CONSOLE"` |  |
 | kargo.webhooksServer.logLevel | string | `"INFO"` |  |
-| kargo.webhooksServer.nodeSelector | object | `{}` |  |
 | kargo.webhooksServer.podAnnotations | object | `{}` |  |
 | kargo.webhooksServer.podLabels | object | `{}` |  |
 | kargo.webhooksServer.replicas | int | `1` |  |
-| kargo.webhooksServer.resources | object | `{}` |  |
-| kargo.webhooksServer.securityContext | object | `{}` |  |
 | kargo.webhooksServer.serviceAccount.annotations | object | `{}` |  |
 | kargo.webhooksServer.serviceAccount.labels | object | `{}` |  |
-| kargo.webhooksServer.tls.caBundle | string | `""` |  |
-| kargo.webhooksServer.tls.secretName | string | `"kargo-webhooks-server-cert"` |  |
-| kargo.webhooksServer.tls.selfSignedCert | bool | `true` |  |
-| kargo.webhooksServer.tolerations | list | `[]` |  |
 
 ## Installing the Chart
 
