@@ -2,14 +2,14 @@ apiVersion: v2
 name: kube-ovn-v2
 description: Helm chart for Kube-OVN
 type: application
-version: 0.1.7
-appVersion: "v1.16.0"
+version: 0.1.8
+appVersion: "1.16.1"
 maintainers:
   - name: hamzatalbi
     email: hamzatalbi831@gmail.com
     url: https://github.com/TalbiHamza
 dependencies:
   - name: kube-ovn-v2
-    version: v1.16.0
+    version: v1.16.1
     repository: "https://kubeovn.github.io/kube-ovn/"
     alias: kube-ovn
