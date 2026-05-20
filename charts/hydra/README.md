@@ -1,6 +1,6 @@
 # hydra
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://k8s.ory.sh/helm/charts | hydra(hydra) | 0.61.0 |
+| https://k8s.ory.sh/helm/charts | hydra(hydra) | 0.61.2 |
 
 ## Maintainers
 
@@ -213,8 +213,9 @@ A Helm chart for Kubernetes
 | hydra.serviceMonitor.scheme | string | `"http"` | HTTP scheme to use for scraping. |
 | hydra.serviceMonitor.scrapeInterval | string | `"60s"` | Interval at which metrics should be scraped |
 | hydra.serviceMonitor.scrapeTimeout | string | `"30s"` | Timeout after which the scrape is ended |
+| hydra.serviceMonitor.targetLabels | list | `[]` | Additional metric labels |
 | hydra.serviceMonitor.tlsConfig | object | `{}` | TLS configuration to use when scraping the endpoint |
-| hydra.test.busybox | object | `{"repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
+| hydra.test.busybox | object | `{"registry":"docker.io","repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
 | hydra.test.labels | object | `{}` | Provide additional labels to the test pod |
 | hydra.watcher.automountServiceAccountToken | bool | `true` |  |
 | hydra.watcher.enabled | bool | `false` |  |
@@ -259,7 +260,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: hydra
     path: ''
     helm:
