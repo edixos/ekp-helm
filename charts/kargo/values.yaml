@@ -937,3 +937,8 @@ kargo:
       ## @param webhooksServer.serviceAccount.annotations Additional annotations to add to the webhooks server ServiceAccount.
       annotations: {}
       # foo
+
+httproute:
+  enabled: false
+
+externalSecrets: []
