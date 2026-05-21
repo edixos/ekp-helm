@@ -12,5 +12,5 @@
 {{- range $subchart }}
 {{- $values = index $values . }}
 {{- end }}
-{{- include $template (dict "Chart" (dict "Name" (last $subchart)) "Values" $values "Release" $dot.Release "Capabilities" $dot.Capabilities) }}
+{{- include $template (dict "Chart" (dict "Name" (last $subchart) "Version" $dot.Chart.Version "AppVersion" $dot.Chart.AppVersion) "Values" $values "Release" $dot.Release "Capabilities" $dot.Capabilities) }}
 {{- end }}
