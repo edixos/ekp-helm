@@ -2669,6 +2669,21 @@ entries:
   kargo:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2026-05-21T13:29:20.095838886Z"
+    dependencies:
+    - alias: kargo
+      name: kargo
+      repository: oci://ghcr.io/akuity/kargo-charts
+      version: 1.10.4
+    description: A Helm chart for Kubernetes
+    digest: 447cd76a0efe61e283a77932193659ecd1a2caf918c2505d37450577f240eb7d
+    name: kargo
+    type: application
+    urls:
+    - kargo-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2026-05-20T10:18:34.037308163Z"
     dependencies:
     - alias: kargo
@@ -4210,4 +4225,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-05-20T10:18:34.037517225Z"
+generated: "2026-05-21T13:29:20.096141374Z"
