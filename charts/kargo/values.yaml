@@ -940,5 +940,8 @@ kargo:
 
 httproute:
   enabled: false
+  parentRefs: []
+  hostnames: []
+  rules: []
 
 externalSecrets: []

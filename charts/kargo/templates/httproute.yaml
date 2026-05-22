@@ -7,9 +7,9 @@ metadata:
 {{ include "call-nested" (list . "kargo" "kargo.labels") | indent 4 }}
 spec:
   parentRefs:
-{{ toYaml .Values.kargo.httproute.parentRefs | indent 4 }}
+{{ toYaml .Values.httproute.parentRefs | indent 4 }}
   hostnames:
-{{ toYaml .Values.kargo.httproute.hostnames | indent 4 }}
+{{ toYaml .Values.httproute.hostnames | indent 4 }}
   rules:
-{{ toYaml .Values.kargo.httproute.rules | indent 4 }}
+{{ toYaml .Values.httproute.rules | indent 4 }}
 {{- end }}
