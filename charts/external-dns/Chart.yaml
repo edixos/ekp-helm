@@ -1,7 +1,7 @@
 apiVersion: v2
 name: external-dns
-version: 0.1.4
-appVersion: "0.16.1"
+version: 0.1.5
+appVersion: "0.21.0"
 description: Deploys external-dns and its monitoring
 maintainers:
   - name: ilyasabdellaoui
@@ -9,7 +9,7 @@ maintainers:
     url: https://github.com/ilyasabdellaoui
 dependencies:
   - name: external-dns
-    version: 1.20.0
+    version: 1.21.1
     repository: "https://kubernetes-sigs.github.io/external-dns/"
     alias: externaldns
   - name: gcp-workload-identity
