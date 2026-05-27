@@ -1,6 +1,6 @@
 # velero
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.18.0](https://img.shields.io/badge/AppVersion-1.18.0-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.18.0](https://img.shields.io/badge/AppVersion-1.18.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@
 | https://edixos.github.io/ekp-helm | iamCustomRole(gcp-iam-custom-role) | 0.1.0 |
 | https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-members) | 0.1.2 |
 | https://edixos.github.io/ekp-helm | workloadIdentity(gcp-workload-identity) | 0.1.1 |
-| https://vmware-tanzu.github.io/helm-charts | velero | 12.0.0 |
+| https://vmware-tanzu.github.io/helm-charts | velero | 12.0.1 |
 
 ## Maintainers
 
@@ -53,6 +53,7 @@ A Helm chart for velero
 | velero.configMaps | object | `{}` |  |
 | velero.configuration.backupStorageLocation[0].accessMode | string | `"ReadWrite"` |  |
 | velero.configuration.backupStorageLocation[0].annotations | object | `{}` |  |
+| velero.configuration.backupStorageLocation[0].backupSyncPeriod | string | `nil` |  |
 | velero.configuration.backupStorageLocation[0].bucket | string | `""` |  |
 | velero.configuration.backupStorageLocation[0].caCert | string | `nil` |  |
 | velero.configuration.backupStorageLocation[0].config | object | `{}` |  |
@@ -256,7 +257,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.7"
+    targetRevision: "0.1.8"
     chart: velero
     path: ''
     helm:

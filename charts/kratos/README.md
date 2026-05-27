@@ -1,6 +1,6 @@
 # kratos
 
-![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
+![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://k8s.ory.sh/helm/charts | kratos(kratos) | 0.61.0 |
+| https://k8s.ory.sh/helm/charts | kratos(kratos) | 0.62.0 |
 
 ## Maintainers
 
@@ -110,7 +110,6 @@ A Helm chart for Kubernetes
 | kratos.global.podMetadata | object | `{"annotations":{},"labels":{}}` | Specify pod metadata, this metadata is added directly to the pod, and not higher objects |
 | kratos.global.podMetadata.annotations | object | `{}` | Extra pod level annotations |
 | kratos.global.podMetadata.labels | object | `{}` | Extra pod level labels |
-| kratos.httproutes | list | `[]` | Define custom HTTP routes to be added to the Kratos configuration. |
 | kratos.image.pullPolicy | string | `"IfNotPresent"` |  |
 | kratos.image.registry | string | `"docker.io"` | ORY KRATOS image registry |
 | kratos.image.repository | string | `"oryd/kratos"` | ORY KRATOS image |
@@ -226,6 +225,7 @@ A Helm chart for Kubernetes
 | kratos.serviceMonitor.scheme | string | `"http"` | HTTP scheme to use for scraping. |
 | kratos.serviceMonitor.scrapeInterval | string | `"60s"` | Interval at which metrics should be scraped |
 | kratos.serviceMonitor.scrapeTimeout | string | `"30s"` | Timeout after which the scrape is ended |
+| kratos.serviceMonitor.targetLabels | list | `[]` | Additional metric labels |
 | kratos.serviceMonitor.tlsConfig | object | `{}` | TLS configuration to use when scraping the endpoint |
 | kratos.statefulSet.affinity | object | `{}` | Configure node affinity |
 | kratos.statefulSet.annotations | object | `{}` |  |
@@ -257,7 +257,7 @@ A Helm chart for Kubernetes
 | kratos.strategy.rollingUpdate.maxSurge | string | `"25%"` |  |
 | kratos.strategy.rollingUpdate.maxUnavailable | string | `"25%"` |  |
 | kratos.strategy.type | string | `"RollingUpdate"` |  |
-| kratos.test.busybox | object | `{"repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
+| kratos.test.busybox | object | `{"registry":"docker.io","repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
 | kratos.watcher.automountServiceAccountToken | bool | `true` |  |
 | kratos.watcher.enabled | bool | `false` |  |
 | kratos.watcher.image | string | `"oryd/k8s-toolbox:v0.0.10"` |  |
@@ -300,7 +300,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.6"
+    targetRevision: "0.1.7"
     chart: kratos
     path: ''
     helm:
