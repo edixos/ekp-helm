@@ -1,6 +1,6 @@
 # envoy-gateway
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.7.1](https://img.shields.io/badge/AppVersion-v1.7.1-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.8.0](https://img.shields.io/badge/AppVersion-v1.8.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://docker.io/envoyproxy | envoy-gateway(gateway-helm) | 1.7.1 |
+| oci://docker.io/envoyproxy | envoy-gateway(gateway-helm) | 1.8.0 |
 
 ## Maintainers
 
@@ -30,9 +30,11 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | certificates | object | `{}` |  |
 | clientTrafficPolicies | object | `{}` |  |
 | envoy-gateway.certgen | object | `{"job":{"affinity":{},"annotations":{},"args":[],"nodeSelector":{},"pod":{"annotations":{},"labels":{}},"resources":{},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65532,"runAsNonRoot":true,"runAsUser":65532,"seccompProfile":{"type":"RuntimeDefault"}},"tolerations":[],"ttlSecondsAfterFinished":30},"rbac":{"annotations":{},"labels":{}}}` | Certgen is used to generate the certificates required by EnvoyGateway. If you want to construct a custom certificate, you can generate a custom certificate through Cert-Manager before installing EnvoyGateway. Certgen will not overwrite the custom certificate. Please do not manually modify `values.yaml` to disable certgen, it may cause EnvoyGateway OIDC,OAuth2,etc. to not work as expected. |
+| envoy-gateway.commonLabels | object | `{}` | Labels to apply to all resources |
 | envoy-gateway.config.envoyGateway | object | `{"extensionApis":{},"gateway":{"controllerName":"gateway.envoyproxy.io/gatewayclass-controller"},"logging":{"level":{"default":"info"}},"provider":{"type":"Kubernetes"}}` | EnvoyGateway configuration. Visit https://gateway.envoyproxy.io/docs/api/extension_types/#envoygateway to view all options. |
 | envoy-gateway.createNamespace | bool | `false` |  |
 | envoy-gateway.deployment.annotations | object | `{}` |  |
+| envoy-gateway.deployment.envoyGateway.extraEnv | list | `[]` | Additional environment variables for the envoy-gateway container. |
 | envoy-gateway.deployment.envoyGateway.image.repository | string | `""` |  |
 | envoy-gateway.deployment.envoyGateway.image.tag | string | `""` |  |
 | envoy-gateway.deployment.envoyGateway.imagePullPolicy | string | `""` |  |
@@ -50,6 +52,8 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | envoy-gateway.deployment.pod.affinity | object | `{}` |  |
 | envoy-gateway.deployment.pod.annotations."prometheus.io/port" | string | `"19001"` |  |
 | envoy-gateway.deployment.pod.annotations."prometheus.io/scrape" | string | `"true"` |  |
+| envoy-gateway.deployment.pod.extraVolumeMounts | list | `[]` |  |
+| envoy-gateway.deployment.pod.extraVolumes | list | `[]` |  |
 | envoy-gateway.deployment.pod.labels | object | `{}` |  |
 | envoy-gateway.deployment.pod.nodeSelector | object | `{}` |  |
 | envoy-gateway.deployment.pod.tolerations | list | `[]` |  |
@@ -70,10 +74,13 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | envoy-gateway.deployment.replicas | int | `1` |  |
 | envoy-gateway.global.imagePullSecrets | list | `[]` | Global override for image pull secrets |
 | envoy-gateway.global.imageRegistry | string | `""` | Global override for image registry |
-| envoy-gateway.global.images.envoyGateway.image | string | `"docker.io/envoyproxy/gateway:v1.7.1"` |  |
+| envoy-gateway.global.images.envoyGateway.image | string | `"docker.io/envoyproxy/gateway:v1.8.0"` |  |
 | envoy-gateway.global.images.envoyGateway.pullPolicy | string | `"IfNotPresent"` |  |
 | envoy-gateway.global.images.envoyGateway.pullSecrets | list | `[]` |  |
-| envoy-gateway.global.images.ratelimit.image | string | `"docker.io/envoyproxy/ratelimit:c8765e89"` |  |
+| envoy-gateway.global.images.envoyProxy.image | string | `""` |  |
+| envoy-gateway.global.images.envoyProxy.pullPolicy | string | `""` |  |
+| envoy-gateway.global.images.envoyProxy.pullSecrets | list | `[]` |  |
+| envoy-gateway.global.images.ratelimit.image | string | `"docker.io/envoyproxy/ratelimit:ff287602"` |  |
 | envoy-gateway.global.images.ratelimit.pullPolicy | string | `"IfNotPresent"` |  |
 | envoy-gateway.global.images.ratelimit.pullSecrets | list | `[]` |  |
 | envoy-gateway.hpa.behavior | object | `{}` |  |
@@ -82,6 +89,7 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | envoy-gateway.hpa.metrics | list | `[]` |  |
 | envoy-gateway.hpa.minReplicas | int | `1` |  |
 | envoy-gateway.kubernetesClusterDomain | string | `"cluster.local"` |  |
+| envoy-gateway.namespaceOverride | string | `""` | Override the namespace for resources deployed by the chart. Defaults to the release namespace. |
 | envoy-gateway.podDisruptionBudget.minAvailable | int | `0` |  |
 | envoy-gateway.service.annotations | object | `{}` |  |
 | envoy-gateway.service.trafficDistribution | string | `""` |  |
@@ -138,7 +146,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: envoy-gateway
     path: ''
     helm:
