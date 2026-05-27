@@ -1,6 +1,6 @@
 dependencies:
 - name: kratos
   repository: https://k8s.ory.sh/helm/charts
-  version: 0.61.0
-digest: sha256:9f0a231e8e18a1445c0b861927d6c52e57b972fa2a701eec91b51fe7ed9683a1
-generated: "2026-04-01T17:06:43.125483717Z"
+  version: 0.62.0
+digest: sha256:6b8dad2a58f5dd1875e7dd92f40d69800e8194422ad8e7d7d0ada40614be9987
+generated: "2026-05-27T11:20:40.774220635Z"
