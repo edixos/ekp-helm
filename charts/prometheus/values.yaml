@@ -845,7 +845,8 @@ oidc:
     gatewayRef: {}
     # HTTPRoute rule configuration
     # rules:
-    # - matches:
+    # - name: service        # optional: enables targeting by sectionName in policies
+    #   matches:
     #   - path:
     #       type: PathPrefix
     #       value: /
@@ -959,6 +960,7 @@ oidc:
     seccompProfile:
       type: RuntimeDefault
 
+  deploymentLabels: {}
   deploymentAnnotations: {}
   podAnnotations: {}
   podLabels: {}
