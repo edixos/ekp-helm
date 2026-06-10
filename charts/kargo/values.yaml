@@ -151,10 +151,9 @@ kargo:
       ## @param api.adminAccount.enabled Whether to enable the admin account.
       enabled: true
       ## @param api.adminAccount.passwordHash Bcrypt password hash for the admin account. A value **must** be provided for this field unless `api.secret.name` is specified.
-      passwordHash: >-
-        $2b$12$qvkOxcQGZCzXcSAmdMIXcuUsofdJYE/behRanuRcVqD/8pBORj.Ze
+      passwordHash: ""
       ## @param api.adminAccount.tokenSigningKey Key used to sign ID tokens (JWTs) for the admin account. It is suggested that you generate this using a password manager or a command like: `openssl rand -base64 29 \| tr -d "=+/" \| cut`. A value **must** be provided for this field, unless `api.secret.name` is specified.
-      tokenSigningKey: "dummy-token-signing-key"
+      tokenSigningKey: ""
       ## @param api.adminAccount.tokenTTL Specifies how long ID tokens for the admin account are valid. (i.e. The expiry will be the time of issue plus this duration.)
       tokenTTL: 24h
 
@@ -668,11 +667,11 @@ kargo:
     ## @param garbageCollector.maxRetainedPromotions The ideal maximum number of Promotions OLDER than the oldest Promotion in a non-terminal phase (for each Stage) that may be spared by the garbage collector. The ACTUAL number of older Promotions spared may exceed this ideal if some Promotions that would otherwise be deleted do not meet the minimum age criterion.
     maxRetainedPromotions: 20
     ## @param garbageCollector.minPromotionDeletionAge The minimum age a Promotion must be before considered eligible for garbage collection.
-    minPromotionDeletionAge: 336h # Two weeks
+    minPromotionDeletionAge: 336h  # Two weeks
     ## @param garbageCollector.maxRetainedFreight The ideal maximum number of Freight OLDER than the oldest still in use (from each Warehouse) that may be spared by the garbage collector. The ACTUAL number of older Freight spared may exceed this ideal if some Freight that would otherwise be deleted do not meet the minimum age criterion.
     maxRetainedFreight: 20
     ## @param garbageCollector.minFreightDeletionAge The minimum age Freight must be before considered eligible for garbage collection.
-    minFreightDeletionAge: 336h # Two weeks
+    minFreightDeletionAge: 336h  # Two weeks
 
     ## @param garbageCollector.labels Labels to add to the api resources. Merges with `global.labels`, allowing you to override or add to the global labels.
     labels: {}
@@ -919,7 +918,7 @@ kargo:
     logFormat: CONSOLE
 
     ## @param webhooksServer.controlplaneUserRegex Regular expression for matching controlplane users.
-    controlplaneUserRegex: "" # ^system:serviceaccount:kargo:[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+    controlplaneUserRegex: ""  # ^system:serviceaccount:kargo:[a-z0-9]([-a-z0-9]*[a-z0-9])?$
 
     ## @param webhooksServer.labels Labels to add to the webhook server resources. Merges with `global.labels`, allowing you to override or add to the global labels.
     labels: {}
@@ -936,8 +935,67 @@ kargo:
       labels: {}
       ## @param webhooksServer.serviceAccount.annotations Additional annotations to add to the webhooks server ServiceAccount.
       annotations: {}
-      # foo
+      # foo: bar
+      # another: value
 
+    ## @param webhooksServer.env Environment variables to add to webhook server pods.
+    env: []
+    #  - name: ENV_NAME
+    #    value: value
+    ## @param webhooksServer.envFrom Environment variables to add to webhook server pods from ConfigMaps or Secrets.
+    envFrom: []
+    #  - configMapRef:
+    #      name: config-map-name
+    #  - secretRef:
+    #      name: secret-name
+
+    ## @param webhooksServer.resources Resources limits and requests for the webhooks server containers.
+    resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+
+    ## @param webhooksServer.nodeSelector Node selector for the webhooks server pods. Defaults to `global.nodeSelector`.
+    nodeSelector: {}
+    ## @param webhooksServer.tolerations Tolerations for the webhooks server pods. Defaults to `global.tolerations`.
+    tolerations: []
+    ## @param webhooksServer.affinity Specifies pod affinity for the webhooks server pods. Defaults to `global.affinity`.
+    affinity: {}
+    ## @param webhooksServer.priorityClassName [nullable] Name of the priority class for the webhooks server pods. Defaults to `global.priorityClassName`.
+    # priorityClassName:
+    ## @param webhooksServer.securityContext Security context for webhooks server pods. Defaults to `global.securityContext`.
+    securityContext: {}
+
+    tls:
+      ## @param webhooksServer.tls.selfSignedCert Whether to generate a self-signed certificate for the (internal) webhooks server. If `true`, `cert-manager` CRDs **must** be present in the cluster. The chart will create and use its own namespaced `Issuer`. If `false`, a cert `Secret` with the name specified by `webhooksServer.tls.secretName` **must** be provided in the same namespace as Kargo. If that cert is not already trusted by the Kubernetes API server, you must specify a value for `webhooksServer.tls.caBundle`. This is why it is strongly recommended to leave this setting as `true`. There is no provision for running the webhooks server without TLS because the Kubernetes API server will not communicate with non-TLS endpoints.
+      selfSignedCert: true
+      ## @param webhooksServer.tls.secretName Name of the cert `Secret` for use with the (internal) webhooks server. When `webhooksServer.tls.selfSignedCert` is `true`, this will be the name of the generated cert `Secret`. When `webhooksServer.tls.selfSignedCert` is `false`, a cert `Secret` with this name **must** be provided in the same namespace as Kargo. There is no provision for running the webhooks server without TLS because the Kubernetes API server will not communicate with non TLS-endpoints.
+      secretName: kargo-webhooks-server-cert
+      ## @param webhooksServer.tls.caBundle PEM-encoded TLS certificates for certificate authorities to trust when `webhooksServer.tls.selfSignedCert` is `false`. If the cert has been signed by an authority already trusted by the Kubernetes API server, this setting can be ignored.
+      caBundle: ""
+      # caBundle: |
+      #   -----BEGIN CERTIFICATE-----
+      #   ...
+      #   -----END CERTIFICATE-----
+
+  ## @param extraObjects An array describing additional, arbitrary Kubernetes resources to include when rendering this chart. Items in the array may be YAML objects or strings. Either may be templated. Templates will be evaluated against the same set of values as the rest of the chart.
+  extraObjects: []
+  # - apiVersion: v1
+  #   kind: ConfigMap
+  #   metadata:
+  #     name: custom-cm-1
+  #   data:
+  #     host: '{{ .Values.api.host }}'
+  # - |
+  #   apiVersion: v1
+  #   kind: ConfigMap
+  #   metadata:
+  #     name: custom-cm-2
+  #   data:
+  #     host: {{ .Values.api.host }}
 httproute:
   enabled: false
   parentRefs: []
