@@ -1,6 +1,6 @@
 # kargo
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.10.7](https://img.shields.io/badge/AppVersion-v1.10.7-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://ghcr.io/akuity/kargo-charts | kargo(kargo) | 1.10.4 |
+| oci://ghcr.io/akuity/kargo-charts | kargo(kargo) | 1.10.7 |
 
 ## Description
 
@@ -27,8 +27,8 @@ A Helm chart for Kubernetes
 | httproute.parentRefs | list | `[]` |  |
 | httproute.rules | list | `[]` |  |
 | kargo.api.adminAccount.enabled | bool | `true` |  |
-| kargo.api.adminAccount.passwordHash | string | `"$2b$12$qvkOxcQGZCzXcSAmdMIXcuUsofdJYE/behRanuRcVqD/8pBORj.Ze"` |  |
-| kargo.api.adminAccount.tokenSigningKey | string | `"dummy-token-signing-key"` |  |
+| kargo.api.adminAccount.passwordHash | string | `""` |  |
+| kargo.api.adminAccount.tokenSigningKey | string | `""` |  |
 | kargo.api.adminAccount.tokenTTL | string | `"24h"` |  |
 | kargo.api.affinity | object | `{}` |  |
 | kargo.api.annotations | object | `{}` |  |
@@ -193,6 +193,7 @@ A Helm chart for Kubernetes
 | kargo.externalWebhooksServer.tls.selfSignedCert | bool | `true` |  |
 | kargo.externalWebhooksServer.tls.terminatedUpstream | bool | `false` |  |
 | kargo.externalWebhooksServer.tolerations | list | `[]` |  |
+| kargo.extraObjects | list | `[]` |  |
 | kargo.garbageCollector.affinity | object | `{}` |  |
 | kargo.garbageCollector.annotations | object | `{}` |  |
 | kargo.garbageCollector.enabled | bool | `true` |  |
@@ -262,17 +263,27 @@ A Helm chart for Kubernetes
 | kargo.rbac.installClusterRoleBindings | bool | `true` |  |
 | kargo.rbac.installClusterRoles | bool | `true` |  |
 | kargo.webhooks.register | bool | `true` |  |
+| kargo.webhooksServer.affinity | object | `{}` |  |
 | kargo.webhooksServer.annotations | object | `{}` |  |
 | kargo.webhooksServer.controlplaneUserRegex | string | `""` |  |
 | kargo.webhooksServer.enabled | bool | `true` |  |
+| kargo.webhooksServer.env | list | `[]` |  |
+| kargo.webhooksServer.envFrom | list | `[]` |  |
 | kargo.webhooksServer.labels | object | `{}` |  |
 | kargo.webhooksServer.logFormat | string | `"CONSOLE"` |  |
 | kargo.webhooksServer.logLevel | string | `"INFO"` |  |
+| kargo.webhooksServer.nodeSelector | object | `{}` |  |
 | kargo.webhooksServer.podAnnotations | object | `{}` |  |
 | kargo.webhooksServer.podLabels | object | `{}` |  |
 | kargo.webhooksServer.replicas | int | `1` |  |
+| kargo.webhooksServer.resources | object | `{}` |  |
+| kargo.webhooksServer.securityContext | object | `{}` |  |
 | kargo.webhooksServer.serviceAccount.annotations | object | `{}` |  |
 | kargo.webhooksServer.serviceAccount.labels | object | `{}` |  |
+| kargo.webhooksServer.tls.caBundle | string | `""` |  |
+| kargo.webhooksServer.tls.secretName | string | `"kargo-webhooks-server-cert"` |  |
+| kargo.webhooksServer.tls.selfSignedCert | bool | `true` |  |
+| kargo.webhooksServer.tolerations | list | `[]` |  |
 
 ## Installing the Chart
 
@@ -299,7 +310,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: kargo
     path: ''
     helm:
