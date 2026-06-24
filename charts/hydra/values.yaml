@@ -733,6 +733,8 @@ hydra:
     labels: {}
     # -- TLS configuration to use when scraping the endpoint
     tlsConfig: {}
+    # -- Additional metric labels
+    targetLabels: []
 
   configmap:
     # -- switch to false to prevent checksum annotations being maintained and propogated to the pods
@@ -743,5 +745,6 @@ hydra:
     labels: {}
     # -- use a busybox image from another repository
     busybox:
+      registry: "docker.io"
       repository: busybox
       tag: stable
