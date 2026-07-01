@@ -1,6 +1,6 @@
 # external-dns
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![AppVersion: 0.16.1](https://img.shields.io/badge/AppVersion-0.16.1-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![AppVersion: 0.21.0](https://img.shields.io/badge/AppVersion-0.21.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@
 |------------|------|---------|
 | https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-members) | 0.1.2 |
 | https://edixos.github.io/ekp-helm | workloadIdentity(gcp-workload-identity) | 0.1.1 |
-| https://kubernetes-sigs.github.io/external-dns/ | externaldns(external-dns) | 1.20.0 |
+| https://kubernetes-sigs.github.io/external-dns/ | externaldns(external-dns) | 1.21.1 |
 
 ## Maintainers
 
@@ -40,6 +40,7 @@ Deploys external-dns and its monitoring
 | externaldns.dnsConfig | object | `nil` | [DNS config](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config) for the pod, if not set the default will be used. |
 | externaldns.dnsPolicy | string | `nil` | [DNS policy](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy) for the pod, if not set the default will be used. |
 | externaldns.domainFilters | list | `[]` | Limit possible target zones by domain suffixes. |
+| externaldns.enableGatewayListenerSets | bool | `false` | if `true`, the Gateway API ListenerSet flag will be enabled. |
 | externaldns.enabled | bool | `nil` | No effect - reserved for use in sub-charting. |
 | externaldns.env | list | `[]` | [Environment variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/) for the `external-dns` container. |
 | externaldns.excludeDomains | list | `[]` | Intentionally exclude domains from being managed. |
@@ -48,7 +49,7 @@ Deploys external-dns and its monitoring
 | externaldns.extraVolumeMounts | list | `[]` | Extra [volume mounts](https://kubernetes.io/docs/concepts/storage/volumes/) for the `external-dns` container. |
 | externaldns.extraVolumes | list | `[]` | Extra [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) for the `Pod`. |
 | externaldns.fullnameOverride | string | `nil` | Override the full name of the chart. |
-| externaldns.gatewayNamespace | string | `nil` | _Gateway API_ gateway namespace to watch. |
+| externaldns.gatewayNamespace | string | `nil` | _Gateway API_ gateway namespace to watch. When `namespaced=true`, setting this value avoids creating any cluster-scoped RBAC (no ClusterRole/ClusterRoleBinding) for Gateway sources. |
 | externaldns.global.imagePullSecrets | list | `[]` | Global image pull secrets. |
 | externaldns.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy for the `external-dns` container. |
 | externaldns.image.repository | string | `"registry.k8s.io/external-dns/external-dns"` | Image repository for the `external-dns` container. |
@@ -62,6 +63,7 @@ Deploys external-dns and its monitoring
 | externaldns.logLevel | string | `"info"` | Log level. |
 | externaldns.managedRecordTypes | list | `[]` | Record types to manage (default: A, AAAA, CNAME) |
 | externaldns.nameOverride | string | `nil` | Override the name of the chart. |
+| externaldns.namespaceOverride | string | `nil` | Override the namespace that chart resources are rendered into. Defaults to the release namespace. Useful when installing the chart as a subchart that should live in its own namespace, separate from the umbrella release namespace. |
 | externaldns.namespaced | bool | `false` | if `true`, _ExternalDNS_ will run in a namespaced scope (`Role`` and `Rolebinding`` will be namespaced too). |
 | externaldns.nodeSelector | object | `{}` | Node labels to match for `Pod` [scheduling](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/). |
 | externaldns.podAnnotations | object | `{}` | Annotations to add to the `Pod`. |
@@ -115,6 +117,7 @@ Deploys external-dns and its monitoring
 | externaldns.serviceMonitor.targetLabels | list | `[]` | Provide target labels for the `ServiceMonitor`. |
 | externaldns.serviceMonitor.tlsConfig | object | `{}` | Configure the `ServiceMonitor` [TLS config](https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#tlsconfig). |
 | externaldns.shareProcessNamespace | bool | `false` | If `true`, the `Pod` will have [process namespace sharing](https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/) enabled. |
+| externaldns.sourceNamespace | string | `nil` | Source namespace to watch for Kubernetes resources other than Gateway API gateways. Used only when `namespaced=true`. Defaults to Release.Namespace |
 | externaldns.sources | list | `["service","ingress"]` | _Kubernetes_ resources to monitor for DNS entries. |
 | externaldns.terminationGracePeriodSeconds | int | `nil` | Termination grace period for the `Pod` in seconds. |
 | externaldns.tolerations | list | `[]` | Node taints which will be tolerated for `Pod` [scheduling](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/). |
@@ -168,7 +171,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: external-dns
     path: ''
     helm:
