@@ -1343,6 +1343,25 @@ entries:
   envoy-gateway:
   - apiVersion: v2
     appVersion: v1.7.1
+    created: "2026-07-01T13:24:18.164575046Z"
+    dependencies:
+    - alias: envoy-gateway
+      name: gateway-helm
+      repository: oci://docker.io/envoyproxy
+      version: 1.7.1
+    description: Helm chart to deploy Envoy Gateway on Kubernetes
+    digest: 4bb9ac4a1bf462c978321bb631091309d7fcf5e1ffe73c8aba21e309848ba1b9
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: envoy-gateway
+    type: application
+    urls:
+    - envoy-gateway-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v2
+    appVersion: v1.7.1
     created: "2026-06-02T19:23:48.560517561Z"
     dependencies:
     - alias: envoy-gateway
@@ -4274,4 +4293,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-06-02T19:23:48.561028118Z"
+generated: "2026-07-01T13:24:18.164760626Z"
