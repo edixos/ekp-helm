@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.13](https://img.shields.io/badge/Version-0.1.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.3.6](https://img.shields.io/badge/AppVersion-v3.3.6-informational?style=flat-square)
+![Version: 0.1.14](https://img.shields.io/badge/Version-0.1.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.4.4](https://img.shields.io/badge/AppVersion-v3.4.4-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 9.4.17 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 10.1.0 |
 
 ## Maintainers
 
@@ -60,6 +60,12 @@ A Helm chart for Kubernetes
 | argocd.applicationSet.extraEnvFrom | list | `[]` (See [values.yaml]) | envFrom to pass to the ApplicationSet controller |
 | argocd.applicationSet.extraVolumeMounts | list | `[]` | List of extra mounts to add (normally used with extraVolumes) |
 | argocd.applicationSet.extraVolumes | list | `[]` | List of extra volumes to add |
+| argocd.applicationSet.httproute.annotations | object | `{}` | Additional HTTPRoute annotations |
+| argocd.applicationSet.httproute.enabled | bool | `false` | Enable HTTPRoute resource for Argo CD Applicationset Webhook (Gateway API) |
+| argocd.applicationSet.httproute.hostnames | list | `[]` (See [values.yaml]) | List of hostnames for the HTTPRoute |
+| argocd.applicationSet.httproute.labels | object | `{}` | Additional HTTPRoute labels |
+| argocd.applicationSet.httproute.parentRefs | list | `[]` (See [values.yaml]) | Gateway API parentRefs for the HTTPRoute # Must reference an existing Gateway |
+| argocd.applicationSet.httproute.rules | list | `[]` (See [values.yaml]) | HTTPRoute rules configuration |
 | argocd.applicationSet.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for the ApplicationSet controller |
 | argocd.applicationSet.image.repository | string | `""` (defaults to global.image.repository) | Repository to use for the ApplicationSet controller |
 | argocd.applicationSet.image.tag | string | `""` (defaults to global.image.tag) | Tag to use for the ApplicationSet controller |
@@ -77,6 +83,11 @@ A Helm chart for Kubernetes
 | argocd.applicationSet.ingress.pathType | string | `"Prefix"` | Ingress path type. One of `Exact`, `Prefix` or `ImplementationSpecific` |
 | argocd.applicationSet.ingress.tls | bool | `false` | Enable TLS configuration for the hostname defined at `applicationSet.webhook.ingress.hostname` # TLS certificate will be retrieved from a TLS secret with name:`argocd-applicationset-controller-tls` |
 | argocd.applicationSet.initContainers | list | `[]` | Init containers to add to the ApplicationSet controller pod # Note: Supports use of custom Helm templates |
+| argocd.applicationSet.listenerset.annotations | object | `{}` | Additional ListenerSet annotations |
+| argocd.applicationSet.listenerset.enabled | bool | `false` | Enable ListenerSet resource for Argo CD ApplicationSet webhook (Gateway API) |
+| argocd.applicationSet.listenerset.labels | object | `{}` | Additional ListenerSet labels |
+| argocd.applicationSet.listenerset.listeners | list | `[]` (See [values.yaml]) | Listeners to attach to the parent Gateway |
+| argocd.applicationSet.listenerset.parentRef | object | `{}` (See [values.yaml]) | Gateway API parentRef for the ListenerSet # Must reference an existing Gateway. Unlike HTTPRoute, ListenerSet accepts exactly one parentRef. |
 | argocd.applicationSet.livenessProbe.enabled | bool | `false` | Enable Kubernetes liveness probe for ApplicationSet controller |
 | argocd.applicationSet.livenessProbe.failureThreshold | int | `3` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
 | argocd.applicationSet.livenessProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
@@ -132,9 +143,20 @@ A Helm chart for Kubernetes
 | argocd.applicationSet.serviceAccount.create | bool | `true` | Create ApplicationSet controller service account |
 | argocd.applicationSet.serviceAccount.labels | object | `{}` | Labels applied to created service account |
 | argocd.applicationSet.serviceAccount.name | string | `"argocd-applicationset-controller"` | ApplicationSet controller service account name |
+| argocd.applicationSet.startupProbe.enabled | bool | `false` | Enable Kubernetes startup probe for ApplicationSet controller |
+| argocd.applicationSet.startupProbe.failureThreshold | int | `20` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.applicationSet.startupProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
+| argocd.applicationSet.startupProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
+| argocd.applicationSet.startupProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
+| argocd.applicationSet.startupProbe.timeoutSeconds | int | `1` | Number of seconds after which the [probe] times out |
 | argocd.applicationSet.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds for container lifecycle hook |
 | argocd.applicationSet.tolerations | list | `[]` (defaults to global.tolerations) | [Tolerations] for use with node taints |
 | argocd.applicationSet.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to the ApplicationSet controller # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
+| argocd.applicationSet.vpa.annotations | object | `{}` | Annotations to be added to ApplicationSet controller vpa |
+| argocd.applicationSet.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for ApplicationSet controller container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.applicationSet.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the ApplicationSet controller |
+| argocd.applicationSet.vpa.labels | object | `{}` | Labels to be added to ApplicationSet controller vpa |
+| argocd.applicationSet.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.commitServer.affinity | object | `{}` (defaults to global.affinity preset) | Assign custom [affinity] rules |
 | argocd.commitServer.automountServiceAccountToken | bool | `false` | Automount API credentials for the Service Account into the pod. |
 | argocd.commitServer.containerSecurityContext | object | See [values.yaml] | commit server container-level security context |
@@ -154,6 +176,7 @@ A Helm chart for Kubernetes
 | argocd.commitServer.image.tag | string | `""` (defaults to global.image.tag) | Tag to use for the commit server |
 | argocd.commitServer.livenessProbe.enabled | bool | `true` | Enable Kubernetes liveness probe for commit server |
 | argocd.commitServer.livenessProbe.failureThreshold | int | `3` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.commitServer.livenessProbe.httpPath | string | `"/healthz?full=true"` | Http path to use for the liveness probe |
 | argocd.commitServer.livenessProbe.initialDelaySeconds | int | `30` | Number of seconds after the container has started before [probe] is initiated |
 | argocd.commitServer.livenessProbe.periodSeconds | int | `30` | How often (in seconds) to perform the [probe] |
 | argocd.commitServer.livenessProbe.timeoutSeconds | int | `5` | Number of seconds after which the [probe] times out |
@@ -172,6 +195,7 @@ A Helm chart for Kubernetes
 | argocd.commitServer.priorityClassName | string | `""` (defaults to global.priorityClassName) | Priority class for the commit server pods |
 | argocd.commitServer.readinessProbe.enabled | bool | `true` | Enable Kubernetes liveness probe for commit server |
 | argocd.commitServer.readinessProbe.failureThreshold | int | `3` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.commitServer.readinessProbe.httpPath | string | `"/healthz"` | Http path to use for the readiness probe |
 | argocd.commitServer.readinessProbe.initialDelaySeconds | int | `5` | Number of seconds after the container has started before [probe] is initiated |
 | argocd.commitServer.readinessProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
 | argocd.commitServer.readinessProbe.timeoutSeconds | int | `1` | Number of seconds after which the [probe] times out |
@@ -186,9 +210,20 @@ A Helm chart for Kubernetes
 | argocd.commitServer.serviceAccount.create | bool | `true` | Create commit server service account |
 | argocd.commitServer.serviceAccount.labels | object | `{}` | Labels applied to created service account |
 | argocd.commitServer.serviceAccount.name | string | `"argocd-commit-server"` | commit server service account name |
+| argocd.commitServer.startupProbe.enabled | bool | `false` | Enable Kubernetes startup probe for commit server |
+| argocd.commitServer.startupProbe.failureThreshold | int | `20` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.commitServer.startupProbe.httpPath | string | `"/healthz"` | Http path to use for the startup probe |
+| argocd.commitServer.startupProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
+| argocd.commitServer.startupProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
+| argocd.commitServer.startupProbe.timeoutSeconds | int | `1` | Number of seconds after which the [probe] times out |
 | argocd.commitServer.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds for container lifecycle hook |
 | argocd.commitServer.tolerations | list | `[]` (defaults to global.tolerations) | [Tolerations] for use with node taints |
 | argocd.commitServer.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to the commit server # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
+| argocd.commitServer.vpa.annotations | object | `{}` | Annotations to be added to commit server vpa |
+| argocd.commitServer.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for commit server container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.commitServer.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the commit server |
+| argocd.commitServer.vpa.labels | object | `{}` | Labels to be added to commit server vpa |
+| argocd.commitServer.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.configs.clusterCredentials | object | `{}` (See [values.yaml]) | Provide one or multiple [external cluster credentials] # Ref: # - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#clusters # - https://argo-cd.readthedocs.io/en/stable/operator-manual/security/#external-cluster-credentials # - https://argo-cd.readthedocs.io/en/stable/user-guide/projects/#project-scoped-repositories-and-clusters |
 | argocd.configs.cm."admin.enabled" | bool | `true` | Enable local admin user # Ref: https://argo-cd.readthedocs.io/en/latest/faq/#how-to-disable-admin-user |
 | argocd.configs.cm."application.instanceLabelKey" | string | `"argocd.argoproj.io/instance"` | The name of tracking label used by Argo CD for resource pruning |
@@ -309,6 +344,7 @@ A Helm chart for Kubernetes
 | argocd.controller.podLabels | object | `{}` | Labels to be added to application controller pods |
 | argocd.controller.priorityClassName | string | `""` (defaults to global.priorityClassName) | Priority class for the application controller pods |
 | argocd.controller.readinessProbe.failureThreshold | int | `3` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.controller.readinessProbe.httpPath | string | `"/healthz"` | Http path to use for the readiness probe |
 | argocd.controller.readinessProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
 | argocd.controller.readinessProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
 | argocd.controller.readinessProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
@@ -323,6 +359,13 @@ A Helm chart for Kubernetes
 | argocd.controller.serviceAccount.create | bool | `true` | Create a service account for the application controller |
 | argocd.controller.serviceAccount.labels | object | `{}` | Labels applied to created service account |
 | argocd.controller.serviceAccount.name | string | `"argocd-application-controller"` | Service account name |
+| argocd.controller.startupProbe.enabled | bool | `false` | Enable Kubernetes startup probe for application controller |
+| argocd.controller.startupProbe.failureThreshold | int | `20` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.controller.startupProbe.httpPath | string | `"/healthz"` | Http path to use for the startup probe |
+| argocd.controller.startupProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
+| argocd.controller.startupProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
+| argocd.controller.startupProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
+| argocd.controller.startupProbe.timeoutSeconds | int | `1` | Number of seconds after which the [probe] times out |
 | argocd.controller.statefulsetAnnotations | object | `{}` | Annotations for the application controller StatefulSet |
 | argocd.controller.statefulsetLabels | object | `{}` | Labels for the application controller StatefulSet |
 | argocd.controller.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds for container lifecycle hook |
@@ -428,11 +471,25 @@ A Helm chart for Kubernetes
 | argocd.dex.servicePortHttp | int | `5556` | Service port for HTTP access |
 | argocd.dex.servicePortHttpName | string | `"http"` | Service port name for HTTP access |
 | argocd.dex.servicePortMetrics | int | `5558` | Service port for metrics access |
+| argocd.dex.startupProbe.enabled | bool | `false` | Enable Kubernetes startup probe for Dex >= 2.28.0 |
+| argocd.dex.startupProbe.failureThreshold | int | `20` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.dex.startupProbe.httpPath | string | `"/healthz/ready"` | Http path to use for the startup probe |
+| argocd.dex.startupProbe.httpPort | string | `"metrics"` | Http port to use for the startup probe |
+| argocd.dex.startupProbe.httpScheme | string | `"HTTP"` | Scheme to use for the startup probe (can be HTTP or HTTPS) |
+| argocd.dex.startupProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
+| argocd.dex.startupProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
+| argocd.dex.startupProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
+| argocd.dex.startupProbe.timeoutSeconds | int | `1` | Number of seconds after which the [probe] times out |
 | argocd.dex.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds for container lifecycle hook |
 | argocd.dex.tolerations | list | `[]` (defaults to global.tolerations) | [Tolerations] for use with node taints |
 | argocd.dex.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to dex # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
 | argocd.dex.volumeMounts | list | `[]` | Additional volumeMounts to the dex main container |
 | argocd.dex.volumes | list | `[]` | Additional volumes to the dex pod |
+| argocd.dex.vpa.annotations | object | `{}` | Annotations to be added to Dex server vpa |
+| argocd.dex.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for Dex server container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.dex.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Dex server |
+| argocd.dex.vpa.labels | object | `{}` | Labels to be added to Dex server vpa |
+| argocd.dex.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.externalRedis.existingSecret | string | `""` | The name of an existing secret with Redis (must contain key `redis-password`. And should contain `redis-username` if username is not `default`) and Sentinel credentials. When it's set, the `externalRedis.username` and `externalRedis.password` parameters are ignored |
 | argocd.externalRedis.host | string | `""` | External Redis server host |
 | argocd.externalRedis.password | string | `""` | External Redis password |
@@ -463,7 +520,7 @@ A Helm chart for Kubernetes
 | argocd.global.imagePullSecrets | list | `[]` | Secrets with credentials to pull images from a private registry |
 | argocd.global.logging.format | string | `"text"` | Set the global logging format. Either: `text` or `json` |
 | argocd.global.logging.level | string | `"info"` | Set the global logging level. One of: `debug`, `info`, `warn` or `error` |
-| argocd.global.networkPolicy.create | bool | `false` | Create NetworkPolicy objects for all components |
+| argocd.global.networkPolicy.create | bool | `true` | Create NetworkPolicy objects for all components |
 | argocd.global.networkPolicy.defaultDenyIngress | bool | `false` | Default deny all ingress traffic |
 | argocd.global.nodeSelector | object | `{"kubernetes.io/os":"linux"}` | Default node selector for all components |
 | argocd.global.podAnnotations | object | `{}` | Annotations for the all deployed pods |
@@ -556,12 +613,23 @@ A Helm chart for Kubernetes
 | argocd.notifications.serviceAccount.create | bool | `true` | Create notifications controller service account |
 | argocd.notifications.serviceAccount.labels | object | `{}` | Labels applied to created service account |
 | argocd.notifications.serviceAccount.name | string | `"argocd-notifications-controller"` | Notification controller service account name |
+| argocd.notifications.startupProbe.enabled | bool | `false` | Enable Kubernetes startup probe for notifications controller Pods |
+| argocd.notifications.startupProbe.failureThreshold | int | `20` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.notifications.startupProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
+| argocd.notifications.startupProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
+| argocd.notifications.startupProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
+| argocd.notifications.startupProbe.timeoutSeconds | int | `1` | Number of seconds after which the [probe] times out |
 | argocd.notifications.subscriptions | list | `[]` | Contains centrally managed global application subscriptions # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/subscriptions/ |
 | argocd.notifications.templates | object | `{}` | The notification template is used to generate the notification content # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/templates/ |
 | argocd.notifications.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds for container lifecycle hook |
 | argocd.notifications.tolerations | list | `[]` (defaults to global.tolerations) | [Tolerations] for use with node taints |
 | argocd.notifications.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to the application controller # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
 | argocd.notifications.triggers | object | `{}` | The trigger defines the condition when the notification should be sent # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/triggers/ |
+| argocd.notifications.vpa.annotations | object | `{}` | Annotations to be added to notifications controller vpa |
+| argocd.notifications.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for notifications controller container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.notifications.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the notifications controller |
+| argocd.notifications.vpa.labels | object | `{}` | Labels to be added to notifications controller vpa |
+| argocd.notifications.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.openshift.enabled | bool | `false` | enables using arbitrary uid for argo repo server |
 | argocd.redis-ha.additionalAffinities | object | `{}` | Additional affinities to add to the Redis server pods. |
 | argocd.redis-ha.affinity | string | `""` | Assign custom [affinity] rules to the Redis pods. |
@@ -611,7 +679,7 @@ A Helm chart for Kubernetes
 | argocd.redis.exporter.env | list | `[]` | Environment variables to pass to the Redis exporter |
 | argocd.redis.exporter.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for the redis-exporter |
 | argocd.redis.exporter.image.repository | string | `"ghcr.io/oliver006/redis_exporter"` | Repository to use for the redis-exporter |
-| argocd.redis.exporter.image.tag | string | `"v1.82.0"` | Tag to use for the redis-exporter |
+| argocd.redis.exporter.image.tag | string | `"v1.86.0"` | Tag to use for the redis-exporter |
 | argocd.redis.exporter.livenessProbe.enabled | bool | `false` | Enable Kubernetes liveness probe for Redis exporter |
 | argocd.redis.exporter.livenessProbe.failureThreshold | int | `5` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
 | argocd.redis.exporter.livenessProbe.initialDelaySeconds | int | `30` | Number of seconds after the container has started before [probe] is initiated |
@@ -688,6 +756,11 @@ A Helm chart for Kubernetes
 | argocd.redis.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to redis # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
 | argocd.redis.volumeMounts | list | `[]` | Additional volumeMounts to the redis container |
 | argocd.redis.volumes | list | `[]` | Additional volumes to the redis pod |
+| argocd.redis.vpa.annotations | object | `{}` | Annotations to be added to Redis vpa |
+| argocd.redis.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for Redis container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.redis.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Redis |
+| argocd.redis.vpa.labels | object | `{}` | Labels to be added to Redis vpa |
+| argocd.redis.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.redisSecretInit.affinity | object | `{}` | Assign custom [affinity] rules to the Redis secret-init Job |
 | argocd.redisSecretInit.containerSecurityContext | object | See [values.yaml] | Application controller container-level security context |
 | argocd.redisSecretInit.enabled | bool | `true` | Enable Redis secret initialization. If disabled, secret must be provisioned by alternative methods |
@@ -730,6 +803,7 @@ A Helm chart for Kubernetes
 | argocd.repoServer.containerPorts.metrics | int | `8084` | Metrics container port |
 | argocd.repoServer.containerPorts.server | int | `8081` | Repo server container port |
 | argocd.repoServer.containerSecurityContext | object | See [values.yaml] | Repo server container-level security context |
+| argocd.repoServer.copyutil.extraArgs | string | `"--update=none"` | Extra arguments for the cp command in the repo server copyutil initContainer |
 | argocd.repoServer.copyutil.resources | object | `{}` | Resource limits and requests for the repo server copyutil initContainer |
 | argocd.repoServer.deploymentAnnotations | object | `{}` | Annotations to be added to repo server Deployment |
 | argocd.repoServer.deploymentLabels | object | `{}` | Labels for the repo server Deployment |
@@ -751,6 +825,7 @@ A Helm chart for Kubernetes
 | argocd.repoServer.lifecycle | object | `{}` | Specify postStart and preStop lifecycle hooks for your argo-repo-server container |
 | argocd.repoServer.livenessProbe.enabled | bool | `true` | Enable Kubernetes liveness probe for Repo Server |
 | argocd.repoServer.livenessProbe.failureThreshold | int | `3` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.repoServer.livenessProbe.httpPath | string | `"/healthz?full=true"` | Http path to use for the liveness probe |
 | argocd.repoServer.livenessProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
 | argocd.repoServer.livenessProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
 | argocd.repoServer.livenessProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
@@ -788,6 +863,7 @@ A Helm chart for Kubernetes
 | argocd.repoServer.rbac | list | `[]` | Repo server rbac rules |
 | argocd.repoServer.readinessProbe.enabled | bool | `true` | Enable Kubernetes readiness probe for Repo Server |
 | argocd.repoServer.readinessProbe.failureThreshold | int | `3` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.repoServer.readinessProbe.httpPath | string | `"/healthz"` | Http path to use for the readiness probe |
 | argocd.repoServer.readinessProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
 | argocd.repoServer.readinessProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
 | argocd.repoServer.readinessProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
@@ -805,12 +881,24 @@ A Helm chart for Kubernetes
 | argocd.repoServer.serviceAccount.create | bool | `true` | Create repo server service account |
 | argocd.repoServer.serviceAccount.labels | object | `{}` | Labels applied to created service account |
 | argocd.repoServer.serviceAccount.name | string | `""` | Repo server service account name |
+| argocd.repoServer.startupProbe.enabled | bool | `false` | Enable Kubernetes startup probe for Repo Server |
+| argocd.repoServer.startupProbe.failureThreshold | int | `20` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.repoServer.startupProbe.httpPath | string | `"/healthz"` | Http path to use for the startup probe |
+| argocd.repoServer.startupProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
+| argocd.repoServer.startupProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
+| argocd.repoServer.startupProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
+| argocd.repoServer.startupProbe.timeoutSeconds | int | `1` | Number of seconds after which the [probe] times out |
 | argocd.repoServer.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds for container lifecycle hook |
 | argocd.repoServer.tolerations | list | `[]` (defaults to global.tolerations) | [Tolerations] for use with node taints |
 | argocd.repoServer.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to the repo server # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
 | argocd.repoServer.useEphemeralHelmWorkingDir | bool | `true` | Toggle the usage of a ephemeral Helm working directory |
 | argocd.repoServer.volumeMounts | list | `[]` | Additional volumeMounts to the repo server main container |
 | argocd.repoServer.volumes | list | `[]` | Additional volumes to the repo server pod |
+| argocd.repoServer.vpa.annotations | object | `{}` | Annotations to be added to repo server vpa |
+| argocd.repoServer.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for repo server container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.repoServer.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the repo server |
+| argocd.repoServer.vpa.labels | object | `{}` | Labels to be added to repo server vpa |
+| argocd.repoServer.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.server.affinity | object | `{}` (defaults to global.affinity preset) | Assign custom [affinity] rules to the deployment |
 | argocd.server.automountServiceAccountToken | bool | `true` | Automount API credentials for the Service Account into the pod. |
 | argocd.server.autoscaling.behavior | object | `{}` | Configures the scaling behavior of the target in both Up and Down directions. |
@@ -863,7 +951,7 @@ A Helm chart for Kubernetes
 | argocd.server.extensions.extensionList | list | `[]` (See [values.yaml]) | Extensions for Argo CD # Ref: https://github.com/argoproj-labs/argocd-extension-metrics#install-ui-extension |
 | argocd.server.extensions.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for extensions |
 | argocd.server.extensions.image.repository | string | `"quay.io/argoprojlabs/argocd-extension-installer"` | Repository to use for extension installer image |
-| argocd.server.extensions.image.tag | string | `"v0.0.9"` | Tag to use for extension installer image |
+| argocd.server.extensions.image.tag | string | `"v1.0.1"` | Tag to use for extension installer image |
 | argocd.server.extensions.resources | object | `{}` | Resource limits and requests for the argocd-extensions container |
 | argocd.server.extraArgs | list | `[]` | Additional command line arguments to pass to Argo CD server |
 | argocd.server.extraContainers | list | `[]` | Additional containers to be added to the server pod # Note: Supports use of custom Helm templates |
@@ -918,8 +1006,14 @@ A Helm chart for Kubernetes
 | argocd.server.ingressGrpc.tls | bool | `false` | Enable TLS configuration for the hostname defined at `server.ingressGrpc.hostname` # TLS certificate will be retrieved from a TLS secret with name: `argocd-server-grpc-tls` |
 | argocd.server.initContainers | list | `[]` | Init containers to add to the server pod # If your target Kubernetes cluster(s) require a custom credential (exec) plugin # you could use this (and the same in the application controller pod) to provide such executable # Ref: https://kubernetes.io/docs/reference/access-authn-authz/authentication/#client-go-credential-plugins |
 | argocd.server.lifecycle | object | `{}` | Specify postStart and preStop lifecycle hooks for your argo-cd-server container |
+| argocd.server.listenerset.annotations | object | `{}` | Additional ListenerSet annotations |
+| argocd.server.listenerset.enabled | bool | `false` | Enable ListenerSet resource for Argo CD server (Gateway API) |
+| argocd.server.listenerset.labels | object | `{}` | Additional ListenerSet labels |
+| argocd.server.listenerset.listeners | list | `[]` (See [values.yaml]) | Listeners to attach to the parent Gateway |
+| argocd.server.listenerset.parentRef | object | `{}` (See [values.yaml]) | Gateway API parentRef for the ListenerSet # Must reference an existing Gateway. Unlike HTTPRoute, ListenerSet accepts exactly one parentRef. |
 | argocd.server.livenessProbe.enabled | bool | `true` | Enable Kubernetes liveness probe for default backend |
 | argocd.server.livenessProbe.failureThreshold | int | `3` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.server.livenessProbe.httpPath | string | `"/healthz?full=true"` | Http path to use for the liveness probe |
 | argocd.server.livenessProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
 | argocd.server.livenessProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
 | argocd.server.livenessProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
@@ -956,6 +1050,7 @@ A Helm chart for Kubernetes
 | argocd.server.priorityClassName | string | `""` (defaults to global.priorityClassName) | Priority class for the Argo CD server pods |
 | argocd.server.readinessProbe.enabled | bool | `true` | Enable Kubernetes readiness probe for default backend |
 | argocd.server.readinessProbe.failureThreshold | int | `3` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.server.readinessProbe.httpPath | string | `"/healthz"` | Http path to use for the readiness probe |
 | argocd.server.readinessProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
 | argocd.server.readinessProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
 | argocd.server.readinessProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
@@ -989,11 +1084,23 @@ A Helm chart for Kubernetes
 | argocd.server.serviceAccount.create | bool | `true` | Create server service account |
 | argocd.server.serviceAccount.labels | object | `{}` | Labels applied to created service account |
 | argocd.server.serviceAccount.name | string | `"argocd-server"` | Server service account name |
+| argocd.server.startupProbe.enabled | bool | `false` | Enable Kubernetes startup probe for Argo CD server |
+| argocd.server.startupProbe.failureThreshold | int | `20` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.server.startupProbe.httpPath | string | `"/healthz"` | Http path to use for the startup probe |
+| argocd.server.startupProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
+| argocd.server.startupProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
+| argocd.server.startupProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
+| argocd.server.startupProbe.timeoutSeconds | int | `1` | Number of seconds after which the [probe] times out |
 | argocd.server.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds for container lifecycle hook |
 | argocd.server.tolerations | list | `[]` (defaults to global.tolerations) | [Tolerations] for use with node taints |
 | argocd.server.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to the Argo CD server # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
 | argocd.server.volumeMounts | list | `[]` | Additional volumeMounts to the server main container |
 | argocd.server.volumes | list | `[]` | Additional volumes to the server pod |
+| argocd.server.vpa.annotations | object | `{}` | Annotations to be added to Argo CD server vpa |
+| argocd.server.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for Argo CD server container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
+| argocd.server.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Argo CD server |
+| argocd.server.vpa.labels | object | `{}` | Labels to be added to Argo CD server vpa |
+| argocd.server.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
@@ -1026,7 +1133,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.13"
+    targetRevision: "0.1.14"
     chart: argocd
     path: ''
     helm:
