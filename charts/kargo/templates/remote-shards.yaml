@@ -1,0 +1,212 @@
+{{- with .Values.remoteShards }}
+{{- if .names }}
+{{- /*
+Control-plane-side identities for Kargo controller shards running in other
+clusters. Each shard authenticates to this cluster's API server with a
+ServiceAccount token; the kubeconfig wrapping that token is assembled and
+shipped to the shard by a PushSecret (see .Values.pushSecrets) + the shard's
+own ExternalSecret.
+
+Scoping: reads are cluster-wide because Kargo 1.10.x builds cluster-wide
+informer caches, but every mutation is confined to the explicit per-namespace
+RoleBindings below. The referenced namespaces must already exist; this chart
+never creates them.
+*/}}
+{{- $kargoNS := .kargoNamespace | default "kargo" }}
+{{- $shardNS := .namespace | default "kargo-remote-controllers" }}
+{{- $projectNamespaces := .projectNamespaces | default list }}
+{{- $sharedNamespaces := .supportNamespaces | default list }}
+{{- $svc := $.Release.Service }}
+{{- range $shard := .names }}
+{{- $sa := printf "kargo-controller-%s" $shard }}
+{{- $subjects := list (dict "kind" "ServiceAccount" "name" $sa "namespace" $shardNS) }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $sa }}
+  namespace: {{ $shardNS }}
+  labels:
+    app.kubernetes.io/managed-by: {{ $svc }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+automountServiceAccountToken: false
+---
+{{- /*
+Long-lived ServiceAccount token: `token` and `ca.crt` are filled in by
+kube-controller-manager, not by Argo CD. Rotation is manual — delete this
+Secret and let Argo CD recreate it, then wait for the PushSecret to republish.
+*/}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $sa }}-token
+  namespace: {{ $shardNS }}
+  labels:
+    app.kubernetes.io/managed-by: {{ $svc }}
+  annotations:
+    kubernetes.io/service-account.name: {{ $sa }}
+    argocd.argoproj.io/sync-wave: "0"
+type: kubernetes.io/service-account-token
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ $sa }}-cluster-reader
+  labels:
+    app.kubernetes.io/managed-by: {{ $svc }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+rules:
+  - apiGroups: [kargo.akuity.io]
+    resources:
+      - clusterconfigs
+      - clusterpromotiontasks
+      - freights
+      - projectconfigs
+      - projects
+      - promotions
+      - promotiontasks
+      - stages
+      - warehouses
+    verbs: [get, list, watch]
+  - apiGroups: [""]
+    resources: [configmaps]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ $sa }}-cluster-reader
+  labels:
+    app.kubernetes.io/managed-by: {{ $svc }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $sa }}-cluster-reader
+subjects:
+{{ toYaml $subjects | indent 2 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ $sa }}-project-reconciler
+  labels:
+    app.kubernetes.io/managed-by: {{ $svc }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+rules:
+  - apiGroups: [kargo.akuity.io]
+    resources: [projectconfigs, promotiontasks, warehouses]
+    verbs: [get, list, watch]
+  - apiGroups: [kargo.akuity.io]
+    resources: [promotions]
+    verbs: [create, get, list, watch]
+  - apiGroups: [kargo.akuity.io]
+    resources: [freights]
+    verbs: [create, get, list, watch, patch, update]
+  - apiGroups: [kargo.akuity.io]
+    resources: [stages]
+    verbs: [get, list, watch, patch, promote]
+  - apiGroups: [kargo.akuity.io]
+    resources:
+      - freights/status
+      - promotions/status
+      - stages/status
+      - warehouses/finalizers
+      - warehouses/status
+    verbs: [patch]
+  - apiGroups: [""]
+    resources: [configmaps, secrets]
+    verbs: [get, list, watch]
+  - apiGroups: [""]
+    resources: [events]
+    verbs: [create, patch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ $sa }}-shared-reader
+  labels:
+    app.kubernetes.io/managed-by: {{ $svc }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+rules:
+  - apiGroups: [""]
+    resources: [configmaps, secrets]
+    verbs: [get, list, watch]
+{{- /*
+Bound namespace by namespace rather than cluster-wide so the shard cannot read
+Secrets from arbitrary namespaces.
+*/}}
+{{- range $namespace := $projectNamespaces }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $sa }}
+  namespace: {{ $namespace }}
+  labels:
+    app.kubernetes.io/managed-by: {{ $svc }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $sa }}-project-reconciler
+subjects:
+{{ toYaml $subjects | indent 2 }}
+{{- end }}
+{{- range $namespace := $sharedNamespaces }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $sa }}
+  namespace: {{ $namespace }}
+  labels:
+    app.kubernetes.io/managed-by: {{ $svc }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $sa }}-shared-reader
+subjects:
+{{ toYaml $subjects | indent 2 }}
+{{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ $sa }}-leader-election
+  namespace: {{ $kargoNS }}
+  labels:
+    app.kubernetes.io/managed-by: {{ $svc }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+rules:
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [get, create, update, patch, delete]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $sa }}-leader-election
+  namespace: {{ $kargoNS }}
+  labels:
+    app.kubernetes.io/managed-by: {{ $svc }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ $sa }}-leader-election
+subjects:
+{{ toYaml $subjects | indent 2 }}
+{{- end }}
+{{- end }}
+{{- end }}

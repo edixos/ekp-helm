@@ -5,3 +5,50 @@ kargo:
       passwordHash: >-
         $2b$12$qvkOxcQGZCzXcSAmdMIXcuUsofdJYE/behRanuRcVqD/8pBORj.Ze
       tokenSigningKey: "dummy-token-signing-key-for-testing"
+
+# Exercise every platform extension so pluto also checks their API versions.
+externalSecrets:
+  - name: dummy-es
+    namespace: kargo
+    spec:
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: dummy
+      target:
+        name: dummy
+
+pushSecrets:
+  - name: dummy-ps
+    namespace: kargo
+    spec:
+      secretStoreRefs:
+        - kind: ClusterSecretStore
+          name: dummy
+      selector:
+        secret:
+          name: dummy
+
+httpRoute:
+  enabled: true
+  namespace: kargo
+  parentRefs:
+    - name: dummy-gateway
+      kind: Gateway
+      group: gateway.networking.k8s.io
+      namespace: envoy-gateway-system
+  hostnames:
+    - kargo.example.com
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: kargo-api
+          port: 80
+
+remoteShards:
+  projectNamespaces:
+    - dummy-project
+  supportNamespaces:
+    - kargo-shared-resources
+  names:
+    - dummy
