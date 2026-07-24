@@ -1,4 +1,7 @@
 # Default values for kargo.
+#
+# The `kargo` key holds the upstream Akuity chart's values verbatim; everything
+# below it configures the Klastro platform extensions this chart adds.
 kargo:
   ## Default values for kargo.
   ## A human-readable version can be found in the chart README.
@@ -151,9 +154,14 @@ kargo:
       ## @param api.adminAccount.enabled Whether to enable the admin account.
       enabled: true
       ## @param api.adminAccount.passwordHash Bcrypt password hash for the admin account. A value **must** be provided for this field unless `api.secret.name` is specified.
+      ## Placeholder only: upstream `fail`s when this is empty, so `ct lint` and
+      ## `helm template` with default values cannot render the chart without it.
+      ## Real deployments set `api.secret.name` instead and let ESO supply the
+      ## credential; never install this chart with these defaults in place.
       passwordHash: >-
         $2b$12$qvkOxcQGZCzXcSAmdMIXcuUsofdJYE/behRanuRcVqD/8pBORj.Ze
       ## @param api.adminAccount.tokenSigningKey Key used to sign ID tokens (JWTs) for the admin account. It is suggested that you generate this using a password manager or a command like: `openssl rand -base64 29 \| tr -d "=+/" \| cut`. A value **must** be provided for this field, unless `api.secret.name` is specified.
+      ## Placeholder only -- see the note on `passwordHash` above.
       tokenSigningKey: "dummy-token-signing-key"
       ## @param api.adminAccount.tokenTTL Specifies how long ID tokens for the admin account are valid. (i.e. The expiry will be the time of issue plus this duration.)
       tokenTTL: 24h
@@ -936,12 +944,118 @@ kargo:
       labels: {}
       ## @param webhooksServer.serviceAccount.annotations Additional annotations to add to the webhooks server ServiceAccount.
       annotations: {}
-      # foo
+      # foo: bar
+      # another: value
 
-httproute:
+    ## @param webhooksServer.env Environment variables to add to webhook server pods.
+    env: []
+    #  - name: ENV_NAME
+    #    value: value
+    ## @param webhooksServer.envFrom Environment variables to add to webhook server pods from ConfigMaps or Secrets.
+    envFrom: []
+    #  - configMapRef:
+    #      name: config-map-name
+    #  - secretRef:
+    #      name: secret-name
+
+    ## @param webhooksServer.resources Resources limits and requests for the webhooks server containers.
+    resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+
+    ## @param webhooksServer.nodeSelector Node selector for the webhooks server pods. Defaults to `global.nodeSelector`.
+    nodeSelector: {}
+    ## @param webhooksServer.tolerations Tolerations for the webhooks server pods. Defaults to `global.tolerations`.
+    tolerations: []
+    ## @param webhooksServer.affinity Specifies pod affinity for the webhooks server pods. Defaults to `global.affinity`.
+    affinity: {}
+    ## @param webhooksServer.priorityClassName [nullable] Name of the priority class for the webhooks server pods. Defaults to `global.priorityClassName`.
+    # priorityClassName:
+    ## @param webhooksServer.securityContext Security context for webhooks server pods. Defaults to `global.securityContext`.
+    securityContext: {}
+
+    tls:
+      ## @param webhooksServer.tls.selfSignedCert Whether to generate a self-signed certificate for the (internal) webhooks server. If `true`, `cert-manager` CRDs **must** be present in the cluster. The chart will create and use its own namespaced `Issuer`. If `false`, a cert `Secret` with the name specified by `webhooksServer.tls.secretName` **must** be provided in the same namespace as Kargo. If that cert is not already trusted by the Kubernetes API server, you must specify a value for `webhooksServer.tls.caBundle`. This is why it is strongly recommended to leave this setting as `true`. There is no provision for running the webhooks server without TLS because the Kubernetes API server will not communicate with non-TLS endpoints.
+      selfSignedCert: true
+      ## @param webhooksServer.tls.secretName Name of the cert `Secret` for use with the (internal) webhooks server. When `webhooksServer.tls.selfSignedCert` is `true`, this will be the name of the generated cert `Secret`. When `webhooksServer.tls.selfSignedCert` is `false`, a cert `Secret` with this name **must** be provided in the same namespace as Kargo. There is no provision for running the webhooks server without TLS because the Kubernetes API server will not communicate with non TLS-endpoints.
+      secretName: kargo-webhooks-server-cert
+      ## @param webhooksServer.tls.caBundle PEM-encoded TLS certificates for certificate authorities to trust when `webhooksServer.tls.selfSignedCert` is `false`. If the cert has been signed by an authority already trusted by the Kubernetes API server, this setting can be ignored.
+      caBundle: ""
+      # caBundle: |
+      #   -----BEGIN CERTIFICATE-----
+      #   ...
+      #   -----END CERTIFICATE-----
+
+  ## @param extraObjects An array describing additional, arbitrary Kubernetes resources to include when rendering this chart. Items in the array may be YAML objects or strings. Either may be templated. Templates will be evaluated against the same set of values as the rest of the chart.
+  extraObjects: []
+  # - apiVersion: v1
+  #   kind: ConfigMap
+  #   metadata:
+  #     name: custom-cm-1
+  #   data:
+  #     host: '{{ .Values.api.host }}'
+  # - |
+  #   apiVersion: v1
+  #   kind: ConfigMap
+  #   metadata:
+  #     name: custom-cm-2
+  #   data:
+  #     host: {{ .Values.api.host }}
+
+# ============================================================================
+# Klastro platform extensions
+#
+# None of the below exists upstream. Everything is optional and off by default,
+# so with no overrides this chart renders exactly what the upstream Akuity
+# chart renders.
+# ============================================================================
+
+# -- ExternalSecrets the Kargo workloads consume: admin credentials and global
+# image/git credentials on a control-plane host, the assembled control-plane
+# kubeconfig on a shard. Each item is `{ name, namespace, syncWave?, spec }`,
+# where `spec` is an ExternalSecret spec passed through verbatim.
+externalSecrets: []
+
+# -- PushSecrets that publish this control plane's shard credential material
+# into another cluster's secret backend. Each item is
+# `{ name, namespace, syncWave?, spec }`, where `spec` is a PushSecret spec
+# passed through verbatim.
+pushSecrets: []
+
+httpRoute:
+  # -- Expose the Kargo API through a Gateway API HTTPRoute. Control-plane host
+  # only; upstream offers an Ingress but no HTTPRoute.
   enabled: false
+  # -- Namespace of the HTTPRoute. Must be the namespace the Kargo API Service
+  # is deployed into.
+  namespace: kargo
+  # -- Gateways this route attaches to.
   parentRefs: []
+  # -- Hostnames this route matches.
   hostnames: []
+  # -- Route rules, normally a single rule backed by the `kargo-api` Service.
   rules: []
 
-externalSecrets: []
+# In-cluster identities for Kargo controller shards running in *other* clusters
+# (control-plane host only). Each shard authenticates to this cluster's API
+# server with a ServiceAccount token; the kubeconfig wrapping that token is
+# shipped to the shard by a PushSecret above plus the shard's own
+# ExternalSecret. Every namespace referenced here must already exist -- this
+# chart never creates them.
+remoteShards:
+  # -- Namespace holding the shard ServiceAccounts and their token Secrets.
+  namespace: kargo-remote-controllers
+  # -- Namespace of the Kargo release, where each shard takes its
+  # leader-election lease.
+  kargoNamespace: kargo
+  # -- Kargo Project namespaces a shard may reconcile.
+  projectNamespaces: []
+  # -- Shared/system namespaces a shard may read.
+  supportNamespaces: []
+  # -- Shard names, each matching `kargo.controller.shardName` in that shard's
+  # own cluster. Empty disables this section entirely.
+  names: []

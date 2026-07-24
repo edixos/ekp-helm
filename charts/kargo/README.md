@@ -1,6 +1,6 @@
 # kargo
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.10.9](https://img.shields.io/badge/AppVersion-v1.10.9-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,21 +11,26 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://ghcr.io/akuity/kargo-charts | kargo(kargo) | 1.10.4 |
+| oci://ghcr.io/akuity/kargo-charts | kargo(kargo) | 1.10.9 |
 
 ## Description
 
-A Helm chart for Kubernetes
+Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart and adds the platform extensions it does not provide: ExternalSecrets the Kargo workloads consume, PushSecrets that publish a control plane's shard credential to another cluster, the HTTPRoute exposing the Kargo API, and the in-cluster identity + RBAC for Kargo controller shards running in other clusters. Every extension is optional and driven entirely by values.
+
+## Source Code
+
+* <https://github.com/akuity/kargo/tree/main/charts/kargo>
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| externalSecrets | list | `[]` |  |
-| httproute.enabled | bool | `false` |  |
-| httproute.hostnames | list | `[]` |  |
-| httproute.parentRefs | list | `[]` |  |
-| httproute.rules | list | `[]` |  |
+| externalSecrets | list | `[]` | ExternalSecrets the Kargo workloads consume: admin credentials and global image/git credentials on a control-plane host, the assembled control-plane kubeconfig on a shard. Each item is `{ name, namespace, syncWave?, spec }`, where `spec` is an ExternalSecret spec passed through verbatim. |
+| httpRoute.enabled | bool | `false` | Expose the Kargo API through a Gateway API HTTPRoute. Control-plane host only; upstream offers an Ingress but no HTTPRoute. |
+| httpRoute.hostnames | list | `[]` | Hostnames this route matches. |
+| httpRoute.namespace | string | `"kargo"` | Namespace of the HTTPRoute. Must be the namespace the Kargo API Service is deployed into. |
+| httpRoute.parentRefs | list | `[]` | Gateways this route attaches to. |
+| httpRoute.rules | list | `[]` | Route rules, normally a single rule backed by the `kargo-api` Service. |
 | kargo.api.adminAccount.enabled | bool | `true` |  |
 | kargo.api.adminAccount.passwordHash | string | `"$2b$12$qvkOxcQGZCzXcSAmdMIXcuUsofdJYE/behRanuRcVqD/8pBORj.Ze"` |  |
 | kargo.api.adminAccount.tokenSigningKey | string | `"dummy-token-signing-key"` |  |
@@ -193,6 +198,7 @@ A Helm chart for Kubernetes
 | kargo.externalWebhooksServer.tls.selfSignedCert | bool | `true` |  |
 | kargo.externalWebhooksServer.tls.terminatedUpstream | bool | `false` |  |
 | kargo.externalWebhooksServer.tolerations | list | `[]` |  |
+| kargo.extraObjects | list | `[]` |  |
 | kargo.garbageCollector.affinity | object | `{}` |  |
 | kargo.garbageCollector.annotations | object | `{}` |  |
 | kargo.garbageCollector.enabled | bool | `true` |  |
@@ -262,17 +268,33 @@ A Helm chart for Kubernetes
 | kargo.rbac.installClusterRoleBindings | bool | `true` |  |
 | kargo.rbac.installClusterRoles | bool | `true` |  |
 | kargo.webhooks.register | bool | `true` |  |
+| kargo.webhooksServer.affinity | object | `{}` |  |
 | kargo.webhooksServer.annotations | object | `{}` |  |
 | kargo.webhooksServer.controlplaneUserRegex | string | `""` |  |
 | kargo.webhooksServer.enabled | bool | `true` |  |
+| kargo.webhooksServer.env | list | `[]` |  |
+| kargo.webhooksServer.envFrom | list | `[]` |  |
 | kargo.webhooksServer.labels | object | `{}` |  |
 | kargo.webhooksServer.logFormat | string | `"CONSOLE"` |  |
 | kargo.webhooksServer.logLevel | string | `"INFO"` |  |
+| kargo.webhooksServer.nodeSelector | object | `{}` |  |
 | kargo.webhooksServer.podAnnotations | object | `{}` |  |
 | kargo.webhooksServer.podLabels | object | `{}` |  |
 | kargo.webhooksServer.replicas | int | `1` |  |
+| kargo.webhooksServer.resources | object | `{}` |  |
+| kargo.webhooksServer.securityContext | object | `{}` |  |
 | kargo.webhooksServer.serviceAccount.annotations | object | `{}` |  |
 | kargo.webhooksServer.serviceAccount.labels | object | `{}` |  |
+| kargo.webhooksServer.tls.caBundle | string | `""` |  |
+| kargo.webhooksServer.tls.secretName | string | `"kargo-webhooks-server-cert"` |  |
+| kargo.webhooksServer.tls.selfSignedCert | bool | `true` |  |
+| kargo.webhooksServer.tolerations | list | `[]` |  |
+| pushSecrets | list | `[]` | PushSecrets that publish this control plane's shard credential material into another cluster's secret backend. Each item is `{ name, namespace, syncWave?, spec }`, where `spec` is a PushSecret spec passed through verbatim. |
+| remoteShards.kargoNamespace | string | `"kargo"` | Namespace of the Kargo release, where each shard takes its leader-election lease. |
+| remoteShards.names | list | `[]` | Shard names, each matching `kargo.controller.shardName` in that shard's own cluster. Empty disables this section entirely. |
+| remoteShards.namespace | string | `"kargo-remote-controllers"` | Namespace holding the shard ServiceAccounts and their token Secrets. |
+| remoteShards.projectNamespaces | list | `[]` | Kargo Project namespaces a shard may reconcile. |
+| remoteShards.supportNamespaces | list | `[]` | Shared/system namespaces a shard may read. |
 
 ## Installing the Chart
 
@@ -299,7 +321,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.2.0"
     chart: kargo
     path: ''
     helm:
