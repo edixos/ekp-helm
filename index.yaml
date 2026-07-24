@@ -2706,6 +2706,28 @@ entries:
     version: 0.1.0
   kargo:
   - apiVersion: v2
+    appVersion: v1.10.9
+    created: "2026-07-24T11:58:11.230908854Z"
+    dependencies:
+    - alias: kargo
+      name: kargo
+      repository: oci://ghcr.io/akuity/kargo-charts
+      version: 1.10.9
+    description: 'Kargo, packaged for the Klastro platform. Wraps the upstream Akuity
+      Kargo chart and adds the platform extensions it does not provide: ExternalSecrets
+      the Kargo workloads consume, PushSecrets that publish a control plane''s shard
+      credential to another cluster, the HTTPRoute exposing the Kargo API, and the
+      in-cluster identity + RBAC for Kargo controller shards running in other clusters.
+      Every extension is optional and driven entirely by values.'
+    digest: 85fb8b76b312ee16a0cd4a8b686f2247908a7c221d90b12ad7fe58746d15c593
+    name: kargo
+    sources:
+    - https://github.com/akuity/kargo/tree/main/charts/kargo
+    type: application
+    urls:
+    - kargo-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     appVersion: 1.16.0
     created: "2026-05-22T08:03:24.800264388Z"
     dependencies:
@@ -4293,4 +4315,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-01T13:24:18.164760626Z"
+generated: "2026-07-24T11:58:11.231061801Z"
