@@ -1,0 +1,53 @@
+---
+# Minimal values for pluto rendering.
+# Every platform extension is turned on so pluto also checks their API versions.
+global:
+  enableArgocdAnnotations: true
+
+prometheus:
+  enabled: true
+  rules:
+    enabled: true
+  grafanaDashboard:
+    enabled: true
+
+externalSecrets:
+  - name: dummy-es
+    namespace: victoria-metrics
+    spec:
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: dummy
+      target:
+        name: dummy
+
+# Exercise the upstream ServiceMonitor and HTTPRoute objects as well, so their
+# API versions are covered by the same pluto run.
+vmcluster:
+  vmselect:
+    serviceMonitor:
+      enabled: true
+    route:
+      enabled: true
+      parentRefs:
+        - name: dummy-gateway
+          kind: Gateway
+          group: gateway.networking.k8s.io
+          namespace: envoy-gateway-system
+      hostnames:
+        - vmselect.edixos.local
+  vminsert:
+    serviceMonitor:
+      enabled: true
+    route:
+      enabled: true
+      parentRefs:
+        - name: dummy-gateway
+          kind: Gateway
+          group: gateway.networking.k8s.io
+          namespace: envoy-gateway-system
+      hostnames:
+        - vminsert.edixos.local
+  vmstorage:
+    serviceMonitor:
+      enabled: true
