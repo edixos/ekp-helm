@@ -13,6 +13,12 @@
 |------------|------|---------|
 | https://victoriametrics.github.io/helm-charts/ | vmcluster(victoria-metrics-cluster) | 0.47.0 |
 
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| mo-hamedaziz | <aziz@edixos.com> |  |
+
 ## Description
 
 VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), packaged for the Edixos Kubernetes Platform. Wraps the upstream VictoriaMetrics cluster chart and adds the platform extensions it does not provide: ExternalSecrets for the credentials the components consume (enterprise license, vmauth config, vmbackupmanager object storage), curated PrometheusRule alerts for cluster and process health, and the official VictoriaMetrics cluster Grafana dashboard shipped as a sidecar-discoverable ConfigMap. Every extension is optional and driven entirely by values.

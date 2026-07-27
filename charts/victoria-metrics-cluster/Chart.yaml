@@ -21,6 +21,9 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "v1.148.0"
+maintainers:
+  - name: mo-hamedaziz
+    email: aziz@edixos.com
 sources:
   - https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-cluster
   - https://docs.victoriametrics.com/helm/victoria-metrics-cluster/
