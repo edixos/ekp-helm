@@ -4355,6 +4355,36 @@ entries:
     urls:
     - victoria-metrics-cluster-0.1.0.tgz
     version: 0.1.0
+  victoria-metrics-k8s-stack:
+  - apiVersion: v2
+    appVersion: v1.148.0
+    created: "2026-07-28T20:56:38.44672015Z"
+    dependencies:
+    - alias: vmstack
+      name: victoria-metrics-k8s-stack
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.87.0
+    description: Kubernetes monitoring on VictoriaMetrics, packaged for the Edixos
+      Kubernetes Platform. Wraps the upstream VictoriaMetrics K8s Stack chart, including
+      the VictoriaMetrics Operator and CRDs, VMAgent, VictoriaMetrics storage, VMAlert,
+      Grafana, kube-state-metrics, node-exporter, Kubernetes scrape resources, recording
+      and alerting rules, and curated dashboards. Adds optional EKP file-backed Grafana
+      dashboards, PrometheusRule resources, and ExternalSecrets for GitOps and externally
+      managed monitoring integrations. All upstream settings are available under the
+      vmstack values key.
+    digest: 958872234a75f176e3c2783d416a96c1a13b831e8de150043cb331687e59188f
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: victoria-metrics-k8s-stack
+    sources:
+    - https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-k8s-stack
+    - https://docs.victoriametrics.com/helm/victoria-metrics-k8s-stack/
+    type: application
+    urls:
+    - victoria-metrics-k8s-stack-0.1.0.tgz
+    version: 0.1.0
   workload-identity:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -4373,4 +4403,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-28T13:35:03.813069241Z"
+generated: "2026-07-28T20:56:38.44698824Z"
