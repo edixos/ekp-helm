@@ -1,0 +1,26 @@
+---
+global:
+  enableArgocdAnnotations: true
+
+prometheus:
+  enabled: true
+  rules:
+    enabled: true
+  grafanaDashboard:
+    enabled: true
+
+externalSecrets:
+  - name: dummy-es
+    namespace: monitoring
+    syncWave: "-1"
+    spec:
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: dummy
+      target:
+        name: dummy
+
+# The upstream defaults exercise the operator, Grafana, node-exporter,
+# kube-state-metrics, VM rules and Kubernetes scrape resources.
+vmstack:
+  nameOverride: vmks

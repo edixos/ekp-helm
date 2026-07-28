@@ -1,0 +1,198 @@
+# {{ .Name }}
+
+{{ template "chart.versionBadge" .}}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Prerequisites
+
+- Helm v{{ if eq .ApiVersion "v2" }}3{{ else }}2{{end}}
+- Kubernetes 1.25 or newer
+- A default StorageClass, or explicit storage configuration in the chart values
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+## Description
+
+{{ template "chart.description" . }}
+
+The upstream chart is exposed through the `vmstack` dependency alias. Prefix
+all upstream values with `vmstack`, for example:
+
+```yaml
+vmstack:
+  nameOverride: vmks
+  vmsingle:
+    spec:
+      retentionPeriod: "30d"
+```
+
+The upstream defaults deploy `VMSingle`. To use VictoriaMetrics cluster mode:
+
+```yaml
+vmstack:
+  nameOverride: vmks
+  vmsingle:
+    enabled: false
+  vmcluster:
+    enabled: true
+    spec:
+      retentionPeriod: "30d"
+      replicationFactor: 2
+      vmstorage:
+        replicaCount: 3
+        storage:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: your-storage-class
+              resources:
+                requests:
+                  storage: 20Gi
+```
+
+### Optional EKP dashboards and Prometheus rules
+
+The upstream K8s Stack already creates dashboards and `VMRule` resources with
+its sync job. The EKP wrapper also packages the same curated VMCluster,
+vmagent, and process-health content as files. Enable this alternative when an
+external Grafana sidecar or Prometheus Operator should own those resources:
+
+```yaml
+global:
+  enableArgocdAnnotations: true
+
+prometheus:
+  enabled: true
+  rules:
+    labels:
+      prometheus: prometheus-operator-prometheus
+
+vmstack:
+  # Prevent duplicate dashboard UIDs and alert names.
+  syncJob:
+    enabled: false
+```
+
+The `PrometheusRule` CRD must exist when `prometheus.enabled` is true. Leave
+the EKP resources disabled when using the stack's native `VMRule` resources.
+
+### ExternalSecrets
+
+`externalSecrets` can create credentials before the stack consumes them. For
+example, provision Grafana's admin Secret without storing credentials in Git:
+
+```yaml
+externalSecrets:
+  - name: vmstack-grafana-admin
+    namespace: monitoring
+    syncWave: "-1"
+    spec:
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: scaleway-secret-manager
+      target:
+        name: vmstack-grafana-admin
+      data:
+        - secretKey: admin-user
+          remoteRef:
+            key: vmstack-grafana-admin-user
+        - secretKey: admin-password
+          remoteRef:
+            key: vmstack-grafana-admin-password
+
+vmstack:
+  grafana:
+    admin:
+      existingSecret: vmstack-grafana-admin
+      userKey: admin-user
+      passwordKey: admin-password
+```
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+## Installing the Chart
+
+### With Helm
+
+```bash
+helm repo add ekp-helm https://edixos.github.io/ekp-helm
+helm repo update
+helm upgrade --install vmks ekp-helm/{{ .Name }} \
+  --namespace monitoring \
+  --create-namespace
+```
+
+### With Argo CD
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Name }}
+  namespace: argocd
+spec:
+  project: infra
+  source:
+    repoURL: "https://edixos.github.io/ekp-helm"
+    targetRevision: "{{ .Version }}"
+    chart: {{ .Name }}
+    helm:
+      releaseName: vmks
+      values: |
+        vmstack:
+          nameOverride: vmks
+          defaultDashboards:
+            annotations:
+              argocd.argoproj.io/sync-options: ServerSideApply=true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+```
+
+The stack creates cluster-scoped CRDs and RBAC. Review the upstream
+[Argo CD guidance](https://docs.victoriametrics.com/helm/victoria-metrics-k8s-stack/#argocd-issues)
+when configuring webhook certificates, Grafana credentials, or removal.
+
+## Develop
+
+### Update documentation
+
+```bash
+helm-docs
+```
+
+### Run linter
+
+```bash
+docker run --rm -it -w /charts -v $(pwd)/../../:/charts \
+  quay.io/helmpack/chart-testing:v3.12.0 \
+  ct lint --charts /charts/charts/{{ .Name }} \
+  --config /charts/charts/{{ .Name }}/ct.yaml
+```
+
+### Run Pluto
+
+```bash
+docker run --rm -it -v $(pwd):/apps -v pluto:/pluto \
+  alpine/helm:3.17 template {{ .Name }} . \
+  -f tests/pluto/values.yaml --output-dir /pluto
+docker run --rm -it -v pluto:/data \
+  us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 \
+  detect-files -d /data -o wide \
+  --ignore-deprecations \
+  -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0"
+docker volume rm pluto
+```

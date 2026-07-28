@@ -1,0 +1,52 @@
+---
+rule_files:
+  - ../../resources/prometheus-rules/victoria-metrics-health.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # A vmselect pod stops reporting `up` and stays down past the 2m threshold.
+  - interval: 1m
+    input_series:
+      - series: 'up{job="vmcluster-victoria-metrics-cluster-vmselect", instance="10.42.0.11:8481"}'
+        values: '1+0x2 0+0x10'
+
+    alert_rule_test:
+      # Still pending - the target went down at t=3m and `for` is 2m.
+      - eval_time: 4m
+        alertname: ServiceDown
+
+      - eval_time: 6m
+        alertname: ServiceDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: vmcluster-victoria-metrics-cluster-vmselect
+              instance: 10.42.0.11:8481
+            exp_annotations:
+              summary: "Service vmcluster-victoria-metrics-cluster-vmselect is down on 10.42.0.11:8481"
+              description: "10.42.0.11:8481 of job vmcluster-victoria-metrics-cluster-vmselect has been down for more than 2 minutes."
+
+  # A vmstorage pod restarts three times inside the 15m window.
+  - interval: 1m
+    input_series:
+      - series: 'process_start_time_seconds{job="vmcluster-victoria-metrics-cluster-vmstorage", instance="10.42.0.21:8482"}'
+        values: '1+0x3 2+0x3 3+0x3 4+0x8'
+
+    alert_rule_test:
+      # Only two restarts observed so far.
+      - eval_time: 9m
+        alertname: TooManyRestarts
+
+      - eval_time: 15m
+        alertname: TooManyRestarts
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: vmcluster-victoria-metrics-cluster-vmstorage
+              instance: 10.42.0.21:8482
+            exp_annotations:
+              summary: "vmcluster-victoria-metrics-cluster-vmstorage too many restarts (instance 10.42.0.21:8482)"
+              description: >
+                Job vmcluster-victoria-metrics-cluster-vmstorage (instance 10.42.0.21:8482) has restarted more than twice in the last 15 minutes.
+                It might be crashlooping.
