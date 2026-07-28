@@ -1,0 +1,53 @@
+---
+rule_files:
+  - ../../resources/prometheus-rules/victoria-metrics-agent.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # vmagent starts failing scrapes and keeps failing past the 15m threshold.
+  - interval: 1m
+    input_series:
+      - series: 'vm_promscrape_scrapes_failed_total{job="vmagent", instance="10.42.0.31:8429"}'
+        values: '0+0x5 0+1x25'
+
+    alert_rule_test:
+      # Still pending - failures started at t=7m and `for` is 15m.
+      - eval_time: 10m
+        alertname: TooManyScrapeErrors
+
+      - eval_time: 25m
+        alertname: TooManyScrapeErrors
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: vmagent
+              instance: 10.42.0.31:8429
+            exp_annotations:
+              dashboard: "/d/G7Z9GzMGz?viewPanel=31&var-instance=10.42.0.31:8429"
+              summary: "Vmagent fails to scrape one or more targets"
+              description: "Job \"vmagent\" on instance 10.42.0.31:8429 fails to scrape targets for last 15m"
+
+  # A scrape config hot-reload starts failing. The alert has no `for`, so it
+  # fires on the first failing evaluation.
+  - interval: 1m
+    input_series:
+      - series: 'vm_promscrape_config_last_reload_successful{job="vmagent", instance="10.42.0.31:8429"}'
+        values: '1+0x3 0+0x10'
+
+    alert_rule_test:
+      # Reloads still succeeding.
+      - eval_time: 2m
+        alertname: ConfigurationReloadFailure
+
+      - eval_time: 6m
+        alertname: ConfigurationReloadFailure
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: vmagent
+              instance: 10.42.0.31:8429
+            exp_annotations:
+              summary: "Configuration reload failed for vmagent instance 10.42.0.31:8429"
+              description: "Configuration hot-reload failed for vmagent on instance 10.42.0.31:8429.
+              Check vmagent's logs for detailed error message."
