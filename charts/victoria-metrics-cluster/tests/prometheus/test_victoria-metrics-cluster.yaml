@@ -1,0 +1,60 @@
+---
+rule_files:
+  - ../../resources/prometheus-rules/victoria-metrics-cluster.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # A vmstorage node sits at 90% disk utilisation for longer than 30m.
+  - interval: 1m
+    input_series:
+      - series: 'vm_data_size_bytes{job="vmcluster-victoria-metrics-cluster-vmstorage", instance="10.42.0.21:8482", type="storage/small"}'
+        values: '90+0x40'
+      - series: 'vm_free_disk_space_bytes{job="vmcluster-victoria-metrics-cluster-vmstorage", instance="10.42.0.21:8482", path="/storage"}'
+        values: '10+0x40'
+
+    alert_rule_test:
+      # Still pending - `for` is 30m.
+      - eval_time: 20m
+        alertname: DiskRunsOutOfSpace
+
+      - eval_time: 35m
+        alertname: DiskRunsOutOfSpace
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: vmcluster-victoria-metrics-cluster-vmstorage
+              instance: 10.42.0.21:8482
+            exp_annotations:
+              dashboard: "/d/oS7Bi_0Wz?viewPanel=20&var-instance=10.42.0.21:8482"
+              summary: "Instance 10.42.0.21:8482 (job=vmcluster-victoria-metrics-cluster-vmstorage) will run out of disk space soon"
+              description: "Disk utilisation on instance 10.42.0.21:8482 is more than 80%.\n
+                Having less than 20% of free disk space could cripple merges processes and overall performance.
+                Consider to limit the ingestion rate, decrease retention or scale the disk space if possible."
+
+  # IndexDB starts rejecting items during ingestion.
+  - interval: 1m
+    input_series:
+      - series: 'vm_indexdb_items_dropped_total{job="vmcluster-victoria-metrics-cluster-vmstorage", instance="10.42.0.21:8482", reason="too_long_item"}'
+        values: '0+0x5 0+1x10'
+
+    alert_rule_test:
+      # Nothing dropped yet.
+      - eval_time: 4m
+        alertname: IndexDBRecordsDrop
+
+      - eval_time: 12m
+        alertname: IndexDBRecordsDrop
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: vmcluster-victoria-metrics-cluster-vmstorage
+              instance: 10.42.0.21:8482
+              reason: too_long_item
+            exp_annotations:
+              summary: "IndexDB skipped registering items during data ingestion with reason=too_long_item."
+              description: |
+                VictoriaMetrics could skip registering new timeseries during ingestion if they fail the validation process.
+                For example, `reason=too_long_item` means that time series cannot exceed 64KB. Please, reduce the number
+                of labels or label values for such series. Or enforce these limits via `-maxLabelsPerTimeseries` and
+                `-maxLabelValueLen` command-line flags.

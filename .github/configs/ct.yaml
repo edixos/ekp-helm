@@ -23,7 +23,8 @@ chart-repos:
   - cilium=https://helm.cilium.io/
   - cloudnative-pg=https://cloudnative-pg.github.io/charts
   - longhorn=https://charts.longhorn.io
-  
+  - victoria-metrics-cluster=https://victoriametrics.github.io/helm-charts/
+
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
 validate-maintainers: false

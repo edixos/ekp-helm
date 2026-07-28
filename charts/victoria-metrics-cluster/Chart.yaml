@@ -1,0 +1,34 @@
+apiVersion: v2
+name: victoria-metrics-cluster
+description: >-
+  VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth),
+  packaged for the Edixos Kubernetes Platform. Wraps the upstream
+  VictoriaMetrics cluster chart and adds the platform extensions it does not
+  provide: ExternalSecrets for the credentials the components consume
+  (enterprise license, vmauth config, vmbackupmanager object storage), curated
+  PrometheusRule alerts for cluster and process health, and the official
+  VictoriaMetrics cluster Grafana dashboard shipped as a sidecar-discoverable
+  ConfigMap. Every extension is optional and driven entirely by values.
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.1.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "v1.148.0"
+maintainers:
+  - name: mo-hamedaziz
+    email: aziz@edixos.com
+sources:
+  - https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-cluster
+  - https://docs.victoriametrics.com/helm/victoria-metrics-cluster/
+dependencies:
+  - name: victoria-metrics-cluster
+    version: 0.47.0
+    repository: "https://victoriametrics.github.io/helm-charts/"
+    alias: vmcluster
