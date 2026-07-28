@@ -873,7 +873,7 @@ vmstack:
     # -- Remote write configuration of VLAgent, allowed parameters defined in a [spec](https://docs.victoriametrics.com/operator/api/#vlagentremotewritespec)
     additionalRemoteWrites:
       []
-      #- url: http://some-remote-write/api/v1/write
+      # - url: http://some-remote-write/api/v1/write
     # -- (object) Full spec for VLAgent CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vlagentspec)
     spec:
       port: "9429"
@@ -1969,7 +1969,7 @@ vmstack:
     # -- Remote write configuration of VMAgent, allowed parameters defined in a [spec](https://docs.victoriametrics.com/operator/api/#vmagentremotewritespec)
     additionalRemoteWrites:
       []
-      #- url: http://some-remote-write/api/v1/write
+      # - url: http://some-remote-write/api/v1/write
     # -- (object) Full spec for VMAgent CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vmagentspec)
     spec:
       port: "8429"
