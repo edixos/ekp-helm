@@ -1,0 +1,18 @@
+{{- if and .Values.prometheus.enabled .Values.prometheus.grafanaDashboard.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "victoria-metrics-k8s-stack.fullname" . }}-grafana-dashboards
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: victoria-metrics-grafana
+    {{- include "victoria-metrics-k8s-stack.labels" . | nindent 4 }}
+    {{- toYaml .Values.prometheus.grafanaDashboard.label | nindent 4 }}
+  {{- if (.Values.global).enableArgocdAnnotations }}
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true
+  {{- end }}
+data:
+  {{- (.Files.Glob "resources/grafana-dashboards/*.json").AsConfig | nindent 2 }}
+{{- end }}

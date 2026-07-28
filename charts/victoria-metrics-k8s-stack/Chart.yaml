@@ -1,0 +1,27 @@
+apiVersion: v2
+name: victoria-metrics-k8s-stack
+description: >-
+  Kubernetes monitoring on VictoriaMetrics, packaged for the Edixos Kubernetes
+  Platform. Wraps the upstream VictoriaMetrics K8s Stack chart, including the
+  VictoriaMetrics Operator and CRDs, VMAgent, VictoriaMetrics storage, VMAlert,
+  Grafana, kube-state-metrics, node-exporter, Kubernetes scrape resources,
+  recording and alerting rules, and curated dashboards. Adds optional EKP
+  file-backed Grafana dashboards, PrometheusRule resources, and ExternalSecrets
+  for GitOps and externally managed monitoring integrations. All upstream
+  settings are available under the vmstack values key.
+type: application
+
+version: 0.1.0
+appVersion: "v1.148.0"
+maintainers:
+  - name: hamzatalbi
+    email: hamzatalbi831@gmail.com
+    url: https://github.com/TalbiHamza
+sources:
+  - https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-k8s-stack
+  - https://docs.victoriametrics.com/helm/victoria-metrics-k8s-stack/
+dependencies:
+  - name: victoria-metrics-k8s-stack
+    version: 0.87.0
+    repository: "https://victoriametrics.github.io/helm-charts/"
+    alias: vmstack

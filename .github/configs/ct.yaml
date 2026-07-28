@@ -25,6 +25,7 @@ chart-repos:
   - longhorn=https://charts.longhorn.io
   - victoria-metrics-cluster=https://victoriametrics.github.io/helm-charts/
   - victoria-metrics-agent=https://victoriametrics.github.io/helm-charts/
+  - victoria-metrics-k8s-stack=https://victoriametrics.github.io/helm-charts/
 
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
