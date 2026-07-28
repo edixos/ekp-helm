@@ -4297,6 +4297,35 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/velero-0.1.0.tgz
     version: 0.1.0
+  victoria-metrics-agent:
+  - apiVersion: v2
+    appVersion: v1.148.0
+    created: "2026-07-28T13:35:03.812750636Z"
+    dependencies:
+    - alias: vmagent
+      name: victoria-metrics-agent
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.44.0
+    description: 'vmagent, packaged for the Edixos Kubernetes Platform. Wraps the
+      upstream VictoriaMetrics agent chart — which scrapes targets and forwards samples
+      to one or more remote write endpoints — and adds the platform extensions it
+      does not provide: ExternalSecrets for the credentials vmagent consumes (remote
+      write basic auth or bearer tokens, enterprise license), curated PrometheusRule
+      alerts covering the persistent queue, scraping and remote write, and the official
+      vmagent Grafana dashboard shipped as a sidecar-discoverable ConfigMap. Every
+      extension is optional and driven entirely by values.'
+    digest: 0ceb5ba744ae2463a06e06b085d080c202df53b8bf21fb7122abd850bda385e0
+    maintainers:
+    - email: aziz@edixos.com
+      name: mo-hamedaziz
+    name: victoria-metrics-agent
+    sources:
+    - https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-agent
+    - https://docs.victoriametrics.com/helm/victoria-metrics-agent/
+    type: application
+    urls:
+    - victoria-metrics-agent-0.1.0.tgz
+    version: 0.1.0
   victoria-metrics-cluster:
   - apiVersion: v2
     appVersion: v1.148.0
@@ -4344,4 +4373,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-28T06:59:33.774728984Z"
+generated: "2026-07-28T13:35:03.813069241Z"
