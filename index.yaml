@@ -4297,6 +4297,35 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/velero-0.1.0.tgz
     version: 0.1.0
+  victoria-metrics-cluster:
+  - apiVersion: v2
+    appVersion: v1.148.0
+    created: "2026-07-28T06:59:33.774536857Z"
+    dependencies:
+    - alias: vmcluster
+      name: victoria-metrics-cluster
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.47.0
+    description: 'VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage
+      / vmauth), packaged for the Edixos Kubernetes Platform. Wraps the upstream VictoriaMetrics
+      cluster chart and adds the platform extensions it does not provide: ExternalSecrets
+      for the credentials the components consume (enterprise license, vmauth config,
+      vmbackupmanager object storage), curated PrometheusRule alerts for cluster and
+      process health, and the official VictoriaMetrics cluster Grafana dashboard shipped
+      as a sidecar-discoverable ConfigMap. Every extension is optional and driven
+      entirely by values.'
+    digest: 45ce9141f4c488d691be26a3a7e022460a50260bae90d19d21ec64e1a9d74485
+    maintainers:
+    - email: aziz@edixos.com
+      name: mo-hamedaziz
+    name: victoria-metrics-cluster
+    sources:
+    - https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-cluster
+    - https://docs.victoriametrics.com/helm/victoria-metrics-cluster/
+    type: application
+    urls:
+    - victoria-metrics-cluster-0.1.0.tgz
+    version: 0.1.0
   workload-identity:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -4315,4 +4344,4 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-24T11:58:11.231061801Z"
+generated: "2026-07-28T06:59:33.774728984Z"
