@@ -1,88 +1,113 @@
 webhook:
-  # +docs:section=Configuration
+  ## @section Configuration
+  ##
+  ## @descriptionStart
+  ## Configuration parameters.
+  ## @descriptionEnd
 
-  # -- Name under which the webhook will be available
+  ## @param groupName Name under which the webhook will be available
   groupName: acme.scaleway.com
 
+  ## @param certManager.namespace Namespace under which cert-manager is installed
+  ## @param certManager.serviceAccountName Name of the cert-manager service account
   certManager:
-    # -- Namespace under which cert-manager is installed
     namespace: cert-manager
-    # -- Name of the cert-manager service account
     serviceAccountName: cert-manager
 
+  ## @param pki.caDuration Webhook ca duration
+  ## @param pki.servingCertificateDuration Webhook certificate duration
   pki:
-    # -- Webhook ca duration
-    caDuration: 43800h # 5y
-    # -- Webhook certificate duration
-    servingCertificateDuration: 8760h # 1y
+    caDuration: 43800h  # 5y
+    servingCertificateDuration: 8760h  # 1y
 
+  ## @param secret.accessKey Default scaleway access key (optional)
+  ## @param secret.secretKey Default scaleway secret key (optional)
+  ## @param secret.name Secret name for the default scaleway credentials
+  ## @param secret.externalSecretName Existing secret name for the default scaleway credentials
   secret:
-    # -- Default scaleway access key (optional)
     accessKey: ""
-    # -- Default scaleway secret key (optional)
     secretKey: ""
-    # -- Secret name for the default scaleway credentials
     name: scaleway-webhook-secret
-    # -- Existing secret name for the default scaleway credentials
     externalSecretName: ""
 
-  # +docs:section=Common configuration
+  ## @section Common configuration
+  ##
+  ## @descriptionStart
+  ## Common parameters.
+  ## @descriptionEnd
 
-  # -- Override charts name
+  ## @param nameOverride Override charts name
+  ## @param fullnameOverride Override charts and release name
   nameOverride: ""
-  # -- Override charts and release name
   fullnameOverride: ""
 
-  # -- Number of replica
+  ## @param replicaCount Number of replica
   replicaCount: 1
 
+  ## @param image.repository Repository for the webhook image
+  ## @param image.pullPolicy Image pull policy
+  ## @param image.imagePullSecrets Image pull secrets
+  ## @param image.tag Tag for the webhook image, defaults to AppVersion
   image:
-    # -- Repository for the webhook image
     repository: scaleway/cert-manager-webhook-scaleway
-    # -- Image pull policy
     pullPolicy: IfNotPresent
-    # -- Image pull secrets
     imagePullSecrets: []
-    # -- Tag for the webhook image, defaults to AppVersion
     tag: ""
 
-  # -- Additional environment variables to pass to the webhook deployment
+  ## @param extraEnv Additional environment variables to pass to the webhook deployment
   extraEnv: []
+  # - name: SOME_VAR
+  #   value: 'some value'
 
-  # -- Port the webhook listens on
+  ## @param listenPort Port the webhook listens on
   listenPort: 443
 
+  ## @param service.type Service type exposing the webhook
+  ## @param service.port Service port exposing the webhook
+  ## @param service.ipFamilyPolicy Service ipFamilyPolicy set the ip family policy to configure dual-stack
+  ## @param service.ipFamilies Service ipFamilies. Can be IPv4 and/or IPv6.
   service:
-    # -- Service type exposing the webhook
     type: ClusterIP
-    # -- Service port exposing the webhook
     port: 443
-    # -- Service ipFamilyPolicy set the ip family policy to configure dual-stack
     ipFamilyPolicy: ""
-    # -- Service ipFamilies. Can be IPv4 and/or IPv6.
     ipFamilies: []
 
-  # -- Resources definition
+  ## @param resources Resources definition
   resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
 
-  # -- Pod labels
+  ## @param podLabels Pod labels
   podLabels: {}
 
-  # -- Node selector
+  ## @param nodeSelector Node selector
   nodeSelector: {}
 
-  # -- Tolerations
+  ## @param tolerations Tolerations
   tolerations: []
 
-  # -- Affinities
+  ## @param affinity Affinities
   affinity: {}
 
-  # -- Container security context
+  ## @param securityContext Container security context
   securityContext: {}
+    # runAsNonRoot: true
+    # runAsUser:  1000
+    # runAsGroup: 1000
 
-  # -- Pod security context
+  ## @param podSecurityContext Pod security context
   podSecurityContext: {}
-
+    # runAsNonRoot: true
+    # runAsUser:  1000
+    # runAsGroup: 1000
 clusterIssuer:
   enabled: true
   # -- Name of the ClusterIssuer
