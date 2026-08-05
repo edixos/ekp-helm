@@ -1,6 +1,6 @@
 # victoria-metrics-k8s-stack
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.148.0](https://img.shields.io/badge/AppVersion-v1.148.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.148.0](https://img.shields.io/badge/AppVersion-v1.148.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmstack(victoria-metrics-k8s-stack) | 0.87.0 |
+| https://victoriametrics.github.io/helm-charts/ | vmstack(victoria-metrics-k8s-stack) | 0.88.0 |
 
 ## Maintainers
 
@@ -140,6 +140,7 @@ vmstack:
 | vmstack.alertmanager.ingress.extraPaths | list | `[]` | Extra paths to prepend to every host configuration. This is useful when working with annotation based services. |
 | vmstack.alertmanager.labels | object | `{}` | VMAlertmanager labels |
 | vmstack.alertmanager.monzoTemplate | object | `{"enabled":true}` | Better alert templates for [slack source](https://gist.github.com/milesbxf/e2744fc90e9c41b47aa47925f8ff6512) |
+| vmstack.alertmanager.namespaceOverride | string | `""` | Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace. |
 | vmstack.alertmanager.route | object | `{"annotations":{},"enabled":false,"extraRules":[],"filters":[],"hostnames":[],"labels":{},"matches":[{"path":{"type":"PathPrefix","value":"{{ .Values.alertmanager.spec.routePrefix | default \"/\" }}"}}],"parentRefs":[],"port":"{{ .Values.alertmanager.spec.port }}"}` | VMAlertmanager route configuration |
 | vmstack.alertmanager.route.annotations | object | `{}` | HTTPRoute annotations |
 | vmstack.alertmanager.route.enabled | bool | `false` | Enable deployment of HTTPRoute for alertmanager component |
@@ -286,6 +287,8 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.syncJob.dnsPolicy | string | `""` | Alternative DNS policy for the sync job Pod |
 | vmstack.syncJob.enabled | bool | `true` | Fetch dashboards and rules from upstream sources at deploy time. Creates ConfigMaps (for Grafana sidecar) or GrafanaDashboard CRDs and VMRules directly in the cluster. A new Job runs automatically whenever this config changes. |
 | vmstack.syncJob.env | list | `[]` | Extra env variables for sync job |
+| vmstack.syncJob.extraVolumeMounts | list | `[]` | Extra volume mounts to add to the sync-job container. |
+| vmstack.syncJob.extraVolumes | list | `[]` | Extra volumes to add to the sync-job Pod. Useful for mounting custom CA certificates; set SSL_CERT_FILE in env to point to the mounted cert. |
 | vmstack.syncJob.image.pullPolicy | string | `"IfNotPresent"` |  |
 | vmstack.syncJob.image.repository | string | `"ghcr.io/victoriametrics/sync-job"` |  |
 | vmstack.syncJob.image.tag | string | `"v0.0.11"` |  |
@@ -307,6 +310,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.vlagent.enabled | bool | `false` | Create VLAgent CR |
 | vmstack.vlagent.ingress | object | `{"annotations":{},"enabled":false,"extraPaths":[],"hosts":["vlagent.domain.com"],"labels":{},"path":"","pathType":"Prefix","tls":[]}` | VLAgent ingress configuration |
 | vmstack.vlagent.labels | object | `{}` | VLAgent labels |
+| vmstack.vlagent.namespaceOverride | string | `""` | Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace. |
 | vmstack.vlagent.rbac.annotations | object | `{}` | Role/RoleBinding annotations |
 | vmstack.vlagent.rbac.extraLabels | object | `{}` | Role/RoleBinding labels |
 | vmstack.vlagent.rbac.namespaced | bool | `true` | Defines if ClusterRole or Role with respective bindings should be created |
@@ -352,6 +356,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.vlcluster.ingress.vlstorage.pathType | string | `"Prefix"` | Ingress path type |
 | vmstack.vlcluster.ingress.vlstorage.tls | list | `[]` | Array of TLS objects |
 | vmstack.vlcluster.labels | object | `{}` | VLCluster labels |
+| vmstack.vlcluster.namespaceOverride | string | `""` | Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace. |
 | vmstack.vlcluster.route.vlinsert.annotations | object | `{}` | HTTPRoute annotations |
 | vmstack.vlcluster.route.vlinsert.enabled | bool | `false` | Enable deployment of HTTPRoute for insert component |
 | vmstack.vlcluster.route.vlinsert.extraRules | list | `[]` | Extra rules to prepend to route. This is useful when working with annotation based services. |
@@ -395,6 +400,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.vlsingle.ingress.pathType | string | `"Prefix"` | Ingress path type |
 | vmstack.vlsingle.ingress.tls | list | `[]` | Array of TLS objects |
 | vmstack.vlsingle.labels | object | `{}` | VLSingle labels |
+| vmstack.vlsingle.namespaceOverride | string | `""` | Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace. |
 | vmstack.vlsingle.route.annotations | object | `{}` | HTTPRoute annotations |
 | vmstack.vlsingle.route.enabled | bool | `false` | Enable deployment of HTTPRoute for server component |
 | vmstack.vlsingle.route.extraRules | list | `[]` | Extra rules to prepend to route. This is useful when working with annotation based services. |
@@ -411,6 +417,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.vmagent.enabled | bool | `true` | Create VMAgent CR |
 | vmstack.vmagent.ingress | object | `{"annotations":{},"enabled":false,"extraPaths":[],"hosts":["vmagent.domain.com"],"labels":{},"path":"","pathType":"Prefix","tls":[]}` | VMAgent ingress configuration |
 | vmstack.vmagent.labels | object | `{}` | VMAgent labels |
+| vmstack.vmagent.namespaceOverride | string | `""` | Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace. |
 | vmstack.vmagent.rbac.annotations | object | `{}` | Role/RoleBinding annotations |
 | vmstack.vmagent.rbac.extraLabels | object | `{}` | Role/RoleBinding labels |
 | vmstack.vmagent.rbac.namespaced | bool | `true` | Defines if ClusterRole or Role with respective bindings should be created |
@@ -432,6 +439,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.vmalert.ingress | object | `{"annotations":{},"enabled":false,"extraPaths":[],"hosts":["vmalert.domain.com"],"labels":{},"path":"","pathType":"Prefix","tls":[]}` | VMAlert ingress config |
 | vmstack.vmalert.ingress.extraPaths | list | `[]` | Extra paths to prepend to every host configuration. This is useful when working with annotation based services. |
 | vmstack.vmalert.labels | object | `{}` | VMAlert labels |
+| vmstack.vmalert.namespaceOverride | string | `""` | Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace. |
 | vmstack.vmalert.remoteWriteVMAgent | bool | `false` | Controls whether VMAlert should use VMAgent or VMInsert as a target for remotewrite |
 | vmstack.vmalert.route | object | `{"annotations":{},"enabled":false,"extraRules":[],"filters":[],"hostnames":[],"labels":{},"matches":[{"path":{"type":"PathPrefix","value":"{{ dig \"spec\" \"extraArgs\" \"http.pathPrefix\" \"/\" .Values.vmalert }}"}}],"parentRefs":[],"port":"{{ .Values.vmalert.spec.port }}"}` | VMAlert route configuration |
 | vmstack.vmalert.route.annotations | object | `{}` | HTTPRoute annotations |
@@ -448,6 +456,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.vmauth.annotations | object | `{}` | VMAuth annotations |
 | vmstack.vmauth.enabled | bool | `false` | Enable VMAuth CR |
 | vmstack.vmauth.labels | object | `{}` | VMAuth labels |
+| vmstack.vmauth.namespaceOverride | string | `""` | Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace. |
 | vmstack.vmauth.spec | object | `{"port":"8427","unauthorizedUserAccessSpec":{"disabled":false,"discover_backend_ips":true,"url_map":[{"src_paths":["{{ .vm.read.path }}/.*"],"url_prefix":["{{ urlJoin (omit .vm.read \"path\") }}/"]},{"src_paths":["{{ .vm.write.path }}/.*"],"url_prefix":["{{ urlJoin (omit .vm.write \"path\") }}/"]}]}}` | Full spec for VMAuth CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vmauthspec) It's possible to use given below predefined variables in spec: * `{{ .vm.read }}` - parsed vmselect, vmsingle or external.vm.read URL * `{{ .vm.write }}` - parsed vminsert, vmsingle or external.vm.write URL * `{{ .vl.read }}` - parsed vlselect, vlsingle or external.vl.read URL * `{{ .vl.write }}` - parsed vlinsert, vlsingle or external.vl.write URL * `{{ .vt.read }}` - parsed vtselect, vtsingle or external.vt.read URL * `{{ .vt.write }}` - parsed vtinsert, vtsingle or external.vt.write URL |
 | vmstack.vmauth.spec.unauthorizedUserAccessSpec.disabled | bool | `false` | Flag, that allows to disable default VMAuth unauthorized user access config |
 | vmstack.vmcluster.annotations | object | `{}` | VMCluster annotations |
@@ -480,6 +489,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.vmcluster.ingress.storage.pathType | string | `"Prefix"` | Ingress path type |
 | vmstack.vmcluster.ingress.storage.tls | list | `[]` | Array of TLS objects |
 | vmstack.vmcluster.labels | object | `{}` | VMCluster labels |
+| vmstack.vmcluster.namespaceOverride | string | `""` | Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace. |
 | vmstack.vmcluster.route.insert.annotations | object | `{}` | HTTPRoute annotations |
 | vmstack.vmcluster.route.insert.enabled | bool | `false` | Enable deployment of HTTPRoute for insert component |
 | vmstack.vmcluster.route.insert.extraRules | list | `[]` | Extra rules to prepend to route. This is useful when working with annotation based services. |
@@ -527,6 +537,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.vmsingle.ingress.pathType | string | `"Prefix"` | Ingress path type |
 | vmstack.vmsingle.ingress.tls | list | `[]` | Array of TLS objects |
 | vmstack.vmsingle.labels | object | `{}` | VMSingle labels |
+| vmstack.vmsingle.namespaceOverride | string | `""` | Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace. |
 | vmstack.vmsingle.route.annotations | object | `{}` | HTTPRoute annotations |
 | vmstack.vmsingle.route.enabled | bool | `false` | Enable deployment of HTTPRoute for server component |
 | vmstack.vmsingle.route.extraRules | list | `[]` | Extra rules to prepend to route. This is useful when working with annotation based services. |
@@ -568,6 +579,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.vtcluster.ingress.vtstorage.pathType | string | `"Prefix"` | Ingress path type |
 | vmstack.vtcluster.ingress.vtstorage.tls | list | `[]` | Array of TLS objects |
 | vmstack.vtcluster.labels | object | `{}` | VTCluster labels |
+| vmstack.vtcluster.namespaceOverride | string | `""` | Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace. |
 | vmstack.vtcluster.route.vtinsert.annotations | object | `{}` | HTTPRoute annotations |
 | vmstack.vtcluster.route.vtinsert.enabled | bool | `false` | Enable deployment of HTTPRoute for insert component |
 | vmstack.vtcluster.route.vtinsert.extraRules | list | `[]` | Extra rules to prepend to route. This is useful when working with annotation based services. |
@@ -611,6 +623,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.vtsingle.ingress.pathType | string | `"Prefix"` | Ingress path type |
 | vmstack.vtsingle.ingress.tls | list | `[]` | Array of TLS objects |
 | vmstack.vtsingle.labels | object | `{}` | VTSingle labels |
+| vmstack.vtsingle.namespaceOverride | string | `""` | Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace. |
 | vmstack.vtsingle.route.annotations | object | `{}` | HTTPRoute annotations |
 | vmstack.vtsingle.route.enabled | bool | `false` | Enable deployment of HTTPRoute for server component |
 | vmstack.vtsingle.route.extraRules | list | `[]` | Extra rules to prepend to route. This is useful when working with annotation based services. |
@@ -647,7 +660,7 @@ spec:
   project: infra
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: victoria-metrics-k8s-stack
     helm:
       releaseName: vmks

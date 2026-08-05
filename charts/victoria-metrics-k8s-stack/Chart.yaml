@@ -11,7 +11,7 @@ description: >-
   settings are available under the vmstack values key.
 type: application
 
-version: 0.1.0
+version: 0.1.1
 appVersion: "v1.148.0"
 maintainers:
   - name: hamzatalbi
@@ -22,6 +22,6 @@ sources:
   - https://docs.victoriametrics.com/helm/victoria-metrics-k8s-stack/
 dependencies:
   - name: victoria-metrics-k8s-stack
-    version: 0.87.0
+    version: 0.88.0
     repository: "https://victoriametrics.github.io/helm-charts/"
     alias: vmstack
