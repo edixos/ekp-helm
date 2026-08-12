@@ -1,6 +1,6 @@
 # cert-manager-webhook-scaleway
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.1](https://img.shields.io/badge/AppVersion-v0.1.1-informational?style=flat-square)
+![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.1](https://img.shields.io/badge/AppVersion-v0.1.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://helm.scw.cloud/ | webhook(scaleway-certmanager-webhook) | 0.4.1 |
+| https://helm.scw.cloud/ | webhook(scaleway-certmanager-webhook) | 0.4.3 |
 
 ## Maintainers
 
@@ -33,35 +33,35 @@ A Helm chart for cert-manager-webhook-scaleway
 | clusterIssuer.privateKeySecretRef | string | `"letsencrypt-prod"` | Name of the secret used to store the ACME account private key |
 | clusterIssuer.server | string | `"https://acme-v02.api.letsencrypt.org/directory"` | Server URL for the ACME CA |
 | externalSecrets | list | `[]` | List of ExternalSecret resources to create alongside the webhook. |
-| webhook.affinity | object | `{}` | Affinities |
-| webhook.certManager.namespace | string | `"cert-manager"` | Namespace under which cert-manager is installed |
-| webhook.certManager.serviceAccountName | string | `"cert-manager"` | Name of the cert-manager service account |
-| webhook.extraEnv | list | `[]` | Additional environment variables to pass to the webhook deployment |
-| webhook.fullnameOverride | string | `""` | Override charts and release name |
-| webhook.groupName | string | `"acme.scaleway.com"` | Name under which the webhook will be available |
-| webhook.image.imagePullSecrets | list | `[]` | Image pull secrets |
-| webhook.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
-| webhook.image.repository | string | `"scaleway/cert-manager-webhook-scaleway"` | Repository for the webhook image |
-| webhook.image.tag | string | `""` | Tag for the webhook image, defaults to AppVersion |
-| webhook.listenPort | int | `443` | Port the webhook listens on |
-| webhook.nameOverride | string | `""` | Override charts name |
-| webhook.nodeSelector | object | `{}` | Node selector |
-| webhook.pki.caDuration | string | `"43800h"` | Webhook ca duration |
-| webhook.pki.servingCertificateDuration | string | `"8760h"` | Webhook certificate duration |
-| webhook.podLabels | object | `{}` | Pod labels |
-| webhook.podSecurityContext | object | `{}` | Pod security context |
-| webhook.replicaCount | int | `1` | Number of replica |
-| webhook.resources | object | `{}` | Resources definition |
-| webhook.secret.accessKey | string | `""` | Default scaleway access key (optional) |
-| webhook.secret.externalSecretName | string | `""` | Existing secret name for the default scaleway credentials |
-| webhook.secret.name | string | `"scaleway-webhook-secret"` | Secret name for the default scaleway credentials |
-| webhook.secret.secretKey | string | `""` | Default scaleway secret key (optional) |
-| webhook.securityContext | object | `{}` | Container security context |
-| webhook.service.ipFamilies | list | `[]` | Service ipFamilies. Can be IPv4 and/or IPv6. |
-| webhook.service.ipFamilyPolicy | string | `""` | Service ipFamilyPolicy set the ip family policy to configure dual-stack |
-| webhook.service.port | int | `443` | Service port exposing the webhook |
-| webhook.service.type | string | `"ClusterIP"` | Service type exposing the webhook |
-| webhook.tolerations | list | `[]` | Tolerations |
+| webhook.affinity | object | `{}` |  |
+| webhook.certManager.namespace | string | `"cert-manager"` |  |
+| webhook.certManager.serviceAccountName | string | `"cert-manager"` |  |
+| webhook.extraEnv | list | `[]` |  |
+| webhook.fullnameOverride | string | `""` |  |
+| webhook.groupName | string | `"acme.scaleway.com"` |  |
+| webhook.image.imagePullSecrets | list | `[]` |  |
+| webhook.image.pullPolicy | string | `"IfNotPresent"` |  |
+| webhook.image.repository | string | `"scaleway/cert-manager-webhook-scaleway"` |  |
+| webhook.image.tag | string | `""` |  |
+| webhook.listenPort | int | `443` |  |
+| webhook.nameOverride | string | `""` |  |
+| webhook.nodeSelector | object | `{}` |  |
+| webhook.pki.caDuration | string | `"43800h"` |  |
+| webhook.pki.servingCertificateDuration | string | `"8760h"` |  |
+| webhook.podLabels | object | `{}` |  |
+| webhook.podSecurityContext | object | `{}` |  |
+| webhook.replicaCount | int | `1` |  |
+| webhook.resources | object | `{}` |  |
+| webhook.secret.accessKey | string | `""` |  |
+| webhook.secret.externalSecretName | string | `""` |  |
+| webhook.secret.name | string | `"scaleway-webhook-secret"` |  |
+| webhook.secret.secretKey | string | `""` |  |
+| webhook.securityContext | object | `{}` |  |
+| webhook.service.ipFamilies | list | `[]` |  |
+| webhook.service.ipFamilyPolicy | string | `""` |  |
+| webhook.service.port | int | `443` |  |
+| webhook.service.type | string | `"ClusterIP"` |  |
+| webhook.tolerations | list | `[]` |  |
 
 ## Installing the Chart
 
@@ -88,7 +88,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.2.1"
+    targetRevision: "0.2.2"
     chart: cert-manager-webhook-scaleway
     path: ''
     helm:

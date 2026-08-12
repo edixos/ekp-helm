@@ -1,6 +1,6 @@
 dependencies:
 - name: scaleway-certmanager-webhook
   repository: https://helm.scw.cloud/
-  version: 0.4.1
-digest: sha256:7fa099e0bc16e37fb333f2674d82fc39bfae521140c4e0a09f849f3e372ef887
-generated: "2026-03-13T00:18:38.351899+01:00"
+  version: 0.4.3
+digest: sha256:133e821a58a7061b71ca4895df0c9dcd62c7eb226e2c305387178fec02d10570
+generated: "2026-08-12T11:01:44.594635414Z"
