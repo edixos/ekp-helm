@@ -1,6 +1,6 @@
 # victoria-metrics-cluster
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.148.0](https://img.shields.io/badge/AppVersion-v1.148.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.149.0](https://img.shields.io/badge/AppVersion-v1.149.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmcluster(victoria-metrics-cluster) | 0.47.0 |
+| https://victoriametrics.github.io/helm-charts/ | vmcluster(victoria-metrics-cluster) | 0.48.0 |
 
 ## Maintainers
 
@@ -98,6 +98,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmauth.initContainers | list | `[]` | Init containers for vmauth |
 | vmcluster.vmauth.lifecycle | object | `{}` | Specify pod lifecycle |
 | vmcluster.vmauth.name | string | `""` | Override default `app` label name |
+| vmcluster.vmauth.networkPolicy | object | `{"annotations":{},"egress":[],"enabled":false,"ingress":[],"labels":{}}` | See `kubectl explain networkpolicy.spec` for more. Details are [here](https://kubernetes.io/docs/concepts/services-networking/network-policies/) |
 | vmcluster.vmauth.nodeSelector | object | `{}` | Pod's node selector. Details are [here](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) |
 | vmcluster.vmauth.podAnnotations | object | `{}` | Pod's annotations |
 | vmcluster.vmauth.podDisruptionBudget | object | `{"enabled":false,"labels":{},"maxUnavailable":0,"minAvailable":0,"unhealthyPodEvictionPolicy":null}` | See `kubectl explain poddisruptionbudget.spec` for more. Details are [here](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) |
@@ -191,6 +192,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vminsert.initContainers | list | `[]` | Init containers for vminsert |
 | vmcluster.vminsert.lifecycle | object | `{}` | Specify pod lifecycle |
 | vmcluster.vminsert.name | string | `""` | Override default `app` label name |
+| vmcluster.vminsert.networkPolicy | object | `{"annotations":{},"egress":[],"enabled":false,"ingress":[],"labels":{}}` | See `kubectl explain networkpolicy.spec` for more. Details are [here](https://kubernetes.io/docs/concepts/services-networking/network-policies/) |
 | vmcluster.vminsert.nodeSelector | object | `{}` | Pod's node selector. Details are [here](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) |
 | vmcluster.vminsert.podAnnotations | object | `{}` | Pod's annotations |
 | vmcluster.vminsert.podDisruptionBudget | object | `{"enabled":false,"labels":{},"maxUnavailable":0,"minAvailable":0,"unhealthyPodEvictionPolicy":null}` | See `kubectl explain poddisruptionbudget.spec` for more. Details are [here](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) |
@@ -292,6 +294,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmselect.lifecycle | object | `{}` | Specify pod lifecycle |
 | vmcluster.vmselect.mode | string | `"deployment"` | vmselect mode: deployment, statefulSet |
 | vmcluster.vmselect.name | string | `""` | Override default `app` label name |
+| vmcluster.vmselect.networkPolicy | object | `{"annotations":{},"egress":[],"enabled":false,"ingress":[],"labels":{}}` | See `kubectl explain networkpolicy.spec` for more. Details are [here](https://kubernetes.io/docs/concepts/services-networking/network-policies/) |
 | vmcluster.vmselect.nodeSelector | object | `{}` | Pod's node selector. Details are [here](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) |
 | vmcluster.vmselect.persistentVolume.accessModes | list | `["ReadWriteOnce"]` | Array of access mode. Must match those of existing PV or dynamic provisioner. Details are [here](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) |
 | vmcluster.vmselect.persistentVolume.annotations | object | `{}` | Persistent volume annotations |
@@ -393,6 +396,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmstorage.lifecycle | object | `{}` | Specify pod lifecycle |
 | vmcluster.vmstorage.minReadySeconds | int | `5` |  |
 | vmcluster.vmstorage.name | string | `""` | Override default `app` label name |
+| vmcluster.vmstorage.networkPolicy | object | `{"annotations":{},"egress":[],"enabled":false,"ingress":[],"labels":{}}` | See `kubectl explain networkpolicy.spec` for more. Details are [here](https://kubernetes.io/docs/concepts/services-networking/network-policies/) |
 | vmcluster.vmstorage.nodeSelector | object | `{}` | Pod's node selector. Details are [here](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) |
 | vmcluster.vmstorage.persistentVolume.accessModes | list | `["ReadWriteOnce"]` | Array of access modes. Must match those of existing PV or dynamic provisioner. Details are [here](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) |
 | vmcluster.vmstorage.persistentVolume.annotations | object | `{}` | Persistent volume annotations |
@@ -504,7 +508,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: victoria-metrics-cluster
     path: ''
     helm:

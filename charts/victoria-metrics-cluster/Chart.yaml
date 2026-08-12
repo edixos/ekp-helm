@@ -14,13 +14,13 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.0
+version: 0.1.1
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "v1.148.0"
+appVersion: "v1.149.0"
 maintainers:
   - name: mo-hamedaziz
     email: aziz@edixos.com
@@ -29,6 +29,6 @@ sources:
   - https://docs.victoriametrics.com/helm/victoria-metrics-cluster/
 dependencies:
   - name: victoria-metrics-cluster
-    version: 0.47.0
+    version: 0.48.0
     repository: "https://victoriametrics.github.io/helm-charts/"
     alias: vmcluster
