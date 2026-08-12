@@ -1,6 +1,6 @@
 # kargo
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.10.9](https://img.shields.io/badge/AppVersion-v1.10.9-informational?style=flat-square)
+![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.11.1](https://img.shields.io/badge/AppVersion-v1.11.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://ghcr.io/akuity/kargo-charts | kargo(kargo) | 1.10.9 |
+| oci://ghcr.io/akuity/kargo-charts | kargo(kargo) | 1.11.1 |
 
 ## Description
 
@@ -32,18 +32,20 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | httpRoute.parentRefs | list | `[]` | Gateways this route attaches to. |
 | httpRoute.rules | list | `[]` | Route rules, normally a single rule backed by the `kargo-api` Service. |
 | kargo.api.adminAccount.enabled | bool | `true` |  |
-| kargo.api.adminAccount.passwordHash | string | `"$2b$12$qvkOxcQGZCzXcSAmdMIXcuUsofdJYE/behRanuRcVqD/8pBORj.Ze"` |  |
-| kargo.api.adminAccount.tokenSigningKey | string | `"dummy-token-signing-key"` |  |
+| kargo.api.adminAccount.passwordHash | string | `""` |  |
+| kargo.api.adminAccount.tokenSigningKey | string | `""` |  |
 | kargo.api.adminAccount.tokenTTL | string | `"24h"` |  |
 | kargo.api.affinity | object | `{}` |  |
 | kargo.api.annotations | object | `{}` |  |
 | kargo.api.argocd.urls | string | `nil` |  |
+| kargo.api.basePath | string | `""` |  |
 | kargo.api.cabundle.configMapName | string | `""` |  |
 | kargo.api.cabundle.secretName | string | `""` |  |
 | kargo.api.clusterRoles.admin.additionalRules | string | `nil` |  |
 | kargo.api.clusterRoles.projectCreator.additionalRules | string | `nil` |  |
 | kargo.api.clusterRoles.user.additionalRules | string | `nil` |  |
 | kargo.api.clusterRoles.viewer.additionalRules | string | `nil` |  |
+| kargo.api.containers | list | `[]` |  |
 | kargo.api.enabled | bool | `true` |  |
 | kargo.api.env | list | `[]` |  |
 | kargo.api.envFrom | list | `[]` |  |
@@ -55,6 +57,8 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.api.ingress.tls.enabled | bool | `true` |  |
 | kargo.api.ingress.tls.secretName | string | `"kargo-api-ingress-cert"` |  |
 | kargo.api.ingress.tls.selfSignedCert | bool | `true` |  |
+| kargo.api.initContainers | list | `[]` |  |
+| kargo.api.kubeconfigSecrets | object | `{}` |  |
 | kargo.api.labels | object | `{}` |  |
 | kargo.api.logFormat | string | `"CONSOLE"` |  |
 | kargo.api.logLevel | string | `"INFO"` |  |
@@ -65,7 +69,11 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.api.oidc.clientID | string | `nil` |  |
 | kargo.api.oidc.dex.affinity | object | `{}` |  |
 | kargo.api.oidc.dex.annotations | object | `{}` |  |
+| kargo.api.oidc.dex.byo.caCertPath | string | `""` |  |
+| kargo.api.oidc.dex.byo.enabled | bool | `false` |  |
+| kargo.api.oidc.dex.byo.serverAddress | string | `""` |  |
 | kargo.api.oidc.dex.connectors | list | `[]` |  |
+| kargo.api.oidc.dex.containers | list | `[]` |  |
 | kargo.api.oidc.dex.enabled | bool | `false` |  |
 | kargo.api.oidc.dex.env | list | `[]` |  |
 | kargo.api.oidc.dex.envFrom | list | `[]` |  |
@@ -73,9 +81,19 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.api.oidc.dex.image.pullSecrets | list | `[]` |  |
 | kargo.api.oidc.dex.image.repository | string | `"ghcr.io/dexidp/dex"` |  |
 | kargo.api.oidc.dex.image.tag | string | `"v2.44.0"` |  |
+| kargo.api.oidc.dex.initContainers | list | `[]` |  |
+| kargo.api.oidc.dex.logFormat | string | `"TEXT"` |  |
+| kargo.api.oidc.dex.logLevel | string | `"INFO"` |  |
 | kargo.api.oidc.dex.nodeSelector | object | `{}` |  |
+| kargo.api.oidc.dex.podAnnotations | object | `{}` |  |
 | kargo.api.oidc.dex.probes.enabled | bool | `true` |  |
+| kargo.api.oidc.dex.probes.livenessProbe | object | `{}` |  |
+| kargo.api.oidc.dex.probes.readinessProbe.initialDelaySeconds | int | `5` |  |
+| kargo.api.oidc.dex.probes.startupProbe.failureThreshold | int | `30` |  |
+| kargo.api.oidc.dex.probes.startupProbe.initialDelaySeconds | int | `10` |  |
 | kargo.api.oidc.dex.resources | object | `{}` |  |
+| kargo.api.oidc.dex.revisionHistoryLimit | int | `10` |  |
+| kargo.api.oidc.dex.rollingUpdate | object | `{}` |  |
 | kargo.api.oidc.dex.securityContext | object | `{}` |  |
 | kargo.api.oidc.dex.serviceAccount.annotations | object | `{}` |  |
 | kargo.api.oidc.dex.serviceAccount.labels | object | `{}` |  |
@@ -94,10 +112,19 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.api.oidc.viewers.claims | object | `{}` |  |
 | kargo.api.permissiveCORSPolicyEnabled | bool | `false` |  |
 | kargo.api.podAnnotations | object | `{}` |  |
+| kargo.api.podDisruptionBudget.enabled | bool | `false` |  |
+| kargo.api.podDisruptionBudget.maxUnavailable | string | `""` |  |
+| kargo.api.podDisruptionBudget.minAvailable | int | `1` |  |
 | kargo.api.podLabels | object | `{}` |  |
 | kargo.api.probes.enabled | bool | `true` |  |
+| kargo.api.probes.livenessProbe | object | `{}` |  |
+| kargo.api.probes.readinessProbe.initialDelaySeconds | int | `5` |  |
+| kargo.api.probes.startupProbe.failureThreshold | int | `30` |  |
+| kargo.api.probes.startupProbe.initialDelaySeconds | int | `10` |  |
 | kargo.api.replicas | int | `1` |  |
 | kargo.api.resources | object | `{}` |  |
+| kargo.api.revisionHistoryLimit | int | `10` |  |
+| kargo.api.rollingUpdate | object | `{}` |  |
 | kargo.api.rollouts.integrationEnabled | bool | `true` |  |
 | kargo.api.rollouts.logs.enabled | bool | `false` |  |
 | kargo.api.rollouts.logs.httpHeaders | object | `{}` |  |
@@ -116,6 +143,11 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.api.tls.selfSignedCert | bool | `true` |  |
 | kargo.api.tls.terminatedUpstream | bool | `false` |  |
 | kargo.api.tolerations | list | `[]` |  |
+| kargo.api.topologySpreadConstraints | list | `[]` |  |
+| kargo.api.volumeMounts | list | `[]` |  |
+| kargo.api.volumes | list | `[]` |  |
+| kargo.argocd.dataPlane.install | bool | `true` |  |
+| kargo.argocd.dataPlane.kargoController.install | bool | `true` |  |
 | kargo.controller.affinity | object | `{}` |  |
 | kargo.controller.allowCredentialsOverHTTP | bool | `false` |  |
 | kargo.controller.annotations | object | `{}` |  |
@@ -124,6 +156,7 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.controller.argocd.watchArgocdNamespaceOnly | bool | `false` |  |
 | kargo.controller.cabundle.configMapName | string | `""` |  |
 | kargo.controller.cabundle.secretName | string | `""` |  |
+| kargo.controller.containers | list | `[]` |  |
 | kargo.controller.enabled | bool | `true` |  |
 | kargo.controller.env | list | `[]` |  |
 | kargo.controller.envFrom | list | `[]` |  |
@@ -141,9 +174,25 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.controller.images.registries.rateLimit | int | `20` |  |
 | kargo.controller.initContainers | list | `[]` |  |
 | kargo.controller.isDefault | bool | `false` |  |
+| kargo.controller.kubeconfigSecrets | object | `{}` |  |
 | kargo.controller.labels | object | `{}` |  |
 | kargo.controller.logFormat | string | `"CONSOLE"` |  |
 | kargo.controller.logLevel | string | `"INFO"` |  |
+| kargo.controller.metrics.enabled | bool | `false` |  |
+| kargo.controller.metrics.service.annotations | object | `{}` |  |
+| kargo.controller.metrics.service.clusterIP | string | `""` |  |
+| kargo.controller.metrics.service.labels | object | `{}` |  |
+| kargo.controller.metrics.service.portName | string | `"http-metrics"` |  |
+| kargo.controller.metrics.service.servicePort | int | `9090` |  |
+| kargo.controller.metrics.service.type | string | `"ClusterIP"` |  |
+| kargo.controller.metrics.serviceMonitor.additionalLabels | object | `{}` |  |
+| kargo.controller.metrics.serviceMonitor.enabled | bool | `false` |  |
+| kargo.controller.metrics.serviceMonitor.interval | string | `"30s"` |  |
+| kargo.controller.metrics.serviceMonitor.metricRelabelings | list | `[]` |  |
+| kargo.controller.metrics.serviceMonitor.namespace | string | `""` |  |
+| kargo.controller.metrics.serviceMonitor.relabelings | list | `[]` |  |
+| kargo.controller.metrics.serviceMonitor.scheme | string | `""` |  |
+| kargo.controller.metrics.serviceMonitor.tlsConfig | object | `{}` |  |
 | kargo.controller.nodeSelector | object | `{}` |  |
 | kargo.controller.podAnnotations | object | `{}` |  |
 | kargo.controller.podLabels | object | `{}` |  |
@@ -154,6 +203,7 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.controller.reconcilers.warehouses.maxConcurrentReconciles | string | `nil` |  |
 | kargo.controller.reconcilers.warehouses.minReconciliationInterval | string | `"5m0s"` |  |
 | kargo.controller.resources | object | `{}` |  |
+| kargo.controller.revisionHistoryLimit | int | `10` |  |
 | kargo.controller.rollouts.controllerInstanceID | string | `""` |  |
 | kargo.controller.rollouts.integrationEnabled | bool | `true` |  |
 | kargo.controller.securityContext | object | `{}` |  |
@@ -166,8 +216,12 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.controller.volumes | list | `[]` |  |
 | kargo.crds.install | bool | `true` |  |
 | kargo.crds.keep | bool | `true` |  |
+| kargo.dataPlane.controller.install | bool | `true` |  |
+| kargo.dataPlane.install | bool | `true` |  |
 | kargo.externalWebhooksServer.affinity | object | `{}` |  |
 | kargo.externalWebhooksServer.annotations | object | `{}` |  |
+| kargo.externalWebhooksServer.basePath | string | `""` |  |
+| kargo.externalWebhooksServer.containers | list | `[]` |  |
 | kargo.externalWebhooksServer.enabled | bool | `true` |  |
 | kargo.externalWebhooksServer.env | list | `[]` |  |
 | kargo.externalWebhooksServer.envFrom | list | `[]` |  |
@@ -179,15 +233,26 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.externalWebhooksServer.ingress.tls.enabled | bool | `true` |  |
 | kargo.externalWebhooksServer.ingress.tls.secretName | string | `"kargo-external-webhooks-server-ingress-cert"` |  |
 | kargo.externalWebhooksServer.ingress.tls.selfSignedCert | bool | `true` |  |
+| kargo.externalWebhooksServer.initContainers | list | `[]` |  |
+| kargo.externalWebhooksServer.kubeconfigSecrets | object | `{}` |  |
 | kargo.externalWebhooksServer.labels | object | `{}` |  |
 | kargo.externalWebhooksServer.logFormat | string | `"CONSOLE"` |  |
 | kargo.externalWebhooksServer.logLevel | string | `"INFO"` |  |
 | kargo.externalWebhooksServer.nodeSelector | object | `{}` |  |
 | kargo.externalWebhooksServer.podAnnotations | object | `{}` |  |
+| kargo.externalWebhooksServer.podDisruptionBudget.enabled | bool | `false` |  |
+| kargo.externalWebhooksServer.podDisruptionBudget.maxUnavailable | string | `""` |  |
+| kargo.externalWebhooksServer.podDisruptionBudget.minAvailable | int | `1` |  |
 | kargo.externalWebhooksServer.podLabels | object | `{}` |  |
 | kargo.externalWebhooksServer.probes.enabled | bool | `true` |  |
+| kargo.externalWebhooksServer.probes.livenessProbe | object | `{}` |  |
+| kargo.externalWebhooksServer.probes.readinessProbe.initialDelaySeconds | int | `5` |  |
+| kargo.externalWebhooksServer.probes.startupProbe.failureThreshold | int | `30` |  |
+| kargo.externalWebhooksServer.probes.startupProbe.initialDelaySeconds | int | `10` |  |
 | kargo.externalWebhooksServer.replicas | int | `1` |  |
 | kargo.externalWebhooksServer.resources | object | `{}` |  |
+| kargo.externalWebhooksServer.revisionHistoryLimit | int | `10` |  |
+| kargo.externalWebhooksServer.rollingUpdate | object | `{}` |  |
 | kargo.externalWebhooksServer.securityContext | object | `{}` |  |
 | kargo.externalWebhooksServer.service.annotations | object | `{}` |  |
 | kargo.externalWebhooksServer.service.type | string | `"ClusterIP"` |  |
@@ -198,12 +263,19 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.externalWebhooksServer.tls.selfSignedCert | bool | `true` |  |
 | kargo.externalWebhooksServer.tls.terminatedUpstream | bool | `false` |  |
 | kargo.externalWebhooksServer.tolerations | list | `[]` |  |
+| kargo.externalWebhooksServer.topologySpreadConstraints | list | `[]` |  |
+| kargo.externalWebhooksServer.volumeMounts | list | `[]` |  |
+| kargo.externalWebhooksServer.volumes | list | `[]` |  |
 | kargo.extraObjects | list | `[]` |  |
 | kargo.garbageCollector.affinity | object | `{}` |  |
 | kargo.garbageCollector.annotations | object | `{}` |  |
+| kargo.garbageCollector.containers | list | `[]` |  |
 | kargo.garbageCollector.enabled | bool | `true` |  |
 | kargo.garbageCollector.env | list | `[]` |  |
 | kargo.garbageCollector.envFrom | list | `[]` |  |
+| kargo.garbageCollector.failedJobsHistoryLimit | int | `1` |  |
+| kargo.garbageCollector.initContainers | list | `[]` |  |
+| kargo.garbageCollector.kubeconfigSecrets | object | `{}` |  |
 | kargo.garbageCollector.labels | object | `{}` |  |
 | kargo.garbageCollector.logFormat | string | `"CONSOLE"` |  |
 | kargo.garbageCollector.logLevel | string | `"INFO"` |  |
@@ -219,12 +291,18 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.garbageCollector.securityContext | object | `{}` |  |
 | kargo.garbageCollector.serviceAccount.annotations | object | `{}` |  |
 | kargo.garbageCollector.serviceAccount.labels | object | `{}` |  |
+| kargo.garbageCollector.successfulJobsHistoryLimit | int | `3` |  |
+| kargo.garbageCollector.suspend | bool | `false` |  |
 | kargo.garbageCollector.tolerations | list | `[]` |  |
+| kargo.garbageCollector.ttlSecondsAfterFinished | string | `nil` |  |
+| kargo.garbageCollector.volumeMounts | list | `[]` |  |
+| kargo.garbageCollector.volumes | list | `[]` |  |
 | kargo.garbageCollector.workers | int | `3` |  |
 | kargo.global.affinity | object | `{}` |  |
 | kargo.global.annotations | object | `{}` |  |
 | kargo.global.clusterSecretsNamespace | string | `"kargo-cluster-secrets"` |  |
 | kargo.global.createClusterSecretsNamespace | bool | `true` |  |
+| kargo.global.createClusterSecretsRBAC | bool | `true` |  |
 | kargo.global.env | list | `[]` |  |
 | kargo.global.envFrom | list | `[]` |  |
 | kargo.global.labels | object | `{}` |  |
@@ -235,8 +313,14 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.global.serviceAccount.annotations | object | `{}` |  |
 | kargo.global.serviceAccount.labels | object | `{}` |  |
 | kargo.global.sharedResources.createNamespace | bool | `true` |  |
+| kargo.global.sharedResources.createRBAC | bool | `true` |  |
+| kargo.global.sharedResources.extraNamespaceAnnotations | object | `{}` |  |
+| kargo.global.sharedResources.extraNamespaceLabels | object | `{}` |  |
 | kargo.global.sharedResources.namespace | string | `"kargo-shared-resources"` |  |
 | kargo.global.systemResources.createNamespace | bool | `true` |  |
+| kargo.global.systemResources.createRBAC | bool | `true` |  |
+| kargo.global.systemResources.extraNamespaceAnnotations | object | `{}` |  |
+| kargo.global.systemResources.extraNamespaceLabels | object | `{}` |  |
 | kargo.global.systemResources.namespace | string | `"kargo-system-resources"` |  |
 | kargo.global.tolerations | list | `[]` |  |
 | kargo.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -246,12 +330,30 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.kubeconfigSecrets | object | `{}` |  |
 | kargo.managementController.affinity | object | `{}` |  |
 | kargo.managementController.annotations | object | `{}` |  |
+| kargo.managementController.containers | list | `[]` |  |
 | kargo.managementController.enabled | bool | `true` |  |
 | kargo.managementController.env | list | `[]` |  |
 | kargo.managementController.envFrom | list | `[]` |  |
+| kargo.managementController.initContainers | list | `[]` |  |
+| kargo.managementController.kubeconfigSecrets | object | `{}` |  |
 | kargo.managementController.labels | object | `{}` |  |
 | kargo.managementController.logFormat | string | `"CONSOLE"` |  |
 | kargo.managementController.logLevel | string | `"INFO"` |  |
+| kargo.managementController.metrics.enabled | bool | `false` |  |
+| kargo.managementController.metrics.service.annotations | object | `{}` |  |
+| kargo.managementController.metrics.service.clusterIP | string | `""` |  |
+| kargo.managementController.metrics.service.labels | object | `{}` |  |
+| kargo.managementController.metrics.service.portName | string | `"http-metrics"` |  |
+| kargo.managementController.metrics.service.servicePort | int | `9090` |  |
+| kargo.managementController.metrics.service.type | string | `"ClusterIP"` |  |
+| kargo.managementController.metrics.serviceMonitor.additionalLabels | object | `{}` |  |
+| kargo.managementController.metrics.serviceMonitor.enabled | bool | `false` |  |
+| kargo.managementController.metrics.serviceMonitor.interval | string | `"30s"` |  |
+| kargo.managementController.metrics.serviceMonitor.metricRelabelings | list | `[]` |  |
+| kargo.managementController.metrics.serviceMonitor.namespace | string | `""` |  |
+| kargo.managementController.metrics.serviceMonitor.relabelings | list | `[]` |  |
+| kargo.managementController.metrics.serviceMonitor.scheme | string | `""` |  |
+| kargo.managementController.metrics.serviceMonitor.tlsConfig | object | `{}` |  |
 | kargo.managementController.nodeSelector | object | `{}` |  |
 | kargo.managementController.podAnnotations | object | `{}` |  |
 | kargo.managementController.podLabels | object | `{}` |  |
@@ -261,27 +363,53 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.managementController.reconcilers.projects.maxConcurrentReconciles | string | `nil` |  |
 | kargo.managementController.reconcilers.serviceAccounts.maxConcurrentReconciles | string | `nil` |  |
 | kargo.managementController.resources | object | `{}` |  |
+| kargo.managementController.revisionHistoryLimit | int | `10` |  |
 | kargo.managementController.securityContext | object | `{}` |  |
 | kargo.managementController.serviceAccount.annotations | object | `{}` |  |
 | kargo.managementController.serviceAccount.labels | object | `{}` |  |
 | kargo.managementController.tolerations | list | `[]` |  |
+| kargo.managementController.volumeMounts | list | `[]` |  |
+| kargo.managementController.volumes | list | `[]` |  |
 | kargo.rbac.installClusterRoleBindings | bool | `true` |  |
 | kargo.rbac.installClusterRoles | bool | `true` |  |
 | kargo.webhooks.register | bool | `true` |  |
 | kargo.webhooksServer.affinity | object | `{}` |  |
 | kargo.webhooksServer.annotations | object | `{}` |  |
+| kargo.webhooksServer.containers | list | `[]` |  |
 | kargo.webhooksServer.controlplaneUserRegex | string | `""` |  |
 | kargo.webhooksServer.enabled | bool | `true` |  |
 | kargo.webhooksServer.env | list | `[]` |  |
 | kargo.webhooksServer.envFrom | list | `[]` |  |
+| kargo.webhooksServer.initContainers | list | `[]` |  |
+| kargo.webhooksServer.kubeconfigSecrets | object | `{}` |  |
 | kargo.webhooksServer.labels | object | `{}` |  |
 | kargo.webhooksServer.logFormat | string | `"CONSOLE"` |  |
 | kargo.webhooksServer.logLevel | string | `"INFO"` |  |
+| kargo.webhooksServer.metrics.enabled | bool | `false` |  |
+| kargo.webhooksServer.metrics.service.annotations | object | `{}` |  |
+| kargo.webhooksServer.metrics.service.clusterIP | string | `""` |  |
+| kargo.webhooksServer.metrics.service.labels | object | `{}` |  |
+| kargo.webhooksServer.metrics.service.portName | string | `"http-metrics"` |  |
+| kargo.webhooksServer.metrics.service.servicePort | int | `9090` |  |
+| kargo.webhooksServer.metrics.service.type | string | `"ClusterIP"` |  |
+| kargo.webhooksServer.metrics.serviceMonitor.additionalLabels | object | `{}` |  |
+| kargo.webhooksServer.metrics.serviceMonitor.enabled | bool | `false` |  |
+| kargo.webhooksServer.metrics.serviceMonitor.interval | string | `"30s"` |  |
+| kargo.webhooksServer.metrics.serviceMonitor.metricRelabelings | list | `[]` |  |
+| kargo.webhooksServer.metrics.serviceMonitor.namespace | string | `""` |  |
+| kargo.webhooksServer.metrics.serviceMonitor.relabelings | list | `[]` |  |
+| kargo.webhooksServer.metrics.serviceMonitor.scheme | string | `""` |  |
+| kargo.webhooksServer.metrics.serviceMonitor.tlsConfig | object | `{}` |  |
 | kargo.webhooksServer.nodeSelector | object | `{}` |  |
 | kargo.webhooksServer.podAnnotations | object | `{}` |  |
+| kargo.webhooksServer.podDisruptionBudget.enabled | bool | `false` |  |
+| kargo.webhooksServer.podDisruptionBudget.maxUnavailable | string | `""` |  |
+| kargo.webhooksServer.podDisruptionBudget.minAvailable | int | `1` |  |
 | kargo.webhooksServer.podLabels | object | `{}` |  |
 | kargo.webhooksServer.replicas | int | `1` |  |
 | kargo.webhooksServer.resources | object | `{}` |  |
+| kargo.webhooksServer.revisionHistoryLimit | int | `10` |  |
+| kargo.webhooksServer.rollingUpdate | object | `{}` |  |
 | kargo.webhooksServer.securityContext | object | `{}` |  |
 | kargo.webhooksServer.serviceAccount.annotations | object | `{}` |  |
 | kargo.webhooksServer.serviceAccount.labels | object | `{}` |  |
@@ -289,6 +417,10 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.webhooksServer.tls.secretName | string | `"kargo-webhooks-server-cert"` |  |
 | kargo.webhooksServer.tls.selfSignedCert | bool | `true` |  |
 | kargo.webhooksServer.tolerations | list | `[]` |  |
+| kargo.webhooksServer.topologySpreadConstraints | list | `[]` |  |
+| kargo.webhooksServer.volumeMounts | list | `[]` |  |
+| kargo.webhooksServer.volumes | list | `[]` |  |
+| kargo.workloads.install | bool | `true` |  |
 | pushSecrets | list | `[]` | PushSecrets that publish this control plane's shard credential material into another cluster's secret backend. Each item is `{ name, namespace, syncWave?, spec }`, where `spec` is a PushSecret spec passed through verbatim. |
 | remoteShards.kargoNamespace | string | `"kargo"` | Namespace of the Kargo release, where each shard takes its leader-election lease. |
 | remoteShards.names | list | `[]` | Shard names, each matching `kargo.controller.shardName` in that shard's own cluster. Empty disables this section entirely. |
@@ -321,7 +453,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.2.0"
+    targetRevision: "0.2.1"
     chart: kargo
     path: ''
     helm:
