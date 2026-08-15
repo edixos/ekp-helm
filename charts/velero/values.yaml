@@ -37,7 +37,7 @@ velero:
   # enabling node-agent). Required.
   image:
     repository: docker.io/velero/velero
-    tag: v1.18.0
+    tag: v1.18.1
     # Digest value example: sha256:73266e6bd7e2fe3f65fb20677d36c4a8df76d417d9ba76bd9932e0d983a776ec.
     # If used, it will take precedence over the image.tag.
     # digest:
@@ -209,6 +209,19 @@ velero:
   # DNS configuration to use for the Velero deployment. Optional.
   dnsConfig: {}
 
+  # Pod Disruption Budget for the Velero deployment. Optional.
+  # Velero runs a single replica with a Recreate strategy by default, so this is
+  # disabled by default. Enable it when running Velero with multiple replicas.
+  podDisruptionBudget:
+    enabled: false
+    # minAvailable and maxUnavailable are mutually exclusive; set only one.
+    minAvailable: 1
+    maxUnavailable: ""
+    # See https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+    # unhealthyPodEvictionPolicy: IfHealthyBudget
+    annotations: {}
+    labels: {}
+
   # Extra volumes for the Velero deployment. Optional.
   extraVolumes: []
 
@@ -370,7 +383,7 @@ velero:
     labels: {}
     # Extra volumes for the upgrade/cleanup job. Optional.
     extraVolumes: []
-    # Extra volumeMounts for the upgrade/cleanup job.. Optional.
+    # Extra volumeMounts for the upgrade/cleanup job. Optional.
     extraVolumeMounts: []
 
   # This job upgrades the CRDs.
@@ -408,6 +421,8 @@ velero:
       default: false
       # validationFrequency defines how frequently Velero should validate the object storage. Optional.
       validationFrequency:
+      # backupSyncPeriod defines how frequently Velero should synchronize backups in object storage. Optional.
+      backupSyncPeriod:
       # accessMode determines if velero can write to this backup storage location. Optional.
       # default to ReadWrite, ReadOnly is used during migrations and restores.
       accessMode: ReadWrite

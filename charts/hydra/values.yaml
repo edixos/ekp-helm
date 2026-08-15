@@ -465,6 +465,20 @@ hydra:
     #   value: BAR
     extraEnv: []
 
+    # -- Array of extra volumes to be mounted on the job. This takes precedence over `deployment.extraVolumes` when set,
+    # otherwise the deployment's volumes are used.
+    extraVolumes: []
+    # - name: my-volume
+    #   secret:
+    #     secretName: my-secret
+
+    # -- Array of extra volume mounts to be mounted on the job. This takes precedence over `deployment.extraVolumeMounts`
+    # when set, otherwise the deployment's volume mounts are used.
+    extraVolumeMounts: []
+    # - name: my-volume
+    #   mountPath: /etc/secrets/my-secret
+    #   readOnly: true
+
     # -- Specify pod metadata, this metadata is added directly to the pod, and not higher objects
     podMetadata:
       # -- Extra pod level labels
@@ -733,6 +747,8 @@ hydra:
     labels: {}
     # -- TLS configuration to use when scraping the endpoint
     tlsConfig: {}
+    # -- Additional metric labels
+    targetLabels: []
 
   configmap:
     # -- switch to false to prevent checksum annotations being maintained and propogated to the pods
@@ -743,5 +759,6 @@ hydra:
     labels: {}
     # -- use a busybox image from another repository
     busybox:
+      registry: "docker.io"
       repository: busybox
       tag: stable

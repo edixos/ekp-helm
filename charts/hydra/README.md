@@ -1,6 +1,6 @@
 # hydra
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://k8s.ory.sh/helm/charts | hydra(hydra) | 0.61.0 |
+| https://k8s.ory.sh/helm/charts | hydra(hydra) | 0.63.0 |
 
 ## Maintainers
 
@@ -160,6 +160,8 @@ A Helm chart for Kubernetes
 | hydra.job.extraContainers | string | `""` | If you want to add extra sidecar containers. |
 | hydra.job.extraEnv | list | `[]` | Array of extra envs to be passed to the job. This takes precedence over deployment variables. Kubernetes format is expected. Value is processed with Helm `tpl` - name: FOO   value: BAR |
 | hydra.job.extraInitContainers | string | `""` | If you want to add extra init containers. extraInitContainers: |  - name: ...    image: ... |
+| hydra.job.extraVolumeMounts | list | `[]` | Array of extra volume mounts to be mounted on the job. This takes precedence over `deployment.extraVolumeMounts` when set, otherwise the deployment's volume mounts are used. |
+| hydra.job.extraVolumes | list | `[]` | Array of extra volumes to be mounted on the job. This takes precedence over `deployment.extraVolumes` when set, otherwise the deployment's volumes are used. |
 | hydra.job.labels | object | `{}` | Set custom deployment level labels |
 | hydra.job.lifecycle | string | `""` | If you want to add lifecycle hooks. |
 | hydra.job.nodeSelector | object | `{}` | Node labels for pod assignment. |
@@ -213,8 +215,9 @@ A Helm chart for Kubernetes
 | hydra.serviceMonitor.scheme | string | `"http"` | HTTP scheme to use for scraping. |
 | hydra.serviceMonitor.scrapeInterval | string | `"60s"` | Interval at which metrics should be scraped |
 | hydra.serviceMonitor.scrapeTimeout | string | `"30s"` | Timeout after which the scrape is ended |
+| hydra.serviceMonitor.targetLabels | list | `[]` | Additional metric labels |
 | hydra.serviceMonitor.tlsConfig | object | `{}` | TLS configuration to use when scraping the endpoint |
-| hydra.test.busybox | object | `{"repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
+| hydra.test.busybox | object | `{"registry":"docker.io","repository":"busybox","tag":"stable"}` | use a busybox image from another repository |
 | hydra.test.labels | object | `{}` | Provide additional labels to the test pod |
 | hydra.watcher.automountServiceAccountToken | bool | `true` |  |
 | hydra.watcher.enabled | bool | `false` |  |
@@ -259,7 +262,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: hydra
     path: ''
     helm:

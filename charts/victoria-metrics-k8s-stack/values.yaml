@@ -167,7 +167,7 @@ vmstack:
         enabled: '{{ .Values.vtsingle.enabled }}'
       victorialogs-cluster:
         url: https://raw.githubusercontent.com/VictoriaMetrics/VictoriaLogs/master/dashboards/victorialogs-cluster.json
-        enabled: '{{ .Values.vlcluster.enabled }}'
+        enabled: '{{ or .Values.vlcluster.enabled .Values.vldistributed.enabled }}'
       victorialogs-single-node:
         url: https://raw.githubusercontent.com/VictoriaMetrics/VictoriaLogs/master/dashboards/victorialogs.json
         enabled: '{{ .Values.vlsingle.enabled }}'
@@ -223,7 +223,7 @@ vmstack:
     image:
       repository: ghcr.io/victoriametrics/sync-job
       # renovate: image=ghcr.io/victoriametrics/sync-job
-      tag: v0.0.11
+      tag: v0.0.13
       pullPolicy: IfNotPresent
     # -- Seconds to keep a finished job before automatic deletion
     ttlSecondsAfterFinished: 600
@@ -257,6 +257,11 @@ vmstack:
     dnsPolicy: ""
     # -- Extra env variables for sync job
     env: []
+    # -- Extra volumes to add to the sync-job Pod.
+    # Useful for mounting custom CA certificates; set SSL_CERT_FILE in env to point to the mounted cert.
+    extraVolumes: []
+    # -- Extra volume mounts to add to the sync-job container.
+    extraVolumeMounts: []
 
   # -- Create default rules for monitoring the cluster
   defaultRules:
@@ -453,13 +458,13 @@ vmstack:
         enabled: '{{ index .Values "victoria-metrics-operator" "enabled" }}'
       vlhealth:
         url: https://raw.githubusercontent.com/VictoriaMetrics/VictoriaLogs/master/deployment/docker/rules/alerts-health.yml
-        enabled: '{{ or .Values.vlsingle.enabled .Values.vlcluster.enabled .Values.vlagent.enabled }}'
+        enabled: '{{ or .Values.vlsingle.enabled .Values.vlcluster.enabled .Values.vldistributed.enabled .Values.vlagent.enabled }}'
       vlagent:
         url: https://raw.githubusercontent.com/VictoriaMetrics/VictoriaLogs/master/deployment/docker/rules/alerts-vlagent.yml
         enabled: '{{ .Values.vlagent.enabled }}'
       victorialogs:
         url: https://raw.githubusercontent.com/VictoriaMetrics/VictoriaLogs/master/deployment/docker/rules/alerts-vlogs.yml
-        enabled: '{{ or .Values.vlsingle.enabled .Values.vlcluster.enabled }}'
+        enabled: '{{ or .Values.vlsingle.enabled .Values.vlcluster.enabled .Values.vldistributed.enabled }}'
       victoriatraces:
         url: https://raw.githubusercontent.com/VictoriaMetrics/VictoriaTraces/master/deployment/docker/rules/alerts-vtraces.yml
         enabled: '{{ or .Values.vtsingle.enabled .Values.vtcluster.enabled }}'
@@ -534,6 +539,8 @@ vmstack:
     labels: {}
     # -- VLSingle annotations
     annotations: {}
+    # -- Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace.
+    namespaceOverride: ""
     # -- Create VLSingle CR
     enabled: false
     # -- Full spec for VLSingle CRD. Allowed values describe [here](https://docs.victoriametrics.com/operator/api/#vlsinglespec)
@@ -616,6 +623,8 @@ vmstack:
     labels: {}
     # -- VLCluster annotations
     annotations: {}
+    # -- Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace.
+    namespaceOverride: ""
     # -- Full spec for VLCluster CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vlclusterspec)
     spec:
       # renovate: image=victoriametrics/victoria-logs
@@ -854,6 +863,40 @@ vmstack:
               type: PathPrefix
               value: '{{ dig "extraArgs" "http.pathPrefix" "/" .Values.vlcluster.spec.vlinsert }}'
 
+  vldistributed:
+    # -- Create VLDistributed CR
+    enabled: false
+    # -- VLDistributed labels
+    labels: {}
+    # -- VLDistributed annotations
+    annotations: {}
+    # -- Full spec for VLDistributed CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vldistributedspec)
+    spec:
+      vmauth:
+        spec:
+          port: "8427"
+      zoneCommon:
+        vlcluster:
+          spec:
+            # renovate: image=victoriametrics/victoria-logs
+            clusterVersion: v1.52.0
+            vlstorage:
+              replicaCount: 2
+              retentionPeriod: 14d
+              storageDataPath: /vl-data
+              storage:
+                volumeClaimTemplate:
+                  spec:
+                    resources:
+                      requests:
+                        storage: 10Gi
+            vlselect:
+              replicaCount: 2
+            vlinsert:
+              replicaCount: 2
+      zones:
+        - name: zone-0
+
   vlagent:
     # -- Create VLAgent CR
     enabled: false
@@ -861,6 +904,8 @@ vmstack:
     labels: {}
     # -- VLAgent annotations
     annotations: {}
+    # -- Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace.
+    namespaceOverride: ""
     rbac:
       # -- Role/RoleBinding annotations
       annotations: {}
@@ -942,6 +987,8 @@ vmstack:
     labels: {}
     # -- VTSingle annotations
     annotations: {}
+    # -- Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace.
+    namespaceOverride: ""
     # -- Create VTSingle CR
     enabled: false
     # -- Full spec for VTSingle CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vtsinglespec)
@@ -1023,6 +1070,8 @@ vmstack:
     labels: {}
     # -- VTCluster annotations
     annotations: {}
+    # -- Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace.
+    namespaceOverride: ""
     # -- Full spec for VTCluster CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vtclusterspec)
     spec:
       # renovate: image=victoriametrics/victoria-traces
@@ -1267,6 +1316,8 @@ vmstack:
     labels: {}
     # -- VMSingle annotations
     annotations: {}
+    # -- Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace.
+    namespaceOverride: ""
     # -- Create VMSingle CR
     enabled: true
     # -- Full spec for VMSingle CRD. Allowed values describe [here](https://docs.victoriametrics.com/operator/api/#vmsinglespec)
@@ -1385,6 +1436,8 @@ vmstack:
     labels: {}
     # -- VMCluster annotations
     annotations: {}
+    # -- Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace.
+    namespaceOverride: ""
     # -- Full spec for VMCluster CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vmclusterspec)
     spec:
       # -- Data retention period. Possible units character: h(ours), d(ays), w(eeks), y(ears), if no unit character specified - month. The minimum retention period is 24h. See these [docs](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#retention)
@@ -1635,6 +1688,8 @@ vmstack:
     labels: {}
     # -- VMAlertmanager annotations
     annotations: {}
+    # -- Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace.
+    namespaceOverride: ""
     # -- (object) Full spec for VMAlertmanager CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vmalertmanagerspec)
     spec:
       replicaCount: 1
@@ -1830,6 +1885,8 @@ vmstack:
     annotations: {}
     # -- VMAlert labels
     labels: {}
+    # -- Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace.
+    namespaceOverride: ""
     # -- Create VMAlert CR
     enabled: true
 
@@ -1926,6 +1983,8 @@ vmstack:
     labels: {}
     # -- VMAuth annotations
     annotations: {}
+    # -- Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace.
+    namespaceOverride: ""
     # -- (object) Full spec for VMAuth CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vmauthspec)
     # It's possible to use given below predefined variables in spec:
     # * `{{ .vm.read }}` - parsed vmselect, vmsingle or external.vm.read URL
@@ -1957,6 +2016,8 @@ vmstack:
     labels: {}
     # -- VMAgent annotations
     annotations: {}
+    # -- Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace.
+    namespaceOverride: ""
     rbac:
       # -- Role/RoleBinding annotations
       annotations: {}

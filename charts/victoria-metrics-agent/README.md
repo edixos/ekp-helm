@@ -1,6 +1,6 @@
 # victoria-metrics-agent
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.148.0](https://img.shields.io/badge/AppVersion-v1.148.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.149.0](https://img.shields.io/badge/AppVersion-v1.149.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmagent(victoria-metrics-agent) | 0.44.0 |
+| https://victoriametrics.github.io/helm-charts/ | vmagent(victoria-metrics-agent) | 0.45.0 |
 
 ## Maintainers
 
@@ -100,6 +100,11 @@ vmagent, packaged for the Edixos Kubernetes Platform. Wraps the upstream Victori
 | vmagent.lifecycle | object | `{}` | Specify pod lifecycle |
 | vmagent.mode | string | `"deployment"` | VMAgent mode: daemonSet, deployment, statefulSet |
 | vmagent.nameOverride | string | `""` | Override chart name |
+| vmagent.networkPolicy | object | `{"annotations":{},"egress":[],"enabled":false,"ingress":[],"labels":{}}` | See `kubectl explain networkpolicy.spec` for more. Details are [here](https://kubernetes.io/docs/concepts/services-networking/network-policies/) |
+| vmagent.networkPolicy.annotations | object | `{}` | Extra annotations for NetworkPolicy |
+| vmagent.networkPolicy.egress | list | `[]` | Egress rules |
+| vmagent.networkPolicy.ingress | list | `[]` | Ingress rules |
+| vmagent.networkPolicy.labels | object | `{}` | Extra labels for NetworkPolicy |
 | vmagent.nodeSelector | object | `{}` | Pod's node selector. Details are [here](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) |
 | vmagent.persistentVolume.accessModes | list | `["ReadWriteOnce"]` | Array of access modes. Must match those of existing PV or dynamic provisioner. Details are [here](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) |
 | vmagent.persistentVolume.annotations | object | `{}` | Persistent volume annotations |
@@ -204,7 +209,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: victoria-metrics-agent
     path: ''
     helm:
