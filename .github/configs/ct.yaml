@@ -26,6 +26,7 @@ chart-repos:
   - victoria-metrics-cluster=https://victoriametrics.github.io/helm-charts/
   - victoria-metrics-agent=https://victoriametrics.github.io/helm-charts/
   - victoria-metrics-k8s-stack=https://victoriametrics.github.io/helm-charts/
+  - zammad=https://zammad.github.io/zammad-helm
 
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
