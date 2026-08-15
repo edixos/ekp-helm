@@ -1,0 +1,31 @@
+{{/*
+VMServiceScrape objects for the Zammad release.
+
+Be aware of what this can and cannot collect: Zammad exposes no Prometheus
+endpoint of its own. Its only monitoring surface is
+`/api/v1/monitoring/status?token=…`, which answers JSON, not the text exposition
+format — VictoriaMetrics cannot read it. A scrape defined here therefore
+produces series only once something serves Prometheus metrics on the named port,
+i.e. a `zammad-exporter` sidecar added through
+`zammad.zammadConfig.nginx.sidecars`. Until then the VMServiceScrape is valid
+and simply resolves to zero targets.
+*/}}
+{{- range .Values.vmServiceScrapes }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ .name }}
+  namespace: {{ .namespace | default $.Release.Namespace }}
+  labels:
+    {{- include "zammad-wrapper.labels" $ | nindent 4 }}
+    {{- with .labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- toYaml .spec | nindent 2 }}
+{{- end }}

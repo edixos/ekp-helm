@@ -1,0 +1,35 @@
+{{/*
+Gateway API HTTPRoutes for the Zammad release.
+
+The upstream chart only ships an Ingress, and the platform terminates public
+traffic on Envoy Gateway instead — so the route lives here. The backend is the
+nginx Service the upstream chart creates (`<release>-zammad-nginx`), which is
+the only component that serves both the web UI and /api/v1; the railsserver and
+websocket Services are internal to the release.
+*/}}
+{{- range $name, $route := .Values.httpRoutes }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $name }}
+  namespace: {{ $route.namespace | default $.Release.Namespace }}
+  labels:
+    {{- include "zammad-wrapper.labels" $ | nindent 4 }}
+    {{- with $route.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $route.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    {{- toYaml $route.parentRefs | nindent 4 }}
+  {{- with $route.hostnames }}
+  hostnames:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+    {{- toYaml $route.rules | nindent 4 }}
+{{- end }}
