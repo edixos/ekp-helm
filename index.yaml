@@ -4953,4 +4953,21 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/workload-identity-0.1.0.tgz
     version: 0.1.0
-generated: "2026-08-15T12:48:27.064784302Z"
+  zammad:
+  - apiVersion: v2
+    appVersion: 7.1.2-0004
+    created: "2026-08-15T14:15:05.585499041Z"
+    dependencies:
+    - alias: zammad
+      name: zammad
+      repository: https://zammad.github.io/zammad-helm
+      version: 17.0.1
+    description: Zammad helpdesk, wired to an externally managed PostgreSQL and the
+      platform Gateway
+    digest: 079f9a03387823f40b9b9b754f41e126385841e680427daf70b371c7d87af4c2
+    name: zammad
+    type: application
+    urls:
+    - zammad-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-08-15T14:15:05.585819391Z"
