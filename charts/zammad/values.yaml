@@ -51,18 +51,17 @@ zammad:
       useExisting: false
       secretKey: autowizard
       secretName: autowizard
+    # These values are only used when zammadConfig.elasticsearch.enabled is false
+    # (i.e. for an external Elasticsearch service). For the bundled ECK Elasticsearch,
+    # the operator-generated secret is used automatically and these values are ignored.
     elasticsearch:
       useExisting: false
       secretKey: password
       secretName: elastic-credentials
     postgresql:
-      # ekp-helm: the database password is never rendered into a Secret by this
-      # chart. It is synced from Secret Manager by the `externalSecrets` entry
-      # below, which is also what the CNPG managed role reads — one remote
-      # value, two namespaces, so the role and the client cannot drift apart.
-      useExisting: true
-      secretKey: password
-      secretName: zammad-db
+      useExisting: false
+      secretKey: postgresql-pass
+      secretName: postgresql-pass
     redis:
       useExisting: false
       secretKey: redis-password
@@ -79,7 +78,7 @@ zammad:
   securityContext:
     fsGroup: 1000
     # https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#configure-volume-permission-and-ownership-change-policy-for-pods
-    fsGroupChangePolicy: Always
+    fsGroupChangePolicy: OnRootMismatch
     runAsUser: 1000
     runAsNonRoot: true
     runAsGroup: 1000
@@ -96,16 +95,14 @@ zammad:
 
   zammadConfig:
     elasticsearch:
-      # ekp-helm: off in every profile. Elasticsearch only powers Zammad's
-      # full-text search over tickets; it costs more memory than the rest of the
-      # stack combined and the helpdesk works without it. `initialisation` has to
-      # go off with it — left on, the init job blocks waiting for a cluster that
-      # was never deployed.
-      # enable/disable elasticsearch chart dependency
-      enabled: false
-      # host env var is only used when zammadConfig.elasticsearch.enabled is false
-      host: zammad-elasticsearch-master
-      initialisation: false
+      # enable/disable the bundled elasticsearch (ECK) chart dependency
+      enabled: true
+      # host, user and pass are only used when zammadConfig.elasticsearch.enabled is
+      # false (i.e. when connecting to an external Elasticsearch service). For the
+      # bundled ECK Elasticsearch, the host, the "elastic" user and the operator-
+      # generated password are resolved automatically and these values are ignored.
+      host: external-elasticsearch-host
+      initialisation: true
       pass: ""
       port: 9200
       reindex: false
@@ -209,21 +206,15 @@ zammad:
         #      app.kubernetes.io/name: zammad
 
     postgresql:
-      # ekp-helm: never the bundled subchart. Zammad shares the platform's
-      # CloudNativePG cluster, so `host` is the CNPG `-rw` Service and the
-      # database, role and password are owned by the cnpg release — see the
-      # `databases` / `externalSecrets` entries in gitops infra values. Set
-      # `host` per environment; there is no sane default for it.
       # enable/disable postgresql chart dependency
-      enabled: false
+      enabled: true
       # needs to be the same as the postgres.auth.database
-      db: zammad
+      db: zammad_production
       # Host of an external PostgreSQL server, only used when enabled is false.
       #   When the subchart is enabled, the host is derived from the release name instead.
-      host: ""
-      # ekp-helm: unused — secrets.postgresql.useExisting is true, so the password
-      # comes from the `zammad-db` Secret and this value is never rendered.
-      pass: ""
+      host: zammad-postgresql
+      # needs to be the same as the postgres.auth.password
+      pass: "zammad"
       port: 5432
       # needs to be the same as the postgres.auth.username
       user: zammad
@@ -558,28 +549,9 @@ zammad:
       #   initialised, e.g. while restoring a dump (see the PostgreSQL migration notes in the README).
       #   Zammad will not work correctly if this is left disabled permanently.
       enabled: true
-      # Appends the release revision to the job name so a new job always runs on
-      #   install/upgrade. Note that `helm template` and GitOps tools that render
-      #   manifests statically (e.g. Argo CD) always see revision 1, so the name
-      #   stays constant there and the job will not re-run on subsequent syncs -
-      #   see the Argo CD section in the README.
-      # ekp-helm: false, because under Argo CD the revision is always 1 and the
-      # suffix therefore only produces a permanently-named `-1` job that never
-      # re-runs. The migrations are re-run instead by the Argo sync-hook
-      # annotations below, which delete the previous Job before each sync.
-      randomName: false
       # specify how long after finish pods are deleted
       ttlSecondsAfterFinished: 300
-      # ekp-helm: PreSync rather than the default plain resource. Zammad's Rails
-      # containers start with RAILS_CHECK_PENDING_MIGRATIONS=true and refuse to
-      # boot while a migration is outstanding, so the schema has to be current
-      # *before* the new Deployments roll — which is exactly what PreSync means.
-      # BeforeHookCreation deletes the completed Job from the previous sync;
-      # without it the second sync finds an immutable, already-Complete Job and
-      # the migrations silently never run.
-      annotations:
-        argocd.argoproj.io/hook: PreSync
-        argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+      annotations: {}
       # my-annotation: "value"
       podLabels: {}
         # my-label: "value"
@@ -745,48 +717,67 @@ zammad:
 
   # dependency charts config
 
-  # Settings for the elasticsearch subchart
+  # Settings for the elasticsearch subchart (eck-elasticsearch).
+  #
+  # This deploys an Elasticsearch custom resource that is managed by the ECK operator.
+  # The ECK operator (and its CRDs) MUST already be installed in the cluster, see README.
+  #
+  # ECK names the resource "<release name>-es" (nameOverride below), which usually results in
+  # the in-cluster service "<release name>-es-es-http" and the auto-generated superuser secret
+  # "<release name>-es-es-elastic-user" (user "elastic") - the exact names depend on your release
+  # name, since a release name that already contains "es" as a substring (e.g. "zammad-helpdesk")
+  # is used as-is instead of getting "-es" appended. The Zammad templates pick these up
+  # automatically regardless. Kept short on purpose: ECK caps the Elasticsearch resource name
+  # itself at 36 characters, so a short nameOverride leaves more of that budget for the release
+  # name.
+  #
+  # The Elasticsearch version is not pinned here on purpose: it comes from the subchart's
+  # default, so it is carried along with the subchart version. Set "version" here if you
+  # need to pin a specific Elasticsearch version (it must be supported by the installed
+  # ECK operator).
   elasticsearch:
-    # Workaround: switch to bitnami legacy image repository (https://github.com/bitnami/containers/issues/83267)
-    image:
-      repository: bitnamilegacy/elasticsearch
-    sysctlImage:
-      repository: bitnamilegacy/os-shell
-    volumePermissions:
-      image:
-        repository: bitnamilegacy/os-shell
-    metrics:
-      image:
-        repository: bitnamilegacy/elasticsearch-exporter
-    global:
-      security:
-        allowInsecureImages: true
-
-    clusterName: zammad
-    coordinating:
-      replicaCount: 0
-    data:
-      replicaCount: 0
-    ingest:
-      replicaCount: 0
-    master:
-      heapSize: 512m
-      masterOnly: false
-      replicaCount: 1
-      resourcesPreset: medium
-      resources: {}
-        # requests:
-        #   cpu: 50m
-        #   memory: 512Mi
-        # limits:
-        #   cpu: 100m
-        #   memory: 1024Mi
-
-    # To use an existing Kubernetes secret containing the credentials,
-    # remove the comments on the lines below and adjust them accordingly
-    #
-    # security:
-    #   existingSecret: elastic-credentials
+    nameOverride: es
+    http:
+      tls:
+        selfSignedCertificate:
+          # Disable TLS on the HTTP layer (Variant A): Zammad talks plain http to ES.
+          # Native authentication (user "elastic" + generated password) stays enabled.
+          # Enabling this (selfSignedCertificate.disabled: false) is not supported yet: Zammad
+          # verifies TLS certificates by default and the chart does not mount the ECK-generated
+          # CA into the Zammad pods, so the zammad-init job will fail on certificate verification.
+          disabled: true
+    nodeSets:
+      - name: default
+        count: 1
+        config:
+          # Single-node default deployment without raising vm.max_map_count.
+          # For production, raise the kernel setting vm.max_map_count to 1048576 at
+          # the node level and remove this line instead. See:
+          # https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-virtual-memory.html
+          node.store.allow_mmap: false
+        volumeClaimTemplates:
+          - metadata:
+              name: elasticsearch-data
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 5Gi
+              # storageClassName: ""
+        podTemplate:
+          spec:
+            containers:
+              - name: elasticsearch
+                env:
+                  - name: ES_JAVA_OPTS
+                    value: "-Xms512m -Xmx512m"
+                resources:
+                  requests:
+                    cpu: 500m
+                    memory: 1Gi
+                  limits:
+                    memory: 1Gi
 
   # settings for the memcached subchart
   memcached:
@@ -898,7 +889,6 @@ zammad:
     # requests:
     #   cpu: 250m
     #   memory: 256Mi
-
 # -- List of ExternalSecrets to deploy
 externalSecrets: []
 
