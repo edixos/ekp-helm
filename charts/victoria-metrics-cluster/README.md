@@ -1,6 +1,6 @@
 # victoria-metrics-cluster
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.149.0](https://img.shields.io/badge/AppVersion-v1.149.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.150.0](https://img.shields.io/badge/AppVersion-v1.150.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmcluster(victoria-metrics-cluster) | 0.48.0 |
+| https://victoriametrics.github.io/helm-charts/ | vmcluster(victoria-metrics-cluster) | 0.49.0 |
 
 ## Maintainers
 
@@ -508,7 +508,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: victoria-metrics-cluster
     path: ''
     helm:

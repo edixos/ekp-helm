@@ -250,10 +250,10 @@ cilium:
     # @schema
     override: ~
     repository: "quay.io/cilium/cilium"
-    tag: "v1.20.0"
+    tag: "v1.20.1"
     pullPolicy: "IfNotPresent"
     # cilium-digest
-    digest: sha256:383968cd5e8873f7976fa76aa6196045643558f4cc9518a207b9335cb24a0e93
+    digest: sha256:ae9ea21f7427fe24bc6ea7247eb552157a1b0a431744045d3f641545ca71d11b
     useDigest: true
   # -- Scheduling configurations for cilium pods
   scheduling:
@@ -1283,7 +1283,7 @@ cilium:
     # -- Enable connectivity health checking between virtual endpoints.
     enabled: true
   # -- Max duration to wait for envoy to respond to configuration changes. Default "10s".
-  endpointPolicyUpdateTimeoutDuration: null
+  endpointPolicyUpdateTimeoutDuration: ""
   endpointRoutes:
     # @schema
     # type: [boolean, string]
@@ -1410,8 +1410,8 @@ cilium:
       # @schema
       override: ~
       repository: "quay.io/cilium/certgen"
-      tag: "v0.4.8"
-      digest: "sha256:e65f1d15a0ffaf2df32797c8ad1c797fc64dad11c274cd96a2eafa89d712cdc3"
+      tag: "v0.4.9"
+      digest: "sha256:6213a4c54a1f36e14a9280765f058aaa2017550c28bc122f5b09ad146fd0da2b"
       useDigest: true
       pullPolicy: "IfNotPresent"
     # @schema
@@ -1769,9 +1769,9 @@ cilium:
         # @schema
         override: ~
         repository: "quay.io/cilium/hubble-relay"
-        tag: "v1.20.0"
+        tag: "v1.20.1"
         # hubble-relay-digest
-        digest: sha256:2ca16981c7eb98df0ba9c9d18896bb9ca628b5cbd40dc9801339f4741f91ee94
+        digest: sha256:59be0ae7d475ab9011a5e954618c0f27b5778b17140381425b308b55ba4917f4
         useDigest: true
         pullPolicy: "IfNotPresent"
       # -- Specifies the resources for the hubble-relay pods
@@ -2824,6 +2824,9 @@ cilium:
     # @schema
     # -- Max duration to wait for endpoint policies to be restored on restart. Default "3m".
     policyRestoreTimeoutDuration: null
+    # @schema
+    # type: [null, integer]
+    # @schema
     # -- Time in seconds to block Envoy worker thread while an upstream HTTP connection is closing. If set to 0, the connection is closed immediately (with TCP RST). If set to -1, the connection is closed asynchronously in the background.
     httpUpstreamLingerTimeout: null
     # -- Envoy container image.
@@ -2833,9 +2836,9 @@ cilium:
       # @schema
       override: ~
       repository: "quay.io/cilium/cilium-envoy"
-      tag: "v1.37.5-1782911245-7cffc778c923f68a77954a53b1a98d6b5353f004"
+      tag: "v1.37.5-1786810558-766ccfb37260a43e9d228837aa84ce3faf9f64e7"
       pullPolicy: "IfNotPresent"
-      digest: "sha256:583057dd4f7d54cd41efff3c413aa0b148ac201f522e2c3336851fa89c78b039"
+      digest: "sha256:75b8094c7127736a2ffd2dce3945e0931cb6df21b0372ff661940eca26730b91"
       useDigest: true
     # -- Init containers added to the cilium Envoy DaemonSet.
     initContainers: []
@@ -3240,15 +3243,15 @@ cilium:
       # @schema
       override: ~
       repository: "quay.io/cilium/operator"
-      tag: "v1.20.0"
+      tag: "v1.20.1"
       # operator-generic-digest
-      genericDigest: sha256:80744a8cc7c91c2f9e6347629406844eb35d79b30a732c6d41c15b17232a74f3
+      genericDigest: sha256:6c3885fc7b629099fdbe2a5c87869c86feb825fa18fae299eac0f61918d16ecf
       # operator-azure-digest
-      azureDigest: sha256:4506f8d0c9f2dd187313f71b37a789986c1c1699f59c52973941df9eb5ccae0c
+      azureDigest: sha256:13746a479ca60395df8d83580b49464c6c975cca6fdb21ba4791a076ab01b031
       # operator-aws-digest
-      awsDigest: sha256:a0e50fa611fa3e2e8b1c9521a3e813576034a0b3d626e9c128ac01f8f7dfd0fa
+      awsDigest: sha256:7cf0cb0e6584f72ca8de951a1be03829f69fcaeba69dc6c7856fc4470545acd7
       # operator-alibabacloud-digest
-      alibabacloudDigest: sha256:52535dba067abf5b1cce2a666ee3f9430a1682ade3bf11db5f118436e84ad2e9
+      alibabacloudDigest: sha256:2af5dd3d85649ea36d365363b8eca82ad06116c6259c4aace700a7c036348e4c
       useDigest: true
       pullPolicy: "IfNotPresent"
       suffix: ""
@@ -3580,9 +3583,9 @@ cilium:
       # @schema
       override: ~
       repository: "quay.io/cilium/cilium"
-      tag: "v1.20.0"
+      tag: "v1.20.1"
       # cilium-digest
-      digest: sha256:383968cd5e8873f7976fa76aa6196045643558f4cc9518a207b9335cb24a0e93
+      digest: sha256:ae9ea21f7427fe24bc6ea7247eb552157a1b0a431744045d3f641545ca71d11b
       useDigest: true
       pullPolicy: "IfNotPresent"
     envoy:
@@ -3593,9 +3596,9 @@ cilium:
         # @schema
         override: ~
         repository: "quay.io/cilium/cilium-envoy"
-        tag: "v1.37.5-1782911245-7cffc778c923f68a77954a53b1a98d6b5353f004"
+        tag: "v1.37.5-1786810558-766ccfb37260a43e9d228837aa84ce3faf9f64e7"
         pullPolicy: "IfNotPresent"
-        digest: "sha256:583057dd4f7d54cd41efff3c413aa0b148ac201f522e2c3336851fa89c78b039"
+        digest: "sha256:75b8094c7127736a2ffd2dce3945e0931cb6df21b0372ff661940eca26730b91"
         useDigest: true
     # -- The priority class to use for the preflight pod.
     priorityClassName: ""
@@ -3862,9 +3865,9 @@ cilium:
         # @schema
         override: ~
         repository: "quay.io/cilium/clustermesh-apiserver"
-        tag: "v1.20.0"
+        tag: "v1.20.1"
         # clustermesh-apiserver-digest
-        digest: sha256:c791d0c334d4515d40041b2660d50a1b94b0179ef1d3c120bd350aebc9115e92
+        digest: sha256:d905d614a332b2058cb81c193e481d1f460902b903f4eb57cc9764640b750fb5
         useDigest: true
         pullPolicy: "IfNotPresent"
       # -- TCP port for the clustermesh-apiserver health API.
@@ -4393,7 +4396,7 @@ cilium:
             override: ~
             repository: "docker.io/library/busybox"
             tag: "1.38.0"
-            digest: "sha256:fd8d9aa63ba2f0982b5304e1ee8d3b90a210bc1ffb5314d980eb6962f1a9715d"
+            digest: "sha256:dc2d74b28e4cf8984fa52af1f39bc7c3d9c73760b41a74d629f5d11b1ab28616"
             useDigest: true
             pullPolicy: "IfNotPresent"
           # SPIRE agent configuration

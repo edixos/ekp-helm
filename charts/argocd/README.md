@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.14](https://img.shields.io/badge/Version-0.1.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.5.0](https://img.shields.io/badge/AppVersion-v3.5.0-informational?style=flat-square)
+![Version: 0.1.15](https://img.shields.io/badge/Version-0.1.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.5.1](https://img.shields.io/badge/AppVersion-v3.5.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 10.3.2 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 10.4.0 |
 
 ## Maintainers
 
@@ -165,6 +165,7 @@ A Helm chart for Kubernetes
 | argocd.applicationSet.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for ApplicationSet controller container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
 | argocd.applicationSet.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the ApplicationSet controller |
 | argocd.applicationSet.vpa.labels | object | `{}` | Labels to be added to ApplicationSet controller vpa |
+| argocd.applicationSet.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
 | argocd.applicationSet.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.commitServer.affinity | object | `{}` (defaults to global.affinity preset) | Assign custom [affinity] rules |
 | argocd.commitServer.automountServiceAccountToken | bool | `false` | Automount API credentials for the Service Account into the pod. |
@@ -232,6 +233,7 @@ A Helm chart for Kubernetes
 | argocd.commitServer.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for commit server container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
 | argocd.commitServer.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the commit server |
 | argocd.commitServer.vpa.labels | object | `{}` | Labels to be added to commit server vpa |
+| argocd.commitServer.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
 | argocd.commitServer.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.configs.clusterCredentials | object | `{}` (See [values.yaml]) | Provide one or multiple [external cluster credentials] # Ref: # - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#clusters # - https://argo-cd.readthedocs.io/en/stable/operator-manual/security/#external-cluster-credentials # - https://argo-cd.readthedocs.io/en/stable/user-guide/projects/#project-scoped-repositories-and-clusters |
 | argocd.configs.cm."admin.enabled" | bool | `true` | Enable local admin user # Ref: https://argo-cd.readthedocs.io/en/latest/faq/#how-to-disable-admin-user |
@@ -386,6 +388,7 @@ A Helm chart for Kubernetes
 | argocd.controller.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for application controller container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
 | argocd.controller.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the application controller |
 | argocd.controller.vpa.labels | object | `{}` | Labels to be added to application controller vpa |
+| argocd.controller.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
 | argocd.controller.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.crds.additionalLabels | object | `{}` | Additional labels to be added to all CRDs |
 | argocd.crds.annotations | object | `{"argocd.argoproj.io/sync-options":"ServerSideApply=true"}` | Annotations to be added to all CRDs |
@@ -498,6 +501,7 @@ A Helm chart for Kubernetes
 | argocd.dex.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for Dex server container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
 | argocd.dex.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Dex server |
 | argocd.dex.vpa.labels | object | `{}` | Labels to be added to Dex server vpa |
+| argocd.dex.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
 | argocd.dex.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.externalRedis.existingSecret | string | `""` | The name of an existing secret with Redis (must contain key `redis-password`. And should contain `redis-username` if username is not `default`) and Sentinel credentials. When it's set, the `externalRedis.username` and `externalRedis.password` parameters are ignored |
 | argocd.externalRedis.host | string | `""` | External Redis server host |
@@ -638,6 +642,7 @@ A Helm chart for Kubernetes
 | argocd.notifications.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for notifications controller container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
 | argocd.notifications.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the notifications controller |
 | argocd.notifications.vpa.labels | object | `{}` | Labels to be added to notifications controller vpa |
+| argocd.notifications.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
 | argocd.notifications.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.openshift.enabled | bool | `false` | enables using arbitrary uid for argo repo server |
 | argocd.redis-ha.additionalAffinities | object | `{}` | Additional affinities to add to the Redis server pods. |
@@ -769,6 +774,7 @@ A Helm chart for Kubernetes
 | argocd.redis.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for Redis container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
 | argocd.redis.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Redis |
 | argocd.redis.vpa.labels | object | `{}` | Labels to be added to Redis vpa |
+| argocd.redis.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
 | argocd.redis.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.redisSecretInit.affinity | object | `{}` | Assign custom [affinity] rules to the Redis secret-init Job |
 | argocd.redisSecretInit.containerSecurityContext | object | See [values.yaml] | Application controller container-level security context |
@@ -907,6 +913,7 @@ A Helm chart for Kubernetes
 | argocd.repoServer.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for repo server container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
 | argocd.repoServer.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the repo server |
 | argocd.repoServer.vpa.labels | object | `{}` | Labels to be added to repo server vpa |
+| argocd.repoServer.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
 | argocd.repoServer.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.server.affinity | object | `{}` (defaults to global.affinity preset) | Assign custom [affinity] rules to the deployment |
 | argocd.server.automountServiceAccountToken | bool | `true` | Automount API credentials for the Service Account into the pod. |
@@ -1122,6 +1129,7 @@ A Helm chart for Kubernetes
 | argocd.server.vpa.containerPolicy | object | `{}` | Controls how VPA computes the recommended resources for Argo CD server container # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml |
 | argocd.server.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Argo CD server |
 | argocd.server.vpa.labels | object | `{}` | Labels to be added to Argo CD server vpa |
+| argocd.server.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
 | argocd.server.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
@@ -1155,7 +1163,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.14"
+    targetRevision: "0.1.15"
     chart: argocd
     path: ''
     helm:
