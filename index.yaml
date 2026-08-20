@@ -2634,6 +2634,28 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/gcp-workload-identity-0.1.1.tgz
     version: 0.1.1
+  goldilocks:
+  - apiVersion: v2
+    appVersion: v4.16.1
+    created: "2026-08-20T12:04:04.396684824Z"
+    dependencies:
+    - name: goldilocks
+      repository: https://charts.fairwinds.com/stable
+      version: 11.0.0
+    description: Goldilocks packaged for the Edixos Kubernetes Platform.
+    digest: 7b65ab8efa36284a8a4b9edb6898e44ce9c4c323ce82f7bc3654cca5b412b934
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: goldilocks
+    sources:
+    - https://github.com/FairwindsOps/goldilocks
+    - https://github.com/FairwindsOps/charts/tree/master/stable/goldilocks
+    type: application
+    urls:
+    - goldilocks-0.1.0.tgz
+    version: 0.1.0
   grafana-stack:
   - apiVersion: v2
     appVersion: 11.3.1
@@ -4995,4 +5017,4 @@ entries:
     urls:
     - zammad-0.1.0.tgz
     version: 0.1.0
-generated: "2026-08-20T12:02:26.009971545Z"
+generated: "2026-08-20T12:04:04.396908916Z"
