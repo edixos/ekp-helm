@@ -1,0 +1,205 @@
+---
+rule_files:
+  - ../../resources/prometheus-rules/metrics-server.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # The metrics-server target goes away entirely.
+  - interval: 1m
+    input_series:
+      - series: 'up{job="metrics-server", namespace="infra-metrics-server", pod="metrics-server-6d94bc8694-4hqzn", service="metrics-server", endpoint="https"}'
+        values: '1+0x30 0+0x60 1+0x50'
+
+    alert_rule_test:
+      # Target is up.
+      - eval_time: 10m
+        alertname: MetricsServerIsDown
+
+      # Down since t=31m, `for` is 15m, so still pending at t=40m.
+      - eval_time: 40m
+        alertname: MetricsServerIsDown
+
+      - eval_time: 60m
+        alertname: MetricsServerIsDown
+        exp_alerts:
+          - exp_labels:
+              alertname: MetricsServerIsDown
+              severity: critical
+              job: metrics-server
+              namespace: infra-metrics-server
+              pod: metrics-server-6d94bc8694-4hqzn
+              service: metrics-server
+              endpoint: https
+            exp_annotations:
+              summary: "[metrics-server] Service metrics-server is down"
+              message: 'Service "metrics-server" in namespace "infra-metrics-server" is down, so the metrics.k8s.io API serves no data.'
+
+      # Target recovered at t=91m.
+      - eval_time: 110m
+        alertname: MetricsServerIsDown
+
+  # The process is up but node metrics stop being stored, which the resource
+  # metrics API reports as an empty list rather than an error.
+  - interval: 1m
+    input_series:
+      - series: 'metrics_server_storage_points{job="metrics-server", namespace="infra-metrics-server", type="node"}'
+        values: '5+0x10 0+0x40'
+      - series: 'metrics_server_storage_points{job="metrics-server", namespace="infra-metrics-server", type="container"}'
+        values: '42+0x50'
+
+    alert_rule_test:
+      # Node points still stored.
+      - eval_time: 5m
+        alertname: MetricsServerHasNoNodeMetrics
+
+      # Zero since t=11m, `for` is 15m, so still pending.
+      - eval_time: 20m
+        alertname: MetricsServerHasNoNodeMetrics
+
+      - eval_time: 40m
+        alertname: MetricsServerHasNoNodeMetrics
+        exp_alerts:
+          - exp_labels:
+              alertname: MetricsServerHasNoNodeMetrics
+              severity: critical
+              job: metrics-server
+              namespace: infra-metrics-server
+            exp_annotations:
+              summary: "[metrics-server] Metrics-server stores no node metrics"
+              message: 'Metrics-server in namespace "infra-metrics-server" has 0 stored node metric points, so `kubectl top nodes` and node-based autoscaling return nothing.'
+
+  # A minority of kubelets become unreachable: 1 in 10 requests fails.
+  - interval: 1m
+    input_series:
+      - series: 'metrics_server_kubelet_request_total{job="metrics-server", namespace="infra-metrics-server", success="true"}'
+        values: '0+9x40'
+      - series: 'metrics_server_kubelet_request_total{job="metrics-server", namespace="infra-metrics-server", success="false"}'
+        values: '0+1x40'
+
+    alert_rule_test:
+      # 10% error rate is over the 5% threshold, but `for` is 15m.
+      - eval_time: 10m
+        alertname: MetricsServerKubeletScrapeErrorsAreHigh
+
+      - eval_time: 30m
+        alertname: MetricsServerKubeletScrapeErrorsAreHigh
+        exp_alerts:
+          - exp_labels:
+              alertname: MetricsServerKubeletScrapeErrorsAreHigh
+              severity: warning
+              job: metrics-server
+              namespace: infra-metrics-server
+            exp_annotations:
+              summary: "[metrics-server] Metrics-server fails to scrape kubelets"
+              message: 'Metrics-server in namespace "infra-metrics-server" fails 10% of its kubelet requests, so metrics for the affected nodes and their pods are missing.'
+
+      # A 10% failure rate is not a total outage.
+      - eval_time: 30m
+        alertname: MetricsServerAllKubeletScrapesAreFailing
+
+  # Every kubelet request fails, which points at metrics-server's own kubelet
+  # TLS or authn/authz configuration rather than at individual nodes.
+  - interval: 1m
+    input_series:
+      - series: 'metrics_server_kubelet_request_total{job="metrics-server", namespace="infra-metrics-server", success="true"}'
+        values: '100+0x40'
+      - series: 'metrics_server_kubelet_request_total{job="metrics-server", namespace="infra-metrics-server", success="false"}'
+        values: '0+1x40'
+
+    alert_rule_test:
+      # Ratio is already 1, but `for` is 10m.
+      - eval_time: 5m
+        alertname: MetricsServerAllKubeletScrapesAreFailing
+
+      - eval_time: 20m
+        alertname: MetricsServerAllKubeletScrapesAreFailing
+        exp_alerts:
+          - exp_labels:
+              alertname: MetricsServerAllKubeletScrapesAreFailing
+              severity: critical
+              job: metrics-server
+              namespace: infra-metrics-server
+            exp_annotations:
+              summary: "[metrics-server] Every metrics-server kubelet scrape is failing"
+              message: 'All kubelet requests from metrics-server in namespace "infra-metrics-server" fail. Check the kubelet TLS configuration (`--kubelet-insecure-tls`, `--kubelet-preferred-address-types`) and the RBAC on nodes/metrics.'
+
+  # Kubelet responses slow down past half the 10s request timeout. Only the
+  # buckets around the threshold are needed to move the p99.
+  - interval: 1m
+    input_series:
+      - series: 'metrics_server_kubelet_request_duration_seconds_bucket{job="metrics-server", namespace="infra-metrics-server", le="5"}'
+        values: '0+0x40'
+      - series: 'metrics_server_kubelet_request_duration_seconds_bucket{job="metrics-server", namespace="infra-metrics-server", le="10"}'
+        values: '0+10x40'
+      - series: 'metrics_server_kubelet_request_duration_seconds_bucket{job="metrics-server", namespace="infra-metrics-server", le="+Inf"}'
+        values: '0+10x40'
+
+    alert_rule_test:
+      # p99 sits in the 5s-10s bucket from the start, but `for` is 15m.
+      - eval_time: 10m
+        alertname: MetricsServerKubeletRequestsAreSlow
+
+      - eval_time: 30m
+        alertname: MetricsServerKubeletRequestsAreSlow
+        exp_alerts:
+          - exp_labels:
+              alertname: MetricsServerKubeletRequestsAreSlow
+              severity: warning
+              job: metrics-server
+              namespace: infra-metrics-server
+            exp_annotations:
+              summary: "[metrics-server] Metrics-server kubelet requests are slow"
+              message: 'The p99 kubelet request duration of metrics-server in namespace "infra-metrics-server" is 9.95s, over half the 10s kubelet request timeout. Scrapes are about to start timing out.'
+
+  # Served metrics go stale past 90s, which stalls HPA decisions.
+  - interval: 1m
+    input_series:
+      - series: 'metrics_server_api_metric_freshness_seconds_bucket{job="metrics-server", namespace="infra-metrics-server", le="90"}'
+        values: '0+0x40'
+      - series: 'metrics_server_api_metric_freshness_seconds_bucket{job="metrics-server", namespace="infra-metrics-server", le="120"}'
+        values: '0+10x40'
+      - series: 'metrics_server_api_metric_freshness_seconds_bucket{job="metrics-server", namespace="infra-metrics-server", le="+Inf"}'
+        values: '0+10x40'
+
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: MetricsServerMetricsAreStale
+
+      - eval_time: 30m
+        alertname: MetricsServerMetricsAreStale
+        exp_alerts:
+          - exp_labels:
+              alertname: MetricsServerMetricsAreStale
+              severity: warning
+              job: metrics-server
+              namespace: infra-metrics-server
+            exp_annotations:
+              summary: "[metrics-server] Metrics-server serves stale metrics"
+              message: 'The p99 freshness of metrics served by metrics-server in namespace "infra-metrics-server" is 1m 59s. Autoscaling decisions are being made on stale data, or the HPA is discarding it.'
+
+  # The collect-and-store loop starts approaching the 15s metric resolution.
+  - interval: 1m
+    input_series:
+      - series: 'metrics_server_manager_tick_duration_seconds_bucket{job="metrics-server", namespace="infra-metrics-server", le="10"}'
+        values: '0+0x40'
+      - series: 'metrics_server_manager_tick_duration_seconds_bucket{job="metrics-server", namespace="infra-metrics-server", le="12.5"}'
+        values: '0+10x40'
+      - series: 'metrics_server_manager_tick_duration_seconds_bucket{job="metrics-server", namespace="infra-metrics-server", le="+Inf"}'
+        values: '0+10x40'
+
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: MetricsServerCollectionIsSlow
+
+      - eval_time: 30m
+        alertname: MetricsServerCollectionIsSlow
+        exp_alerts:
+          - exp_labels:
+              alertname: MetricsServerCollectionIsSlow
+              severity: warning
+              job: metrics-server
+              namespace: infra-metrics-server
+            exp_annotations:
+              summary: "[metrics-server] Metrics-server collection loop is slow"
+              message: 'The p99 collect-and-store duration of metrics-server in namespace "infra-metrics-server" is 12.47s, approaching the 15s metric resolution. Consider scaling metrics-server up (see https://github.com/kubernetes-sigs/metrics-server#scaling).'

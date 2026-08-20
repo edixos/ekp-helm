@@ -1,0 +1,21 @@
+apiVersion: v2
+name: metrics-server
+description: >-
+  Metrics Server packaged for the Edixos Kubernetes Platform. Wraps the 
+  upstream chart and provides the `metrics.k8s.io` API for `kubectl top`, 
+  HPA, and VPA, with optional Prometheus alerts and a Grafana dashboard. 
+  Extensions are fully configurable through values.
+type: application
+version: 0.1.0
+appVersion: "0.9.0"
+maintainers:
+  - name: hamzatalbi
+    email: hamzatalbi831@gmail.com
+    url: https://github.com/TalbiHamza
+sources:
+  - https://github.com/kubernetes-sigs/metrics-server
+  - https://github.com/kubernetes-sigs/metrics-server/tree/master/charts/metrics-server
+dependencies:
+  - name: metrics-server
+    version: 3.14.0
+    repository: "https://kubernetes-sigs.github.io/metrics-server/"
