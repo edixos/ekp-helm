@@ -1,0 +1,7 @@
+remote: origin
+chart-dirs:
+  - charts
+helm-extra-args: --timeout=500
+chart-repos:
+  - goldilocks=https://charts.fairwinds.com/stable
+check-version-increment: true
