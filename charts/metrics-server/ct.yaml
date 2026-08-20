@@ -1,0 +1,7 @@
+remote: origin
+chart-dirs:
+  - charts
+helm-extra-args: --timeout=500
+chart-repos:
+  - metrics-server=https://kubernetes-sigs.github.io/metrics-server/
+check-version-increment: true

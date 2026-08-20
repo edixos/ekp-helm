@@ -1,0 +1,27 @@
+---
+# Minimal values for pluto rendering.
+# Every platform extension is turned on so pluto also checks their API versions.
+global:
+  enableArgocdAnnotations: true
+
+prometheus:
+  enabled: true
+  rules:
+    enabled: true
+  grafanaDashboard:
+    enabled: true
+
+# Exercise the upstream objects whose API versions are worth covering in the
+# same pluto run: the ServiceMonitor, the PodDisruptionBudget, the APIService
+# and the cert-manager Certificate/Issuer pair.
+metrics-server:
+  metrics:
+    enabled: true
+  serviceMonitor:
+    enabled: true
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+  replicas: 2
+  tls:
+    type: cert-manager

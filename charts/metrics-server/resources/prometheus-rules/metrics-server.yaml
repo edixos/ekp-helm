@@ -1,0 +1,117 @@
+# Alerts for metrics-server. Expressions use only metrics exported by
+# metrics-server v0.9.0 itself, registered in:
+#   pkg/scraper/scraper.go   metrics_server_kubelet_request_total{success}
+#                            metrics_server_kubelet_request_duration_seconds{node}
+#   pkg/server/server.go     metrics_server_manager_tick_duration_seconds
+#   pkg/storage/monitoring.go  metrics_server_storage_points{type}
+#   pkg/api/monitoring.go    metrics_server_api_metric_freshness_seconds
+# The `job` matcher is a suffix match because the ServiceMonitor names the job
+# after the Service, which the upstream chart prefixes with the release name.
+# Thresholds assume the upstream default `--metric-resolution=15s` and may need
+# calibration per environment.
+groups:
+  - name: metrics-server
+    rules:
+      # Nothing serves metrics.k8s.io: `kubectl top` and every HPA that reads
+      # resource metrics stop working.
+      - alert: MetricsServerIsDown
+        expr: up{job=~".*metrics-server.*"} == 0
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: '[{{ $labels.job }}] Service metrics-server is down'
+          message: 'Service "metrics-server" in namespace "{{ $labels.namespace }}" is down, so the metrics.k8s.io API serves no data.'
+
+      # Storage is empty while the process is up: the resource metrics API
+      # answers with an empty list rather than failing, so this is silent.
+      - alert: MetricsServerHasNoNodeMetrics
+        expr: max(metrics_server_storage_points{job=~".*metrics-server.*", type="node"}) by (job, namespace) == 0
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: '[{{ $labels.job }}] Metrics-server stores no node metrics'
+          message: 'Metrics-server in namespace "{{ $labels.namespace }}" has 0 stored node metric points, so `kubectl top nodes` and node-based autoscaling return nothing.'
+
+  - name: metrics-server-scraping
+    rules:
+      # A minority of kubelets failing usually means a few unreachable or
+      # NotReady nodes, which only blanks those nodes in the metrics API.
+      - alert: MetricsServerKubeletScrapeErrorsAreHigh
+        expr: |
+          sum(rate(metrics_server_kubelet_request_total{job=~".*metrics-server.*", success="false"}[5m])) by (job, namespace)
+            /
+          sum(rate(metrics_server_kubelet_request_total{job=~".*metrics-server.*"}[5m])) by (job, namespace)
+            > 0.05
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: '[{{ $labels.job }}] Metrics-server fails to scrape kubelets'
+          message: 'Metrics-server in namespace "{{ $labels.namespace }}" fails {{ $value | humanizePercentage }} of its kubelet requests, so metrics for the affected nodes and their pods are missing.'
+
+      # Every kubelet request failing points at metrics-server itself — kubelet
+      # TLS or authn/authz, not individual nodes.
+      - alert: MetricsServerAllKubeletScrapesAreFailing
+        expr: |
+          sum(rate(metrics_server_kubelet_request_total{job=~".*metrics-server.*", success="false"}[5m])) by (job, namespace)
+            /
+          sum(rate(metrics_server_kubelet_request_total{job=~".*metrics-server.*"}[5m])) by (job, namespace)
+            == 1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: '[{{ $labels.job }}] Every metrics-server kubelet scrape is failing'
+          message: 'All kubelet requests from metrics-server in namespace "{{ $labels.namespace }}" fail. Check the kubelet TLS configuration (`--kubelet-insecure-tls`, `--kubelet-preferred-address-types`) and the RBAC on nodes/metrics.'
+
+      # Slow kubelet responses eat into the resolution window and precede
+      # scrapes timing out outright. This histogram uses the default buckets,
+      # whose largest finite bound is 10s, so the threshold must stay below
+      # that to be reachable at all; 5s is half the default
+      # --kubelet-request-timeout of 10s.
+      - alert: MetricsServerKubeletRequestsAreSlow
+        expr: |
+          histogram_quantile(
+            0.99,
+            sum(rate(metrics_server_kubelet_request_duration_seconds_bucket{job=~".*metrics-server.*"}[10m])) by (le, job, namespace)
+          ) > 5
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: '[{{ $labels.job }}] Metrics-server kubelet requests are slow'
+          message: 'The p99 kubelet request duration of metrics-server in namespace "{{ $labels.namespace }}" is {{ $value | humanizeDuration }}, over half the 10s kubelet request timeout. Scrapes are about to start timing out.'
+
+  - name: metrics-server-freshness
+    rules:
+      # The HPA rejects samples it considers too old, so stale metrics stall
+      # autoscaling even though the API still answers.
+      - alert: MetricsServerMetricsAreStale
+        expr: |
+          histogram_quantile(
+            0.99,
+            sum(rate(metrics_server_api_metric_freshness_seconds_bucket{job=~".*metrics-server.*"}[10m])) by (le, job, namespace)
+          ) > 90
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: '[{{ $labels.job }}] Metrics-server serves stale metrics'
+          message: 'The p99 freshness of metrics served by metrics-server in namespace "{{ $labels.namespace }}" is {{ $value | humanizeDuration }}. Autoscaling decisions are being made on stale data, or the HPA is discarding it.'
+
+      # The collection loop must finish inside --metric-resolution (15s by
+      # default) or scrapes queue up and freshness degrades.
+      - alert: MetricsServerCollectionIsSlow
+        expr: |
+          histogram_quantile(
+            0.99,
+            sum(rate(metrics_server_manager_tick_duration_seconds_bucket{job=~".*metrics-server.*"}[10m])) by (le, job, namespace)
+          ) > 10
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: '[{{ $labels.job }}] Metrics-server collection loop is slow'
+          message: 'The p99 collect-and-store duration of metrics-server in namespace "{{ $labels.namespace }}" is {{ $value | humanizeDuration }}, approaching the 15s metric resolution. Consider scaling metrics-server up (see https://github.com/kubernetes-sigs/metrics-server#scaling).'
