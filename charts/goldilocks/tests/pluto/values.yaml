@@ -1,0 +1,38 @@
+---
+# Minimal values for pluto rendering.
+# The optional dashboard objects are all turned on so pluto also checks their
+# API versions: the Ingress, the Gateway API HTTPRoute and the GKE
+# HealthCheckPolicy. The bundled vpa and metrics-server subcharts stay off, as
+# they do in values.yaml.
+goldilocks:
+  controller:
+    enabled: true
+  dashboard:
+    enabled: true
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts:
+        - host: goldilocks.edixos.local
+          paths:
+            - path: /
+              type: ImplementationSpecific
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: dummy-gateway
+          namespace: envoy-gateway-system
+          sectionName: https
+      hostnames:
+        - goldilocks.edixos.local
+    healthCheckPolicy:
+      enabled: true
+
+externalSecrets:
+  - name: dummy-es
+    spec:
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: dummy
+      target:
+        name: dummy
