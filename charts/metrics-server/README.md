@@ -21,7 +21,7 @@
 
 ## Description
 
-Metrics Server, packaged for the Edixos Kubernetes Platform. Wraps the upstream kubernetes-sigs chart — which serves the resource metrics API (metrics.k8s.io) that `kubectl top`, the HorizontalPodAutoscaler and the VerticalPodAutoscaler read from — and adds the platform extensions it does not provide: curated PrometheusRule alerts covering availability, kubelet scraping, metric freshness and the collection loop, plus a Grafana dashboard shipped as a sidecar-discoverable ConfigMap. The upstream chart already renders the ServiceMonitor, so enable it under `metrics-server.serviceMonitor`. Every extension is optional and driven entirely by values.
+Metrics Server packaged for the Edixos Kubernetes Platform. Wraps the upstream chart and provides the `metrics.k8s.io` API for `kubectl top`, HPA, and VPA, with optional Prometheus alerts and a Grafana dashboard. Extensions are fully configurable through values.
 
 ## Source Code
 
