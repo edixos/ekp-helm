@@ -1,6 +1,6 @@
 # envoy-gateway
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.8.3](https://img.shields.io/badge/AppVersion-v1.8.3-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.9.0](https://img.shields.io/badge/AppVersion-v1.9.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://docker.io/envoyproxy | envoy-gateway(gateway-helm) | 1.8.3 |
+| oci://docker.io/envoyproxy | envoy-gateway(gateway-helm) | 1.9.0 |
 
 ## Maintainers
 
@@ -30,7 +30,7 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | backendTrafficPolicies | object | `{}` |  |
 | certificates | object | `{}` |  |
 | clientTrafficPolicies | object | `{}` |  |
-| envoy-gateway.certgen | object | `{"job":{"affinity":{},"annotations":{},"args":[],"nodeSelector":{},"pod":{"annotations":{},"labels":{}},"resources":{},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65532,"runAsNonRoot":true,"runAsUser":65532,"seccompProfile":{"type":"RuntimeDefault"}},"tolerations":[],"ttlSecondsAfterFinished":30},"rbac":{"annotations":{},"labels":{}}}` | Certgen is used to generate the certificates required by EnvoyGateway. If you want to construct a custom certificate, you can generate a custom certificate through Cert-Manager before installing EnvoyGateway. Certgen will not overwrite the custom certificate. Please do not manually modify `values.yaml` to disable certgen, it may cause EnvoyGateway OIDC,OAuth2,etc. to not work as expected. |
+| envoy-gateway.certgen | object | `{"job":{"affinity":{},"annotations":{},"args":[],"nodeSelector":{},"pod":{"annotations":{},"labels":{},"securityContext":{"fsGroup":65532,"runAsGroup":65532,"runAsNonRoot":true,"runAsUser":65532,"seccompProfile":{"type":"RuntimeDefault"}}},"resources":{},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65532,"runAsNonRoot":true,"runAsUser":65532,"seccompProfile":{"type":"RuntimeDefault"}},"tolerations":[],"ttlSecondsAfterFinished":30},"rbac":{"annotations":{},"labels":{}}}` | Certgen is used to generate the certificates required by EnvoyGateway. If you want to construct a custom certificate, you can generate a custom certificate through Cert-Manager before installing EnvoyGateway. Certgen will not overwrite the custom certificate. Please do not manually modify `values.yaml` to disable certgen, it may cause EnvoyGateway OIDC,OAuth2,etc. to not work as expected. |
 | envoy-gateway.commonLabels | object | `{}` | Labels to apply to all resources |
 | envoy-gateway.config.envoyGateway | object | `{"extensionApis":{},"gateway":{"controllerName":"gateway.envoyproxy.io/gatewayclass-controller"},"logging":{"level":{"default":"info"}},"provider":{"type":"Kubernetes"}}` | EnvoyGateway configuration. Visit https://gateway.envoyproxy.io/docs/api/extension_types/#envoygateway to view all options. |
 | envoy-gateway.crds.enabled | bool | `true` | Install Envoy Gateway CRDs, Gateway API CRDs, and Gateway API safe upgrade policy resources. Set to false when these resources are managed separately. |
@@ -41,16 +41,35 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | envoy-gateway.deployment.envoyGateway.image.tag | string | `""` |  |
 | envoy-gateway.deployment.envoyGateway.imagePullPolicy | string | `""` |  |
 | envoy-gateway.deployment.envoyGateway.imagePullSecrets | list | `[]` |  |
+| envoy-gateway.deployment.envoyGateway.livenessProbe.httpGet.path | string | `"/healthz"` |  |
+| envoy-gateway.deployment.envoyGateway.livenessProbe.httpGet.port | int | `8081` |  |
+| envoy-gateway.deployment.envoyGateway.livenessProbe.periodSeconds | int | `20` |  |
+| envoy-gateway.deployment.envoyGateway.livenessProbe.successThreshold | int | `1` |  |
+| envoy-gateway.deployment.envoyGateway.livenessProbe.timeoutSeconds | int | `1` |  |
+| envoy-gateway.deployment.envoyGateway.readinessProbe.httpGet.path | string | `"/readyz"` |  |
+| envoy-gateway.deployment.envoyGateway.readinessProbe.httpGet.port | int | `8081` |  |
+| envoy-gateway.deployment.envoyGateway.readinessProbe.periodSeconds | int | `10` |  |
+| envoy-gateway.deployment.envoyGateway.readinessProbe.successThreshold | int | `1` |  |
+| envoy-gateway.deployment.envoyGateway.readinessProbe.timeoutSeconds | int | `1` |  |
 | envoy-gateway.deployment.envoyGateway.resources.limits.memory | string | `"1024Mi"` |  |
 | envoy-gateway.deployment.envoyGateway.resources.requests.cpu | string | `"100m"` |  |
 | envoy-gateway.deployment.envoyGateway.resources.requests.memory | string | `"256Mi"` |  |
 | envoy-gateway.deployment.envoyGateway.securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | envoy-gateway.deployment.envoyGateway.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | envoy-gateway.deployment.envoyGateway.securityContext.privileged | bool | `false` |  |
+| envoy-gateway.deployment.envoyGateway.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | envoy-gateway.deployment.envoyGateway.securityContext.runAsGroup | int | `65532` |  |
 | envoy-gateway.deployment.envoyGateway.securityContext.runAsNonRoot | bool | `true` |  |
 | envoy-gateway.deployment.envoyGateway.securityContext.runAsUser | int | `65532` |  |
 | envoy-gateway.deployment.envoyGateway.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| envoy-gateway.deployment.envoyGateway.startupProbe.failureThreshold | int | `30` |  |
+| envoy-gateway.deployment.envoyGateway.startupProbe.httpGet.path | string | `"/healthz"` |  |
+| envoy-gateway.deployment.envoyGateway.startupProbe.httpGet.port | int | `8081` |  |
+| envoy-gateway.deployment.envoyGateway.startupProbe.periodSeconds | int | `1` |  |
+| envoy-gateway.deployment.envoyGateway.startupProbe.successThreshold | int | `1` |  |
+| envoy-gateway.deployment.envoyGateway.startupProbe.timeoutSeconds | int | `1` |  |
+| envoy-gateway.deployment.envoyGateway.strategy | object | `{}` | Volume source for the Wasm module cache mounted at /var/lib/eg/wasm. Defaults to an emptyDir when left empty. Example: persist the Wasm module cache across controller restarts by backing it with a PersistentVolumeClaim:   wasmCacheVolume:     persistentVolumeClaim:       claimName: envoy-gateway-wasm-cache |
+| envoy-gateway.deployment.envoyGateway.wasmCacheVolume | object | `{}` |  |
 | envoy-gateway.deployment.pod.affinity | object | `{}` |  |
 | envoy-gateway.deployment.pod.annotations."prometheus.io/port" | string | `"19001"` |  |
 | envoy-gateway.deployment.pod.annotations."prometheus.io/scrape" | string | `"true"` |  |
@@ -58,6 +77,11 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | envoy-gateway.deployment.pod.extraVolumes | list | `[]` |  |
 | envoy-gateway.deployment.pod.labels | object | `{}` |  |
 | envoy-gateway.deployment.pod.nodeSelector | object | `{}` |  |
+| envoy-gateway.deployment.pod.securityContext.fsGroup | int | `65532` |  |
+| envoy-gateway.deployment.pod.securityContext.runAsGroup | int | `65532` |  |
+| envoy-gateway.deployment.pod.securityContext.runAsNonRoot | bool | `true` |  |
+| envoy-gateway.deployment.pod.securityContext.runAsUser | int | `65532` |  |
+| envoy-gateway.deployment.pod.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | envoy-gateway.deployment.pod.tolerations | list | `[]` |  |
 | envoy-gateway.deployment.pod.topologySpreadConstraints | list | `[]` |  |
 | envoy-gateway.deployment.ports[0].name | string | `"grpc"` |  |
@@ -76,13 +100,13 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | envoy-gateway.deployment.replicas | int | `1` |  |
 | envoy-gateway.global.imagePullSecrets | list | `[]` | Global override for image pull secrets |
 | envoy-gateway.global.imageRegistry | string | `""` | Global override for image registry |
-| envoy-gateway.global.images.envoyGateway.image | string | `"docker.io/envoyproxy/gateway:v1.8.3"` |  |
-| envoy-gateway.global.images.envoyGateway.pullPolicy | string | `"IfNotPresent"` |  |
-| envoy-gateway.global.images.envoyGateway.pullSecrets | list | `[]` |  |
-| envoy-gateway.global.images.envoyProxy.image | string | `""` |  |
-| envoy-gateway.global.images.envoyProxy.pullPolicy | string | `""` |  |
-| envoy-gateway.global.images.envoyProxy.pullSecrets | list | `[]` |  |
-| envoy-gateway.global.images.ratelimit.image | string | `"docker.io/envoyproxy/ratelimit:1e50889b"` |  |
+| envoy-gateway.global.images.envoyGateway.image | string | `"docker.io/envoyproxy/gateway:v1.9.0"` | Full image for the Envoy Gateway control plane Deployment installed by this chart. |
+| envoy-gateway.global.images.envoyGateway.pullPolicy | string | `"IfNotPresent"` | Image pull policy for the Envoy Gateway control plane Deployment. Default behavior: latest images will be Always else IfNotPresent. |
+| envoy-gateway.global.images.envoyGateway.pullSecrets | list | `[]` | Pull secrets for the Envoy Gateway control plane Deployment. |
+| envoy-gateway.global.images.envoyProxy.image | string | `""` | Full image for the managed Envoy Proxy data plane. This updates the generated `envoyProxy` config and does not change the `envoy-gateway` control plane Deployment image. If not specified, the default image built into `envoy-gateway` is used. |
+| envoy-gateway.global.images.envoyProxy.pullPolicy | string | `""` | Image pull policy for the managed Envoy Proxy data plane. Default behavior: IfNotPresent. |
+| envoy-gateway.global.images.envoyProxy.pullSecrets | list | `[]` | Pull secrets for the managed Envoy Proxy data plane. |
+| envoy-gateway.global.images.ratelimit.image | string | `"docker.io/envoyproxy/ratelimit:17b1956c"` |  |
 | envoy-gateway.global.images.ratelimit.pullPolicy | string | `"IfNotPresent"` |  |
 | envoy-gateway.global.images.ratelimit.pullSecrets | list | `[]` |  |
 | envoy-gateway.hpa.behavior | object | `{}` |  |
@@ -149,7 +173,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.7"
+    targetRevision: "0.1.8"
     chart: envoy-gateway
     path: ''
     helm:
