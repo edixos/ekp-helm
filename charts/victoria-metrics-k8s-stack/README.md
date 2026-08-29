@@ -1,6 +1,6 @@
 # victoria-metrics-k8s-stack
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.149.0](https://img.shields.io/badge/AppVersion-v1.149.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.150.0](https://img.shields.io/badge/AppVersion-v1.150.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmstack(victoria-metrics-k8s-stack) | 0.90.2 |
+| https://victoriametrics.github.io/helm-charts/ | vmstack(victoria-metrics-k8s-stack) | 0.91.2 |
 
 ## Maintainers
 
@@ -291,7 +291,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.syncJob.extraVolumes | list | `[]` | Extra volumes to add to the sync-job Pod. Useful for mounting custom CA certificates; set SSL_CERT_FILE in env to point to the mounted cert. |
 | vmstack.syncJob.image.pullPolicy | string | `"IfNotPresent"` |  |
 | vmstack.syncJob.image.repository | string | `"ghcr.io/victoriametrics/sync-job"` |  |
-| vmstack.syncJob.image.tag | string | `"v0.0.13"` |  |
+| vmstack.syncJob.image.tag | string | `"v0.0.16"` |  |
 | vmstack.syncJob.nodeSelector | object | `{}` |  |
 | vmstack.syncJob.podAnnotations | object | `{}` | Annotations to add to the sync-job Pod |
 | vmstack.syncJob.podSecurityContext | object | `{}` | Security context for the sync-job Pod |
@@ -664,7 +664,7 @@ spec:
   project: infra
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: victoria-metrics-k8s-stack
     helm:
       releaseName: vmks

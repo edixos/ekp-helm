@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.14](https://img.shields.io/badge/Version-0.1.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.93.0](https://img.shields.io/badge/AppVersion-v0.93.0-informational?style=flat-square)
+![Version: 0.1.15](https://img.shields.io/badge/Version-0.1.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.93.1](https://img.shields.io/badge/AppVersion-v0.93.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 88.3.0 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 88.5.4 |
 
 ## Description
 
@@ -53,7 +53,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.repository | string | `"prometheus/alertmanager"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.alertmanager.alertmanagerSpec.image.tag | string | `"v0.33.1"` |  |
+| kubePrometheusStack.alertmanager.alertmanagerSpec.image.tag | string | `"v0.34.0"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.limits | object | `{}` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.listenLocal | bool | `false` |  |
@@ -846,7 +846,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.repository | string | `"prometheus/prometheus"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.13.2-distroless"` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.14.0-distroless"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.keepDroppedTargets | int | `0` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.labelLimit | int | `0` |  |
@@ -1155,7 +1155,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.registry | string | `"ghcr.io"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.repository | string | `"jkroepke/kube-webhook-certgen"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"1.8.5"` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"1.8.7"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.nodeSelector | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.priorityClassName | string | `""` |  |
@@ -1452,7 +1452,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.14"
+    targetRevision: "0.1.15"
     chart: kube-prometheus-stack
     path: ''
     helm:

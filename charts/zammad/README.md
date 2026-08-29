@@ -1,6 +1,6 @@
 # zammad
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 7.1.2-0004](https://img.shields.io/badge/AppVersion-7.1.2--0004-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 7.1.3-0000](https://img.shields.io/badge/AppVersion-7.1.3--0000-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://zammad.github.io/zammad-helm | zammad(zammad) | 17.0.1 |
+| https://zammad.github.io/zammad-helm | zammad(zammad) | 18.0.2 |
 
 ## Description
 
@@ -28,20 +28,20 @@ Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gate
 | zammad.autoWizard.enabled | bool | `false` |  |
 | zammad.commonAnnotations | object | `{}` |  |
 | zammad.commonLabels | object | `{}` |  |
-| zammad.elasticsearch.clusterName | string | `"zammad"` |  |
-| zammad.elasticsearch.coordinating.replicaCount | int | `0` |  |
-| zammad.elasticsearch.data.replicaCount | int | `0` |  |
-| zammad.elasticsearch.global.security.allowInsecureImages | bool | `true` |  |
-| zammad.elasticsearch.image.repository | string | `"bitnamilegacy/elasticsearch"` |  |
-| zammad.elasticsearch.ingest.replicaCount | int | `0` |  |
-| zammad.elasticsearch.master.heapSize | string | `"512m"` |  |
-| zammad.elasticsearch.master.masterOnly | bool | `false` |  |
-| zammad.elasticsearch.master.replicaCount | int | `1` |  |
-| zammad.elasticsearch.master.resources | object | `{}` |  |
-| zammad.elasticsearch.master.resourcesPreset | string | `"medium"` |  |
-| zammad.elasticsearch.metrics.image.repository | string | `"bitnamilegacy/elasticsearch-exporter"` |  |
-| zammad.elasticsearch.sysctlImage.repository | string | `"bitnamilegacy/os-shell"` |  |
-| zammad.elasticsearch.volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` |  |
+| zammad.elasticsearch.http.tls.selfSignedCertificate.disabled | bool | `true` |  |
+| zammad.elasticsearch.nameOverride | string | `"es"` |  |
+| zammad.elasticsearch.nodeSets[0].config."node.store.allow_mmap" | bool | `false` |  |
+| zammad.elasticsearch.nodeSets[0].count | int | `1` |  |
+| zammad.elasticsearch.nodeSets[0].name | string | `"default"` |  |
+| zammad.elasticsearch.nodeSets[0].podTemplate.spec.containers[0].env[0].name | string | `"ES_JAVA_OPTS"` |  |
+| zammad.elasticsearch.nodeSets[0].podTemplate.spec.containers[0].env[0].value | string | `"-Xms512m -Xmx512m"` |  |
+| zammad.elasticsearch.nodeSets[0].podTemplate.spec.containers[0].name | string | `"elasticsearch"` |  |
+| zammad.elasticsearch.nodeSets[0].podTemplate.spec.containers[0].resources.limits.memory | string | `"1Gi"` |  |
+| zammad.elasticsearch.nodeSets[0].podTemplate.spec.containers[0].resources.requests.cpu | string | `"500m"` |  |
+| zammad.elasticsearch.nodeSets[0].podTemplate.spec.containers[0].resources.requests.memory | string | `"1Gi"` |  |
+| zammad.elasticsearch.nodeSets[0].volumeClaimTemplates[0].metadata.name | string | `"elasticsearch-data"` |  |
+| zammad.elasticsearch.nodeSets[0].volumeClaimTemplates[0].spec.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| zammad.elasticsearch.nodeSets[0].volumeClaimTemplates[0].spec.resources.requests.storage | string | `"5Gi"` |  |
 | zammad.extraEnv | list | `[]` |  |
 | zammad.image.imagePullSecrets | list | `[]` |  |
 | zammad.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -87,9 +87,9 @@ Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gate
 | zammad.secrets.elasticsearch.secretKey | string | `"password"` |  |
 | zammad.secrets.elasticsearch.secretName | string | `"elastic-credentials"` |  |
 | zammad.secrets.elasticsearch.useExisting | bool | `false` |  |
-| zammad.secrets.postgresql.secretKey | string | `"password"` |  |
-| zammad.secrets.postgresql.secretName | string | `"zammad-db"` |  |
-| zammad.secrets.postgresql.useExisting | bool | `true` |  |
+| zammad.secrets.postgresql.secretKey | string | `"postgresql-pass"` |  |
+| zammad.secrets.postgresql.secretName | string | `"postgresql-pass"` |  |
+| zammad.secrets.postgresql.useExisting | bool | `false` |  |
 | zammad.secrets.redis.secretKey | string | `"redis-password"` |  |
 | zammad.secrets.redis.secretName | string | `"redis-pass"` |  |
 | zammad.secrets.redis.sentinel.secretKey | string | `"redis-sentinel-password"` |  |
@@ -100,7 +100,7 @@ Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gate
 | zammad.secrets.s3.secretName | string | `"s3-url"` |  |
 | zammad.secrets.s3.useExisting | bool | `false` |  |
 | zammad.securityContext.fsGroup | int | `1000` |  |
-| zammad.securityContext.fsGroupChangePolicy | string | `"Always"` |  |
+| zammad.securityContext.fsGroupChangePolicy | string | `"OnRootMismatch"` |  |
 | zammad.securityContext.runAsGroup | int | `1000` |  |
 | zammad.securityContext.runAsNonRoot | bool | `true` |  |
 | zammad.securityContext.runAsUser | int | `1000` |  |
@@ -121,9 +121,9 @@ Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gate
 | zammad.zammadConfig.cronJob.reindex.suspend | bool | `true` |  |
 | zammad.zammadConfig.customVolumeMounts | string | `nil` |  |
 | zammad.zammadConfig.customVolumes | string | `nil` |  |
-| zammad.zammadConfig.elasticsearch.enabled | bool | `false` |  |
-| zammad.zammadConfig.elasticsearch.host | string | `"zammad-elasticsearch-master"` |  |
-| zammad.zammadConfig.elasticsearch.initialisation | bool | `false` |  |
+| zammad.zammadConfig.elasticsearch.enabled | bool | `true` |  |
+| zammad.zammadConfig.elasticsearch.host | string | `"external-elasticsearch-host"` |  |
+| zammad.zammadConfig.elasticsearch.initialisation | bool | `true` |  |
 | zammad.zammadConfig.elasticsearch.pass | string | `""` |  |
 | zammad.zammadConfig.elasticsearch.port | int | `9200` |  |
 | zammad.zammadConfig.elasticsearch.reindex | bool | `false` |  |
@@ -159,14 +159,12 @@ Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gate
 | zammad.zammadConfig.initContainers.zammad.securityContext.privileged | bool | `false` |  |
 | zammad.zammadConfig.initContainers.zammad.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | zammad.zammadConfig.initJob.affinity | object | `{}` |  |
-| zammad.zammadConfig.initJob.annotations."argocd.argoproj.io/hook" | string | `"PreSync"` |  |
-| zammad.zammadConfig.initJob.annotations."argocd.argoproj.io/hook-delete-policy" | string | `"BeforeHookCreation"` |  |
+| zammad.zammadConfig.initJob.annotations | object | `{}` |  |
 | zammad.zammadConfig.initJob.enabled | bool | `true` |  |
 | zammad.zammadConfig.initJob.nodeSelector | object | `{}` |  |
 | zammad.zammadConfig.initJob.podAnnotations | object | `{}` |  |
 | zammad.zammadConfig.initJob.podLabels | object | `{}` |  |
 | zammad.zammadConfig.initJob.podSpec | object | `{}` |  |
-| zammad.zammadConfig.initJob.randomName | bool | `false` |  |
 | zammad.zammadConfig.initJob.tolerations | list | `[]` |  |
 | zammad.zammadConfig.initJob.topologySpreadConstraints | list | `[]` |  |
 | zammad.zammadConfig.initJob.ttlSecondsAfterFinished | int | `300` |  |
@@ -205,11 +203,11 @@ Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gate
 | zammad.zammadConfig.nginx.topologySpreadConstraints | list | `[]` |  |
 | zammad.zammadConfig.nginx.trustedProxies | list | `[]` |  |
 | zammad.zammadConfig.nginx.websocketExtraHeaders | list | `[]` |  |
-| zammad.zammadConfig.postgresql.db | string | `"zammad"` |  |
-| zammad.zammadConfig.postgresql.enabled | bool | `false` |  |
-| zammad.zammadConfig.postgresql.host | string | `""` |  |
+| zammad.zammadConfig.postgresql.db | string | `"zammad_production"` |  |
+| zammad.zammadConfig.postgresql.enabled | bool | `true` |  |
+| zammad.zammadConfig.postgresql.host | string | `"zammad-postgresql"` |  |
 | zammad.zammadConfig.postgresql.options | string | `"pool=50"` |  |
-| zammad.zammadConfig.postgresql.pass | string | `""` |  |
+| zammad.zammadConfig.postgresql.pass | string | `"zammad"` |  |
 | zammad.zammadConfig.postgresql.port | int | `5432` |  |
 | zammad.zammadConfig.postgresql.user | string | `"zammad"` |  |
 | zammad.zammadConfig.railsserver.affinity | object | `{}` |  |
@@ -317,7 +315,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: zammad
     path: ''
     helm:

@@ -1020,7 +1020,7 @@ kubePrometheusStack:
       image:
         registry: quay.io
         repository: prometheus/alertmanager
-        tag: v0.33.1
+        tag: v0.34.0
         sha: ""
         pullPolicy: IfNotPresent
 
@@ -1251,7 +1251,7 @@ kubePrometheusStack:
       containers: []
       # containers:
       # - name: oauth-proxy
-      #   image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.3
+      #   image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.4
       #   args:
       #   - --upstream=http://127.0.0.1:9093
       #   - --http-address=0.0.0.0:8081
@@ -3131,7 +3131,7 @@ kubePrometheusStack:
         image:
           registry: ghcr.io
           repository: jkroepke/kube-webhook-certgen
-          tag: 1.8.5
+          tag: 1.8.7
           sha: ""
           pullPolicy: IfNotPresent
         resources: {}
@@ -4346,7 +4346,7 @@ kubePrometheusStack:
       image:
         registry: quay.io
         repository: prometheus/prometheus
-        tag: v3.13.2-distroless
+        tag: v3.14.0-distroless
         sha: ""
         pullPolicy: IfNotPresent
 
@@ -4870,7 +4870,7 @@ kubePrometheusStack:
       containers: []
       # containers:
       # - name: oauth-proxy
-      #   image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.3
+      #   image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.4
       #   args:
       #   - --upstream=http://127.0.0.1:9090
       #   - --http-address=0.0.0.0:8081
