@@ -445,6 +445,13 @@ argocd:
           - ClusterBackgroundScanReport
           - UpdateRequest
 
+      # -- Additional resource exclusions to append to the default `resource.exclusions` list above,
+      # so that the defaults can be kept up to date without needing to duplicate/override them.
+      # These entries are always appended, never substituted: if you also set `resource.exclusions`
+      # yourself, they are appended to your value rather than to the chart defaults.
+      # @default -- `[]`
+      resourceExclusionsAdditional: []
+
     # Argo CD configuration parameters
     ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cmd-params-cm.yaml
     params:
@@ -849,6 +856,13 @@ argocd:
       ## Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec
       ## NOTE: specify only zero or one recommender as of VPA 1.7.1
       recommenders: []
+      # -- Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set
+      ## Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup
+      startupBoost: {}
+        # cpu:
+        #   type: Factor
+        #   factor: 2
+        #   durationSeconds: 10
 
     ## Application controller image
     image:
@@ -986,6 +1000,28 @@ argocd:
       successThreshold: 1
       # -- Number of seconds after which the [probe] times out
       timeoutSeconds: 1
+
+    ## Liveness probe for the application controller.
+    ## Disabled by default, matching upstream: Argo CD removed this probe deliberately
+    ## (argoproj/argo-cd#9557) because restarting an overloaded controller usually makes
+    ## things worse. Enable only if you have a known failure mode (e.g. deadlock) where
+    ## a restart is the correct remediation, and size the thresholds generously.
+    ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+    livenessProbe:
+      # -- Enable Kubernetes liveness probe for Application controller
+      enabled: false
+      # -- Http path to use for the liveness probe
+      httpPath: /healthz
+      # -- Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+      failureThreshold: 5
+      # -- Number of seconds after the container has started before [probe] is initiated
+      initialDelaySeconds: 10
+      # -- How often (in seconds) to perform the [probe]
+      periodSeconds: 30
+      # -- Minimum consecutive successes for the [probe] to be considered successful after having failed
+      successThreshold: 1
+      # -- Number of seconds after which the [probe] times out
+      timeoutSeconds: 5
 
     ## Startup probe for application controller (optional)
     ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
@@ -1250,6 +1286,13 @@ argocd:
       ## Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec
       ## NOTE: specify only zero or one recommender as of VPA 1.7.1
       recommenders: []
+      # -- Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set
+      ## Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup
+      startupBoost: {}
+        # cpu:
+        #   type: Factor
+        #   factor: 2
+        #   durationSeconds: 10
 
     ## Dex image
     image:
@@ -1575,6 +1618,13 @@ argocd:
       ## Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec
       ## NOTE: specify only zero or one recommender as of VPA 1.7.1
       recommenders: []
+      # -- Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set
+      ## Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup
+      startupBoost: {}
+        # cpu:
+        #   type: Factor
+        #   factor: 2
+        #   durationSeconds: 10
 
     ## Redis image
     image:
@@ -1598,7 +1648,7 @@ argocd:
         # -- Repository to use for the redis-exporter
         repository: ghcr.io/oliver006/redis_exporter
         # -- Tag to use for the redis-exporter
-        tag: v1.89.0
+        tag: v1.91.1
         # -- Image pull policy for the redis-exporter
         # @default -- `""` (defaults to global.image.imagePullPolicy)
         imagePullPolicy: ""
@@ -1752,6 +1802,9 @@ argocd:
       # -- Metrics container port
       metrics: 9121
 
+    # -- Host Network for redis pods
+    hostNetwork: false
+
     # -- [DNS configuration]
     dnsConfig: {}
     # -- Alternative DNS policy for Redis server pods
@@ -1877,8 +1930,10 @@ argocd:
       # -- Redis repository
       repository: ecr-public.aws.com/docker/library/redis
       # -- Redis tag
-      ## Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis
-      tag: 8.2.3-alpine
+      ## Do not use 7.4.0 <= v < 8.0.0, otherwise you are no longer using an open source version of Redis
+      ## Runs ahead of the upstream HA manifests' pin: the redis 8.2.x line is only built on Alpine 3.22,
+      ## whose OpenSSL carries known vulnerabilities (GHSA-5p3w-hgjv-f6q3 report); 8.6.x is the patched base.
+      tag: 8.6.4-alpine
     ## Prometheus redis-exporter sidecar
     exporter:
       # -- Enable Prometheus redis-exporter sidecar
@@ -1900,6 +1955,18 @@ argocd:
         # -- Will save the DB if both the given number of seconds and the given number of write operations against the DB occurred. `""`  is disabled
         # @default -- `'""'`
         save: '""'
+    ## Redis sentinel specific configuration options
+    sentinel:
+      # -- Sentinel container lifecycle hooks. The default `postStart` hook resets the sentinel state after a rolling update to prevent high CPU usage
+      # @default -- See [values.yaml]
+      lifecycle:
+        postStart:
+          exec:
+            ## Note: the reset command hardcodes the master group name `argocd`. If you override `redis-ha.redis.masterGroupName`, you must override this hook to match.
+            command:
+              - '/bin/sh'
+              - '-c'
+              - 'sleep 30; redis-cli -p 26379 sentinel reset argocd'
     ## Enables a HA Proxy for better LoadBalancing / Sentinel Master support. Automatically proxies to Redis master.
     haproxy:
       # -- Enabled HAProxy LoadBalancing/Proxy
@@ -2055,6 +2122,14 @@ argocd:
     # @default -- `""` (defaults to global.priorityClassName)
     priorityClassName: ""
 
+    # -- Host Network for redis-secret-init pods
+    hostNetwork: false
+
+    # -- [DNS configuration]
+    dnsConfig: {}
+    # -- Alternative DNS policy for Redis secret-init Job
+    dnsPolicy: "ClusterFirst"
+
     # -- Assign custom [affinity] rules to the Redis secret-init Job
     affinity: {}
 
@@ -2151,6 +2226,13 @@ argocd:
       ## Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec
       ## NOTE: specify only zero or one recommender as of VPA 1.7.1
       recommenders: []
+      # -- Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set
+      ## Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup
+      startupBoost: {}
+        # cpu:
+        #   type: Factor
+        #   factor: 2
+        #   durationSeconds: 10
 
     ## Argo CD server image
     image:
@@ -2199,7 +2281,7 @@ argocd:
         # -- Repository to use for extension installer image
         repository: "quay.io/argoprojlabs/argocd-extension-installer"
         # -- Tag to use for extension installer image
-        tag: "v1.0.1"
+        tag: "v1.1.0"
         # -- Image pull policy for extensions
         # @default -- `""` (defaults to global.image.imagePullPolicy)
         imagePullPolicy: ""
@@ -3063,6 +3145,13 @@ argocd:
       ## Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec
       ## NOTE: specify only zero or one recommender as of VPA 1.7.1
       recommenders: []
+      # -- Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set
+      ## Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup
+      startupBoost: {}
+        # cpu:
+        #   type: Factor
+        #   factor: 2
+        #   durationSeconds: 10
 
     ## Repo server image
     image:
@@ -3505,6 +3594,13 @@ argocd:
       ## Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec
       ## NOTE: specify only zero or one recommender as of VPA 1.7.1
       recommenders: []
+      # -- Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set
+      ## Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup
+      startupBoost: {}
+        # cpu:
+        #   type: Factor
+        #   factor: 2
+        #   durationSeconds: 10
 
     ## ApplicationSet controller image
     image:
@@ -4027,6 +4123,13 @@ argocd:
       ## Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec
       ## NOTE: specify only zero or one recommender as of VPA 1.7.1
       recommenders: []
+      # -- Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set
+      ## Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup
+      startupBoost: {}
+        # cpu:
+        #   type: Factor
+        #   factor: 2
+        #   durationSeconds: 10
 
     ## Notifications controller image
     image:
@@ -4827,4 +4930,11 @@ argocd:
       ## Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec
       ## NOTE: specify only zero or one recommender as of VPA 1.7.1
       recommenders: []
+      # -- Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set
+      ## Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup
+      startupBoost: {}
+        # cpu:
+        #   type: Factor
+        #   factor: 2
+        #   durationSeconds: 10
 securityPolicies: {}
