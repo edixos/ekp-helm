@@ -2,7 +2,7 @@ apiVersion: v2
 name: goldilocks
 description: Goldilocks packaged for the Edixos Kubernetes Platform.
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "v4.16.1"
 maintainers:
   - name: hamzatalbi
@@ -13,5 +13,5 @@ sources:
   - https://github.com/FairwindsOps/charts/tree/master/stable/goldilocks
 dependencies:
   - name: goldilocks
-    version: 11.0.0
+    version: 11.1.0
     repository: "https://charts.fairwinds.com/stable"
