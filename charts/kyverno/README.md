@@ -1,6 +1,6 @@
 # kyverno
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.19.0](https://img.shields.io/badge/AppVersion-v1.19.0-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.19.1](https://img.shields.io/badge/AppVersion-v1.19.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kyverno.github.io/kyverno/ | kyverno | 3.9.0 |
+| https://kyverno.github.io/kyverno/ | kyverno | 3.9.1 |
 
 ## Maintainers
 
@@ -550,7 +550,7 @@ A Helm chart for kyverno
 | kyverno.reportsController.profiling.nodePort | string | `nil` | Service node port. Only used if `type` is `NodePort`. |
 | kyverno.reportsController.profiling.port | int | `6060` | Profiling endpoint port |
 | kyverno.reportsController.profiling.serviceType | string | `"ClusterIP"` | Service type. |
-| kyverno.reportsController.rbac.clusterRole.extraResources | list | `[]` | Extra resource permissions to add in the cluster role |
+| kyverno.reportsController.rbac.clusterRole.extraResources | list | `[]` | Extra resource permissions to add in the cluster role (granted get/list/watch). Required for background-scan/PolicyReport coverage of custom workload CRDs (e.g. Argo Rollout, JobSet) referenced by a CEL policy's `spec.autogen.podControllers.controllers` - Kyverno cannot self-grant RBAC for arbitrary CRDs, so list/watch access for each such CRD must be added here. |
 | kyverno.reportsController.rbac.coreClusterRole.extraResources | list | See [values.yaml](values.yaml) | Extra resource permissions to add in the core cluster role. This was introduced to avoid breaking change in the chart but should ideally be moved in `clusterRole.extraResources`. |
 | kyverno.reportsController.rbac.create | bool | `true` | Create RBAC resources |
 | kyverno.reportsController.rbac.createViewRoleBinding | bool | `true` | Create rolebinding to view role |
@@ -660,7 +660,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.7"
+    targetRevision: "0.1.8"
     chart: kyverno
     path: ''
     helm:
