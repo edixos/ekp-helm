@@ -29,6 +29,7 @@ chart-repos:
   - zammad=https://zammad.github.io/zammad-helm
   - metrics-server=https://kubernetes-sigs.github.io/metrics-server/
   - goldilocks=https://charts.fairwinds.com/stable
+  - tetragon=https://helm.cilium.io/
 
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false

@@ -1,0 +1,82 @@
+---
+rule_files:
+  - ../../resources/prometheus-rules/tetragon-up.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # TEST1: Absence of Tetragon - no input series
+  - interval: 1m
+    input_series:
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: TetragonDown
+        exp_alerts:
+          - exp_labels:
+              alertname: TetragonDown
+              severity: critical
+            exp_annotations:
+              summary: "Tetragon is down"
+              description: "No Tetragon agent has been scraped successfully for more than 5 minutes. The cluster has no runtime security events."
+
+  # TEST2: One node's agent stops reporting - should trigger TetragonAgentDown
+  - name: TetragonAgentDown should fire when a node's agent is unscrapable
+    interval: 1m
+    input_series:
+      - series: 'up{job="tetragon", node="worker-1", instance="10.0.0.1:2112"}'
+        values: '1x5 0x15'
+      - series: 'up{job="tetragon", node="worker-2", instance="10.0.0.2:2112"}'
+        values: '1x20'
+    alert_rule_test:
+      - eval_time: 18m
+        alertname: TetragonAgentDown
+        exp_alerts:
+          - exp_labels:
+              job: tetragon
+              node: worker-1
+              instance: 10.0.0.1:2112
+              severity: warning
+            exp_annotations:
+              summary: "Tetragon agent is not reporting on a node"
+              description: "The Tetragon agent on node worker-1 has not been scraped successfully for more than 10 minutes. Runtime events from that node are missing."
+      # The cluster is still being scraped, so the critical alert stays silent
+      - eval_time: 18m
+        alertname: TetragonDown
+        exp_alerts: []
+
+  # TEST3: Tetragon pod restarting - should trigger TetragonHighRestarts
+  - name: TetragonHighRestarts should fire when 8+ restarts in 15m
+    interval: 1m
+    input_series:
+      - series: 'kube_pod_container_status_restarts_total{namespace="infra-tetragon", pod="tetragon-abc123", container="tetragon"}'
+        values: '0x5 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: TetragonHighRestarts
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              namespace: infra-tetragon
+              pod: tetragon-abc123
+              container: tetragon
+            exp_annotations:
+              summary: "Tetragon pods are restarting frequently"
+              description: 'Tetragon pod tetragon-abc123 has restarted 15 times in the last 15 minutes.'
+
+  # TEST4: Healthy Tetragon - no alerts
+  - interval: 1m
+    input_series:
+      - series: 'up{job="tetragon", node="worker-1", instance="10.0.0.1:2112"}'
+        values: '1x15'
+      - series: 'kube_pod_container_status_restarts_total{namespace="infra-tetragon", pod="tetragon-abc123", container="tetragon"}'
+        values: '0x15'
+    alert_rule_test:
+      - eval_time: 12m
+        alertname: TetragonDown
+        exp_alerts: []
+      - eval_time: 12m
+        alertname: TetragonAgentDown
+        exp_alerts: []
+      - eval_time: 12m
+        alertname: TetragonHighRestarts
+        exp_alerts: []

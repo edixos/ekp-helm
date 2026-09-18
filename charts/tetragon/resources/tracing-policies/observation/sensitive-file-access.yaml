@@ -1,0 +1,113 @@
+# Reports reads of credential/boot files and writes into the directories that
+# hold the binaries, libraries and configuration a node runs from.
+#
+# Derived from the upstream Tetragon quickstart policy
+# (examples/quickstart/file_monitoring.yaml, v1.7.1). Two deliberate changes for
+# a Kubernetes node:
+#
+#   * /var/log and /dev/log are not watched for writes. On a node every
+#     container log line is a write under /var/log/pods, so upstream's list
+#     turns the event stream into a copy of the cluster's logs.
+#   * the Kubernetes credential directories are watched for reads, since a read
+#     of the kubelet client key is worth an event on a cluster node.
+#
+# Report only: no selector carries an enforcing action, so nothing a workload
+# does is ever blocked or killed by this policy.
+kprobes:
+  - call: "security_file_permission"
+    syscall: false
+    return: true
+    args:
+      - index: 0
+        type: "file" # (struct file *) used for getting the path
+      - index: 1
+        type: "int" # 0x04 is MAY_READ, 0x02 is MAY_WRITE
+    returnArg:
+      index: 0
+      type: "int"
+    selectors:
+      # Reads of sensitive files and directories
+      - matchArgs:
+          - index: 0
+            operator: "Prefix"
+            values:
+              - "/boot"
+              - "/root/.ssh"
+              - "/etc/shadow"
+              - "/etc/profile"
+              - "/etc/sudoers"
+              - "/etc/pam.conf"
+              - "/etc/bashrc"
+              - "/etc/csh.cshrc"
+              - "/etc/csh.login"
+              - "/etc/kubernetes/pki"   # control plane keys and certificates
+              - "/var/lib/kubelet/pki"  # kubelet client and serving keys
+          - index: 1
+            operator: "Equal"
+            values:
+              - "4" # MAY_READ
+      # Reads of shell and environment files, wherever they live
+      - matchArgs:
+          - index: 0
+            operator: "Postfix"
+            values:
+              - ".bashrc"
+              - ".bash_profile"
+              - ".bash_login"
+              - ".bash_logout"
+              - ".cshrc"
+              - ".cshdirs"
+              - ".profile"
+              - ".login"
+              - ".logout"
+              - ".history"
+          - index: 1
+            operator: "Equal"
+            values:
+              - "4" # MAY_READ
+      # Writes into the directories a node executes from
+      - matchArgs:
+          - index: 0
+            operator: "Prefix"
+            values:
+              - "/etc"
+              - "/boot"
+              - "/lib"
+              - "/lib64"
+              - "/bin"
+              - "/usr/lib"
+              - "/usr/local/lib"
+              - "/usr/local/sbin"
+              - "/usr/local/bin"
+              - "/usr/bin"
+              - "/usr/sbin"
+              - "/root/.ssh"
+          - index: 1
+            operator: "Equal"
+            values:
+              - "2" # MAY_WRITE
+  - call: "security_path_truncate"
+    syscall: false
+    return: true
+    args:
+      - index: 0
+        type: "path" # (struct path *) used for getting the path
+    returnArg:
+      index: 0
+      type: "int"
+    selectors:
+      - matchArgs:
+          - index: 0
+            operator: "Prefix"
+            values:
+              - "/etc"
+              - "/boot"
+              - "/lib"
+              - "/lib64"
+              - "/usr/lib"
+              - "/usr/local/lib"
+              - "/usr/local/sbin"
+              - "/usr/local/bin"
+              - "/usr/bin"
+              - "/usr/sbin"
+              - "/root/.ssh"

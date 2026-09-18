@@ -1,0 +1,78 @@
+{{/*
+TracingPolicy resources shipped with the chart.
+
+  observation/  reports the matching kernel events, nothing else.
+  enforcement/  SIGKILLs the process that matched, and is therefore rendered
+                only for the namespaces named in values.
+
+Both bundles hold the *spec* of a policy; the resource around it is built here
+so that the mode a policy runs in is a property of this chart and not of the
+file, and so that the same file can never be installed cluster-wide by mistake.
+*/}}
+{{- if and .Values.tracingPolicies.enabled .Values.tetragon.enabled }}
+{{- $root := . }}
+{{- if .Values.tracingPolicies.observation.enabled }}
+{{- range $name := .Values.tracingPolicies.observation.policies }}
+{{- $path := printf "resources/tracing-policies/observation/%s.yaml" $name }}
+{{- $spec := $root.Files.Get $path }}
+{{- if not $spec }}
+{{- fail (printf "tracingPolicies.observation.policies: %q is not a bundled policy (%s does not exist)" $name $path) }}
+{{- end }}
+---
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "tetragon.labels" $root | nindent 4 }}
+    tetragon.edixos.com/mode: observation
+  {{- with include "tetragon.tracingPolicyAnnotations" $root }}
+  {{- . | nindent 2 }}
+  {{- end }}
+spec:
+{{ $spec | indent 2 }}
+{{- end }}
+{{- end }}
+{{- if .Values.tracingPolicies.enforcement.enabled }}
+{{- range $namespace := .Values.tracingPolicies.enforcement.namespaces }}
+{{- range $name := $root.Values.tracingPolicies.enforcement.policies }}
+{{- $path := printf "resources/tracing-policies/enforcement/%s.yaml" $name }}
+{{- $spec := $root.Files.Get $path }}
+{{- if not $spec }}
+{{- fail (printf "tracingPolicies.enforcement.policies: %q is not a bundled policy (%s does not exist)" $name $path) }}
+{{- end }}
+---
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicyNamespaced
+metadata:
+  name: {{ $name }}
+  namespace: {{ $namespace }}
+  labels:
+    {{- include "tetragon.labels" $root | nindent 4 }}
+    tetragon.edixos.com/mode: enforcement
+  {{- with include "tetragon.tracingPolicyAnnotations" $root }}
+  {{- . | nindent 2 }}
+  {{- end }}
+spec:
+{{ $spec | indent 2 }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- range $policy := .Values.tracingPolicies.extra }}
+---
+apiVersion: cilium.io/v1alpha1
+kind: {{ if $policy.namespace }}TracingPolicyNamespaced{{ else }}TracingPolicy{{ end }}
+metadata:
+  name: {{ required "tracingPolicies.extra: every policy needs a name" $policy.name }}
+  {{- with $policy.namespace }}
+  namespace: {{ . }}
+  {{- end }}
+  labels:
+    {{- include "tetragon.labels" $root | nindent 4 }}
+  {{- with include "tetragon.tracingPolicyAnnotations" $root }}
+  {{- . | nindent 2 }}
+  {{- end }}
+spec:
+{{ required "tracingPolicies.extra: every policy needs a spec" $policy.spec | toYaml | indent 2 }}
+{{- end }}
+{{- end }}

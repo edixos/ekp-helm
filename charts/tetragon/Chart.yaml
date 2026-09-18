@@ -1,0 +1,25 @@
+apiVersion: v2
+name: tetragon
+description: >-
+  Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps
+  the upstream Cilium Tetragon chart, which deploys the eBPF agent DaemonSet and
+  the operator that owns the TracingPolicy CRDs, and adds the EKP extensions:
+  file-backed TracingPolicy bundles split into observation and enforcement,
+  Prometheus alerting rules and a Grafana dashboard. The baseline is
+  observation-only; enforcement is opt-in per policy and per namespace. All
+  upstream settings are available under the tetragon values key.
+type: application
+version: 0.1.0
+appVersion: "1.7.1"
+maintainers:
+  - name: hamzatalbi
+    email: hamzatalbi831@gmail.com
+    url: https://github.com/TalbiHamza
+sources:
+  - https://github.com/cilium/tetragon
+  - https://github.com/cilium/tetragon/tree/main/install/kubernetes/tetragon
+dependencies:
+  - name: tetragon
+    version: 1.7.1
+    repository: "https://helm.cilium.io/"
+    condition: tetragon.enabled
