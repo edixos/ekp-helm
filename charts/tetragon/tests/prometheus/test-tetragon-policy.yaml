@@ -1,0 +1,59 @@
+---
+rule_files:
+  - ../../resources/prometheus-rules/tetragon-policy.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # TEST1: A tracing policy fails to load on one node
+  - name: TetragonTracingPolicyLoadFailed should fire while a policy is in error
+    interval: 1m
+    input_series:
+      - series: 'tetragon_tracingpolicy_loaded{state="enabled", node="worker-1"}'
+        values: '2x20'
+      - series: 'tetragon_tracingpolicy_loaded{state="load_error", node="worker-1"}'
+        values: '1x20'
+      - series: 'tetragon_tracingpolicy_loaded{state="enabled", node="worker-2"}'
+        values: '3x20'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: TetragonTracingPolicyLoadFailed
+        exp_alerts:
+          - exp_labels:
+              node: worker-1
+              severity: critical
+            exp_annotations:
+              summary: "Tetragon failed to load a tracing policy"
+              description: "1 tracing policies are in an error state on node worker-1. The events, or the enforcement, that those policies provide are not in effect on that node."
+
+  # TEST2: Events are dropped from the kernel ring buffer
+  - name: TetragonEventsLost should fire while the ring buffer overflows
+    interval: 1m
+    input_series:
+      - series: 'tetragon_observer_ringbuf_events_lost_total{node="worker-1"}'
+        values: '0+60x25'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: TetragonEventsLost
+        exp_alerts:
+          - exp_labels:
+              node: worker-1
+              severity: warning
+            exp_annotations:
+              summary: "Tetragon is losing events"
+              description: "Tetragon on node worker-1 has been dropping events from the kernel ring buffer for 15 minutes (1.00 events/s). Observations from that node are incomplete."
+
+  # TEST3: All policies loaded, nothing dropped - no alerts
+  - interval: 1m
+    input_series:
+      - series: 'tetragon_tracingpolicy_loaded{state="enabled", node="worker-1"}'
+        values: '2x20'
+      - series: 'tetragon_observer_ringbuf_events_lost_total{node="worker-1"}'
+        values: '0x20'
+    alert_rule_test:
+      - eval_time: 18m
+        alertname: TetragonTracingPolicyLoadFailed
+        exp_alerts: []
+      - eval_time: 18m
+        alertname: TetragonEventsLost
+        exp_alerts: []

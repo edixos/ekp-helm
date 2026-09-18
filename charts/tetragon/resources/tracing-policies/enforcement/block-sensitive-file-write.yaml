@@ -1,0 +1,78 @@
+# ENFORCING. Kills the process that writes to (or truncates) a file holding
+# credentials or a file the system executes from.
+#
+# Derived from the upstream Tetragon quickstart enforcement policy
+# (examples/quickstart/file_monitoring_enforce.yaml, v1.7.1), narrowed to the
+# paths where a write is never part of a normal workload:
+#
+#   * upstream also SIGKILLs on writes below /etc, /usr/lib and /var/log. A
+#     container image that runs `apt-get install`, rewrites /etc/resolv.conf or
+#     writes its own log file does all three, so that list kills ordinary
+#     workloads. This one keeps the credential stores and the executable paths.
+#
+# Installed as a TracingPolicyNamespaced, into the namespaces listed under
+# `tracingPolicies.enforcement.namespaces` only — it never applies cluster-wide.
+# Run the workloads of a namespace against the observation bundle first and read
+# the events before adding that namespace here.
+kprobes:
+  - call: "security_file_permission"
+    syscall: false
+    return: true
+    args:
+      - index: 0
+        type: "file" # (struct file *) used for getting the path
+      - index: 1
+        type: "int" # 0x04 is MAY_READ, 0x02 is MAY_WRITE
+    returnArg:
+      index: 0
+      type: "int"
+    selectors:
+      - matchArgs:
+          - index: 0
+            operator: "Prefix"
+            values:
+              - "/etc/shadow"
+              - "/etc/passwd"
+              - "/etc/sudoers"
+              - "/etc/pam.conf"
+              - "/root/.ssh"
+              - "/boot"
+              - "/bin"
+              - "/sbin"
+              - "/usr/bin"
+              - "/usr/sbin"
+              - "/usr/local/bin"
+              - "/usr/local/sbin"
+          - index: 1
+            operator: "Equal"
+            values:
+              - "2" # MAY_WRITE
+        matchActions:
+          - action: Sigkill
+  - call: "security_path_truncate"
+    syscall: false
+    return: true
+    args:
+      - index: 0
+        type: "path" # (struct path *) used for getting the path
+    returnArg:
+      index: 0
+      type: "int"
+    selectors:
+      - matchArgs:
+          - index: 0
+            operator: "Prefix"
+            values:
+              - "/etc/shadow"
+              - "/etc/passwd"
+              - "/etc/sudoers"
+              - "/root/.ssh"
+              - "/boot"
+              - "/bin"
+              - "/sbin"
+              - "/usr/bin"
+              - "/usr/sbin"
+              - "/usr/local/bin"
+              - "/usr/local/sbin"
+        matchActions:
+          - action: Sigkill

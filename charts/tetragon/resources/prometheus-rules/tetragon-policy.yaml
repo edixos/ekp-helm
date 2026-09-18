@@ -1,0 +1,20 @@
+groups:
+- name: tetragon.policy.rules
+  rules:
+  - alert: TetragonTracingPolicyLoadFailed
+    expr: sum by (node) (tetragon_tracingpolicy_loaded{state=~"error|load_error"}) > 0
+    for: 10m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Tetragon failed to load a tracing policy"
+      description: "{{ printf \"%.0f\" $value }} tracing policies are in an error state on node {{ $labels.node }}. The events, or the enforcement, that those policies provide are not in effect on that node."
+
+  - alert: TetragonEventsLost
+    expr: sum by (node) (rate(tetragon_observer_ringbuf_events_lost_total[5m])) > 0
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Tetragon is losing events"
+      description: "Tetragon on node {{ $labels.node }} has been dropping events from the kernel ring buffer for 15 minutes ({{ printf \"%.2f\" $value }} events/s). Observations from that node are incomplete."

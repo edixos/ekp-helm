@@ -1,0 +1,29 @@
+groups:
+- name: tetragon.availability.rules
+  rules:
+  - alert: TetragonDown
+    expr: absent(up{job="tetragon"} == 1)
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Tetragon is down"
+      description: "No Tetragon agent has been scraped successfully for more than 5 minutes. The cluster has no runtime security events."
+
+  - alert: TetragonAgentDown
+    expr: up{job="tetragon"} == 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Tetragon agent is not reporting on a node"
+      description: "The Tetragon agent on node {{ $labels.node }} has not been scraped successfully for more than 10 minutes. Runtime events from that node are missing."
+
+  - alert: TetragonHighRestarts
+    expr: increase(kube_pod_container_status_restarts_total{container="tetragon"}[15m]) >= 8
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Tetragon pods are restarting frequently"
+      description: "Tetragon pod {{ $labels.pod }} has restarted {{ printf \"%.0f\" $value }} times in the last 15 minutes."
