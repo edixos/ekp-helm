@@ -4579,6 +4579,35 @@ entries:
     urls:
     - scaleway-csi-0.1.0.tgz
     version: 0.1.0
+  tetragon:
+  - apiVersion: v2
+    appVersion: 1.7.1
+    created: "2026-09-18T07:53:01.2680138Z"
+    dependencies:
+    - condition: tetragon.enabled
+      name: tetragon
+      repository: https://helm.cilium.io/
+      version: 1.7.1
+    description: 'Tetragon runtime security packaged for the Edixos Kubernetes Platform.
+      Wraps the upstream Cilium Tetragon chart, which deploys the eBPF agent DaemonSet
+      and the operator that owns the TracingPolicy CRDs, and adds the EKP extensions:
+      file-backed TracingPolicy bundles split into observation and enforcement, Prometheus
+      alerting rules and a Grafana dashboard. The baseline is observation-only; enforcement
+      is opt-in per policy and per namespace. All upstream settings are available
+      under the tetragon values key.'
+    digest: de2322b364d4a07e621ca4651231191d2a65fa79b81142aa8dfe070fa9dbe7a9
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: tetragon
+    sources:
+    - https://github.com/cilium/tetragon
+    - https://github.com/cilium/tetragon/tree/main/install/kubernetes/tetragon
+    type: application
+    urls:
+    - tetragon-0.1.0.tgz
+    version: 0.1.0
   velero:
   - apiVersion: v2
     appVersion: 1.18.1
@@ -5270,4 +5299,4 @@ entries:
     urls:
     - zammad-0.1.0.tgz
     version: 0.1.0
-generated: "2026-08-29T22:29:57.479647888Z"
+generated: "2026-09-18T07:53:01.268292551Z"
