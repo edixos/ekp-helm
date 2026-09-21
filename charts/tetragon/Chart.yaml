@@ -5,11 +5,11 @@ description: >-
   the upstream Cilium Tetragon chart, which deploys the eBPF agent DaemonSet and
   the operator that owns the TracingPolicy CRDs, and adds the EKP extensions:
   file-backed TracingPolicy bundles split into observation and enforcement,
-  Prometheus alerting rules and a Grafana dashboard. The baseline is
+  Prometheus or VictoriaMetrics alerting rules and a Grafana dashboard. The baseline is
   observation-only; enforcement is opt-in per policy and per namespace. All
   upstream settings are available under the tetragon values key.
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "1.7.1"
 maintainers:
   - name: hamzatalbi

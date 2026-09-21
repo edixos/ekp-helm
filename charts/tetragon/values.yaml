@@ -11,9 +11,8 @@ global:
   argocdSyncWave: "1"
 
 # Prometheus Operator integration for the platform extensions.
-# The ServiceMonitors are already provided by the upstream chart — enable them
-# under `tetragon.prometheus.serviceMonitor` (agent) and
-# `tetragonOperator.prometheus.serviceMonitor` (operator).
+# The ServiceMonitors are provided by the upstream chart. Clusters using
+# VictoriaMetrics should leave this disabled and use victoriaMetrics below.
 prometheus:
   # -- Enables Prometheus Operator monitoring resources
   enabled: false
@@ -29,6 +28,22 @@ prometheus:
     # -- Label to apply to the config map. Used by the Grafana sidecar to automatically install the dashboard
     label:
       grafana_dashboard: "1"
+
+# Native VictoriaMetrics monitoring. Unlike the upstream ServiceMonitors and
+# PrometheusRule resources, these objects work without Prometheus Operator CRDs.
+# Keep the upstream agent/operator metrics endpoints enabled, but disable their
+# serviceMonitor switches to avoid duplicate scraping.
+victoriaMetrics:
+  # -- Render VMServiceScrape and VMRule resources instead of Prometheus Operator resources
+  enabled: false
+  serviceScrapes:
+    # -- Scrape both the Tetragon agent and its operator
+    enabled: true
+    # -- Interval used for both metrics endpoints
+    interval: 30s
+  rules:
+    # -- Render the bundled alert groups as VMRules
+    enabled: true
 
 # TracingPolicy bundles shipped with this chart, on top of the process
 # lifecycle visibility (exec/exit) Tetragon reports without any policy.
