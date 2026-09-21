@@ -1,0 +1,16 @@
+{{- if and .Values.victoriaMetrics.enabled .Values.victoriaMetrics.rules.enabled }}
+{{- $root := . }}
+{{- range $path, $bytes := .Files.Glob "resources/prometheus-rules/*.yaml" }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: {{ base $path | replace ".yaml" ".rules" }}
+  namespace: {{ $root.Release.Namespace | quote }}
+  labels:
+    {{- include "tetragon.labels" $root | nindent 4 }}
+    role: alert-rules
+spec:
+{{ $root.Files.Get $path | indent 2 }}
+{{- end }}
+{{- end }}

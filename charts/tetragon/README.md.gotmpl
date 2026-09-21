@@ -9,7 +9,7 @@
 ## Prerequisites
 
 - Helm v{{ if eq .ApiVersion "v2" }}3{{ else }}2{{end}}
-- Config Connector installed (v1.6.0)
+- A cluster with eBPF support for the Tetragon agent
 
 {{ template "chart.requirementsSection" . }}
 
@@ -63,6 +63,37 @@ set) from an inline spec.
 * `crds.installMethod` is left at the upstream default, `operator`: the Tetragon
   operator creates the CRDs. The policy resources of this chart carry an Argo CD
   sync wave so they are applied after the operator, not before it.
+* Talos Linux 1.12+ needs the upstream chart's `tetragon.extraHostPathMounts`
+  setting for `/sys/kernel/tracing` on the agent DaemonSet.
+
+## Monitoring
+
+The upstream chart's `ServiceMonitor` resources and this wrapper's
+`PrometheusRule` resources require Prometheus Operator CRDs. On a cluster with
+VictoriaMetrics only, leave `prometheus.enabled: false`, enable the wrapper's
+`victoriaMetrics` resources, and turn off both upstream `serviceMonitor`
+switches. Keep the upstream metrics endpoints enabled so their Services exist:
+
+```yaml
+prometheus:
+  enabled: false
+victoriaMetrics:
+  enabled: true
+tetragon:
+  tetragon:
+    prometheus:
+      enabled: true
+      serviceMonitor:
+        enabled: false
+  tetragonOperator:
+    prometheus:
+      enabled: true
+      serviceMonitor:
+        enabled: false
+```
+
+The wrapper then renders two `VMServiceScrape` resources and the bundled alerts
+as `VMRule` resources. The dashboard ConfigMap is available in either mode.
 
 ## Installing the Chart
 
@@ -129,4 +160,3 @@ docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:3.17 template {{
 docker run --rm -it -v pluto:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /data -o yaml --ignore-deprecations -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0" -o wide
 docker volume rm pluto
 ```
-

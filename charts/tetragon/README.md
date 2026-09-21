@@ -1,11 +1,11 @@
 # tetragon
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.1](https://img.shields.io/badge/AppVersion-1.7.1-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.1](https://img.shields.io/badge/AppVersion-1.7.1-informational?style=flat-square)
 
 ## Prerequisites
 
 - Helm v3
-- Config Connector installed (v1.6.0)
+- A cluster with eBPF support for the Tetragon agent
 
 ## Requirements
 
@@ -21,7 +21,7 @@
 
 ## Description
 
-Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps the upstream Cilium Tetragon chart, which deploys the eBPF agent DaemonSet and the operator that owns the TracingPolicy CRDs, and adds the EKP extensions: file-backed TracingPolicy bundles split into observation and enforcement, Prometheus alerting rules and a Grafana dashboard. The baseline is observation-only; enforcement is opt-in per policy and per namespace. All upstream settings are available under the tetragon values key.
+Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps the upstream Cilium Tetragon chart, which deploys the eBPF agent DaemonSet and the operator that owns the TracingPolicy CRDs, and adds the EKP extensions: file-backed TracingPolicy bundles split into observation and enforcement, Prometheus or VictoriaMetrics alerting rules and a Grafana dashboard. The baseline is observation-only; enforcement is opt-in per policy and per namespace. All upstream settings are available under the tetragon values key.
 
 ## Source Code
 
@@ -199,6 +199,10 @@ Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps the
 | tracingPolicies.extra | list | `[]` | Policies defined inline instead of coming from the bundles. Each item: `name` (required), `spec` (required, a TracingPolicy spec), `namespace` (optional — when set the policy is rendered as a TracingPolicyNamespaced in that namespace instead of cluster-wide) |
 | tracingPolicies.observation.enabled | bool | `true` | Install the bundled observation policies. They carry no enforcing action, they only make the matching kernel events show up in the Tetragon event stream |
 | tracingPolicies.observation.policies | list | `["sensitive-file-access","process-credential-changes"]` | Bundled observation policies to install, by file name (without the extension) in `resources/tracing-policies/observation`. Installed cluster-wide as TracingPolicy resources |
+| victoriaMetrics.enabled | bool | `false` | Render VMServiceScrape and VMRule resources instead of Prometheus Operator resources |
+| victoriaMetrics.rules.enabled | bool | `true` | Render the bundled alert groups as VMRules |
+| victoriaMetrics.serviceScrapes.enabled | bool | `true` | Scrape both the Tetragon agent and its operator |
+| victoriaMetrics.serviceScrapes.interval | string | `"30s"` | Interval used for both metrics endpoints |
 
 ## Runtime security posture
 
@@ -240,6 +244,37 @@ set) from an inline spec.
 * `crds.installMethod` is left at the upstream default, `operator`: the Tetragon
   operator creates the CRDs. The policy resources of this chart carry an Argo CD
   sync wave so they are applied after the operator, not before it.
+* Talos Linux 1.12+ needs the upstream chart's `tetragon.extraHostPathMounts`
+  setting for `/sys/kernel/tracing` on the agent DaemonSet.
+
+## Monitoring
+
+The upstream chart's `ServiceMonitor` resources and this wrapper's
+`PrometheusRule` resources require Prometheus Operator CRDs. On a cluster with
+VictoriaMetrics only, leave `prometheus.enabled: false`, enable the wrapper's
+`victoriaMetrics` resources, and turn off both upstream `serviceMonitor`
+switches. Keep the upstream metrics endpoints enabled so their Services exist:
+
+```yaml
+prometheus:
+  enabled: false
+victoriaMetrics:
+  enabled: true
+tetragon:
+  tetragon:
+    prometheus:
+      enabled: true
+      serviceMonitor:
+        enabled: false
+  tetragonOperator:
+    prometheus:
+      enabled: true
+      serviceMonitor:
+        enabled: false
+```
+
+The wrapper then renders two `VMServiceScrape` resources and the bundled alerts
+as `VMRule` resources. The dashboard ConfigMap is available in either mode.
 
 ## Installing the Chart
 
@@ -266,7 +301,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: tetragon
     path: ''
     helm:
@@ -306,4 +341,3 @@ docker run --rm -it -v $(pwd):/apps -v pluto:/pluto alpine/helm:3.17 template te
 docker run --rm -it -v pluto:/data us-docker.pkg.dev/fairwinds-ops/oss/pluto:v5 detect-files -d /data -o yaml --ignore-deprecations -t "k8s=v1.31.0,cert-manager=v1.17.0,istio=v1.24.0" -o wide
 docker volume rm pluto
 ```
-

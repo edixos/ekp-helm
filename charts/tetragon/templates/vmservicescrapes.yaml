@@ -1,0 +1,61 @@
+{{- if and .Values.victoriaMetrics.enabled .Values.victoriaMetrics.serviceScrapes.enabled .Values.tetragon.enabled }}
+{{- if .Values.tetragon.tetragon.prometheus.enabled }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ include "tetragon.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "tetragon.labels" . | nindent 4 }}
+spec:
+  jobLabel: app.kubernetes.io/name
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace | quote }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tetragon
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: {{ .Values.victoriaMetrics.serviceScrapes.interval | quote }}
+      honorLabels: true
+      relabelConfigs:
+        - action: replace
+          sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: node
+        - action: replace
+          sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: tetragon_pod
+{{- end }}
+{{- if .Values.tetragon.tetragonOperator.prometheus.enabled }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ include "tetragon.fullname" . }}-operator
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "tetragon.labels" . | nindent 4 }}
+spec:
+  jobLabel: app.kubernetes.io/name
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace | quote }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tetragon-operator
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: {{ .Values.victoriaMetrics.serviceScrapes.interval | quote }}
+      honorLabels: true
+      relabelConfigs:
+        - action: replace
+          sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: node
+{{- end }}
+{{- end }}
