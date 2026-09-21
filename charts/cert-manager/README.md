@@ -1,6 +1,6 @@
 # cert-manager
 
-![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.21.1](https://img.shields.io/badge/AppVersion-v1.21.1-informational?style=flat-square)
+![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.21.2](https://img.shields.io/badge/AppVersion-v1.21.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.jetstack.io | certmanager(cert-manager) | v1.21.1 |
+| https://charts.jetstack.io | certmanager(cert-manager) | v1.21.2 |
 | https://edixos.github.io/ekp-helm | iamPolicyMembers(gcp-iam-policy-members) | 0.1.2 |
 | https://edixos.github.io/ekp-helm | workloadIdentity(gcp-workload-identity) | 0.1.1 |
 
@@ -320,7 +320,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.9"
+    targetRevision: "0.1.10"
     chart: cert-manager
     path: ''
     helm:

@@ -1,6 +1,6 @@
 # eso
 
-![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.9.0](https://img.shields.io/badge/AppVersion-v2.9.0-informational?style=flat-square)
+![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.10.0](https://img.shields.io/badge/AppVersion-v2.10.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.external-secrets.io | eso(external-secrets) | 2.9.0 |
+| https://charts.external-secrets.io | eso(external-secrets) | 2.10.0 |
 
 ## Maintainers
 
@@ -108,6 +108,10 @@ A Helm chart ESO for Kubernetes
 | eso.certController.startupProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before the startup probe is initiated. |
 | eso.certController.startupProbe.periodSeconds | int | `10` | How often (in seconds) to perform the startup probe. |
 | eso.certController.strategy | object | `{}` | Set deployment strategy |
+| eso.certController.tls | object | `{"ciphers":"","curvePreferences":[],"minVersion":""}` | CertController-specific TLS security profile overrides. When set, these override the global tls.* values for the cert-controller deployment. |
+| eso.certController.tls.ciphers | string | `""` | Comma-separated list of TLS cipher suites. If empty, the global tls.ciphers is used. +docs:property |
+| eso.certController.tls.curvePreferences | list | `[]` | Ordered list of TLS key exchange curves. If empty, the global tls.curvePreferences is used. +docs:property |
+| eso.certController.tls.minVersion | string | `""` | Minimum TLS version supported (e.g. "1.2" or "1.3"). If empty, the global tls.minVersion is used. +docs:property |
 | eso.certController.tolerations | list | `[]` |  |
 | eso.certController.topologySpreadConstraints | list | `[]` |  |
 | eso.commonLabels | object | `{}` | Additional labels added to all helm chart resources. |
@@ -259,6 +263,10 @@ A Helm chart ESO for Kubernetes
 | eso.storeRequeueInterval | string | `""` | Default time duration between reconciling (Cluster)SecretStores. |
 | eso.strategy | object | `{}` | Set deployment strategy |
 | eso.systemAuthDelegator | bool | `false` | If true the system:auth-delegator ClusterRole will be added to RBAC |
+| eso.tls | object | `{"ciphers":"","curvePreferences":[],"minVersion":""}` | TLS security profile settings applied to all controller, webhook, and certController deployments. These can be overridden per-component via webhook.tls and certController.tls. |
+| eso.tls.ciphers | string | `""` | Comma-separated list of TLS cipher suites (TLS_CIPHER_SUITE names). Does not apply to TLS 1.3. If empty, Go defaults apply. +docs:property |
+| eso.tls.curvePreferences | list | `[]` | Ordered list of TLS key exchange curves (e.g. X25519, CurveP256, or decimal CurveID). If empty, Go defaults apply. +docs:property |
+| eso.tls.minVersion | string | `""` | Minimum TLS version supported (e.g. "1.2" or "1.3"). If empty, the Go CLI default applies. +docs:property |
 | eso.tolerations | list | `[]` |  |
 | eso.topologySpreadConstraints | list | `[]` |  |
 | eso.vault | object | `{"enableTokenCache":false,"tokenCacheSize":262144}` | Vault token cache configuration |
@@ -360,6 +368,10 @@ A Helm chart ESO for Kubernetes
 | eso.webhook.startupProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before the startup probe is initiated. |
 | eso.webhook.startupProbe.periodSeconds | int | `10` | How often (in seconds) to perform the startup probe. |
 | eso.webhook.strategy | object | `{}` | Set deployment strategy |
+| eso.webhook.tls | object | `{"ciphers":"","curvePreferences":[],"minVersion":""}` | Webhook-specific TLS security profile overrides. When set, these override the global tls.* values for the webhook deployment. |
+| eso.webhook.tls.ciphers | string | `""` | Comma-separated list of TLS cipher suites. If empty, the global tls.ciphers is used. +docs:property |
+| eso.webhook.tls.curvePreferences | list | `[]` | Ordered list of TLS key exchange curves. If empty, the global tls.curvePreferences is used. +docs:property |
+| eso.webhook.tls.minVersion | string | `""` | Minimum TLS version supported (e.g. "1.2" or "1.3"). If empty, the global tls.minVersion is used. +docs:property |
 | eso.webhook.tolerations | list | `[]` |  |
 | eso.webhook.topologySpreadConstraints | list | `[]` |  |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
@@ -393,7 +405,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.2.2"
+    targetRevision: "0.2.3"
     chart: eso
     path: ''
 
