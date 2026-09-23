@@ -1,6 +1,6 @@
 # kube-ovn-v2
 
-![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.2](https://img.shields.io/badge/AppVersion-1.16.2-informational?style=flat-square)
+![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.3](https://img.shields.io/badge/AppVersion-1.16.3-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn-v2) | v1.16.2 |
+| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn-v2) | v1.16.3 |
 
 ## Maintainers
 
@@ -86,6 +86,7 @@ Helm chart for Kube-OVN
 | kube-ovn.central | object | "{}" | Configuration for ovn-central, the daemon containing the northbound/southbound DBs and northd. |
 | kube-ovn.central.annotations | object | `{}` | Annotations to be added to all top-level ovn-central objects (resources under templates/central) |
 | kube-ovn.central.extraEnv | list | `[]` | Extra environment variables to be added to ovn-central pods. |
+| kube-ovn.central.hcp | object | `{"enabled":false,"namespace":"hcp","nbAddress":"","replicas":3,"sbAddress":"","service":{"nbNodePort":30641,"sbNodePort":30642,"type":"NodePort"},"storage":{"size":"5Gi","storageClassName":""}}` | Deploy ovn-central as a PVC-backed StatefulSet that can be exposed to workload clusters. |
 | kube-ovn.central.labels | object | `{}` | Labels to be added to all top-level ovn-central objects (resources under templates/central) |
 | kube-ovn.central.nodeAffinity | object | `{"preferredDuringSchedulingIgnoredDuringExecution":[],"requiredDuringSchedulingIgnoredDuringExecution":[]}` | More information on formatting nodeAffinity can be found at https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity |
 | kube-ovn.central.podAnnotations | object | `{}` | Annotations to be added to ovn-central pods. |
@@ -106,7 +107,7 @@ Helm chart for Kube-OVN
 |-----|------|---------|-------------|
 | kube-ovn.clusterDomain | string | `"cluster.local"` | Domain used by the cluster. |
 | kube-ovn.fullnameOverride | string | `""` | Full name override. |
-| kube-ovn.global | object | `{"images":{"kubeovn":{"repository":"kube-ovn","tag":"v1.16.2"}},"registry":{"address":"docker.io/kubeovn","imagePullSecrets":[]}}` | Global configuration. |
+| kube-ovn.global | object | `{"images":{"kubeovn":{"repository":"kube-ovn","tag":"v1.16.3"}},"registry":{"address":"docker.io/kubeovn","imagePullSecrets":[]}}` | Global configuration. |
 | kube-ovn.image | object | "{}" | Image configuration. |
 | kube-ovn.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for all images. |
 | kube-ovn.masterNodes | list | `[]` | Comma-separated list of IPs for each master node. If not specified, fallback to auto-identifying masters based on "masterNodesLabels" |
@@ -136,6 +137,10 @@ Helm chart for Kube-OVN
 | kube-ovn.controller.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-controller objects (resources under templates/controller) |
 | kube-ovn.controller.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-controller pods. |
 | kube-ovn.controller.labels | object | `{}` | Labels to be added to all top-level kube-ovn-controller objects (resources under templates/controller) |
+| kube-ovn.controller.leaderElection | object | `{"leaseDuration":"","renewDeadline":"","retryPeriod":""}` | Leader election timing configuration. |
+| kube-ovn.controller.leaderElection.leaseDuration | string | `""` | Duration non-leader candidates wait after observing a renewal before attempting to acquire leadership. Empty uses the controller default of 30s. |
+| kube-ovn.controller.leaderElection.renewDeadline | string | `""` | Duration the acting leader retries refreshing leadership before giving up. Empty uses the controller default of 20s. |
+| kube-ovn.controller.leaderElection.retryPeriod | string | `""` | Duration leader election clients wait between attempts. Empty uses the controller default of 6s. |
 | kube-ovn.controller.metrics | object | "{}" | Controller metrics configuration. |
 | kube-ovn.controller.metrics.port | int | `10660` | Configure the port on which the controller service will serve metrics. |
 | kube-ovn.controller.nodeAffinity | object | `{"preferredDuringSchedulingIgnoredDuringExecution":[],"requiredDuringSchedulingIgnoredDuringExecution":[]}` | More information on formatting nodeAffinity can be found at https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity |
@@ -219,11 +224,11 @@ Helm chart for Kube-OVN
 | kube-ovn.natGw.bgpSpeaker.image | object | "{}" | Image used by the NAT gateway sidecar. |
 | kube-ovn.natGw.bgpSpeaker.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | kube-ovn.natGw.bgpSpeaker.image.repository | string | `"docker.io/kubeovn/kube-ovn"` | Image repository. |
-| kube-ovn.natGw.bgpSpeaker.image.tag | string | `"v1.16.2"` | Image tag. |
+| kube-ovn.natGw.bgpSpeaker.image.tag | string | `"v1.16.3"` | Image tag. |
 | kube-ovn.natGw.image | object | "{}" | Image used by the NAT gateway. |
 | kube-ovn.natGw.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | kube-ovn.natGw.image.repository | string | `"docker.io/kubeovn/vpc-nat-gateway"` | Image repository. |
-| kube-ovn.natGw.image.tag | string | `"v1.16.2"` | Image tag. |
+| kube-ovn.natGw.image.tag | string | `"v1.16.3"` | Image tag. |
 | kube-ovn.natGw.namePrefix | string | `"vpc-nat-gw"` | Prefix appended to the name of the NAT gateways when generating the Pods. If this value is changed after NAT GWs have been provisioned, every NAT gateway will need to be manually destroyed and recreated. |
 
 ### Network Policies
@@ -252,6 +257,7 @@ Helm chart for Kube-OVN
 | kube-ovn.networking.join.cidr.v4 | string | `"100.64.0.0/16"` | IPv4 CIDR. |
 | kube-ovn.networking.join.cidr.v6 | string | `"fd00:100:64::/112"` | IPv6 CIDR. |
 | kube-ovn.networking.join.subnetName | string | `"join"` | Name of the join subnet once it gets generated in the cluster. |
+| kube-ovn.networking.kubeOvnTlsRotationInterval | string | `"8760h"` | How often kube-ovn-controller checks kube-ovn-tls for renewal. Set to 0 to disable. |
 | kube-ovn.networking.networkType | string | `"geneve"` | Network type can be "geneve" or "vlan". |
 | kube-ovn.networking.nodeLocalDnsIp | string | `""` | Comma-separated string of NodeLocal DNS IP addresses. |
 | kube-ovn.networking.podNicType | string | `"veth-pair"` | NIC type used on pods to connect them to the CNI. |
@@ -272,6 +278,9 @@ Helm chart for Kube-OVN
 | kube-ovn.networking.services.cidr.v6 | string | `"fd00:10:96::/112"` | IPv6 CIDR. |
 | kube-ovn.networking.skipConntrackDstCidrs | string | `""` | Comma-separated list of destination IP CIDRs that should skip conntrack processing. |
 | kube-ovn.networking.stack | string | `"IPv4"` | Protocol(s) used by Kube-OVN to allocate IPs to pods and services. Can be either IPv4, IPv6 or Dual. |
+| kube-ovn.networking.tlsCipherSuites | list | `[]` | Go TLS cipher suite names. OVN DB server only supports suites mapped by dist/images/ovn-db-ssl-options.sh. |
+| kube-ovn.networking.tlsMaxVersion | string | `""` | Maximum TLS version for OVN NB/SB database server and kube-ovn secure-serving endpoints. Supported values: TLS10, TLS11, TLS12, TLS13. Empty uses the component default. |
+| kube-ovn.networking.tlsMinVersion | string | `""` | Minimum TLS version for OVN NB/SB database server and kube-ovn secure-serving endpoints. Supported values: TLS10, TLS11, TLS12, TLS13. Empty uses the component default. |
 | kube-ovn.networking.tunnelType | string | `"geneve"` | Tunnel type can be "geneve", "vxlan" or "stt". |
 | kube-ovn.networking.vlan | object | `{"id":"100","interfaceName":"","name":"ovn-vlan","providerName":"provider"}` | Configuration if we're running on top of a VLAN. |
 
@@ -288,12 +297,13 @@ Helm chart for Kube-OVN
 | kube-ovn.ovsOvn.dpdkHybrid.enabled | bool | `false` | Enables DPDK-hybrid support on OVS. |
 | kube-ovn.ovsOvn.dpdkHybrid.nodeSelector | object | `{"kubernetes.io/os":"linux","ovn.kubernetes.io/ovs_dp_type":"userspace"}` | Node selector to restrict the deployment of DPDK-hybrid OVS to specific nodes. |
 | kube-ovn.ovsOvn.dpdkHybrid.resources | object | `{"limits":{"cpu":"2","ephemeral-storage":"1Gi","hugepages-2Mi":"1Gi","memory":"1000Mi"},"requests":{"cpu":"200m","memory":"200Mi"}}` | ovs-ovn resource limits & requests when DPDK-hybrid is enabled. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
-| kube-ovn.ovsOvn.dpdkHybrid.tag | string | `"v1.16.2"` | DPDK image tag. |
+| kube-ovn.ovsOvn.dpdkHybrid.tag | string | `"v1.16.3-dpdk"` | DPDK image tag. |
 | kube-ovn.ovsOvn.extraEnv | list | `[]` | Extra environment variables to be added to ovs-ovn pods. |
 | kube-ovn.ovsOvn.labels | object | `{}` | Labels to be added to all top-level ovs-ovn objects (resources under templates/ovs-ovn) |
 | kube-ovn.ovsOvn.nodeSelector | object | `{"kubernetes.io/os":"linux"}` | Node selector to restrict the deployment of ovs-ovn to specific nodes. |
 | kube-ovn.ovsOvn.ovnDirectory | string | `"/etc/origin/ovn"` | Directory on the node where Open Virtual Network (OVN) lives. |
 | kube-ovn.ovsOvn.ovsDirectory | string | `"/etc/origin/openvswitch"` | Directory on the node where Open vSwitch (OVS) lives. |
+| kube-ovn.ovsOvn.ovsIpsecKeysDirectory | string | `"/etc/origin/ovs_ipsec_keys"` | Directory on the node where Open vSwitch (OVS) IPSEC keys live. |
 | kube-ovn.ovsOvn.podAnnotations | object | `{}` | Annotations to be added to ovs-ovn pods. |
 | kube-ovn.ovsOvn.podLabels | object | `{}` | Labels to be added to ovs-ovn pods. |
 | kube-ovn.ovsOvn.resources | object | `{"limits":{"cpu":"2","ephemeral-storage":"1Gi","memory":"1000Mi"},"requests":{"cpu":"200m","memory":"200Mi"}}` | ovs-ovn resource limits & requests. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
@@ -348,6 +358,8 @@ Helm chart for Kube-OVN
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| kube-ovn.central.hcp.nbAddress | string | `""` | OVN NB address used by workload clusters, for example tcp:ovn-nb.example.com:6641. |
+| kube-ovn.central.hcp.sbAddress | string | `""` | OVN SB address used by workload clusters, for example tcp:ovn-sb.example.com:6642. |
 | kube-ovn.central.nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution | list | `[]` | - antarctica-west1 |
 | kube-ovn.central.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution | list | `[]` | - antarctica-west1 |
 | kube-ovn.controller.nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution | list | `[]` | - antarctica-west1 |
@@ -356,7 +368,6 @@ Helm chart for Kube-OVN
 | kube-ovn.ic.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution | list | `[]` | - antarctica-west1 |
 | kube-ovn.monitor.nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution | list | `[]` | - antarctica-west1 |
 | kube-ovn.monitor.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution | list | `[]` | - antarctica-west1 |
-| kube-ovn.ovsOvn.ovsIpsecKeysDirectory | string | `"/etc/origin/ovs_ipsec_keys"` | Directory on the node where Open vSwitch (OVS) IPSEC keys live. |
 | kube-ovn.ovsOvn.upgrade.enabled | bool | `true` | Enable post-upgrade hooks to run upgrade logic of OVS/OVN. |
 | kube-ovn.ovsOvn.upgrade.versionCompatibility | string | `"25.03"` | Value propagated to ovn-central to handle OVS/OVN compatibility with Kube-OVN. This value must be updated for each new OVN version. |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
@@ -403,7 +414,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.8"
+    targetRevision: "0.1.9"
     chart: kube-ovn-v2
     path: ''
     helm:
