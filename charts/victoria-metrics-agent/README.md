@@ -1,6 +1,6 @@
 # victoria-metrics-agent
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.150.0](https://img.shields.io/badge/AppVersion-v1.150.0-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.152.0](https://img.shields.io/badge/AppVersion-v1.152.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmagent(victoria-metrics-agent) | 0.46.0 |
+| https://victoriametrics.github.io/helm-charts/ | vmagent(victoria-metrics-agent) | 0.48.0 |
 
 ## Maintainers
 
@@ -50,6 +50,7 @@ vmagent, packaged for the Edixos Kubernetes Platform. Wraps the upstream Victori
 | vmagent.daemonSet | object | `{"spec":{}}` | [K8s DaemonSet](https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/) specific variables |
 | vmagent.deployment | object | `{"spec":{"strategy":{}}}` | [K8s Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) specific variables |
 | vmagent.deployment.spec.strategy | object | `{}` | Deployment strategy. Check [here](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) for details |
+| vmagent.dnsConfig | object | `{}` | Custom DNS config for pod. Details are [here](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-config) |
 | vmagent.dnsPolicy | string | "" | DNS policy for pod. If not set and hostNetwork is enabled, defaults to ClusterFirstWithHostNet. |
 | vmagent.emptyDir | object | `{}` | Empty dir configuration for a case, when persistence is disabled |
 | vmagent.env | list | `[]` | Additional environment variables (ex.: secret tokens, flags). Check [here](https://docs.victoriametrics.com/victoriametrics/#environment-variables) for more details. |
@@ -209,7 +210,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: victoria-metrics-agent
     path: ''
     helm:
