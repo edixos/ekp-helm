@@ -1,6 +1,6 @@
 dependencies:
 - name: zammad
   repository: https://zammad.github.io/zammad-helm
-  version: 18.0.2
-digest: sha256:f6f5c33e7910b1402e1e72d68dde897647fc1134cfacdf9592bd243482e20f1f
-generated: "2026-08-26T10:40:39.242504676Z"
+  version: 19.1.0
+digest: sha256:2487519ed45d77c97218d6f9279ff0177905a4068990e7f170b5aa14eb31665d
+generated: "2026-09-23T14:52:13.948274436Z"
