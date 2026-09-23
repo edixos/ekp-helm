@@ -1,6 +1,6 @@
 # zammad
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 7.1.3-0000](https://img.shields.io/badge/AppVersion-7.1.3--0000-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 7.2.0-0000](https://img.shields.io/badge/AppVersion-7.2.0--0000-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://zammad.github.io/zammad-helm | zammad(zammad) | 18.0.2 |
+| https://zammad.github.io/zammad-helm | zammad(zammad) | 19.1.0 |
 
 ## Description
 
@@ -58,15 +58,6 @@ Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gate
 | zammad.initContainers | list | `[]` |  |
 | zammad.memcached.replicaCount | int | `1` |  |
 | zammad.memcached.resources | object | `{}` |  |
-| zammad.minio.auth.rootPassword | string | `"zammadadmin"` |  |
-| zammad.minio.auth.rootUser | string | `"zammadadmin"` |  |
-| zammad.minio.clientImage.repository | string | `"bitnamilegacy/minio-client"` |  |
-| zammad.minio.console.image.repository | string | `"bitnamilegacy/minio-object-browser"` |  |
-| zammad.minio.defaultBuckets | string | `"zammad"` |  |
-| zammad.minio.defaultInitContainers.volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` |  |
-| zammad.minio.disableWebUI | bool | `true` |  |
-| zammad.minio.global.security.allowInsecureImages | bool | `true` |  |
-| zammad.minio.image.repository | string | `"bitnamilegacy/minio"` |  |
 | zammad.nodeSelector | object | `{}` |  |
 | zammad.podAnnotations | object | `{}` |  |
 | zammad.podDisruptionBudget.enabled | bool | `false` |  |
@@ -81,6 +72,18 @@ Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gate
 | zammad.redis.auth.password | string | `"zammad"` |  |
 | zammad.redis.resources | object | `{}` |  |
 | zammad.redis.sentinel.enabled | bool | `false` |  |
+| zammad.rustfs.config.rustfs.console_enable | string | `"false"` |  |
+| zammad.rustfs.config.rustfs.obs_environment | string | `"production"` |  |
+| zammad.rustfs.config.rustfs.obs_log_directory | string | `""` |  |
+| zammad.rustfs.config.rustfs.region | string | `"zammad"` |  |
+| zammad.rustfs.ingress.enabled | bool | `false` |  |
+| zammad.rustfs.mode.distributed.enabled | bool | `false` |  |
+| zammad.rustfs.mode.standalone.enabled | bool | `true` |  |
+| zammad.rustfs.replicaCount | int | `1` |  |
+| zammad.rustfs.secret.rustfs.access_key | string | `"zammadadmin"` |  |
+| zammad.rustfs.secret.rustfs.secret_key | string | `"zammadadmin"` |  |
+| zammad.rustfs.storageclass.dataStorageSize | string | `"10Gi"` |  |
+| zammad.rustfs.storageclass.name | string | `""` |  |
 | zammad.secrets.autowizard.secretKey | string | `"autowizard"` |  |
 | zammad.secrets.autowizard.secretName | string | `"autowizard"` |  |
 | zammad.secrets.autowizard.useExisting | bool | `false` |  |
@@ -139,13 +142,18 @@ Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gate
 | zammad.zammadConfig.initContainers.postgresql.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | zammad.zammadConfig.initContainers.postgresql.securityContext.privileged | bool | `false` |  |
 | zammad.zammadConfig.initContainers.postgresql.securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| zammad.zammadConfig.initContainers.s3.resources | object | `{}` |  |
+| zammad.zammadConfig.initContainers.s3.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| zammad.zammadConfig.initContainers.s3.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| zammad.zammadConfig.initContainers.s3.securityContext.privileged | bool | `false` |  |
+| zammad.zammadConfig.initContainers.s3.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.command[0] | string | `"/bin/sh"` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.command[1] | string | `"-cx"` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.command[2] | string | `"chmod 770 /opt/zammad/tmp\n"` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.enabled | bool | `true` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.image.pullPolicy | string | `"IfNotPresent"` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.image.repository | string | `"alpine"` |  |
-| zammad.zammadConfig.initContainers.volumePermissions.image.tag | string | `"3.24.1"` |  |
+| zammad.zammadConfig.initContainers.volumePermissions.image.tag | string | `"3.24.2"` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.resources | object | `{}` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.securityContext.privileged | bool | `true` |  |
@@ -171,7 +179,6 @@ Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gate
 | zammad.zammadConfig.memcached.enabled | bool | `true` |  |
 | zammad.zammadConfig.memcached.host | string | `"zammad-memcached"` |  |
 | zammad.zammadConfig.memcached.port | int | `11211` |  |
-| zammad.zammadConfig.minio.enabled | bool | `false` |  |
 | zammad.zammadConfig.nginx.affinity | object | `{}` |  |
 | zammad.zammadConfig.nginx.clientMaxBodySize | string | `"50M"` |  |
 | zammad.zammadConfig.nginx.extraEnv | list | `[]` |  |
@@ -249,6 +256,9 @@ Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gate
 | zammad.zammadConfig.redis.sentinel.username | string | `nil` |  |
 | zammad.zammadConfig.redis.tls | bool | `false` |  |
 | zammad.zammadConfig.redis.username | string | `nil` |  |
+| zammad.zammadConfig.rustfs.bucket | string | `"zammad"` |  |
+| zammad.zammadConfig.rustfs.bucketInitialisation | bool | `true` |  |
+| zammad.zammadConfig.rustfs.enabled | bool | `false` |  |
 | zammad.zammadConfig.scheduler.affinity | object | `{}` |  |
 | zammad.zammadConfig.scheduler.extraEnv | list | `[]` |  |
 | zammad.zammadConfig.scheduler.nodeSelector | object | `{}` |  |
@@ -315,7 +325,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: zammad
     path: ''
     helm:

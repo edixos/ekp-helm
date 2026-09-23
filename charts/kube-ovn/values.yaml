@@ -69,7 +69,7 @@ kube-ovn:
     images:
       kubeovn:
         repository: kube-ovn
-        tag: v1.16.2
+        tag: v1.16.7
 
   # -- Image configuration.
   # @section -- Global parameters
@@ -199,6 +199,18 @@ kube-ovn:
     # -- Deploy the CNI with SSL encryption in between components.
     # @section -- Network parameters of the CNI
     enableSsl: false
+    # -- Minimum TLS version for OVN NB/SB database server and kube-ovn secure-serving endpoints. Supported values: TLS10, TLS11, TLS12, TLS13. Empty uses the component default.
+    # @section -- Network parameters of the CNI
+    tlsMinVersion: ""
+    # -- Maximum TLS version for OVN NB/SB database server and kube-ovn secure-serving endpoints. Supported values: TLS10, TLS11, TLS12, TLS13. Empty uses the component default.
+    # @section -- Network parameters of the CNI
+    tlsMaxVersion: ""
+    # -- Go TLS cipher suite names. OVN DB server only supports suites mapped by dist/images/ovn-db-ssl-options.sh.
+    # @section -- Network parameters of the CNI
+    tlsCipherSuites: []
+    # -- How often kube-ovn-controller checks kube-ovn-tls for renewal. Set to 0 to disable.
+    # @section -- Network parameters of the CNI
+    kubeOvnTlsRotationInterval: "8760h"
     # -- Network type can be "geneve" or "vlan".
     # @section -- Network parameters of the CNI
     networkType: geneve
@@ -375,7 +387,7 @@ kube-ovn:
       repository: docker.io/kubeovn/vpc-nat-gateway
       # -- Image tag.
       # @section -- NAT gateways configuration
-      tag: v1.16.2
+      tag: v1.16.7
       # -- Image pull policy.
       # @section -- NAT gateways configuration
       pullPolicy: IfNotPresent
@@ -392,7 +404,7 @@ kube-ovn:
         repository: docker.io/kubeovn/kube-ovn
         # -- Image tag.
         # @section -- NAT gateways configuration
-        tag: v1.16.2
+        tag: v1.16.7
         # -- Image pull policy.
         # @section -- NAT gateways configuration
         pullPolicy: IfNotPresent
@@ -412,6 +424,38 @@ kube-ovn:
     # is allowed by default. This mode is useful when using Kubevirt and VMs with IPs configured via Kube-OVN's DHCP.
     # @section -- Network Policies
     enforcement: "standard"
+
+  # -- Experimental OVN ACL sampling for NetworkPolicy events.
+  # @section -- ACL sampling configuration
+  # @default -- "{}"
+  aclSampling:
+    # -- Enable controller-side ACL sampling and node-local psample delivery.
+    # @section -- ACL sampling configuration
+    enabled: false
+    # -- OVN sample collector set ID shared by controller and agents.
+    # @section -- ACL sampling configuration
+    setID: 142
+    # -- Linux psample multicast group ID used for local delivery.
+    # @section -- ACL sampling configuration
+    localGroupID: 142
+    # -- OVN sampling application ID for new ACL sessions.
+    # @section -- ACL sampling configuration
+    appIDNew: 102
+    # -- OVN sampling application ID for established ACL sessions.
+    # @section -- ACL sampling configuration
+    appIDEstablished: 103
+    # -- OVN sample collector ID for allowed decisions.
+    # @section -- ACL sampling configuration
+    collectorIDAllow: 1
+    # -- OVN sample collector ID for default-deny decisions.
+    # @section -- ACL sampling configuration
+    collectorIDDefaultDeny: 2
+    # -- Sampling probability percentage for allowed decisions. Fractional percentages are supported.
+    # @section -- ACL sampling configuration
+    allowProbabilityPercent: 1.0
+    # -- Sampling probability percentage for default-deny decisions. Fractional percentages are supported.
+    # @section -- ACL sampling configuration
+    defaultDenyProbabilityPercent: 100.0
 
   # -- API NetworkAttachmentDefinition to give some pods (CoreDNS, NAT GW) in custom VPCs access to the K8S API.
   # This requires Multus to be installed.
@@ -500,6 +544,7 @@ kube-ovn:
     # @section -- OVS/OVN daemons configuration
     ovsDirectory: "/etc/origin/openvswitch"
     # -- Directory on the node where Open vSwitch (OVS) IPSEC keys live.
+    # @section -- OVS/OVN daemons configuration
     ovsIpsecKeysDirectory: "/etc/origin/ovs_ipsec_keys"
     # -- Directory on the node where Open Virtual Network (OVN) lives.
     # @section -- OVS/OVN daemons configuration
@@ -510,9 +555,6 @@ kube-ovn:
     upgrade:
       # -- Enable post-upgrade hooks to run upgrade logic of OVS/OVN.
       enabled: true
-      # -- Value propagated to ovn-central to handle OVS/OVN compatibility with Kube-OVN.
-      # This value must be updated for each new OVN version.
-      versionCompatibility: "25.03"
 
     # @section -- OVS/OVN daemons configuration.
     ovnRemoteProbeInterval: 10000
@@ -531,7 +573,7 @@ kube-ovn:
       enabled: false
       # -- DPDK image tag.
       # @section -- OVS/OVN daemons configuration
-      tag: v1.16.2
+      tag: v1.16.7-dpdk
       # -- Affinity for the ovs-ovn-dpdk DaemonSet.
       # @section -- OVS/OVN daemons configuration
       affinity: {}
@@ -757,6 +799,18 @@ kube-ovn:
   # @section -- Kube-OVN controller configuration
   # @default -- "{}"
   controller:
+    # -- Leader election timing configuration.
+    # @section -- Kube-OVN controller configuration
+    leaderElection:
+      # -- Duration non-leader candidates wait after observing a renewal before attempting to acquire leadership. Empty uses the controller default of 30s.
+      # @section -- Kube-OVN controller configuration
+      leaseDuration: ""
+      # -- Duration the acting leader retries refreshing leadership before giving up. Empty uses the controller default of 20s.
+      # @section -- Kube-OVN controller configuration
+      renewDeadline: ""
+      # -- Duration leader election clients wait between attempts. Empty uses the controller default of 6s.
+      # @section -- Kube-OVN controller configuration
+      retryPeriod: ""
     # -- Annotations to be added to all top-level kube-ovn-controller objects (resources under templates/controller)
     # @section -- Kube-OVN controller configuration
     annotations: {}
@@ -843,12 +897,29 @@ kube-ovn:
     # -- Labels to be added to ovn-central pods.
     # @section -- OVN-central daemon configuration
     podLabels: {}
-
     # -- Extra environment variables to be added to ovn-central pods.
     # @section -- OVN-central daemon configuration
     extraEnv: []
     #  - name: CUSTOM_ENV_VAR
     #    value: "custom-value"
+
+    # -- Deploy ovn-central as a PVC-backed StatefulSet that can be exposed to workload clusters.
+    # @section -- OVN-central daemon configuration
+    hcp:
+      enabled: false
+      namespace: hcp
+      replicas: 3
+      # -- OVN NB address used by workload clusters, for example tcp:ovn-nb.example.com:6641.
+      nbAddress: ""
+      # -- OVN SB address used by workload clusters, for example tcp:ovn-sb.example.com:6642.
+      sbAddress: ""
+      service:
+        type: NodePort
+        nbNodePort: 30641
+        sbNodePort: 30642
+      storage:
+        size: 5Gi
+        storageClassName: ""
 
     # -- ovn-central resource limits & requests.
     # ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/

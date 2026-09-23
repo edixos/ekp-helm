@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.15](https://img.shields.io/badge/Version-0.1.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.93.1](https://img.shields.io/badge/AppVersion-v0.93.1-informational?style=flat-square)
+![Version: 0.1.16](https://img.shields.io/badge/Version-0.1.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.94.0](https://img.shields.io/badge/AppVersion-v0.94.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 88.5.4 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 91.5.0 |
 
 ## Description
 
@@ -36,6 +36,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.alertmanagerSpec.clusterAdvertiseAddress | bool | `false` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.clusterGossipInterval | string | `""` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.clusterLabel | string | `""` |  |
+| kubePrometheusStack.alertmanager.alertmanagerSpec.clusterPeerName | string | `""` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.clusterPeerTimeout | string | `""` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.clusterPushpullInterval | string | `""` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.clusterTLS | object | `{}` |  |
@@ -53,7 +54,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.repository | string | `"prometheus/alertmanager"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.alertmanager.alertmanagerSpec.image.tag | string | `"v0.34.0"` |  |
+| kubePrometheusStack.alertmanager.alertmanagerSpec.image.tag | string | `"v0.34.1"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.limits | object | `{}` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.listenLocal | bool | `false` |  |
@@ -155,7 +156,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.podDisruptionBudget.enabled | bool | `false` |  |
 | kubePrometheusStack.alertmanager.podDisruptionBudget.minAvailable | int | `1` |  |
 | kubePrometheusStack.alertmanager.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
-| kubePrometheusStack.alertmanager.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[],"sessionPersistence":{}}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
+| kubePrometheusStack.alertmanager.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[],"sessionPersistence":{},"timeouts":{}}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
 | kubePrometheusStack.alertmanager.route.main.apiVersion | string | `"gateway.networking.k8s.io/v1"` | Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1alpha2 |
 | kubePrometheusStack.alertmanager.route.main.enabled | bool | `false` | Enables or disables the route |
 | kubePrometheusStack.alertmanager.route.main.httpsRedirect | bool | `false` | create http route for redirect (https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/#http-to-https-redirects) # Take care that you only enable this on the http listener of the gateway to avoid an infinite redirect. # matches, filters and additionalRules will be ignored if this is set to true. Be are |
@@ -174,6 +175,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.routePerReplica.main.matches[0].path.value | string | `"/"` |  |
 | kubePrometheusStack.alertmanager.routePerReplica.main.parentRefs | list | `[]` |  |
 | kubePrometheusStack.alertmanager.routePerReplica.main.sessionPersistence | object | `{}` |  |
+| kubePrometheusStack.alertmanager.routePerReplica.main.timeouts | object | `{}` |  |
 | kubePrometheusStack.alertmanager.secret.annotations | object | `{}` |  |
 | kubePrometheusStack.alertmanager.service.additionalPorts | list | `[]` |  |
 | kubePrometheusStack.alertmanager.service.annotations | object | `{}` |  |
@@ -241,7 +243,9 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.coreDns.service.port | int | `9153` |  |
 | kubePrometheusStack.coreDns.service.targetPort | int | `9153` |  |
 | kubePrometheusStack.coreDns.serviceMonitor.additionalLabels | object | `{}` |  |
-| kubePrometheusStack.coreDns.serviceMonitor.bearerTokenFile | string | `"/var/run/secrets/kubernetes.io/serviceaccount/token"` |  |
+| kubePrometheusStack.coreDns.serviceMonitor.authorization.credentials.key | string | `"token"` |  |
+| kubePrometheusStack.coreDns.serviceMonitor.authorization.credentials.name | string | `"{{ include \"kube-prometheus-stack.prometheus.tokenSecretName\" . }}"` |  |
+| kubePrometheusStack.coreDns.serviceMonitor.authorization.type | string | `"Bearer"` |  |
 | kubePrometheusStack.coreDns.serviceMonitor.enabled | bool | `true` |  |
 | kubePrometheusStack.coreDns.serviceMonitor.interval | string | `""` |  |
 | kubePrometheusStack.coreDns.serviceMonitor.jobLabel | string | `"jobLabel"` |  |
@@ -440,6 +444,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.grafana.namespaceOverride | string | `""` |  |
 | kubePrometheusStack.grafana.operator.annotations | object | `{}` |  |
 | kubePrometheusStack.grafana.operator.dashboardsConfigMapRefEnabled | bool | `false` |  |
+| kubePrometheusStack.grafana.operator.datasourcesEnabled | bool | `false` |  |
 | kubePrometheusStack.grafana.operator.folder | string | `"General"` |  |
 | kubePrometheusStack.grafana.operator.folderRef | string | `nil` |  |
 | kubePrometheusStack.grafana.operator.folderUID | string | `nil` |  |
@@ -487,6 +492,9 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeApiServer.enabled | bool | `true` |  |
 | kubePrometheusStack.kubeApiServer.jobNameOverride | string | `""` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.additionalLabels | object | `{}` |  |
+| kubePrometheusStack.kubeApiServer.serviceMonitor.authorization.credentials.key | string | `"token"` |  |
+| kubePrometheusStack.kubeApiServer.serviceMonitor.authorization.credentials.name | string | `"{{ include \"kube-prometheus-stack.prometheus.tokenSecretName\" . }}"` |  |
+| kubePrometheusStack.kubeApiServer.serviceMonitor.authorization.type | string | `"Bearer"` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.enabled | bool | `true` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.interval | string | `""` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.jobLabel | string | `"component"` |  |
@@ -504,6 +512,8 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeApiServer.serviceMonitor.selector.matchLabels.provider | string | `"kubernetes"` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.targetLabels | list | `[]` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.targetLimit | int | `0` |  |
+| kubePrometheusStack.kubeApiServer.tlsConfig.ca.configMap.key | string | `"ca.crt"` |  |
+| kubePrometheusStack.kubeApiServer.tlsConfig.ca.configMap.name | string | `"kube-root-ca.crt"` |  |
 | kubePrometheusStack.kubeApiServer.tlsConfig.insecureSkipVerify | bool | `false` |  |
 | kubePrometheusStack.kubeApiServer.tlsConfig.serverName | string | `"kubernetes"` |  |
 | kubePrometheusStack.kubeControllerManager.enabled | bool | `true` |  |
@@ -517,9 +527,11 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeControllerManager.service.port | string | `nil` |  |
 | kubePrometheusStack.kubeControllerManager.service.targetPort | string | `nil` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.additionalLabels | object | `{}` |  |
+| kubePrometheusStack.kubeControllerManager.serviceMonitor.authorization.credentials.key | string | `"token"` |  |
+| kubePrometheusStack.kubeControllerManager.serviceMonitor.authorization.credentials.name | string | `"{{ include \"kube-prometheus-stack.prometheus.tokenSecretName\" . }}"` |  |
+| kubePrometheusStack.kubeControllerManager.serviceMonitor.authorization.type | string | `"Bearer"` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.enabled | bool | `true` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.https | string | `nil` |  |
-| kubePrometheusStack.kubeControllerManager.serviceMonitor.insecureSkipVerify | string | `nil` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.interval | string | `""` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.jobLabel | string | `"jobLabel"` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.labelLimit | int | `0` |  |
@@ -531,9 +543,11 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.sampleLimit | int | `0` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.selector | object | `{}` |  |
-| kubePrometheusStack.kubeControllerManager.serviceMonitor.serverName | string | `nil` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.targetLabels | list | `[]` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.targetLimit | int | `0` |  |
+| kubePrometheusStack.kubeControllerManager.serviceMonitor.tlsConfig.ca.configMap.key | string | `"ca.crt"` |  |
+| kubePrometheusStack.kubeControllerManager.serviceMonitor.tlsConfig.ca.configMap.name | string | `"kube-root-ca.crt"` |  |
+| kubePrometheusStack.kubeControllerManager.serviceMonitor.tlsConfig.insecureSkipVerify | bool | `true` |  |
 | kubePrometheusStack.kubeDns.enabled | bool | `false` |  |
 | kubePrometheusStack.kubeDns.service.dnsmasq.port | int | `10054` |  |
 | kubePrometheusStack.kubeDns.service.dnsmasq.targetPort | int | `10054` |  |
@@ -544,7 +558,9 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeDns.service.skydns.port | int | `10055` |  |
 | kubePrometheusStack.kubeDns.service.skydns.targetPort | int | `10055` |  |
 | kubePrometheusStack.kubeDns.serviceMonitor.additionalLabels | object | `{}` |  |
-| kubePrometheusStack.kubeDns.serviceMonitor.bearerTokenFile | string | `"/var/run/secrets/kubernetes.io/serviceaccount/token"` |  |
+| kubePrometheusStack.kubeDns.serviceMonitor.authorization.credentials.key | string | `"token"` |  |
+| kubePrometheusStack.kubeDns.serviceMonitor.authorization.credentials.name | string | `"{{ include \"kube-prometheus-stack.prometheus.tokenSecretName\" . }}"` |  |
+| kubePrometheusStack.kubeDns.serviceMonitor.authorization.type | string | `"Bearer"` |  |
 | kubePrometheusStack.kubeDns.serviceMonitor.dnsmasqMetricRelabelings | list | `[]` |  |
 | kubePrometheusStack.kubeDns.serviceMonitor.dnsmasqRelabelings | list | `[]` |  |
 | kubePrometheusStack.kubeDns.serviceMonitor.interval | string | `""` |  |
@@ -569,14 +585,12 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeEtcd.service.port | int | `2381` |  |
 | kubePrometheusStack.kubeEtcd.service.targetPort | int | `2381` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.additionalLabels | object | `{}` |  |
-| kubePrometheusStack.kubeEtcd.serviceMonitor.bearerTokenFile | string | `"/var/run/secrets/kubernetes.io/serviceaccount/token"` |  |
-| kubePrometheusStack.kubeEtcd.serviceMonitor.caFile | string | `""` |  |
-| kubePrometheusStack.kubeEtcd.serviceMonitor.certFile | string | `""` |  |
+| kubePrometheusStack.kubeEtcd.serviceMonitor.authorization.credentials.key | string | `"token"` |  |
+| kubePrometheusStack.kubeEtcd.serviceMonitor.authorization.credentials.name | string | `"{{ include \"kube-prometheus-stack.prometheus.tokenSecretName\" . }}"` |  |
+| kubePrometheusStack.kubeEtcd.serviceMonitor.authorization.type | string | `"Bearer"` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.enabled | bool | `true` |  |
-| kubePrometheusStack.kubeEtcd.serviceMonitor.insecureSkipVerify | bool | `false` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.interval | string | `""` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.jobLabel | string | `"jobLabel"` |  |
-| kubePrometheusStack.kubeEtcd.serviceMonitor.keyFile | string | `""` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.labelLimit | int | `0` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.labelNameLengthLimit | int | `0` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.labelValueLengthLimit | int | `0` |  |
@@ -587,9 +601,9 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeEtcd.serviceMonitor.sampleLimit | int | `0` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.scheme | string | `"http"` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.selector | object | `{}` |  |
-| kubePrometheusStack.kubeEtcd.serviceMonitor.serverName | string | `""` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.targetLabels | list | `[]` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.targetLimit | int | `0` |  |
+| kubePrometheusStack.kubeEtcd.serviceMonitor.tlsConfig.insecureSkipVerify | bool | `false` |  |
 | kubePrometheusStack.kubeProxy.enabled | bool | `true` |  |
 | kubePrometheusStack.kubeProxy.endpoints | list | `[]` |  |
 | kubePrometheusStack.kubeProxy.jobNameOverride | string | `""` |  |
@@ -601,7 +615,9 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeProxy.service.port | int | `10249` |  |
 | kubePrometheusStack.kubeProxy.service.targetPort | int | `10249` |  |
 | kubePrometheusStack.kubeProxy.serviceMonitor.additionalLabels | object | `{}` |  |
-| kubePrometheusStack.kubeProxy.serviceMonitor.bearerTokenFile | string | `"/var/run/secrets/kubernetes.io/serviceaccount/token"` |  |
+| kubePrometheusStack.kubeProxy.serviceMonitor.authorization.credentials.key | string | `"token"` |  |
+| kubePrometheusStack.kubeProxy.serviceMonitor.authorization.credentials.name | string | `"{{ include \"kube-prometheus-stack.prometheus.tokenSecretName\" . }}"` |  |
+| kubePrometheusStack.kubeProxy.serviceMonitor.authorization.type | string | `"Bearer"` |  |
 | kubePrometheusStack.kubeProxy.serviceMonitor.enabled | bool | `true` |  |
 | kubePrometheusStack.kubeProxy.serviceMonitor.https | bool | `false` |  |
 | kubePrometheusStack.kubeProxy.serviceMonitor.interval | string | `""` |  |
@@ -617,6 +633,8 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeProxy.serviceMonitor.selector | object | `{}` |  |
 | kubePrometheusStack.kubeProxy.serviceMonitor.targetLabels | list | `[]` |  |
 | kubePrometheusStack.kubeProxy.serviceMonitor.targetLimit | int | `0` |  |
+| kubePrometheusStack.kubeProxy.serviceMonitor.tlsConfig.ca.configMap.key | string | `"ca.crt"` |  |
+| kubePrometheusStack.kubeProxy.serviceMonitor.tlsConfig.ca.configMap.name | string | `"kube-root-ca.crt"` |  |
 | kubePrometheusStack.kubeScheduler.enabled | bool | `true` |  |
 | kubePrometheusStack.kubeScheduler.endpoints | list | `[]` |  |
 | kubePrometheusStack.kubeScheduler.jobNameOverride | string | `""` |  |
@@ -628,9 +646,11 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeScheduler.service.port | string | `nil` |  |
 | kubePrometheusStack.kubeScheduler.service.targetPort | string | `nil` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.additionalLabels | object | `{}` |  |
+| kubePrometheusStack.kubeScheduler.serviceMonitor.authorization.credentials.key | string | `"token"` |  |
+| kubePrometheusStack.kubeScheduler.serviceMonitor.authorization.credentials.name | string | `"{{ include \"kube-prometheus-stack.prometheus.tokenSecretName\" . }}"` |  |
+| kubePrometheusStack.kubeScheduler.serviceMonitor.authorization.type | string | `"Bearer"` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.enabled | bool | `true` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.https | string | `nil` |  |
-| kubePrometheusStack.kubeScheduler.serviceMonitor.insecureSkipVerify | string | `nil` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.interval | string | `""` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.jobLabel | string | `"jobLabel"` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.labelLimit | int | `0` |  |
@@ -646,9 +666,11 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeScheduler.serviceMonitor.resource.relabelings | list | `[]` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.sampleLimit | int | `0` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.selector | object | `{}` |  |
-| kubePrometheusStack.kubeScheduler.serviceMonitor.serverName | string | `nil` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.targetLabels | list | `[]` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.targetLimit | int | `0` |  |
+| kubePrometheusStack.kubeScheduler.serviceMonitor.tlsConfig.ca.configMap.key | string | `"ca.crt"` |  |
+| kubePrometheusStack.kubeScheduler.serviceMonitor.tlsConfig.ca.configMap.name | string | `"kube-root-ca.crt"` |  |
+| kubePrometheusStack.kubeScheduler.serviceMonitor.tlsConfig.insecureSkipVerify | bool | `true` |  |
 | kubePrometheusStack.kubeStateMetrics.enabled | bool | `true` |  |
 | kubePrometheusStack.kubeTargetVersionOverride | string | `""` |  |
 | kubePrometheusStack.kubeVersionOverride | string | `""` |  |
@@ -657,6 +679,9 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubelet.namespace | string | `"kube-system"` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.additionalLabels | object | `{}` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.attachMetadata.node | bool | `false` |  |
+| kubePrometheusStack.kubelet.serviceMonitor.authorization.credentials.key | string | `"token"` |  |
+| kubePrometheusStack.kubelet.serviceMonitor.authorization.credentials.name | string | `"{{ include \"kube-prometheus-stack.prometheus.tokenSecretName\" . }}"` |  |
+| kubePrometheusStack.kubelet.serviceMonitor.authorization.type | string | `"Bearer"` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.cAdvisor | bool | `true` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.cAdvisorInterval | string | `"10s"` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.cAdvisorMetricRelabelings[0].action | string | `"drop"` |  |
@@ -693,7 +718,6 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubelet.serviceMonitor.honorLabels | bool | `true` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.honorTimestamps | bool | `true` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.https | bool | `true` |  |
-| kubePrometheusStack.kubelet.serviceMonitor.insecureSkipVerify | bool | `true` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.interval | string | `""` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.kubelet | bool | `true` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.labelLimit | int | `0` |  |
@@ -721,6 +745,9 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubelet.serviceMonitor.sampleLimit | int | `0` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.targetLabels | list | `[]` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.targetLimit | int | `0` |  |
+| kubePrometheusStack.kubelet.serviceMonitor.tlsConfig.ca.configMap.key | string | `"ca.crt"` |  |
+| kubePrometheusStack.kubelet.serviceMonitor.tlsConfig.ca.configMap.name | string | `"kube-root-ca.crt"` |  |
+| kubePrometheusStack.kubelet.serviceMonitor.tlsConfig.insecureSkipVerify | bool | `true` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.trackTimestampsStaleness | bool | `true` |  |
 | kubePrometheusStack.kubernetesServiceMonitors.enabled | bool | `true` |  |
 | kubePrometheusStack.nameOverride | string | `""` |  |
@@ -893,12 +920,14 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.replicas | int | `1` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.resources | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.retention | string | `"10d"` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.retentionPercentage | string | `""` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.retentionSize | string | `""` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.routePrefix | string | `"/"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.ruleNamespaceSelector | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.ruleQueryOffset | string | `""` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.ruleSelector | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.ruleSelectorNilUsesHelmValues | bool | `true` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.rules | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.runtime | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.sampleLimit | bool | `false` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.schedulerName | string | `""` |  |
@@ -933,14 +962,16 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.tolerations | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.topologySpreadConstraints | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.tracingConfig | object | `{}` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.tsdb.chunkEncoding | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.tsdb.outOfOrderTimeWindow | string | `"0s"` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.tsdb.staleSeriesCompactionThreshold | string | `""` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.updateStrategy | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.version | string | `""` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.volumeMounts | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.volumes | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.walCompression | bool | `true` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.web | object | `{}` |  |
-| kubePrometheusStack.prometheus.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[],"sessionPersistence":{}}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
+| kubePrometheusStack.prometheus.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[],"sessionPersistence":{},"timeouts":{}}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
 | kubePrometheusStack.prometheus.route.main.apiVersion | string | `"gateway.networking.k8s.io/v1"` | Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1alpha2 |
 | kubePrometheusStack.prometheus.route.main.enabled | bool | `false` | Enables or disables the route |
 | kubePrometheusStack.prometheus.route.main.httpsRedirect | bool | `false` | create http route for redirect (https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/#http-to-https-redirects) # Take care that you only enable this on the http listener of the gateway to avoid an infinite redirect. # matches, filters and additionalRules will be ignored if this is set to true. Be are |
@@ -959,6 +990,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.routePerReplica.main.matches[0].path.value | string | `"/"` |  |
 | kubePrometheusStack.prometheus.routePerReplica.main.parentRefs | list | `[]` |  |
 | kubePrometheusStack.prometheus.routePerReplica.main.sessionPersistence | object | `{}` |  |
+| kubePrometheusStack.prometheus.routePerReplica.main.timeouts | object | `{}` |  |
 | kubePrometheusStack.prometheus.service.additionalPorts | list | `[]` |  |
 | kubePrometheusStack.prometheus.service.annotations | object | `{}` |  |
 | kubePrometheusStack.prometheus.service.clusterIP | string | `""` |  |
@@ -984,6 +1016,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.serviceAccount.annotations | object | `{}` |  |
 | kubePrometheusStack.prometheus.serviceAccount.automountServiceAccountToken | bool | `true` |  |
 | kubePrometheusStack.prometheus.serviceAccount.create | bool | `true` |  |
+| kubePrometheusStack.prometheus.serviceAccount.createTokenSecret | bool | `true` |  |
 | kubePrometheusStack.prometheus.serviceAccount.name | string | `""` |  |
 | kubePrometheusStack.prometheus.serviceMonitor.additionalEndpoints | list | `[]` |  |
 | kubePrometheusStack.prometheus.serviceMonitor.additionalLabels | object | `{}` |  |
@@ -1144,7 +1177,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.tolerations | list | `[]` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.enabled | bool | `true` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.failurePolicy | string | `""` |  |
-| kubePrometheusStack.prometheusOperator.admissionWebhooks.matchConditions | object | `{}` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.matchConditions | list | `[]` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.mutatingWebhookConfiguration.annotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.namespaceSelector | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.objectSelector | object | `{}` |  |
@@ -1155,7 +1188,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.registry | string | `"ghcr.io"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.repository | string | `"jkroepke/kube-webhook-certgen"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"1.8.7"` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"1.8.8"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.nodeSelector | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.priorityClassName | string | `""` |  |
@@ -1238,7 +1271,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.readinessProbe.timeoutSeconds | int | `1` |  |
 | kubePrometheusStack.prometheusOperator.resources | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.revisionHistoryLimit | int | `10` |  |
-| kubePrometheusStack.prometheusOperator.secretFieldSelector | string | `"type!=kubernetes.io/dockercfg,type!=kubernetes.io/service-account-token,type!=helm.sh/release.v1"` |  |
+| kubePrometheusStack.prometheusOperator.secretFieldSelector | string | `"type!=kubernetes.io/dockercfg,type!=helm.sh/release.v1"` |  |
 | kubePrometheusStack.prometheusOperator.securityContext.fsGroup | int | `65534` |  |
 | kubePrometheusStack.prometheusOperator.securityContext.runAsGroup | int | `65534` |  |
 | kubePrometheusStack.prometheusOperator.securityContext.runAsNonRoot | bool | `true` |  |
@@ -1305,7 +1338,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.podDisruptionBudget.enabled | bool | `false` |  |
 | kubePrometheusStack.thanosRuler.podDisruptionBudget.minAvailable | int | `1` |  |
 | kubePrometheusStack.thanosRuler.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
-| kubePrometheusStack.thanosRuler.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[],"sessionPersistence":{}}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
+| kubePrometheusStack.thanosRuler.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[],"sessionPersistence":{},"timeouts":{}}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
 | kubePrometheusStack.thanosRuler.route.main.apiVersion | string | `"gateway.networking.k8s.io/v1"` | Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1alpha2 |
 | kubePrometheusStack.thanosRuler.route.main.enabled | bool | `false` | Enables or disables the route |
 | kubePrometheusStack.thanosRuler.route.main.httpsRedirect | bool | `false` | create http route for redirect (https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/#http-to-https-redirects) # Take care that you only enable this on the http listener of the gateway to avoid an infinite redirect. # matches, filters and additionalRules will be ignored if this is set to true. Be are |
@@ -1407,6 +1440,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.ruleQueryOffset | string | `""` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.ruleSelector | object | `{}` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.ruleSelectorNilUsesHelmValues | bool | `true` |  |
+| kubePrometheusStack.thanosRuler.thanosRulerSpec.schedulerName | string | `""` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.securityContext.fsGroup | int | `2000` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.securityContext.runAsGroup | int | `2000` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.securityContext.runAsNonRoot | bool | `true` |  |
@@ -1452,7 +1486,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.15"
+    targetRevision: "0.1.16"
     chart: kube-prometheus-stack
     path: ''
     helm:

@@ -1,6 +1,6 @@
 dependencies:
 - name: cloudtty
   repository: https://cloudtty.github.io/cloudtty
-  version: 0.8.9
-digest: sha256:184be09971c7d0a8624269e0e178dc25cd5ee144dfc415b7f82761693a1cedc4
-generated: "2026-08-12T11:02:17.619917422Z"
+  version: 0.8.10
+digest: sha256:f87cc5009ad30aded95ca2a44fc2fe2bc88b7168f87d56aa0422c7e299647a8d
+generated: "2026-09-23T14:47:20.587129078Z"

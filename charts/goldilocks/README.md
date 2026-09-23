@@ -1,6 +1,6 @@
 # goldilocks
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.16.1](https://img.shields.io/badge/AppVersion-v4.16.1-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.16.2](https://img.shields.io/badge/AppVersion-v4.16.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.fairwinds.com/stable | goldilocks | 11.0.0 |
+| https://charts.fairwinds.com/stable | goldilocks | 11.1.1 |
 
 ## Maintainers
 
@@ -114,7 +114,7 @@ Goldilocks packaged for the Edixos Kubernetes Platform.
 | goldilocks.fullnameOverride | string | `""` |  |
 | goldilocks.image.pullPolicy | string | `"Always"` |  |
 | goldilocks.image.repository | string | `"us-docker.pkg.dev/fairwinds-ops/oss/goldilocks"` |  |
-| goldilocks.image.tag | string | `"v4.16.1"` |  |
+| goldilocks.image.tag | string | `"v4.16.2"` |  |
 | goldilocks.imagePullSecrets | list | `[]` |  |
 | goldilocks.metrics-server.apiService.create | bool | `true` |  |
 | goldilocks.metrics-server.enabled | bool | `false` |  |
@@ -148,7 +148,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: goldilocks
     path: ''
     helm:

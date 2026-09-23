@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.15](https://img.shields.io/badge/Version-0.1.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.5.1](https://img.shields.io/badge/AppVersion-v3.5.1-informational?style=flat-square)
+![Version: 0.1.16](https://img.shields.io/badge/Version-0.1.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.5.3](https://img.shields.io/badge/AppVersion-v3.5.3-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 10.4.0 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 10.9.2 |
 
 ## Maintainers
 
@@ -130,6 +130,7 @@ A Helm chart for Kubernetes
 | argocd.applicationSet.pdb.labels | object | `{}` | Labels to be added to ApplicationSet controller pdb |
 | argocd.applicationSet.pdb.maxUnavailable | string | `""` | Number of pods that are unavailable after eviction as number or percentage (eg.: 50%). # Has higher precedence over `applicationSet.pdb.minAvailable` |
 | argocd.applicationSet.pdb.minAvailable | string | `""` (defaults to 0 if not specified) | Number of pods that are available after eviction as number or percentage (eg.: 50%) |
+| argocd.applicationSet.pdb.unhealthyPodEvictionPolicy | string | `""` | Policy for evicting unhealthy (not ready) pods, either `IfHealthyBudget` or `AlwaysAllow` # Defaults to `IfHealthyBudget` if not set |
 | argocd.applicationSet.podAnnotations | object | `{}` | Annotations for the ApplicationSet controller pods |
 | argocd.applicationSet.podLabels | object | `{}` | Labels for the ApplicationSet controller pods |
 | argocd.applicationSet.priorityClassName | string | `""` (defaults to global.priorityClassName) | Priority class for the ApplicationSet controller pods |
@@ -166,6 +167,7 @@ A Helm chart for Kubernetes
 | argocd.applicationSet.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the ApplicationSet controller |
 | argocd.applicationSet.vpa.labels | object | `{}` | Labels to be added to ApplicationSet controller vpa |
 | argocd.applicationSet.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
+| argocd.applicationSet.vpa.startupBoost | object | `{}` | Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set # Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup |
 | argocd.applicationSet.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.commitServer.affinity | object | `{}` (defaults to global.affinity preset) | Assign custom [affinity] rules |
 | argocd.commitServer.automountServiceAccountToken | bool | `false` | Automount API credentials for the Service Account into the pod. |
@@ -234,6 +236,7 @@ A Helm chart for Kubernetes
 | argocd.commitServer.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the commit server |
 | argocd.commitServer.vpa.labels | object | `{}` | Labels to be added to commit server vpa |
 | argocd.commitServer.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
+| argocd.commitServer.vpa.startupBoost | object | `{}` | Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set # Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup |
 | argocd.commitServer.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.configs.clusterCredentials | object | `{}` (See [values.yaml]) | Provide one or multiple [external cluster credentials] # Ref: # - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#clusters # - https://argo-cd.readthedocs.io/en/stable/operator-manual/security/#external-cluster-credentials # - https://argo-cd.readthedocs.io/en/stable/user-guide/projects/#project-scoped-repositories-and-clusters |
 | argocd.configs.cm."admin.enabled" | bool | `true` | Enable local admin user # Ref: https://argo-cd.readthedocs.io/en/latest/faq/#how-to-disable-admin-user |
@@ -255,6 +258,7 @@ A Helm chart for Kubernetes
 | argocd.configs.cm."timeout.reconciliation.jitter" | string | `"60s"` | Maximum jitter added to the reconciliation timeout to spread out refreshes and reduce repo-server load |
 | argocd.configs.cm.annotations | object | `{}` | Annotations to be added to argocd-cm configmap |
 | argocd.configs.cm.create | bool | `true` | Create the argocd-cm configmap for [declarative setup] |
+| argocd.configs.cm.resourceExclusionsAdditional | list | `[]` | Additional resource exclusions to append to the default `resource.exclusions` list above, so that the defaults can be kept up to date without needing to duplicate/override them. These entries are always appended, never substituted: if you also set `resource.exclusions` yourself, they are appended to your value rather than to the chart defaults. |
 | argocd.configs.cmp.annotations | object | `{}` | Annotations to be added to argocd-cmp-cm configmap |
 | argocd.configs.cmp.create | bool | `false` | Create the argocd-cmp-cm configmap |
 | argocd.configs.cmp.plugins | object | `{}` | Plugin yaml files to be added to argocd-cmp-cm |
@@ -316,6 +320,13 @@ A Helm chart for Kubernetes
 | argocd.controller.image.tag | string | `""` (defaults to global.image.tag) | Tag to use for the application controller |
 | argocd.controller.imagePullSecrets | list | `[]` (defaults to global.imagePullSecrets) | Secrets with credentials to pull images from a private registry |
 | argocd.controller.initContainers | list | `[]` | Init containers to add to the application controller pod # If your target Kubernetes cluster(s) require a custom credential (exec) plugin # you could use this (and the same in the server pod) to provide such executable # Ref: https://kubernetes.io/docs/reference/access-authn-authz/authentication/#client-go-credential-plugins # Note: Supports use of custom Helm templates |
+| argocd.controller.livenessProbe.enabled | bool | `false` | Enable Kubernetes liveness probe for Application controller |
+| argocd.controller.livenessProbe.failureThreshold | int | `5` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
+| argocd.controller.livenessProbe.httpPath | string | `"/healthz"` | Http path to use for the liveness probe |
+| argocd.controller.livenessProbe.initialDelaySeconds | int | `10` | Number of seconds after the container has started before [probe] is initiated |
+| argocd.controller.livenessProbe.periodSeconds | int | `30` | How often (in seconds) to perform the [probe] |
+| argocd.controller.livenessProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
+| argocd.controller.livenessProbe.timeoutSeconds | int | `5` | Number of seconds after which the [probe] times out |
 | argocd.controller.metrics.applicationLabels.enabled | bool | `false` | Enables additional labels in argocd_app_labels metric |
 | argocd.controller.metrics.applicationLabels.labels | list | `[]` | Additional labels |
 | argocd.controller.metrics.enabled | bool | `false` | Deploy metrics service |
@@ -351,6 +362,7 @@ A Helm chart for Kubernetes
 | argocd.controller.pdb.labels | object | `{}` | Labels to be added to application controller pdb |
 | argocd.controller.pdb.maxUnavailable | string | `""` | Number of pods that are unavailable after eviction as number or percentage (eg.: 50%). # Has higher precedence over `controller.pdb.minAvailable` |
 | argocd.controller.pdb.minAvailable | string | `""` (defaults to 0 if not specified) | Number of pods that are available after eviction as number or percentage (eg.: 50%) |
+| argocd.controller.pdb.unhealthyPodEvictionPolicy | string | `""` | Policy for evicting unhealthy (not ready) pods, either `IfHealthyBudget` or `AlwaysAllow` # Defaults to `IfHealthyBudget` if not set |
 | argocd.controller.podAnnotations | object | `{}` | Annotations to be added to application controller pods |
 | argocd.controller.podLabels | object | `{}` | Labels to be added to application controller pods |
 | argocd.controller.priorityClassName | string | `""` (defaults to global.priorityClassName) | Priority class for the application controller pods |
@@ -389,6 +401,7 @@ A Helm chart for Kubernetes
 | argocd.controller.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the application controller |
 | argocd.controller.vpa.labels | object | `{}` | Labels to be added to application controller vpa |
 | argocd.controller.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
+| argocd.controller.vpa.startupBoost | object | `{}` | Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set # Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup |
 | argocd.controller.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.crds.additionalLabels | object | `{}` | Additional labels to be added to all CRDs |
 | argocd.crds.annotations | object | `{"argocd.argoproj.io/sync-options":"ServerSideApply=true"}` | Annotations to be added to all CRDs |
@@ -460,6 +473,7 @@ A Helm chart for Kubernetes
 | argocd.dex.pdb.labels | object | `{}` | Labels to be added to Dex server pdb |
 | argocd.dex.pdb.maxUnavailable | string | `""` | Number of pods that are unavailble after eviction as number or percentage (eg.: 50%). # Has higher precedence over `dex.pdb.minAvailable` |
 | argocd.dex.pdb.minAvailable | string | `""` (defaults to 0 if not specified) | Number of pods that are available after eviction as number or percentage (eg.: 50%) |
+| argocd.dex.pdb.unhealthyPodEvictionPolicy | string | `""` | Policy for evicting unhealthy (not ready) pods, either `IfHealthyBudget` or `AlwaysAllow` # Defaults to `IfHealthyBudget` if not set |
 | argocd.dex.podAnnotations | object | `{}` | Annotations to be added to the Dex server pods |
 | argocd.dex.podLabels | object | `{}` | Labels to be added to the Dex server pods |
 | argocd.dex.priorityClassName | string | `""` (defaults to global.priorityClassName) | Priority class for the dex pods |
@@ -502,6 +516,7 @@ A Helm chart for Kubernetes
 | argocd.dex.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Dex server |
 | argocd.dex.vpa.labels | object | `{}` | Labels to be added to Dex server vpa |
 | argocd.dex.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
+| argocd.dex.vpa.startupBoost | object | `{}` | Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set # Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup |
 | argocd.dex.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.externalRedis.existingSecret | string | `""` | The name of an existing secret with Redis (must contain key `redis-password`. And should contain `redis-username` if username is not `default`) and Sentinel credentials. When it's set, the `externalRedis.username` and `externalRedis.password` parameters are ignored |
 | argocd.externalRedis.host | string | `""` | External Redis server host |
@@ -605,6 +620,7 @@ A Helm chart for Kubernetes
 | argocd.notifications.pdb.labels | object | `{}` | Labels to be added to notifications controller pdb |
 | argocd.notifications.pdb.maxUnavailable | string | `""` | Number of pods that are unavailable after eviction as number or percentage (eg.: 50%). # Has higher precedence over `notifications.pdb.minAvailable` |
 | argocd.notifications.pdb.minAvailable | string | `""` (defaults to 0 if not specified) | Number of pods that are available after eviction as number or percentage (eg.: 50%) |
+| argocd.notifications.pdb.unhealthyPodEvictionPolicy | string | `""` | Policy for evicting unhealthy (not ready) pods, either `IfHealthyBudget` or `AlwaysAllow` # Defaults to `IfHealthyBudget` if not set |
 | argocd.notifications.podAnnotations | object | `{}` | Annotations to be applied to the notifications controller Pods |
 | argocd.notifications.podLabels | object | `{}` | Labels to be applied to the notifications controller Pods |
 | argocd.notifications.priorityClassName | string | `""` (defaults to global.priorityClassName) | Priority class for the notifications controller pods |
@@ -643,6 +659,7 @@ A Helm chart for Kubernetes
 | argocd.notifications.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the notifications controller |
 | argocd.notifications.vpa.labels | object | `{}` | Labels to be added to notifications controller vpa |
 | argocd.notifications.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
+| argocd.notifications.vpa.startupBoost | object | `{}` | Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set # Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup |
 | argocd.notifications.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.openshift.enabled | bool | `false` | enables using arbitrary uid for argo repo server |
 | argocd.redis-ha.additionalAffinities | object | `{}` | Additional affinities to add to the Redis server pods. |
@@ -665,11 +682,12 @@ A Helm chart for Kubernetes
 | argocd.redis-ha.haproxy.tolerations | list | `[]` | [Tolerations] for use with node taints for haproxy pods. |
 | argocd.redis-ha.hardAntiAffinity | bool | `true` | Whether the Redis server pods should be forced to run on separate nodes. |
 | argocd.redis-ha.image.repository | string | `"ecr-public.aws.com/docker/library/redis"` | Redis repository |
-| argocd.redis-ha.image.tag | string | `"8.2.3-alpine"` | Redis tag # Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis |
+| argocd.redis-ha.image.tag | string | `"8.6.4-alpine"` | Redis tag # Do not use 7.4.0 <= v < 8.0.0, otherwise you are no longer using an open source version of Redis # Runs ahead of the upstream HA manifests' pin: the redis 8.2.x line is only built on Alpine 3.22, # whose OpenSSL carries known vulnerabilities (GHSA-5p3w-hgjv-f6q3 report); 8.6.x is the patched base. |
 | argocd.redis-ha.persistentVolume.enabled | bool | `false` | Configures persistence on Redis nodes |
 | argocd.redis-ha.redis.config | object | See [values.yaml] | Any valid redis config options in this section will be applied to each server (see `redis-ha` chart) |
 | argocd.redis-ha.redis.config.save | string | `'""'` | Will save the DB if both the given number of seconds and the given number of write operations against the DB occurred. `""`  is disabled |
 | argocd.redis-ha.redis.masterGroupName | string | `"argocd"` | Redis convention for naming the cluster group: must match `^[\\w-\\.]+$` and can be templated |
+| argocd.redis-ha.sentinel.lifecycle | object | See [values.yaml] | Sentinel container lifecycle hooks. The default `postStart` hook resets the sentinel state after a rolling update to prevent high CPU usage |
 | argocd.redis-ha.tolerations | list | `[]` | [Tolerations] for use with node taints for Redis pods. |
 | argocd.redis-ha.topologySpreadConstraints | object | `{"enabled":false,"maxSkew":"","topologyKey":"","whenUnsatisfiable":""}` | Assign custom [TopologySpreadConstraints] rules to the Redis pods. # https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ |
 | argocd.redis-ha.topologySpreadConstraints.enabled | bool | `false` | Enable Redis HA topology spread constraints |
@@ -693,7 +711,7 @@ A Helm chart for Kubernetes
 | argocd.redis.exporter.env | list | `[]` | Environment variables to pass to the Redis exporter |
 | argocd.redis.exporter.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for the redis-exporter |
 | argocd.redis.exporter.image.repository | string | `"ghcr.io/oliver006/redis_exporter"` | Repository to use for the redis-exporter |
-| argocd.redis.exporter.image.tag | string | `"v1.89.0"` | Tag to use for the redis-exporter |
+| argocd.redis.exporter.image.tag | string | `"v1.91.1"` | Tag to use for the redis-exporter |
 | argocd.redis.exporter.livenessProbe.enabled | bool | `false` | Enable Kubernetes liveness probe for Redis exporter |
 | argocd.redis.exporter.livenessProbe.failureThreshold | int | `5` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
 | argocd.redis.exporter.livenessProbe.initialDelaySeconds | int | `30` | Number of seconds after the container has started before [probe] is initiated |
@@ -709,6 +727,7 @@ A Helm chart for Kubernetes
 | argocd.redis.exporter.resources | object | `{}` | Resource limits and requests for redis-exporter sidecar |
 | argocd.redis.extraArgs | list | `[]` | Additional command line arguments to pass to redis-server |
 | argocd.redis.extraContainers | list | `[]` | Additional containers to be added to the redis pod # Note: Supports use of custom Helm templates |
+| argocd.redis.hostNetwork | bool | `false` | Host Network for redis pods |
 | argocd.redis.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Redis image pull policy |
 | argocd.redis.image.repository | string | `"ecr-public.aws.com/docker/library/redis"` | Redis repository |
 | argocd.redis.image.tag | string | `"8.6.4-alpine"` | Redis tag # Do not use 7.4.0 <= v < 8.0.0, otherwise you are no longer using an open source version of Redis |
@@ -746,6 +765,7 @@ A Helm chart for Kubernetes
 | argocd.redis.pdb.labels | object | `{}` | Labels to be added to Redis pdb |
 | argocd.redis.pdb.maxUnavailable | string | `""` | Number of pods that are unavailble after eviction as number or percentage (eg.: 50%). # Has higher precedence over `redis.pdb.minAvailable` |
 | argocd.redis.pdb.minAvailable | string | `""` (defaults to 0 if not specified) | Number of pods that are available after eviction as number or percentage (eg.: 50%) |
+| argocd.redis.pdb.unhealthyPodEvictionPolicy | string | `""` | Policy for evicting unhealthy (not ready) pods, either `IfHealthyBudget` or `AlwaysAllow` # Defaults to `IfHealthyBudget` if not set |
 | argocd.redis.podAnnotations | object | `{}` | Annotations to be added to the Redis server pods |
 | argocd.redis.podLabels | object | `{}` | Labels to be added to the Redis server pods |
 | argocd.redis.priorityClassName | string | `""` (defaults to global.priorityClassName) | Priority class for redis pods |
@@ -775,11 +795,15 @@ A Helm chart for Kubernetes
 | argocd.redis.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Redis |
 | argocd.redis.vpa.labels | object | `{}` | Labels to be added to Redis vpa |
 | argocd.redis.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
+| argocd.redis.vpa.startupBoost | object | `{}` | Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set # Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup |
 | argocd.redis.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.redisSecretInit.affinity | object | `{}` | Assign custom [affinity] rules to the Redis secret-init Job |
 | argocd.redisSecretInit.containerSecurityContext | object | See [values.yaml] | Application controller container-level security context |
+| argocd.redisSecretInit.dnsConfig | object | `{}` | [DNS configuration] |
+| argocd.redisSecretInit.dnsPolicy | string | `"ClusterFirst"` | Alternative DNS policy for Redis secret-init Job |
 | argocd.redisSecretInit.enabled | bool | `true` | Enable Redis secret initialization. If disabled, secret must be provisioned by alternative methods |
 | argocd.redisSecretInit.extraArgs | list | `[]` | Additional command line arguments for the Redis secret-init Job |
+| argocd.redisSecretInit.hostNetwork | bool | `false` | Host Network for redis-secret-init pods |
 | argocd.redisSecretInit.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for the Redis secret-init Job |
 | argocd.redisSecretInit.image.repository | string | `""` (defaults to global.image.repository) | Repository to use for the Redis secret-init Job |
 | argocd.redisSecretInit.image.tag | string | `""` (defaults to global.image.tag) | Tag to use for the Redis secret-init Job |
@@ -872,6 +896,7 @@ A Helm chart for Kubernetes
 | argocd.repoServer.pdb.labels | object | `{}` | Labels to be added to repo server pdb |
 | argocd.repoServer.pdb.maxUnavailable | string | `""` | Number of pods that are unavailable after eviction as number or percentage (eg.: 50%). # Has higher precedence over `repoServer.pdb.minAvailable` |
 | argocd.repoServer.pdb.minAvailable | string | `""` (defaults to 0 if not specified) | Number of pods that are available after eviction as number or percentage (eg.: 50%) |
+| argocd.repoServer.pdb.unhealthyPodEvictionPolicy | string | `""` | Policy for evicting unhealthy (not ready) pods, either `IfHealthyBudget` or `AlwaysAllow` # Defaults to `IfHealthyBudget` if not set |
 | argocd.repoServer.podAnnotations | object | `{}` | Annotations to be added to repo server pods |
 | argocd.repoServer.podLabels | object | `{}` | Labels to be added to repo server pods |
 | argocd.repoServer.priorityClassName | string | `""` (defaults to global.priorityClassName) | Priority class for the repo server pods |
@@ -914,6 +939,7 @@ A Helm chart for Kubernetes
 | argocd.repoServer.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the repo server |
 | argocd.repoServer.vpa.labels | object | `{}` | Labels to be added to repo server vpa |
 | argocd.repoServer.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
+| argocd.repoServer.vpa.startupBoost | object | `{}` | Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set # Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup |
 | argocd.repoServer.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.server.affinity | object | `{}` (defaults to global.affinity preset) | Assign custom [affinity] rules to the deployment |
 | argocd.server.automountServiceAccountToken | bool | `true` | Automount API credentials for the Service Account into the pod. |
@@ -967,7 +993,7 @@ A Helm chart for Kubernetes
 | argocd.server.extensions.extensionList | list | `[]` (See [values.yaml]) | Extensions for Argo CD # Ref: https://github.com/argoproj-labs/argocd-extension-metrics#install-ui-extension |
 | argocd.server.extensions.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for extensions |
 | argocd.server.extensions.image.repository | string | `"quay.io/argoprojlabs/argocd-extension-installer"` | Repository to use for extension installer image |
-| argocd.server.extensions.image.tag | string | `"v1.0.1"` | Tag to use for extension installer image |
+| argocd.server.extensions.image.tag | string | `"v1.1.0"` | Tag to use for extension installer image |
 | argocd.server.extensions.resources | object | `{}` | Resource limits and requests for the argocd-extensions container |
 | argocd.server.extraArgs | list | `[]` | Additional command line arguments to pass to Argo CD server |
 | argocd.server.extraContainers | list | `[]` | Additional containers to be added to the server pod # Note: Supports use of custom Helm templates |
@@ -1070,6 +1096,7 @@ A Helm chart for Kubernetes
 | argocd.server.pdb.labels | object | `{}` | Labels to be added to Argo CD server pdb |
 | argocd.server.pdb.maxUnavailable | string | `""` | Number of pods that are unavailable after eviction as number or percentage (eg.: 50%). # Has higher precedence over `server.pdb.minAvailable` |
 | argocd.server.pdb.minAvailable | string | `""` (defaults to 0 if not specified) | Number of pods that are available after eviction as number or percentage (eg.: 50%) |
+| argocd.server.pdb.unhealthyPodEvictionPolicy | string | `""` | Policy for evicting unhealthy (not ready) pods, either `IfHealthyBudget` or `AlwaysAllow` # Defaults to `IfHealthyBudget` if not set |
 | argocd.server.podAnnotations | object | `{}` | Annotations to be added to server pods |
 | argocd.server.podLabels | object | `{}` | Labels to be added to server pods |
 | argocd.server.priorityClassName | string | `""` (defaults to global.priorityClassName) | Priority class for the Argo CD server pods |
@@ -1130,6 +1157,7 @@ A Helm chart for Kubernetes
 | argocd.server.vpa.enabled | bool | `false` | Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Argo CD server |
 | argocd.server.vpa.labels | object | `{}` | Labels to be added to Argo CD server vpa |
 | argocd.server.vpa.recommenders | list | `[]` | The recommenders that will provide recommendations for vertical scaling. Only relevant if a named VPA recommender (e.g. one started with a custom recommender name) is in use; leave unset to use the cluster's default recommender # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md#verticalpodautoscalerspec # NOTE: specify only zero or one recommender as of VPA 1.7.1 |
+| argocd.server.vpa.startupBoost | object | `{}` | Configures a startup resource boost for faster cold-start (application boot) resource allocation. NOTE: startupBoost is currently a GKE-specific extension to the VPA API and is only honored on GKE clusters; it is rendered only when set # Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/boost-application-startup |
 | argocd.server.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
@@ -1163,7 +1191,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.15"
+    targetRevision: "0.1.16"
     chart: argocd
     path: ''
     helm:

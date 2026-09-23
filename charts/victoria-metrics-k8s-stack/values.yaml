@@ -62,8 +62,8 @@ vmstack:
     license:
       key: ""
       keyRef: {}
-        # name: secret-license
-        # key: license
+      # name: secret-license
+      # key: license
     cluster:
       # -- K8s cluster domain suffix, uses for building storage pods' FQDN. Details are [here](https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/)
       dnsDomain: cluster.local.
@@ -71,7 +71,21 @@ vmstack:
     extraLabels: {}
     # -- Annotations added to all resources
     extraAnnotations: {}
-
+    # -- Default component versions. Propagated automatically (as a global value) to the embedded operator chart's
+    # own `global.versions`, which it uses to populate its default-version env vars, so that CRs created outside this
+    # chart (no explicit spec.image.tag) get the same version this chart deploys. Keep in sync with the corresponding
+    # renovate-tracked tags/appVersion below.
+    versions:
+      # renovate: image=victoriametrics/victoria-metrics
+      metrics: v1.152.0
+      # renovate: image=victoriametrics/victoria-logs
+      logs: v1.52.0
+      # renovate: image=victoriametrics/victoria-traces
+      traces: v0.10.0
+      # renovate: image=victoriametrics/vmanomaly
+      anomaly: v1.30.4
+      # renovate: image=prom/alertmanager
+      alertmanager: v0.34.0
   # -- Override chart name
   nameOverride: ""
   # -- Resource full name override
@@ -82,7 +96,6 @@ vmstack:
   # VMServiceScrapes couldn't select the proper services.
   # For correct working need set value 'argocdReleaseOverride=$ARGOCD_APP_NAME'
   argocdReleaseOverride: ""
-
   # -- VictoriaMetrics Operator dependency chart configuration. More values can be found [here](https://docs.victoriametrics.com/helm/victoria-metrics-operator/#parameters). Also checkout [here](https://docs.victoriametrics.com/operator/configuration/#environment-variables) possible ENV variables to configure operator behaviour
   victoria-metrics-operator:
     enabled: true
@@ -101,7 +114,6 @@ vmstack:
     operator:
       # -- By default, operator converts prometheus-operator objects.
       disable_prometheus_converter: false
-
   defaultDashboards:
     # -- Enable dashboard sync via sync-job
     enabled: true
@@ -214,7 +226,6 @@ vmstack:
         enabled: '{{ .Values.kubeEtcd.enabled }}'
       kube-prometheus:
         url: https://raw.githubusercontent.com/prometheus-operator/kube-prometheus/main/manifests/grafana-dashboardDefinitions.yaml
-
   syncJob:
     # -- Fetch dashboards and rules from upstream sources at deploy time.
     # Creates ConfigMaps (for Grafana sidecar) or GrafanaDashboard CRDs and VMRules directly in the cluster.
@@ -223,8 +234,11 @@ vmstack:
     image:
       repository: ghcr.io/victoriametrics/sync-job
       # renovate: image=ghcr.io/victoriametrics/sync-job
-      tag: v0.0.16
+      tag: v0.0.17
       pullPolicy: IfNotPresent
+    # -- Image pull secrets for the sync-job Pod. Needed when `image.repository` points at a
+    # private registry. Falls back to `global.imagePullSecrets` when not set.
+    imagePullSecrets: []
     # -- Seconds to keep a finished job before automatic deletion
     ttlSecondsAfterFinished: 600
     # -- Delete managed resources that are no longer in the current config
@@ -262,21 +276,23 @@ vmstack:
     extraVolumes: []
     # -- Extra volume mounts to add to the sync-job container.
     extraVolumeMounts: []
-
   # -- Create default rules for monitoring the cluster
   defaultRules:
     # -- Labels, which are used for grouping results of the queries. Note that these labels are joined with `.Values.global.clusterLabel`
     extraGroupByLabels: []
     enabled: true
-    # -- Inject namespace=~"<value>" filter into metric selectors for metrics scraped by the given job.
+    # -- Deprecated: use labelRewrites instead (e.g. `labelRewrites.namespace: {match: <job>, value: <value>}`).
+    # Inject namespace=~"<value>" filter into metric selectors for metrics scraped by the given job.
     # Merged with per-group jobNamespaces (per-group wins on conflict).
     # Only use for jobs whose metrics are always namespace-scoped.
     jobNamespaces: {}
-
+    # -- Each entry rewrites label `name` (defaults to the map key) to `value` (a regexp) for
+    # selectors whose job is `match`. `value` may be a template expression, rendered before use.
+    # Merged with per-group labelRewrites by key (per-group wins on conflict).
+    labelRewrites: {}
     # -- Common properties for VMRule groups
     group:
       spec: {}
-
     # -- Common properties for all VMRules
     rule:
       spec:
@@ -284,7 +300,6 @@ vmstack:
         labels: {}
         # -- Additional annotations for all VMRules
         annotations: {}
-
     # -- Common properties for VMRules alerts
     alerting:
       spec:
@@ -292,7 +307,6 @@ vmstack:
         labels: {}
         # -- Additional annotations for VMRule alerts
         annotations: {}
-
     # -- Common properties for VMRules recording rules
     recording:
       spec:
@@ -300,16 +314,16 @@ vmstack:
         labels: {}
         # -- Additional annotations for VMRule recording rules
         annotations: {}
-
     # -- Per rule properties
     rules: {}
-      # CPUThrottlingHigh:
-      #   enabled: false
-      #   spec:
-      #     for: 15m
-      #     labels:
-      #       severity: critical
+    # CPUThrottlingHigh:
+    #   enabled: false
+    #   spec:
+    #     for: 15m
+    #     labels:
+    #       severity: critical
     # -- Rule group properties. Keys must match upstream group names exactly.
+    # `enabled` may be a template expression (e.g. `{{ .Values.kubeScheduler.enabled }}`), rendered before use.
     groups:
       etcd:
         # -- Enable/disable rule group
@@ -333,6 +347,13 @@ vmstack:
         #     dashboard: https://example.com/dashboard/1
       alertmanager.rules:
         rules: {}
+        labelRewrites:
+          job:
+            match: alertmanager-main
+            value: vmalertmanager-.*
+          namespace:
+            match: alertmanager-main
+            value: '{{ include "vm-k8s-stack.alertmanager.namespace" $ }}'
       general.rules:
         rules: {}
       k8s.rules.container_cpu_limits:
@@ -357,40 +378,53 @@ vmstack:
         rules: {}
       kube-apiserver-burnrate.rules:
         rules: {}
+        enabled: '{{ .Values.kubeApiServer.enabled }}'
       kube-apiserver-histogram.rules:
         rules: {}
+        enabled: '{{ .Values.kubeApiServer.enabled }}'
       kube-apiserver-slos:
         rules: {}
+        enabled: '{{ .Values.kubeApiServer.enabled }}'
       kube-prometheus-general.rules:
         rules: {}
       kube-prometheus-node-recording.rules:
         rules: {}
       kube-scheduler.rules:
         rules: {}
+        enabled: '{{ .Values.kubeScheduler.enabled }}'
       kube-state-metrics:
         rules: {}
       kubelet.rules:
         rules: {}
+        enabled: '{{ .Values.kubelet.enabled }}'
       kubernetes-apps:
         rules: {}
-        jobNamespaces:
-          kube-state-metrics: ".*"
+        labelRewrites:
+          namespace:
+            match: kube-state-metrics
+            value: ".*"
       kubernetes-resources:
         rules: {}
       kubernetes-storage:
         rules: {}
-        jobNamespaces:
-          kubelet: ".*"
+        labelRewrites:
+          namespace:
+            match: kubelet
+            value: ".*"
       kubernetes-system:
         rules: {}
       kubernetes-system-apiserver:
         rules: {}
+        enabled: '{{ .Values.kubeApiServer.enabled }}'
       kubernetes-system-controller-manager:
         rules: {}
+        enabled: '{{ .Values.kubeControllerManager.enabled }}'
       kubernetes-system-kubelet:
         rules: {}
+        enabled: '{{ .Values.kubelet.enabled }}'
       kubernetes-system-scheduler:
         rules: {}
+        enabled: '{{ .Values.kubeScheduler.enabled }}'
       node-exporter:
         rules: {}
       node-exporter.rules:
@@ -411,15 +445,12 @@ vmstack:
         rules: {}
       vmsingle:
         rules: {}
-
     # -- Runbook url prefix for default rules
     runbookUrl: https://runbooks.prometheus-operator.dev/runbooks
-
     # -- Labels for default rules
     labels: {}
     # -- Annotations for default rules
     annotations: {}
-
     # -- Rule sources. Set enabled: false on any entry to disable it. Add new keys to extend.
     sources:
       etcd:
@@ -471,7 +502,6 @@ vmstack:
       vthealth:
         url: https://raw.githubusercontent.com/VictoriaMetrics/VictoriaTraces/master/deployment/docker/rules/alerts-health.yml
         enabled: '{{ or .Values.vtsingle.enabled .Values.vtcluster.enabled }}'
-
   # -- Provide custom recording or alerting rules to be deployed into the cluster.
   extraRules: {}
   #  rule-name:
@@ -532,7 +562,6 @@ vmstack:
         # bearerTokenSecret:
         #   name: dbaas-read-access-token
         #   key: bearerToken
-
   # Configures VLSingle params
   vlsingle:
     # -- VLSingle labels
@@ -547,8 +576,8 @@ vmstack:
     spec:
       port: "9428"
       image:
-        # renovate: image=victoriametrics/victoria-logs
-        tag: v1.52.0
+        # -- VictoriaLogs image tag. Defaults to `global.versions.logs` when empty.
+        tag: ""
       # -- Data retention period. Possible units character: h(ours), d(ays), w(eeks), y(ears), if no unit character specified - month. The minimum retention period is 24h. See these [docs](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#retention)
       retentionPeriod: "1"
       replicaCount: 1
@@ -563,10 +592,9 @@ vmstack:
       # -- Enable deployment of ingress for server component
       enabled: false
       # -- Ingress annotations
-      annotations:
-        {}
-        # kubernetes.io/ingress.class: nginx
-        # kubernetes.io/tls-acme: "true"
+      annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
       # -- Ingress extra labels
       labels: {}
       # -- Ingress default path
@@ -575,7 +603,6 @@ vmstack:
       pathType: Prefix
       # -- Ingress controller class name
       ingressClassName: ""
-
       # -- Array of host objects
       hosts: []
       #  - vlsingle.domain.com
@@ -641,62 +668,53 @@ vmstack:
               resources:
                 requests:
                   storage: 10Gi
-        resources:
-          {}
-          # limits:
-          #   cpu: "1"
-          #   memory: 1500Mi
+        resources: {}
+        # limits:
+        #   cpu: "1"
+        #   memory: 1500Mi
       vlselect:
         # -- Set this value to false to disable VMSelect
         enabled: true
         port: "9471"
         replicaCount: 2
         extraArgs: {}
-        resources:
-          {}
-          # limits:
-          #   cpu: "1"
-          #   memory: "1000Mi"
-          # requests:
-          #   cpu: "0.5"
-          #   memory: "500Mi"
+        resources: {}
+        # limits:
+        #   cpu: "1"
+        #   memory: "1000Mi"
+        # requests:
+        #   cpu: "0.5"
+        #   memory: "500Mi"
       vlinsert:
         # -- Set this value to false to disable VMInsert
         enabled: true
         port: "9481"
         replicaCount: 2
         extraArgs: {}
-        resources:
-          {}
-          # limits:
-          #   cpu: "1"
-          #   memory: 1000Mi
-          # requests:
-          #   cpu: "0.5"
-          #   memory: "500Mi"
-
+        resources: {}
+        # limits:
+        #   cpu: "1"
+        #   memory: 1000Mi
+        # requests:
+        #   cpu: "0.5"
+        #   memory: "500Mi"
     ingress:
       vlstorage:
         # -- Enable deployment of ingress for server component
         enabled: false
-
         # -- Ingress annotations
         annotations: {}
-          # kubernetes.io/ingress.class: nginx
-          # kubernetes.io/tls-acme: "true"
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
 
         # -- Ingress extra labels
         labels: {}
-
         # -- Ingress controller class name
         ingressClassName: ""
-
         # -- Ingress path type
         pathType: Prefix
-
         # -- Ingress default path
         path: ""
-
         # -- Array of host objects
         hosts: []
         #  - vlstorage.domain.com
@@ -719,24 +737,19 @@ vmstack:
       vlselect:
         # -- Enable deployment of ingress for server component
         enabled: false
-
         # -- Ingress annotations
         annotations: {}
-          # kubernetes.io/ingress.class: nginx
-          # kubernetes.io/tls-acme: "true"
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
 
         # -- Ingress extra labels
         labels: {}
-
         # -- Ingress controller class name
         ingressClassName: ""
-
         # -- Ingress path type
         pathType: Prefix
-
         # -- Ingress default path
         path: '{{ dig "extraArgs" "http.pathPrefix" "/" .Values.vlcluster.spec.vlselect }}'
-
         # -- Array of host objects
         hosts: []
         #  - vlselect.domain.com
@@ -758,25 +771,19 @@ vmstack:
       vlinsert:
         # -- Enable deployment of ingress for server component
         enabled: false
-
         # -- Ingress annotations
-        annotations:
-          {}
-          # kubernetes.io/ingress.class: nginx
-          # kubernetes.io/tls-acme: "true"
+        annotations: {}
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
 
         # -- Ingress extra labels
         labels: {}
-
         # -- Ingress controller class name
         ingressClassName: ""
-
         # -- Ingress path type
         pathType: Prefix
-
         # -- Ingress default path
         path: '{{ dig "extraArgs" "http.pathPrefix" "/" .Values.vlcluster.spec.vlinsert }}'
-
         # -- Array of host objects
         hosts: []
         #  - vlinsert.domain.com
@@ -862,7 +869,6 @@ vmstack:
           - path:
               type: PathPrefix
               value: '{{ dig "extraArgs" "http.pathPrefix" "/" .Values.vlcluster.spec.vlinsert }}'
-
   vldistributed:
     # -- Create VLDistributed CR
     enabled: false
@@ -896,7 +902,6 @@ vmstack:
               replicaCount: 2
       zones:
         - name: zone-0
-
   vlagent:
     # -- Create VLAgent CR
     enabled: false
@@ -916,15 +921,14 @@ vmstack:
       # -- additional rules for a role
       rules: []
     # -- Remote write configuration of VLAgent, allowed parameters defined in a [spec](https://docs.victoriametrics.com/operator/api/#vlagentremotewritespec)
-    additionalRemoteWrites:
-      []
-      # - url: http://some-remote-write/api/v1/write
+    additionalRemoteWrites: []
+    # - url: http://some-remote-write/api/v1/write
     # -- (object) Full spec for VLAgent CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vlagentspec)
     spec:
       port: "9429"
       image:
-        # renovate: image=victoriametrics/victoria-logs
-        tag: v1.52.0
+        # -- VictoriaLogs image tag. Defaults to `global.versions.logs` when empty.
+        tag: ""
       k8sCollector:
         enabled: true
     # -- (object) VLAgent ingress configuration
@@ -934,14 +938,12 @@ vmstack:
       # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
       # ingressClassName: nginx
       # Values can be templated
-      annotations:
-        {}
-        # kubernetes.io/ingress.class: nginx
-        # kubernetes.io/tls-acme: "true"
+      annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
       labels: {}
       path: ""
       pathType: Prefix
-
       hosts:
         - vlagent.domain.com
       extraPaths: []
@@ -956,7 +958,6 @@ vmstack:
       #  - secretName: vlagent-ingress-tls
       #    hosts:
       #      - vlagent.domain.com
-
     # -- (object) VLAgent route configuration
     route:
       # -- Enable deployment of HTTPRoute for vlagent component
@@ -980,7 +981,6 @@ vmstack:
         - path:
             type: PathPrefix
             value: '{{ dig "spec" "extraArgs" "http.pathPrefix" "/" .Values.vlagent }}'
-
   # Configures VTSingle params
   vtsingle:
     # -- VTSingle labels
@@ -995,8 +995,8 @@ vmstack:
     spec:
       port: "10428"
       image:
-        # renovate: image=victoriametrics/victoria-traces
-        tag: v0.9.4
+        # -- VictoriaTraces image tag. Defaults to `global.versions.traces` when empty.
+        tag: ""
       # -- Data retention period. Possible units character: h(ours), d(ays), w(eeks), y(ears), if no unit character specified - month. The minimum retention period is 24h.
       retentionPeriod: "1"
       replicaCount: 1
@@ -1011,10 +1011,9 @@ vmstack:
       # -- Enable deployment of ingress for server component
       enabled: false
       # -- Ingress annotations
-      annotations:
-        {}
-        # kubernetes.io/ingress.class: nginx
-        # kubernetes.io/tls-acme: "true"
+      annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
       # -- Ingress extra labels
       labels: {}
       # -- Ingress default path
@@ -1062,7 +1061,6 @@ vmstack:
         - path:
             type: PathPrefix
             value: '{{ dig "spec" "extraArgs" "http.pathPrefix" "/" .Values.vtsingle }}'
-
   vtcluster:
     # -- Create VTCluster CR
     enabled: false
@@ -1088,62 +1086,53 @@ vmstack:
               resources:
                 requests:
                   storage: 10Gi
-        resources:
-          {}
-          # limits:
-          #   cpu: "1"
-          #   memory: 1500Mi
+        resources: {}
+        # limits:
+        #   cpu: "1"
+        #   memory: 1500Mi
       vtselect:
         # -- Set this value to false to disable VTSelect
         enabled: true
         port: "10471"
         replicaCount: 2
         extraArgs: {}
-        resources:
-          {}
-          # limits:
-          #   cpu: "1"
-          #   memory: "1000Mi"
-          # requests:
-          #   cpu: "0.5"
-          #   memory: "500Mi"
+        resources: {}
+        # limits:
+        #   cpu: "1"
+        #   memory: "1000Mi"
+        # requests:
+        #   cpu: "0.5"
+        #   memory: "500Mi"
       vtinsert:
         # -- Set this value to false to disable VTInsert
         enabled: true
         port: "10481"
         replicaCount: 2
         extraArgs: {}
-        resources:
-          {}
-          # limits:
-          #   cpu: "1"
-          #   memory: 1000Mi
-          # requests:
-          #   cpu: "0.5"
-          #   memory: "500Mi"
-
+        resources: {}
+        # limits:
+        #   cpu: "1"
+        #   memory: 1000Mi
+        # requests:
+        #   cpu: "0.5"
+        #   memory: "500Mi"
     ingress:
       vtstorage:
         # -- Enable deployment of ingress for storage component
         enabled: false
-
         # -- Ingress annotations
         annotations: {}
-          # kubernetes.io/ingress.class: nginx
-          # kubernetes.io/tls-acme: "true"
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
 
         # -- Ingress extra labels
         labels: {}
-
         # -- Ingress controller class name
         ingressClassName: ""
-
         # -- Ingress path type
         pathType: Prefix
-
         # -- Ingress default path
         path: ""
-
         # -- Array of host objects
         hosts: []
         #  - vtstorage.domain.com
@@ -1166,24 +1155,19 @@ vmstack:
       vtselect:
         # -- Enable deployment of ingress for select component
         enabled: false
-
         # -- Ingress annotations
         annotations: {}
-          # kubernetes.io/ingress.class: nginx
-          # kubernetes.io/tls-acme: "true"
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
 
         # -- Ingress extra labels
         labels: {}
-
         # -- Ingress controller class name
         ingressClassName: ""
-
         # -- Ingress path type
         pathType: Prefix
-
         # -- Ingress default path
         path: '{{ dig "extraArgs" "http.pathPrefix" "/" .Values.vtcluster.spec.vtselect }}'
-
         # -- Array of host objects
         hosts: []
         #  - vtselect.domain.com
@@ -1205,25 +1189,19 @@ vmstack:
       vtinsert:
         # -- Enable deployment of ingress for insert component
         enabled: false
-
         # -- Ingress annotations
-        annotations:
-          {}
-          # kubernetes.io/ingress.class: nginx
-          # kubernetes.io/tls-acme: "true"
+        annotations: {}
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
 
         # -- Ingress extra labels
         labels: {}
-
         # -- Ingress controller class name
         ingressClassName: ""
-
         # -- Ingress path type
         pathType: Prefix
-
         # -- Ingress default path
         path: '{{ dig "extraArgs" "http.pathPrefix" "/" .Values.vtcluster.spec.vtinsert }}'
-
         # -- Array of host objects
         hosts: []
         #  - vtinsert.domain.com
@@ -1309,7 +1287,6 @@ vmstack:
           - path:
               type: PathPrefix
               value: '{{ dig "extraArgs" "http.pathPrefix" "/" .Values.vtcluster.spec.vtinsert }}'
-
   # Configures vmsingle params
   vmsingle:
     # -- VMSingle labels
@@ -1337,10 +1314,9 @@ vmstack:
       # -- Enable deployment of ingress for server component
       enabled: false
       # -- Ingress annotations
-      annotations:
-        {}
-        # kubernetes.io/ingress.class: nginx
-        # kubernetes.io/tls-acme: "true"
+      annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
       # -- Ingress extra labels
       labels: {}
       # -- Ingress default path
@@ -1349,7 +1325,6 @@ vmstack:
       pathType: Prefix
       # -- Ingress controller class name
       ingressClassName: ""
-
       # -- Array of host objects
       hosts: []
       #  - vmsingle.domain.com
@@ -1390,7 +1365,6 @@ vmstack:
         - path:
             type: PathPrefix
             value: '{{ dig "spec" "extraArgs" "http.pathPrefix" "/" .Values.vmsingle }}'
-
   vmdistributed:
     # -- Create VMDistributed CR
     enabled: false
@@ -1428,7 +1402,6 @@ vmstack:
               replicaCount: 2
       zones:
         - name: us-east-1
-
   vmcluster:
     # -- Create VMCluster CR
     enabled: false
@@ -1452,11 +1425,10 @@ vmstack:
               resources:
                 requests:
                   storage: 10Gi
-        resources:
-          {}
-          # limits:
-          #   cpu: "1"
-          #   memory: 1500Mi
+        resources: {}
+        # limits:
+        #   cpu: "1"
+        #   memory: 1500Mi
       vmselect:
         # -- Set this value to false to disable VMSelect
         enabled: true
@@ -1470,51 +1442,43 @@ vmstack:
               resources:
                 requests:
                   storage: 2Gi
-        resources:
-          {}
-          # limits:
-          #   cpu: "1"
-          #   memory: "1000Mi"
-          # requests:
-          #   cpu: "0.5"
-          #   memory: "500Mi"
+        resources: {}
+        # limits:
+        #   cpu: "1"
+        #   memory: "1000Mi"
+        # requests:
+        #   cpu: "0.5"
+        #   memory: "500Mi"
       vminsert:
         # -- Set this value to false to disable VMInsert
         enabled: true
         port: "8480"
         replicaCount: 2
         extraArgs: {}
-        resources:
-          {}
-          # limits:
-          #   cpu: "1"
-          #   memory: 1000Mi
-          # requests:
-          #   cpu: "0.5"
-          #   memory: "500Mi"
-
+        resources: {}
+        # limits:
+        #   cpu: "1"
+        #   memory: 1000Mi
+        # requests:
+        #   cpu: "0.5"
+        #   memory: "500Mi"
     ingress:
       storage:
         # -- Enable deployment of ingress for server component
         enabled: false
-
         # -- Ingress annotations
         annotations: {}
-          # kubernetes.io/ingress.class: nginx
-          # kubernetes.io/tls-acme: "true"
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
 
         # -- Ingress extra labels
         labels: {}
-
         # -- Ingress controller class name
         ingressClassName: ""
-
         # -- Ingress path type
         pathType: Prefix
-
         # -- Ingress default path
         path: ""
-
         # -- Array of host objects
         hosts: []
         #  - vmstorage.domain.com
@@ -1537,24 +1501,19 @@ vmstack:
       select:
         # -- Enable deployment of ingress for server component
         enabled: false
-
         # -- Ingress annotations
         annotations: {}
-          # kubernetes.io/ingress.class: nginx
-          # kubernetes.io/tls-acme: "true"
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
 
         # -- Ingress extra labels
         labels: {}
-
         # -- Ingress controller class name
         ingressClassName: ""
-
         # -- Ingress path type
         pathType: Prefix
-
         # -- Ingress default path
         path: '{{ dig "extraArgs" "http.pathPrefix" "/" .Values.vmcluster.spec.vmselect }}'
-
         # -- Array of host objects
         hosts: []
         #  - vmselect.domain.com
@@ -1576,25 +1535,19 @@ vmstack:
       insert:
         # -- Enable deployment of ingress for server component
         enabled: false
-
         # -- Ingress annotations
-        annotations:
-          {}
-          # kubernetes.io/ingress.class: nginx
-          # kubernetes.io/tls-acme: "true"
+        annotations: {}
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
 
         # -- Ingress extra labels
         labels: {}
-
         # -- Ingress controller class name
         ingressClassName: ""
-
         # -- Ingress path type
         pathType: Prefix
-
         # -- Ingress default path
         path: '{{ dig "extraArgs" "http.pathPrefix" "/" .Values.vmcluster.spec.vminsert }}'
-
         # -- Array of host objects
         hosts: []
         #  - vminsert.domain.com
@@ -1680,7 +1633,6 @@ vmstack:
           - path:
               type: PathPrefix
               value: '{{ dig "extraArgs" "http.pathPrefix" "/" .Values.vmcluster.spec.vminsert }}'
-
   alertmanager:
     # -- Create VMAlertmanager CR
     enabled: true
@@ -1696,11 +1648,10 @@ vmstack:
       port: "9093"
       selectAllByDefault: true
       image:
-        # renovate: image=prom/alertmanager
-        tag: v0.32.1
+        # -- Alertmanager image tag. Defaults to `global.versions.alertmanager` when empty.
+        tag: ""
       externalURL: ""
       routePrefix: /
-
       # -- (string) If this one defined, it will be used for alertmanager configuration and config parameter will be ignored
       configSecret: ""
     # --
@@ -1763,67 +1714,65 @@ vmstack:
 
       receivers:
         - name: blackhole
-      # - name: "slack-monitoring"
-      #   slack_configs:
-      #     - channel: "#channel"
-      #       send_resolved: true
-      #       title: '{{ template "slack.monzo.title" . }}'
-      #       icon_emoji: '{{ template "slack.monzo.icon_emoji" . }}'
-      #       color: '{{ template "slack.monzo.color" . }}'
-      #       text: '{{ template "slack.monzo.text" . }}'
-      #       actions:
-      #         - type: button
-      #           text: "Runbook :green_book:"
-      #           url: "{{ (index .Alerts 0).Annotations.runbook_url }}"
-      #         - type: button
-      #           text: "Query :mag:"
-      #           url: "{{ (index .Alerts 0).GeneratorURL }}"
-      #         - type: button
-      #           text: "Dashboard :grafana:"
-      #           url: "{{ (index .Alerts 0).Annotations.dashboard }}"
-      #         - type: button
-      #           text: "Silence :no_bell:"
-      #           url: '{{ template "__alert_silence_link" . }}'
-      #         - type: button
-      #           text: '{{ template "slack.monzo.link_button_text" . }}'
-      #           url: "{{ .CommonAnnotations.link_url }}"
-      # - name: slack-code-owners
-      #   slack_configs:
-      #     - channel: "#{{ .CommonLabels.code_owner_channel }}"
-      #       send_resolved: true
-      #       title: '{{ template "slack.monzo.title" . }}'
-      #       icon_emoji: '{{ template "slack.monzo.icon_emoji" . }}'
-      #       color: '{{ template "slack.monzo.color" . }}'
-      #       text: '{{ template "slack.monzo.text" . }}'
-      #       actions:
-      #         - type: button
-      #           text: "Runbook :green_book:"
-      #           url: "{{ (index .Alerts 0).Annotations.runbook }}"
-      #         - type: button
-      #           text: "Query :mag:"
-      #           url: "{{ (index .Alerts 0).GeneratorURL }}"
-      #         - type: button
-      #           text: "Dashboard :grafana:"
-      #           url: "{{ (index .Alerts 0).Annotations.dashboard }}"
-      #         - type: button
-      #           text: "Silence :no_bell:"
-      #           url: '{{ template "__alert_silence_link" . }}'
-      #         - type: button
-      #           text: '{{ template "slack.monzo.link_button_text" . }}'
-      #           url: "{{ .CommonAnnotations.link_url }}"
-      #
+          # - name: "slack-monitoring"
+          #   slack_configs:
+          #     - channel: "#channel"
+          #       send_resolved: true
+          #       title: '{{ template "slack.monzo.title" . }}'
+          #       icon_emoji: '{{ template "slack.monzo.icon_emoji" . }}'
+          #       color: '{{ template "slack.monzo.color" . }}'
+          #       text: '{{ template "slack.monzo.text" . }}'
+          #       actions:
+          #         - type: button
+          #           text: "Runbook :green_book:"
+          #           url: "{{ (index .Alerts 0).Annotations.runbook_url }}"
+          #         - type: button
+          #           text: "Query :mag:"
+          #           url: "{{ (index .Alerts 0).GeneratorURL }}"
+          #         - type: button
+          #           text: "Dashboard :grafana:"
+          #           url: "{{ (index .Alerts 0).Annotations.dashboard }}"
+          #         - type: button
+          #           text: "Silence :no_bell:"
+          #           url: '{{ template "__alert_silence_link" . }}'
+          #         - type: button
+          #           text: '{{ template "slack.monzo.link_button_text" . }}'
+          #           url: "{{ .CommonAnnotations.link_url }}"
+          # - name: slack-code-owners
+          #   slack_configs:
+          #     - channel: "#{{ .CommonLabels.code_owner_channel }}"
+          #       send_resolved: true
+          #       title: '{{ template "slack.monzo.title" . }}'
+          #       icon_emoji: '{{ template "slack.monzo.icon_emoji" . }}'
+          #       color: '{{ template "slack.monzo.color" . }}'
+          #       text: '{{ template "slack.monzo.text" . }}'
+          #       actions:
+          #         - type: button
+          #           text: "Runbook :green_book:"
+          #           url: "{{ (index .Alerts 0).Annotations.runbook }}"
+          #         - type: button
+          #           text: "Query :mag:"
+          #           url: "{{ (index .Alerts 0).GeneratorURL }}"
+          #         - type: button
+          #           text: "Dashboard :grafana:"
+          #           url: "{{ (index .Alerts 0).Annotations.dashboard }}"
+          #         - type: button
+          #           text: "Silence :no_bell:"
+          #           url: '{{ template "__alert_silence_link" . }}'
+          #         - type: button
+          #           text: '{{ template "slack.monzo.link_button_text" . }}'
+          #           url: "{{ .CommonAnnotations.link_url }}"
+          #
     # -- Better alert templates for [slack source](https://gist.github.com/milesbxf/e2744fc90e9c41b47aa47925f8ff6512)
     monzoTemplate:
       enabled: true
-
     # -- (object) Extra alert templates
-    templateFiles:
-      {}
-      # template_1.tmpl: |-
-      #   {{ define "hello" -}}
-      #   hello, Victoria!
-      #   {{- end }}
-      # template_2.tmpl: ""
+    templateFiles: {}
+    # template_1.tmpl: |-
+    #   {{ define "hello" -}}
+    #   hello, Victoria!
+    #   {{- end }}
+    # template_2.tmpl: ""
 
     # -- (object) VMAlertmanager ingress configuration
     ingress:
@@ -1832,14 +1781,12 @@ vmstack:
       # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
       # ingressClassName: nginx
       # Values can be templated
-      annotations:
-        {}
-        # kubernetes.io/ingress.class: nginx
-        # kubernetes.io/tls-acme: "true"
+      annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
       labels: {}
       path: '{{ .Values.alertmanager.spec.routePrefix | default "/" }}'
       pathType: Prefix
-
       hosts:
         - alertmanager.domain.com
       # -- Extra paths to prepend to every host configuration. This is useful when working with annotation based services.
@@ -1855,7 +1802,6 @@ vmstack:
       #  - secretName: alertmanager-ingress-tls
       #    hosts:
       #      - alertmanager.domain.com
-
     # -- (object) VMAlertmanager route configuration
     route:
       # -- Enable deployment of HTTPRoute for alertmanager component
@@ -1879,7 +1825,6 @@ vmstack:
         - path:
             type: PathPrefix
             value: '{{ .Values.alertmanager.spec.routePrefix | default "/" }}'
-
   vmalert:
     # -- VMAlert annotations
     annotations: {}
@@ -1889,7 +1834,6 @@ vmstack:
     namespaceOverride: ""
     # -- Create VMAlert CR
     enabled: true
-
     # -- Controls whether VMAlert should use VMAgent or VMInsert as a target for remotewrite
     remoteWriteVMAgent: false
     # -- (object) Full spec for VMAlert CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vmalertspec)
@@ -1899,28 +1843,25 @@ vmstack:
       evaluationInterval: 20s
       extraArgs:
         http.pathPrefix: "/"
-
       # External labels to add to all generated recording rules and alerts
       externalLabels: {}
-
     # -- (object) Extra VMAlert annotation templates
-    templateFiles:
-      {}
-      # template_1.tmpl: |-
-      #   {{ define "hello" -}}
-      #   hello, Victoria!
-      #   {{- end }}
-      # template_2.tmpl: ""
+    templateFiles: {}
+    # template_1.tmpl: |-
+    #   {{ define "hello" -}}
+    #   hello, Victoria!
+    #   {{- end }}
+    # template_2.tmpl: ""
 
     # -- Allows to configure static notifiers, discover notifiers via Consul and DNS,
     # see specification [here](https://docs.victoriametrics.com/victoriametrics/vmalert/#notifier-configuration-file).
     # This configuration will be created as separate secret and mounted to VMAlert pod.
     additionalNotifierConfigs: {}
-      # dns_sd_configs:
-      #   - names:
-      #       - my.domain.com
-      #     type: 'A'
-      #     port: 9093
+    # dns_sd_configs:
+    #   - names:
+    #       - my.domain.com
+    #     type: 'A'
+    #     port: 9093
     # -- (object) VMAlert ingress config
     ingress:
       enabled: false
@@ -1928,14 +1869,12 @@ vmstack:
       # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
       # ingressClassName: nginx
       # Values can be templated
-      annotations:
-        {}
-        # kubernetes.io/ingress.class: nginx
-        # kubernetes.io/tls-acme: "true"
+      annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
       labels: {}
       path: ""
       pathType: Prefix
-
       hosts:
         - vmalert.domain.com
       # -- Extra paths to prepend to every host configuration. This is useful when working with annotation based services.
@@ -1951,7 +1890,6 @@ vmstack:
       #  - secretName: vmalert-ingress-tls
       #    hosts:
       #      - vmalert.domain.com
-
     # -- (object) VMAlert route configuration
     route:
       # -- Enable deployment of HTTPRoute for vmalert component
@@ -1975,7 +1913,6 @@ vmstack:
         - path:
             type: PathPrefix
             value: '{{ dig "spec" "extraArgs" "http.pathPrefix" "/" .Values.vmalert }}'
-
   vmauth:
     # -- Enable VMAuth CR
     enabled: false
@@ -2008,7 +1945,6 @@ vmstack:
               - '{{ .vm.write.path }}/.*'
             url_prefix:
               - '{{ urlJoin (omit .vm.write "path") }}/'
-
   vmagent:
     # -- Create VMAgent CR
     enabled: true
@@ -2028,18 +1964,17 @@ vmstack:
       # -- additional rules for a role
       rules: []
     # -- Remote write configuration of VMAgent, allowed parameters defined in a [spec](https://docs.victoriametrics.com/operator/api/#vmagentremotewritespec)
-    additionalRemoteWrites:
-      []
-      # - url: http://some-remote-write/api/v1/write
+    additionalRemoteWrites: []
+    # - url: http://some-remote-write/api/v1/write
     # -- (object) Full spec for VMAgent CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vmagentspec)
     spec:
       port: "8429"
       selectAllByDefault: true
       scrapeInterval: 20s
       externalLabels: {}
-        # For multi-cluster setups it is useful to use "cluster" label to identify the metrics source.
-        # For example:
-        # cluster: cluster-name
+      # For multi-cluster setups it is useful to use "cluster" label to identify the metrics source.
+      # For example:
+      # cluster: cluster-name
       extraArgs:
         promscrape.streamParse: "true"
     # -- (object) VMAgent ingress configuration
@@ -2049,14 +1984,12 @@ vmstack:
       # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
       # ingressClassName: nginx
       # Values can be templated
-      annotations:
-        {}
-        # kubernetes.io/ingress.class: nginx
-        # kubernetes.io/tls-acme: "true"
+      annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
       labels: {}
       path: ""
       pathType: Prefix
-
       hosts:
         - vmagent.domain.com
       extraPaths: []
@@ -2071,7 +2004,6 @@ vmstack:
       #  - secretName: vmagent-ingress-tls
       #    hosts:
       #      - vmagent.domain.com
-
     # -- (object) VMAgent route configuration
     route:
       # -- Enable deployment of HTTPRoute for vmagent component
@@ -2095,7 +2027,6 @@ vmstack:
         - path:
             type: PathPrefix
             value: '{{ dig "spec" "extraArgs" "http.pathPrefix" "/" .Values.vmagent }}'
-
   defaultDatasources:
     grafanaOperator:
       # -- Create datasources as CRDs (requires grafana-operator to be installed)
@@ -2120,6 +2051,7 @@ vmstack:
           access: proxy
           uid: VictoriaMetricsDS
           type: victoriametrics-metrics-datasource
+          plugin: true
     victorialogs:
       # -- List of VictoriaLogs datasource configurations.
       # VL `url` will be added to each of them in templates.
@@ -2128,6 +2060,7 @@ vmstack:
           access: proxy
           uid: VictoriaLogs
           type: victoriametrics-logs-datasource
+          plugin: true
     victoriatraces:
       # -- List of VictoriaTraces (Jaeger-compatible) datasource configurations.
       # VT `url` will be added to each of them in templates.
@@ -2148,19 +2081,18 @@ vmstack:
     # -- Configure additional grafana datasources (passed through tpl).
     # Check [here](https://grafana.com/docs/grafana/latest/administration/provisioning/#data-sources) for details
     extra: []
-      # - name: prometheus-sample
-      #   access: proxy
-      #   basicAuth: true
-      #   basicAuthPassword: pass
-      #   basicAuthUser: daco
-      #   editable: false
-      #   jsonData:
-      #     tlsSkipVerify: true
-      #   orgId: 1
-      #   type: prometheus
-      #   url: https://{{ printf "%s-prometheus.svc" .Release.Name }}:9090
-      #   version: 1
-
+    # - name: prometheus-sample
+    #   access: proxy
+    #   basicAuth: true
+    #   basicAuthPassword: pass
+    #   basicAuthUser: daco
+    #   editable: false
+    #   jsonData:
+    #     tlsSkipVerify: true
+    #   orgId: 1
+    #   type: prometheus
+    #   url: https://{{ printf "%s-prometheus.svc" .Release.Name }}:9090
+    #   version: 1
   # -- Grafana dependency chart configuration. For possible values refer [here](https://github.com/grafana-community/helm-charts/tree/main/charts/grafana#configuration)
   grafana:
     enabled: true
@@ -2180,31 +2112,26 @@ vmstack:
         multicluster: false
         label: grafana_dashboard
         labelValue: "1"
-
     # -- Create datasource configmap even if grafana deployment has been disabled
     forceDeployDatasource: false
-
     # Uncomment the block below, if you want to enable VictoriaMetrics Datasource in Grafana:
     # Note that Grafana will need internet access to install the datasource plugin.
     #
     # plugins:
     # - victoriametrics-metrics-datasource
     # - victoriametrics-logs-datasource
-
     ingress:
       enabled: false
       # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
       # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
       # ingressClassName: nginx
       # Values can be templated
-      annotations:
-        {}
-        # kubernetes.io/ingress.class: nginx
-        # kubernetes.io/tls-acme: "true"
+      annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
       labels: {}
       path: /
       pathType: Prefix
-
       hosts:
         - grafana.domain.com
       # -- Extra paths to prepend to every host configuration. This is useful when working with annotation based services.
@@ -2220,12 +2147,10 @@ vmstack:
       #  - secretName: grafana-ingress-tls
       #    hosts:
       #      - grafana.domain.com
-
     # -- Grafana VM scrape config
     vmScrape:
       # whether we should create a service scrape resource for grafana
       enabled: true
-
       # -- [Scrape configuration](https://docs.victoriametrics.com/operator/api/#vmservicescrapespec) for Grafana
       spec:
         selector:
@@ -2233,14 +2158,11 @@ vmstack:
             app.kubernetes.io/name: '{{ include "grafana.name" .Subcharts.grafana }}'
         endpoints:
           - port: '{{ .Values.grafana.service.portName }}'
-
   defaultScrapeService:
     namespace: kube-system
-
   # -- prometheus-node-exporter dependency chart configuration. For possible values check [here](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-node-exporter/values.yaml)
   prometheus-node-exporter:
     enabled: true
-
     # all values for prometheus-node-exporter helm chart can be specified here
     service:
       labels:
@@ -2252,7 +2174,6 @@ vmstack:
     vmScrape:
       # whether we should create a service scrape resource for node-exporter
       enabled: true
-
       # -- [Scrape configuration](https://docs.victoriametrics.com/operator/api/#vmservicescrapespec) for Node Exporter
       spec:
         jobLabel: jobLabel
@@ -2283,7 +2204,6 @@ vmstack:
               - action: labeldrop
                 regex: (uid|container_id|image_id)
         jobLabel: app.kubernetes.io/name
-
   # -- Component scraping the kubelets
   kubelet:
     enabled: true
@@ -2360,12 +2280,10 @@ vmstack:
           matchLabels:
             component: apiserver
             provider: kubernetes
-
   # Component scraping the kube controller manager
   kubeControllerManager:
     # -- Enable kube controller manager metrics scraping
     enabled: true
-
     # -- If your kube controller manager is not deployed as a pod, specify IPs it can be found on
     endpoints: []
     # - 10.141.4.22
@@ -2385,7 +2303,6 @@ vmstack:
       # -- Kube controller manager service pod selector
       selector:
         component: kube-controller-manager
-
     # -- Spec for VMServiceScrape CRD is [here](https://docs.victoriametrics.com/operator/api/#vmservicescrapespec)
     vmScrape:
       spec:
@@ -2401,7 +2318,6 @@ vmstack:
             tlsConfig:
               caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
               serverName: kubernetes
-
   # Component scraping kubeDns. Use either this or coreDns
   kubeDns:
     # -- Enabled KubeDNS metrics scraping
@@ -2433,7 +2349,6 @@ vmstack:
             bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
           - port: http-metrics-skydns
             bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-
   # Component scraping coreDns. Use either this or kubeDns
   coreDns:
     # -- Enabled CoreDNS metrics scraping
@@ -2450,7 +2365,6 @@ vmstack:
       # -- CoreDNS service pod selector
       selector:
         k8s-app: kube-dns
-
     # -- Spec for VMServiceScrape CRD is [here](https://docs.victoriametrics.com/operator/api/#vmservicescrapespec)
     vmScrape:
       spec:
@@ -2460,12 +2374,10 @@ vmstack:
         endpoints:
           - port: http-metrics
             bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-
   # Component scraping etcd
   kubeEtcd:
     # -- Enabled KubeETCD metrics scraping
     enabled: true
-
     # -- If your etcd is not deployed as a pod, specify IPs it can be found on
     endpoints: []
     # - 10.141.4.22
@@ -2485,7 +2397,6 @@ vmstack:
       # -- ETCD service pods selector
       selector:
         component: etcd
-
     # -- Spec for VMServiceScrape CRD is [here](https://docs.victoriametrics.com/operator/api/#vmservicescrapespec)
     vmScrape:
       spec:
@@ -2500,12 +2411,10 @@ vmstack:
             scheme: https
             tlsConfig:
               caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-
   # Component scraping kube scheduler
   kubeScheduler:
     # -- Enable KubeScheduler metrics scraping
     enabled: true
-
     # -- If your kube scheduler is not deployed as a pod, specify IPs it can be found on
     endpoints: []
     # - 10.141.4.22
@@ -2525,7 +2434,6 @@ vmstack:
       # -- KubeScheduler service pod selector
       selector:
         component: kube-scheduler
-
     # -- Spec for VMServiceScrape CRD is [here](https://docs.victoriametrics.com/operator/api/#vmservicescrapespec)
     vmScrape:
       spec:
@@ -2540,12 +2448,10 @@ vmstack:
             scheme: https
             tlsConfig:
               caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-
   # Component scraping kube proxy
   kubeProxy:
     # -- Enable kube proxy metrics scraping
     enabled: false
-
     # -- If your kube proxy is not deployed as a pod, specify IPs it can be found on
     endpoints: []
     # - 10.141.4.22
@@ -2564,7 +2470,6 @@ vmstack:
       # -- Kube proxy service pod selector
       selector:
         k8s-app: kube-proxy
-
     # -- Spec for VMServiceScrape CRD is [here](https://docs.victoriametrics.com/operator/api/#vmservicescrapespec)
     vmScrape:
       spec:
@@ -2579,7 +2484,6 @@ vmstack:
             scheme: https
             tlsConfig:
               caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-
   internal:
     vmauth:
       # -- name is a template for the internal VMAuth CR used for vmalert datasource routing
@@ -2601,6 +2505,5 @@ vmstack:
                 - '/.*'
               url_prefix:
                 - '{{ (include "vm.prometheus.read" . | fromYaml).url }}/'
-
   # -- Add extra objects dynamically to this chart
   extraObjects: []
