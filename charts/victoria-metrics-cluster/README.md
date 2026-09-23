@@ -1,6 +1,6 @@
 # victoria-metrics-cluster
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.150.0](https://img.shields.io/badge/AppVersion-v1.150.0-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.152.0](https://img.shields.io/badge/AppVersion-v1.152.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmcluster(victoria-metrics-cluster) | 0.49.0 |
+| https://victoriametrics.github.io/helm-charts/ | vmcluster(victoria-metrics-cluster) | 0.51.0 |
 
 ## Maintainers
 
@@ -68,6 +68,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmauth.config | object | `{}` | VMAuth configuration object.  It's possible to use given below predefined variables in config: * `{{ .vm.read }}` - parsed vmselect URL * `{{ .vm.write }}` - parsed vminsert URL  Example config:   unauthorized_user:     url_map:      - src_paths:          - '{{ .vm.read.path }}/.*'        url_prefix:          - '{{ urlJoin (omit .vm.read "path") }}/' |
 | vmcluster.vmauth.configSecretName | string | `""` | VMAuth configuration secret name |
 | vmcluster.vmauth.containerWorkingDir | string | `""` | Container workdir |
+| vmcluster.vmauth.dnsConfig | object | `{}` | Custom DNS config for pod. Details are [here](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-config) |
 | vmcluster.vmauth.enabled | bool | `false` | Enable deployment of vmauth component. With vmauth enabled please set `service.clusterIP: None` and `service.type: ClusterIP` for `vminsert` and `vmselect` to use vmauth balancing benefits. |
 | vmcluster.vmauth.env | list | `[]` | Additional environment variables (ex.: secret tokens, flags). Check [here](https://docs.victoriametrics.com/victoriametrics/#environment-variables) for details |
 | vmcluster.vmauth.envFrom | list | `[]` | Specify alternative source for env variables |
@@ -160,6 +161,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vminsert.annotations | object | `{}` | StatefulSet/Deployment annotations |
 | vmcluster.vminsert.command | list | `[]` | Override default container command. Use when the VictoriaMetrics binary is available at a custom path |
 | vmcluster.vminsert.containerWorkingDir | string | `""` | Container workdir |
+| vmcluster.vminsert.dnsConfig | object | `{}` | Custom DNS config for pod. Details are [here](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-config) |
 | vmcluster.vminsert.enabled | bool | `true` | Enable deployment of vminsert component. Deployment is used |
 | vmcluster.vminsert.env | list | `[]` | Additional environment variables (ex.: secret tokens, flags). Check [here](https://docs.victoriametrics.com/victoriametrics/#environment-variables) for details. |
 | vmcluster.vminsert.envFrom | list | `[]` | Specify alternative source for env variables |
@@ -261,6 +263,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmselect.containerWorkingDir | string | `""` | Container workdir |
 | vmcluster.vmselect.deployment | object | `{"spec":{"strategy":{}}}` | [K8s Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) specific variables |
 | vmcluster.vmselect.deployment.spec.strategy | object | `{}` | VMSelect strategy |
+| vmcluster.vmselect.dnsConfig | object | `{}` | Custom DNS config for pod. Details are [here](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-config) |
 | vmcluster.vmselect.emptyDir | object | `{}` | Empty dir configuration if persistence is disabled |
 | vmcluster.vmselect.enabled | bool | `true` | Enable deployment of vmselect component. Can be deployed as Deployment(default) or StatefulSet |
 | vmcluster.vmselect.env | list | `[]` | Additional environment variables (ex.: secret tokens, flags). Check [here](https://docs.victoriametrics.com/victoriametrics/#environment-variables) for details. |
@@ -369,6 +372,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmstorage.annotations | object | `{}` | StatefulSet/Deployment annotations |
 | vmcluster.vmstorage.command | list | `[]` | Override default container command. Use when the VictoriaMetrics binary is available at a custom path |
 | vmcluster.vmstorage.containerWorkingDir | string | `""` | Container workdir |
+| vmcluster.vmstorage.dnsConfig | object | `{}` | Custom DNS config for pod. Details are [here](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-config) |
 | vmcluster.vmstorage.emptyDir | object | `{}` | Empty dir configuration if persistence is disabled |
 | vmcluster.vmstorage.enabled | bool | `true` | Enable deployment of vmstorage component. StatefulSet is used |
 | vmcluster.vmstorage.env | list | `[]` | Additional environment variables (ex.: secret tokens, flags). Check [here](https://docs.victoriametrics.com/victoriametrics/#environment-variables) for details |
@@ -508,7 +512,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: victoria-metrics-cluster
     path: ''
     helm:
