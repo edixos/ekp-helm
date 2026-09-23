@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.15](https://img.shields.io/badge/Version-0.1.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.93.1](https://img.shields.io/badge/AppVersion-v0.93.1-informational?style=flat-square)
+![Version: 0.1.16](https://img.shields.io/badge/Version-0.1.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.93.1](https://img.shields.io/badge/AppVersion-v0.93.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 88.5.4 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 88.6.2 |
 
 ## Description
 
@@ -155,7 +155,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.podDisruptionBudget.enabled | bool | `false` |  |
 | kubePrometheusStack.alertmanager.podDisruptionBudget.minAvailable | int | `1` |  |
 | kubePrometheusStack.alertmanager.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
-| kubePrometheusStack.alertmanager.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[],"sessionPersistence":{}}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
+| kubePrometheusStack.alertmanager.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[],"sessionPersistence":{},"timeouts":{}}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
 | kubePrometheusStack.alertmanager.route.main.apiVersion | string | `"gateway.networking.k8s.io/v1"` | Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1alpha2 |
 | kubePrometheusStack.alertmanager.route.main.enabled | bool | `false` | Enables or disables the route |
 | kubePrometheusStack.alertmanager.route.main.httpsRedirect | bool | `false` | create http route for redirect (https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/#http-to-https-redirects) # Take care that you only enable this on the http listener of the gateway to avoid an infinite redirect. # matches, filters and additionalRules will be ignored if this is set to true. Be are |
@@ -174,6 +174,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.routePerReplica.main.matches[0].path.value | string | `"/"` |  |
 | kubePrometheusStack.alertmanager.routePerReplica.main.parentRefs | list | `[]` |  |
 | kubePrometheusStack.alertmanager.routePerReplica.main.sessionPersistence | object | `{}` |  |
+| kubePrometheusStack.alertmanager.routePerReplica.main.timeouts | object | `{}` |  |
 | kubePrometheusStack.alertmanager.secret.annotations | object | `{}` |  |
 | kubePrometheusStack.alertmanager.service.additionalPorts | list | `[]` |  |
 | kubePrometheusStack.alertmanager.service.annotations | object | `{}` |  |
@@ -940,7 +941,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.volumes | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.walCompression | bool | `true` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.web | object | `{}` |  |
-| kubePrometheusStack.prometheus.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[],"sessionPersistence":{}}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
+| kubePrometheusStack.prometheus.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[],"sessionPersistence":{},"timeouts":{}}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
 | kubePrometheusStack.prometheus.route.main.apiVersion | string | `"gateway.networking.k8s.io/v1"` | Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1alpha2 |
 | kubePrometheusStack.prometheus.route.main.enabled | bool | `false` | Enables or disables the route |
 | kubePrometheusStack.prometheus.route.main.httpsRedirect | bool | `false` | create http route for redirect (https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/#http-to-https-redirects) # Take care that you only enable this on the http listener of the gateway to avoid an infinite redirect. # matches, filters and additionalRules will be ignored if this is set to true. Be are |
@@ -959,6 +960,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.routePerReplica.main.matches[0].path.value | string | `"/"` |  |
 | kubePrometheusStack.prometheus.routePerReplica.main.parentRefs | list | `[]` |  |
 | kubePrometheusStack.prometheus.routePerReplica.main.sessionPersistence | object | `{}` |  |
+| kubePrometheusStack.prometheus.routePerReplica.main.timeouts | object | `{}` |  |
 | kubePrometheusStack.prometheus.service.additionalPorts | list | `[]` |  |
 | kubePrometheusStack.prometheus.service.annotations | object | `{}` |  |
 | kubePrometheusStack.prometheus.service.clusterIP | string | `""` |  |
@@ -1155,7 +1157,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.registry | string | `"ghcr.io"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.repository | string | `"jkroepke/kube-webhook-certgen"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"1.8.7"` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"1.8.8"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.nodeSelector | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.priorityClassName | string | `""` |  |
@@ -1305,7 +1307,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.podDisruptionBudget.enabled | bool | `false` |  |
 | kubePrometheusStack.thanosRuler.podDisruptionBudget.minAvailable | int | `1` |  |
 | kubePrometheusStack.thanosRuler.podDisruptionBudget.unhealthyPodEvictionPolicy | string | `"AlwaysAllow"` |  |
-| kubePrometheusStack.thanosRuler.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[],"sessionPersistence":{}}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
+| kubePrometheusStack.thanosRuler.route | object | `{"main":{"additionalRules":[],"annotations":{},"apiVersion":"gateway.networking.k8s.io/v1","enabled":false,"filters":[],"hostnames":[],"httpsRedirect":false,"kind":"HTTPRoute","labels":{},"matches":[{"path":{"type":"PathPrefix","value":"/"}}],"parentRefs":[],"sessionPersistence":{},"timeouts":{}}}` | BETA: Configure the gateway routes for the chart here. More routes can be added by adding a dictionary key like the 'main' route. Be aware that this is an early beta of this feature, kube-prometheus-stack does not guarantee this works and is subject to change. Being BETA this can/will change in the future without notice, do not use unless you want to take that risk [[ref]](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io%2fv1alpha2) |
 | kubePrometheusStack.thanosRuler.route.main.apiVersion | string | `"gateway.networking.k8s.io/v1"` | Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1alpha2 |
 | kubePrometheusStack.thanosRuler.route.main.enabled | bool | `false` | Enables or disables the route |
 | kubePrometheusStack.thanosRuler.route.main.httpsRedirect | bool | `false` | create http route for redirect (https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/#http-to-https-redirects) # Take care that you only enable this on the http listener of the gateway to avoid an infinite redirect. # matches, filters and additionalRules will be ignored if this is set to true. Be are |
@@ -1452,7 +1454,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.15"
+    targetRevision: "0.1.16"
     chart: kube-prometheus-stack
     path: ''
     helm:

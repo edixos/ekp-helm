@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.15](https://img.shields.io/badge/Version-0.1.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.5.1](https://img.shields.io/badge/AppVersion-v3.5.1-informational?style=flat-square)
+![Version: 0.1.16](https://img.shields.io/badge/Version-0.1.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.5.2](https://img.shields.io/badge/AppVersion-v3.5.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 10.4.0 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 10.6.4 |
 
 ## Maintainers
 
@@ -255,6 +255,7 @@ A Helm chart for Kubernetes
 | argocd.configs.cm."timeout.reconciliation.jitter" | string | `"60s"` | Maximum jitter added to the reconciliation timeout to spread out refreshes and reduce repo-server load |
 | argocd.configs.cm.annotations | object | `{}` | Annotations to be added to argocd-cm configmap |
 | argocd.configs.cm.create | bool | `true` | Create the argocd-cm configmap for [declarative setup] |
+| argocd.configs.cm.resourceExclusionsAdditional | list | `[]` | Additional resource exclusions to append to the default `resource.exclusions` list above, so that the defaults can be kept up to date without needing to duplicate/override them. These entries are always appended, never substituted: if you also set `resource.exclusions` yourself, they are appended to your value rather than to the chart defaults. |
 | argocd.configs.cmp.annotations | object | `{}` | Annotations to be added to argocd-cmp-cm configmap |
 | argocd.configs.cmp.create | bool | `false` | Create the argocd-cmp-cm configmap |
 | argocd.configs.cmp.plugins | object | `{}` | Plugin yaml files to be added to argocd-cmp-cm |
@@ -670,6 +671,7 @@ A Helm chart for Kubernetes
 | argocd.redis-ha.redis.config | object | See [values.yaml] | Any valid redis config options in this section will be applied to each server (see `redis-ha` chart) |
 | argocd.redis-ha.redis.config.save | string | `'""'` | Will save the DB if both the given number of seconds and the given number of write operations against the DB occurred. `""`  is disabled |
 | argocd.redis-ha.redis.masterGroupName | string | `"argocd"` | Redis convention for naming the cluster group: must match `^[\\w-\\.]+$` and can be templated |
+| argocd.redis-ha.sentinel.lifecycle | object | See [values.yaml] | Sentinel container lifecycle hooks. The default `postStart` hook resets the sentinel state after a rolling update to prevent high CPU usage |
 | argocd.redis-ha.tolerations | list | `[]` | [Tolerations] for use with node taints for Redis pods. |
 | argocd.redis-ha.topologySpreadConstraints | object | `{"enabled":false,"maxSkew":"","topologyKey":"","whenUnsatisfiable":""}` | Assign custom [TopologySpreadConstraints] rules to the Redis pods. # https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ |
 | argocd.redis-ha.topologySpreadConstraints.enabled | bool | `false` | Enable Redis HA topology spread constraints |
@@ -693,7 +695,7 @@ A Helm chart for Kubernetes
 | argocd.redis.exporter.env | list | `[]` | Environment variables to pass to the Redis exporter |
 | argocd.redis.exporter.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for the redis-exporter |
 | argocd.redis.exporter.image.repository | string | `"ghcr.io/oliver006/redis_exporter"` | Repository to use for the redis-exporter |
-| argocd.redis.exporter.image.tag | string | `"v1.89.0"` | Tag to use for the redis-exporter |
+| argocd.redis.exporter.image.tag | string | `"v1.90.0"` | Tag to use for the redis-exporter |
 | argocd.redis.exporter.livenessProbe.enabled | bool | `false` | Enable Kubernetes liveness probe for Redis exporter |
 | argocd.redis.exporter.livenessProbe.failureThreshold | int | `5` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
 | argocd.redis.exporter.livenessProbe.initialDelaySeconds | int | `30` | Number of seconds after the container has started before [probe] is initiated |
@@ -709,6 +711,7 @@ A Helm chart for Kubernetes
 | argocd.redis.exporter.resources | object | `{}` | Resource limits and requests for redis-exporter sidecar |
 | argocd.redis.extraArgs | list | `[]` | Additional command line arguments to pass to redis-server |
 | argocd.redis.extraContainers | list | `[]` | Additional containers to be added to the redis pod # Note: Supports use of custom Helm templates |
+| argocd.redis.hostNetwork | bool | `false` | Host Network for redis pods |
 | argocd.redis.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Redis image pull policy |
 | argocd.redis.image.repository | string | `"ecr-public.aws.com/docker/library/redis"` | Redis repository |
 | argocd.redis.image.tag | string | `"8.6.4-alpine"` | Redis tag # Do not use 7.4.0 <= v < 8.0.0, otherwise you are no longer using an open source version of Redis |
@@ -778,8 +781,11 @@ A Helm chart for Kubernetes
 | argocd.redis.vpa.updateMode | string | `"Initial"` | One of the VPA operation modes # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden |
 | argocd.redisSecretInit.affinity | object | `{}` | Assign custom [affinity] rules to the Redis secret-init Job |
 | argocd.redisSecretInit.containerSecurityContext | object | See [values.yaml] | Application controller container-level security context |
+| argocd.redisSecretInit.dnsConfig | object | `{}` | [DNS configuration] |
+| argocd.redisSecretInit.dnsPolicy | string | `"ClusterFirst"` | Alternative DNS policy for Redis secret-init Job |
 | argocd.redisSecretInit.enabled | bool | `true` | Enable Redis secret initialization. If disabled, secret must be provisioned by alternative methods |
 | argocd.redisSecretInit.extraArgs | list | `[]` | Additional command line arguments for the Redis secret-init Job |
+| argocd.redisSecretInit.hostNetwork | bool | `false` | Host Network for redis-secret-init pods |
 | argocd.redisSecretInit.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for the Redis secret-init Job |
 | argocd.redisSecretInit.image.repository | string | `""` (defaults to global.image.repository) | Repository to use for the Redis secret-init Job |
 | argocd.redisSecretInit.image.tag | string | `""` (defaults to global.image.tag) | Tag to use for the Redis secret-init Job |
@@ -1163,7 +1169,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.15"
+    targetRevision: "0.1.16"
     chart: argocd
     path: ''
     helm:
