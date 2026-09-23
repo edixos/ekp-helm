@@ -46,7 +46,7 @@ cloudtty:
   image:
     registry: ghcr.io
     repository: cloudtty/cloudshell-operator
-    tag: "v0.8.9"
+    tag: "v0.8.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -87,6 +87,14 @@ cloudtty:
   readinessProbe:
     enabled: false
 
+  ## @param pprof.enabled Enable the Go pprof profiling HTTP server on the controller manager
+  ## @param pprof.bindAddress Address (host:port) the pprof server binds to
+  ## @param pprof.port Container port to expose for pprof
+  pprof:
+    enabled: false
+    bindAddress: ":6060"
+    port: 6060
+
 
   cloudshell:
     ## @param image.registry cloudshell image registry
@@ -95,7 +103,7 @@ cloudtty:
     image:
       registry: ghcr.io
       repository: cloudtty/cloudshell
-      tag: "v0.8.9"
+      tag: "v0.8.10"
     ## @param resources cloudshell resource requests and limits
     resources: {}
     # If you do want to specify resources, uncomment the following
