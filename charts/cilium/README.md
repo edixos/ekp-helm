@@ -1,6 +1,6 @@
 # cilium
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.20.1](https://img.shields.io/badge/AppVersion-1.20.1-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.20.2](https://img.shields.io/badge/AppVersion-1.20.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://helm.cilium.io/ | cilium | 1.20.1 |
+| https://helm.cilium.io/ | cilium | 1.20.2 |
 
 ## Maintainers
 
@@ -51,7 +51,7 @@ A Helm chart for Kubernetes
 | cilium.authentication.mutual.spire.enabled | bool | `false` | Enable SPIRE integration (beta) |
 | cilium.authentication.mutual.spire.install.agent.affinity | object | `{}` | SPIRE agent affinity configuration |
 | cilium.authentication.mutual.spire.install.agent.annotations | object | `{}` | SPIRE agent annotations |
-| cilium.authentication.mutual.spire.install.agent.image | object | `{"digest":"sha256:1d042e4040466686e0ee46f74981ff2167c86adfadca19b3835946f4d6047536","override":null,"pullPolicy":"IfNotPresent","repository":"ghcr.io/spiffe/spire-agent","tag":"1.15.2","useDigest":true}` | SPIRE agent image |
+| cilium.authentication.mutual.spire.install.agent.image | object | `{"digest":"sha256:41b0dcd8b258a69db9e2768292a060766fb76fd866e4bc925849981ea1b825ff","override":null,"pullPolicy":"IfNotPresent","repository":"ghcr.io/spiffe/spire-agent","tag":"1.15.3","useDigest":true}` | SPIRE agent image |
 | cilium.authentication.mutual.spire.install.agent.labels | object | `{}` | SPIRE agent labels |
 | cilium.authentication.mutual.spire.install.agent.nodeSelector | object | `{}` | SPIRE agent nodeSelector configuration ref: ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector |
 | cilium.authentication.mutual.spire.install.agent.podSecurityContext | object | `{}` | Security context to be added to spire agent pods. SecurityContext holds pod-level security attributes and common container settings. ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod |
@@ -73,7 +73,7 @@ A Helm chart for Kubernetes
 | cilium.authentication.mutual.spire.install.server.dataStorage.enabled | bool | `true` | Enable SPIRE server data storage |
 | cilium.authentication.mutual.spire.install.server.dataStorage.size | string | `"1Gi"` | Size of the SPIRE server data storage |
 | cilium.authentication.mutual.spire.install.server.dataStorage.storageClass | string | `nil` | StorageClass of the SPIRE server data storage |
-| cilium.authentication.mutual.spire.install.server.image | object | `{"digest":"sha256:aa74ef1be86bc8e0684007d84a4d9859d294384d842c30425048d73429f3216e","override":null,"pullPolicy":"IfNotPresent","repository":"ghcr.io/spiffe/spire-server","tag":"1.15.2","useDigest":true}` | SPIRE server image |
+| cilium.authentication.mutual.spire.install.server.image | object | `{"digest":"sha256:4082f30d3e0ddc4000a171392c4ea174345ee44d161ee917c70b97b2ecfba141","override":null,"pullPolicy":"IfNotPresent","repository":"ghcr.io/spiffe/spire-server","tag":"1.15.3","useDigest":true}` | SPIRE server image |
 | cilium.authentication.mutual.spire.install.server.initContainers | list | `[]` | SPIRE server init containers |
 | cilium.authentication.mutual.spire.install.server.labels | object | `{}` | SPIRE server labels |
 | cilium.authentication.mutual.spire.install.server.nodeSelector | object | `{}` | SPIRE server nodeSelector configuration ref: ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector |
@@ -149,7 +149,7 @@ A Helm chart for Kubernetes
 | cilium.bpf.tproxy | bool | `false` | Configure the eBPF-based TPROXY (beta) to reduce reliance on iptables rules for implementing Layer 7 policy. Note this is incompatible with netkit (`bpf.datapathMode=netkit`, `bpf.datapathMode=netkit-l2`). |
 | cilium.bpf.vlanBypass | list | `[]` | Configure explicitly allowed VLAN id's for bpf logic bypass. [0] will allow all VLAN id's without any filtering. |
 | cilium.bpfClockProbe | bool | `false` | Enable BPF clock source probing for more efficient tick retrieval. |
-| cilium.certgen | object | `{"affinity":{},"annotations":{"cronJob":{},"job":{}},"cronJob":{"failedJobsHistoryLimit":1,"successfulJobsHistoryLimit":3},"enforceCAValidityThroughoutLeavesDuration":true,"extraVolumeMounts":[],"extraVolumes":[],"generateCA":true,"image":{"digest":"sha256:6213a4c54a1f36e14a9280765f058aaa2017550c28bc122f5b09ad146fd0da2b","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/certgen","tag":"v0.4.9","useDigest":true},"nodeSelector":{},"podLabels":{},"priorityClassName":"","resources":{},"tolerations":[],"ttlSecondsAfterFinished":null}` | Configure certificate generation for Hubble integration. If hubble.tls.auto.method=cronJob, these values are used for the Kubernetes CronJob which will be scheduled regularly to (re)generate any certificates not provided manually. |
+| cilium.certgen | object | `{"affinity":{},"annotations":{"cronJob":{},"job":{}},"cronJob":{"failedJobsHistoryLimit":1,"successfulJobsHistoryLimit":3},"enforceCAValidityThroughoutLeavesDuration":true,"extraVolumeMounts":[],"extraVolumes":[],"generateCA":true,"image":{"digest":"sha256:14d29a176fc96d15b154559ce1a5baf01367c10baabfa7bb8028b72f087a56f0","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/certgen","tag":"v0.4.11","useDigest":true},"nodeSelector":{},"podLabels":{},"priorityClassName":"","resources":{},"tolerations":[],"ttlSecondsAfterFinished":null}` | Configure certificate generation for Hubble integration. If hubble.tls.auto.method=cronJob, these values are used for the Kubernetes CronJob which will be scheduled regularly to (re)generate any certificates not provided manually. |
 | cilium.certgen.affinity | object | `{}` | Affinity for certgen |
 | cilium.certgen.annotations | object | `{"cronJob":{},"job":{}}` | Annotations to be added to the hubble-certgen initial Job and CronJob |
 | cilium.certgen.cronJob.failedJobsHistoryLimit | int | `1` | The number of failed finished jobs to keep |
@@ -190,7 +190,7 @@ A Helm chart for Kubernetes
 | cilium.clustermesh.apiserver.extraVolumeMounts | list | `[]` | Additional clustermesh-apiserver volumeMounts. |
 | cilium.clustermesh.apiserver.extraVolumes | list | `[]` | Additional clustermesh-apiserver volumes. |
 | cilium.clustermesh.apiserver.healthPort | int | `9880` | TCP port for the clustermesh-apiserver health API. |
-| cilium.clustermesh.apiserver.image | object | `{"digest":"sha256:d905d614a332b2058cb81c193e481d1f460902b903f4eb57cc9764640b750fb5","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/clustermesh-apiserver","tag":"v1.20.1","useDigest":true}` | Clustermesh API server image. |
+| cilium.clustermesh.apiserver.image | object | `{"digest":"sha256:e9ffc79baf76bb98efb87c01be3bca8da998779f4ccdafc97c74132b307305ce","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/clustermesh-apiserver","tag":"v1.20.2","useDigest":true}` | Clustermesh API server image. |
 | cilium.clustermesh.apiserver.kvstoremesh.enabled | bool | `true` | Enable KVStoreMesh. KVStoreMesh caches the information retrieved from the remote clusters in the local etcd instance (deprecated - KVStoreMesh will always be enabled once the option is removed). |
 | cilium.clustermesh.apiserver.kvstoremesh.etcdQPS | int | `100` | Rate limit for the kvstoremesh container while syncing resources from all remote clusters to the local etcd. |
 | cilium.clustermesh.apiserver.kvstoremesh.extraArgs | list | `[]` | Additional KVStoreMesh arguments. |
@@ -444,7 +444,7 @@ A Helm chart for Kubernetes
 | cilium.envoy.httpRetryCount | int | `3` | Maximum number of retries for each HTTP request |
 | cilium.envoy.httpUpstreamLingerTimeout | string | `nil` | Time in seconds to block Envoy worker thread while an upstream HTTP connection is closing. If set to 0, the connection is closed immediately (with TCP RST). If set to -1, the connection is closed asynchronously in the background. |
 | cilium.envoy.idleTimeoutDurationSeconds | int | `60` | Set Envoy upstream HTTP idle connection timeout seconds. Does not apply to connections with pending requests. Default 60s |
-| cilium.envoy.image | object | `{"digest":"sha256:75b8094c7127736a2ffd2dce3945e0931cb6df21b0372ff661940eca26730b91","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/cilium-envoy","tag":"v1.37.5-1786810558-766ccfb37260a43e9d228837aa84ce3faf9f64e7","useDigest":true}` | Envoy container image. |
+| cilium.envoy.image | object | `{"digest":"sha256:af7382699576b9e65e9184efa52eeca0b58aea70ad6e511bf260c91d9f740463","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/cilium-envoy","tag":"v1.37.6-1789133542-cbec91f666af0bf742da986d43832932dbb26b82","useDigest":true}` | Envoy container image. |
 | cilium.envoy.initContainers | list | `[]` | Init containers added to the cilium Envoy DaemonSet. |
 | cilium.envoy.initialFetchTimeoutSeconds | int | `30` | Time in seconds after which the initial fetch on an xDS stream is considered timed out |
 | cilium.envoy.livenessProbe.enabled | bool | `true` | Enable liveness probe for cilium-envoy |
@@ -600,7 +600,7 @@ A Helm chart for Kubernetes
 | cilium.hubble.relay.extraVolumes | list | `[]` | Additional hubble-relay volumes. |
 | cilium.hubble.relay.gops.enabled | bool | `true` | Enable gops for hubble-relay |
 | cilium.hubble.relay.gops.port | int | `9893` | Configure gops listen port for hubble-relay |
-| cilium.hubble.relay.image | object | `{"digest":"sha256:59be0ae7d475ab9011a5e954618c0f27b5778b17140381425b308b55ba4917f4","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/hubble-relay","tag":"v1.20.1","useDigest":true}` | Hubble-relay container image. |
+| cilium.hubble.relay.image | object | `{"digest":"sha256:d309c977870e9dbede7122a10eee09a4c9d66685e8d52af62d9c3c113f815b0f","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/hubble-relay","tag":"v1.20.2","useDigest":true}` | Hubble-relay container image. |
 | cilium.hubble.relay.listenHost | string | `""` | Host to listen to. Specify an empty string to bind to all the interfaces. |
 | cilium.hubble.relay.listenPort | string | `"4245"` | Port to listen to. |
 | cilium.hubble.relay.logOptions | object | `{"format":null,"level":null}` | Logging configuration for hubble-relay. |
@@ -676,7 +676,7 @@ A Helm chart for Kubernetes
 | cilium.hubble.ui.backend.extraEnv | list | `[]` | Additional hubble-ui backend environment variables. |
 | cilium.hubble.ui.backend.extraVolumeMounts | list | `[]` | Additional hubble-ui backend volumeMounts. |
 | cilium.hubble.ui.backend.extraVolumes | list | `[]` | Additional hubble-ui backend volumes. |
-| cilium.hubble.ui.backend.image | object | `{"digest":"sha256:fac0c300ae119274edca11fd89b1ad23c788792d8bc4ea2ba631c709e8d3c688","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/hubble-ui-backend","tag":"v0.13.5","useDigest":true}` | Hubble-ui backend image. |
+| cilium.hubble.ui.backend.image | object | `{"digest":"sha256:83b3fc763f3d49948c306bf49b08277383e195904b9ca5c0c0022b2112628787","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/hubble-ui-backend","tag":"v0.13.6","useDigest":true}` | Hubble-ui backend image. |
 | cilium.hubble.ui.backend.resources | object | `{}` | Resource requests and limits for the 'backend' container of the 'hubble-ui' deployment. |
 | cilium.hubble.ui.backend.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]}}` | Hubble-ui backend security context. |
 | cilium.hubble.ui.baseUrl | string | `"/"` | Defines base url prefix for all hubble-ui http requests. It needs to be changed in case if ingress for hubble-ui is configured under some sub-path. Trailing `/` is required for custom path, ex. `/service-map/` |
@@ -684,7 +684,7 @@ A Helm chart for Kubernetes
 | cilium.hubble.ui.frontend.extraEnv | list | `[]` | Additional hubble-ui frontend environment variables. |
 | cilium.hubble.ui.frontend.extraVolumeMounts | list | `[]` | Additional hubble-ui frontend volumeMounts. |
 | cilium.hubble.ui.frontend.extraVolumes | list | `[]` | Additional hubble-ui frontend volumes. |
-| cilium.hubble.ui.frontend.image | object | `{"digest":"sha256:f7d514fc54d784ed6df9d58cf0e97648b143f92b766dd1780ed3fc845bd4c516","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/hubble-ui","tag":"v0.13.5","useDigest":true}` | Hubble-ui frontend image. |
+| cilium.hubble.ui.frontend.image | object | `{"digest":"sha256:049a80a03585c043d0c3121bdc518c72b0fd42bae07e4bcce0fdb8f1e88041d0","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/hubble-ui","tag":"v0.13.6","useDigest":true}` | Hubble-ui frontend image. |
 | cilium.hubble.ui.frontend.resources | object | `{}` | Resource requests and limits for the 'frontend' container of the 'hubble-ui' deployment. |
 | cilium.hubble.ui.frontend.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]}}` | Hubble-ui frontend security context. |
 | cilium.hubble.ui.frontend.server.ipv6 | object | `{"enabled":true}` | Controls server listener for ipv6 |
@@ -718,7 +718,7 @@ A Helm chart for Kubernetes
 | cilium.identityAllocationMode | string | `"crd"` | Method to use for identity allocation (`crd`, `kvstore` or `doublewrite-readkvstore` / `doublewrite-readcrd` for migrating between identity backends). |
 | cilium.identityChangeGracePeriod | string | `"5s"` | Time to wait before using new identity on endpoint identity change. |
 | cilium.identityManagementMode | string | `"agent"` | Control whether CiliumIdentities are created by the agent ("agent"), the operator ("operator") or both ("both"). "Both" should be used only to migrate between "agent" and "operator". Operator-managed identities is a beta feature. |
-| cilium.image | object | `{"digest":"sha256:ae9ea21f7427fe24bc6ea7247eb552157a1b0a431744045d3f641545ca71d11b","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/cilium","tag":"v1.20.1","useDigest":true}` | Agent container image. |
+| cilium.image | object | `{"digest":"sha256:2939231d0d3e3ebddcd80fffa168b7ddcc78fdf0dc864d1c8c126ff523c54f01","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/cilium","tag":"v1.20.2","useDigest":true}` | Agent container image. |
 | cilium.imagePullSecrets | list | `[]` | Configure image pull secrets for pulling container images |
 | cilium.ingressController.default | bool | `false` | Set cilium ingress controller to be the default ingress controller This will let cilium ingress controller route entries without ingress class set |
 | cilium.ingressController.defaultSecretName | string | `nil` | Default secret name for ingresses without .spec.tls[].secretName set. |
@@ -882,7 +882,7 @@ A Helm chart for Kubernetes
 | cilium.operator.hostUsers | bool | `true` | HostUsers setting (must be true if hostNetwork is true) |
 | cilium.operator.identityGCInterval | string | `"15m0s"` | Interval for identity garbage collection. |
 | cilium.operator.identityHeartbeatTimeout | string | `"30m0s"` | Timeout for identity heartbeats. |
-| cilium.operator.image | object | `{"alibabacloudDigest":"sha256:2af5dd3d85649ea36d365363b8eca82ad06116c6259c4aace700a7c036348e4c","awsDigest":"sha256:7cf0cb0e6584f72ca8de951a1be03829f69fcaeba69dc6c7856fc4470545acd7","azureDigest":"sha256:13746a479ca60395df8d83580b49464c6c975cca6fdb21ba4791a076ab01b031","genericDigest":"sha256:6c3885fc7b629099fdbe2a5c87869c86feb825fa18fae299eac0f61918d16ecf","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/operator","suffix":"","tag":"v1.20.1","useDigest":true}` | cilium-operator image. |
+| cilium.operator.image | object | `{"alibabacloudDigest":"sha256:3c1536f099595c3d967d17d7f2ce290c6adea93777a514081e84a9d82e271e38","awsDigest":"sha256:0df92d10d2ec548052678b67809c1e613429931b2d5c1d6741fcef096bb0d2a3","azureDigest":"sha256:b304dc1ad8dd06abb2103bdb91c87dcc302d904e1e4cbe0afd231885d1f0194a","genericDigest":"sha256:64d8798350e8569b8e7622563fed6e44dce2625f311e4651b774816516c744fc","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/operator","suffix":"","tag":"v1.20.2","useDigest":true}` | cilium-operator image. |
 | cilium.operator.nodeGCInterval | string | `"5m0s"` | Interval for cilium node garbage collection. |
 | cilium.operator.nodeSelector | object | `{"kubernetes.io/os":"linux"}` | Node labels for cilium-operator pod assignment ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector |
 | cilium.operator.podAnnotations | object | `{}` | Annotations to be added to cilium-operator pods |
@@ -941,11 +941,11 @@ A Helm chart for Kubernetes
 | cilium.preflight.affinity | object | `{"podAffinity":{"requiredDuringSchedulingIgnoredDuringExecution":[{"labelSelector":{"matchLabels":{"k8s-app":"cilium"}},"topologyKey":"kubernetes.io/hostname"}]}}` | Affinity for cilium-preflight |
 | cilium.preflight.annotations | object | `{}` | Annotations to be added to all top-level preflight objects (resources under templates/cilium-preflight) |
 | cilium.preflight.enabled | bool | `false` | Enable Cilium pre-flight resources (required for upgrade) |
-| cilium.preflight.envoy.image | object | `{"digest":"sha256:75b8094c7127736a2ffd2dce3945e0931cb6df21b0372ff661940eca26730b91","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/cilium-envoy","tag":"v1.37.5-1786810558-766ccfb37260a43e9d228837aa84ce3faf9f64e7","useDigest":true}` | Envoy pre-flight image. |
+| cilium.preflight.envoy.image | object | `{"digest":"sha256:af7382699576b9e65e9184efa52eeca0b58aea70ad6e511bf260c91d9f740463","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/cilium-envoy","tag":"v1.37.6-1789133542-cbec91f666af0bf742da986d43832932dbb26b82","useDigest":true}` | Envoy pre-flight image. |
 | cilium.preflight.extraEnv | list | `[]` | Additional preflight environment variables. |
 | cilium.preflight.extraVolumeMounts | list | `[]` | Additional preflight volumeMounts. |
 | cilium.preflight.extraVolumes | list | `[]` | Additional preflight volumes. |
-| cilium.preflight.image | object | `{"digest":"sha256:ae9ea21f7427fe24bc6ea7247eb552157a1b0a431744045d3f641545ca71d11b","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/cilium","tag":"v1.20.1","useDigest":true}` | Cilium pre-flight image. |
+| cilium.preflight.image | object | `{"digest":"sha256:2939231d0d3e3ebddcd80fffa168b7ddcc78fdf0dc864d1c8c126ff523c54f01","override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/cilium","tag":"v1.20.2","useDigest":true}` | Cilium pre-flight image. |
 | cilium.preflight.nodeSelector | object | `{"kubernetes.io/os":"linux"}` | Node labels for preflight pod assignment ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector |
 | cilium.preflight.podAnnotations | object | `{}` | Annotations to be added to preflight pods |
 | cilium.preflight.podDisruptionBudget.enabled | bool | `false` | enable PodDisruptionBudget ref: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/ |
@@ -1082,7 +1082,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: cilium
     path: ''
     helm:
