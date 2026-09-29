@@ -4582,6 +4582,34 @@ entries:
   tetragon:
   - apiVersion: v2
     appVersion: 1.7.1
+    created: "2026-09-29T14:44:50.783239209Z"
+    dependencies:
+    - condition: tetragon.enabled
+      name: tetragon
+      repository: https://helm.cilium.io/
+      version: 1.7.1
+    description: 'Tetragon runtime security packaged for the Edixos Kubernetes Platform.
+      Wraps the upstream Cilium Tetragon chart, which deploys the eBPF agent DaemonSet
+      and the operator that owns the TracingPolicy CRDs, and adds the EKP extensions:
+      file-backed TracingPolicy bundles split into observation and enforcement, Prometheus
+      or VictoriaMetrics alerting rules and a Grafana dashboard. The baseline is observation-only;
+      enforcement is opt-in per policy and per namespace. All upstream settings are
+      available under the tetragon values key.'
+    digest: ed364f0335c9426aed2351793ce9659974e4f0cbfce220afc6f2ce77bef62a01
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: tetragon
+    sources:
+    - https://github.com/cilium/tetragon
+    - https://github.com/cilium/tetragon/tree/main/install/kubernetes/tetragon
+    type: application
+    urls:
+    - tetragon-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.7.1
     created: "2026-09-21T07:40:17.216454255Z"
     dependencies:
     - condition: tetragon.enabled
@@ -5327,4 +5355,4 @@ entries:
     urls:
     - zammad-0.1.0.tgz
     version: 0.1.0
-generated: "2026-09-21T07:40:17.21694949Z"
+generated: "2026-09-29T14:44:50.783533377Z"
