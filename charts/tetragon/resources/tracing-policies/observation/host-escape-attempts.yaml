@@ -1,0 +1,93 @@
+# Reports a container touching the procfs/cgroupfs files that are the classic
+# primitives for breaking out onto the node: the ones that make the *host*
+# kernel run an attacker-chosen program, or that expose host kernel memory.
+#
+# Written for this platform rather than derived from a single upstream example,
+# but every hook is the same `security_file_permission` LSM kprobe the bundled
+# sensitive-file-access policy already uses, so it loads on the same kernels.
+#
+#   * /proc/sys/kernel/core_pattern, /proc/sys/kernel/modprobe and
+#     /proc/sysrq-trigger — writing any of these makes the host kernel execute
+#     a path or trigger a host action from inside a container. No workload
+#     writes them; a write is an escape attempt.
+#   * a cgroup release_agent / notify_on_release file — the cgroup-v1
+#     release_agent breakout writes a host-run helper here. Matched by suffix
+#     because the mount path inside a container is attacker-chosen.
+#   * /proc/kcore — a read is a read of live host kernel memory (key/secret
+#     scraping). Normal workloads never open it.
+#
+# Scoped to containers only (Pid namespace not the host): the node's own
+# systemd/kubelet legitimately manage some of these at boot.
+#
+# Report only: the single action is Post. Nothing is blocked or killed. The
+# matching enforcement policy is enforcement/block-host-escape.yaml.
+kprobes:
+  - call: "security_file_permission"
+    syscall: false
+    return: true
+    args:
+      - index: 0
+        type: "file"
+      - index: 1
+        type: "int" # 0x04 MAY_READ, 0x02 MAY_WRITE
+    returnArg:
+      index: 0
+      type: "int"
+    selectors:
+      # Writes to host-kernel control files that cause host code execution.
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchArgs:
+          - index: 0
+            operator: "Equal"
+            values:
+              - "/proc/sys/kernel/core_pattern"
+              - "/proc/sys/kernel/modprobe"
+              - "/proc/sysrq-trigger"
+          - index: 1
+            operator: "Equal"
+            values:
+              - "2" # MAY_WRITE
+        matchActions:
+          - action: Post
+            rateLimit: "1m"
+      # Writes to a cgroup release_agent / notify_on_release, wherever mounted.
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchArgs:
+          - index: 0
+            operator: "Postfix"
+            values:
+              - "release_agent"
+              - "notify_on_release"
+          - index: 1
+            operator: "Equal"
+            values:
+              - "2" # MAY_WRITE
+        matchActions:
+          - action: Post
+            rateLimit: "1m"
+      # Reads of live host kernel memory.
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchArgs:
+          - index: 0
+            operator: "Equal"
+            values:
+              - "/proc/kcore"
+          - index: 1
+            operator: "Equal"
+            values:
+              - "4" # MAY_READ
+        matchActions:
+          - action: Post
+            rateLimit: "1m"

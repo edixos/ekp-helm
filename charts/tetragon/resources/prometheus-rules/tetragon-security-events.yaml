@@ -1,0 +1,60 @@
+groups:
+- name: tetragon.security.rules
+  rules:
+  # Near-zero-false-positive signals: these policies match operations that a
+  # legitimate workload never performs, so a single event is actionable.
+  - alert: TetragonHostEscapeAttempt
+    expr: sum by (policy) (increase(tetragon_policy_events_total{policy="host-escape-attempts"}[5m])) > 0
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Container attempted a host escape primitive"
+      description: "The host-escape-attempts policy matched {{ printf \"%.0f\" $value }} event(s) in the last 5m: a container wrote a host-kernel control file (core_pattern/modprobe/sysrq/release_agent) or read /proc/kcore. Identify the pod from the Tetragon event stream and treat the session as compromised."
+
+  - alert: TetragonKernelModuleLoad
+    expr: sum by (policy) (increase(tetragon_policy_events_total{policy="kernel-module-load"}[5m])) > 0
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Container requested a host kernel module load"
+      description: "The kernel-module-load policy matched {{ printf \"%.0f\" $value }} event(s) in the last 5m. Lab guests that legitimately load modules do so inside a Kata microVM, so a request seen on the node is an escape or rootkit attempt."
+
+  - alert: TetragonCryptoMinerExecution
+    expr: sum by (policy) (increase(tetragon_policy_events_total{policy="crypto-miner-execution"}[5m])) > 0
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Known cryptominer binary executed in a container"
+      description: "The crypto-miner-execution policy matched {{ printf \"%.0f\" $value }} event(s) in the last 5m. A known miner binary was launched; the session is being used for resource abuse."
+
+  # Correlation signals: legitimate under some lab scenarios, so alert on volume
+  # or duration rather than a single event.
+  - alert: TetragonDangerousCapabilityUse
+    expr: sum by (policy) (increase(tetragon_policy_events_total{policy="dangerous-capabilities"}[5m])) > 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Container exercised a high-risk Linux capability"
+      description: "The dangerous-capabilities policy has matched for 5m (CAP_SYS_MODULE/RAWIO/BOOT/TIME/MAC_*). Correlate with the host-escape, kernel-module and injection policies before actioning."
+
+  - alert: TetragonProcessInjection
+    expr: sum by (policy) (increase(tetragon_policy_events_total{policy="process-injection"}[5m])) > 5
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Sustained ptrace attach activity in a container"
+      description: "The process-injection policy matched more than 5 ptrace-attach events in 5m. This is expected for a debugging lab; investigate if the namespace is not a debugging scenario."
+
+  - alert: TetragonServiceAccountTokenAccess
+    expr: sum by (policy) (increase(tetragon_policy_events_total{policy="serviceaccount-token-access"}[5m])) > 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Sustained ServiceAccount token reads in containers"
+      description: "The serviceaccount-token-access policy has matched for 10m. Platform pods read their own token once at start-up (expected); a token read from a lab session namespace is not expected and should be investigated."

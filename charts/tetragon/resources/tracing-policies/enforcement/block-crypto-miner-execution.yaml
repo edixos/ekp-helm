@@ -1,0 +1,45 @@
+# ENFORCING. SIGKILLs a process that execs a known cryptocurrency-miner binary.
+#
+# The enforcement twin of observation/crypto-miner-execution.yaml: same execve
+# hook and same suffix list, with a Sigkill action instead of Post. Killing on
+# exec stops the miner before it runs.
+#
+# Safe to enforce because the match is an exact set of miner binary names that no
+# legitimate lab image ships. A determined attacker can still rename the binary
+# to evade the list — that residual case is handled by the per-session
+# ResourceQuota/LimitRange (mining is CPU-bound and the quota caps CPU) and by
+# the report-only observation policy, which stays cluster-wide.
+#
+# Installed as a TracingPolicyNamespaced into the namespaces listed under
+# tracingPolicies.enforcement.namespaces only — it never applies cluster-wide.
+kprobes:
+  - call: "sys_execve"
+    syscall: true
+    args:
+      - index: 0
+        type: "string" # program path
+    selectors:
+      - matchArgs:
+          - index: 0
+            operator: "Postfix"
+            values:
+              - "/xmrig"
+              - "/minerd"
+              - "/cpuminer"
+              - "/cpuminer-multi"
+              - "/ethminer"
+              - "/cgminer"
+              - "/bfgminer"
+              - "/nbminer"
+              - "/t-rex"
+              - "/teamredminer"
+              - "/xmr-stak"
+              - "/xmr-stak-rx"
+              - "/phoenixminer"
+              - "/lolminer"
+              - "/gminer"
+              - "/nanominer"
+              - "/srbminer"
+              - "/srbminer-multi"
+        matchActions:
+          - action: Sigkill

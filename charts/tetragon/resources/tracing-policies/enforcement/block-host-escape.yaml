@@ -1,0 +1,69 @@
+# ENFORCING. SIGKILLs a process in the target namespace that writes a host-kernel
+# control file or reads host kernel memory.
+#
+# The enforcement twin of observation/host-escape-attempts.yaml, narrowed to the
+# operations that are *never* part of a legitimate workload, so killing on them
+# cannot take down a real lab:
+#
+#   * writing /proc/sys/kernel/core_pattern, /proc/sys/kernel/modprobe or
+#     /proc/sysrq-trigger — each makes the host kernel run code or take a host
+#     action.
+#   * writing a cgroup release_agent / notify_on_release file — the release_agent
+#     breakout.
+#   * reading /proc/kcore — live host kernel memory.
+#
+# The generic `mount` primitive is deliberately NOT enforced here: the eBPF lab
+# mounts debugfs/tracefs/bpffs and the kubeadm/k3s labs mount for their nested
+# runtime, all legitimate. Only the host-escape control files above are killed.
+#
+# Installed as a TracingPolicyNamespaced into the namespaces listed under
+# tracingPolicies.enforcement.namespaces only — it never applies cluster-wide.
+kprobes:
+  - call: "security_file_permission"
+    syscall: false
+    return: true
+    args:
+      - index: 0
+        type: "file"
+      - index: 1
+        type: "int" # 0x04 MAY_READ, 0x02 MAY_WRITE
+    returnArg:
+      index: 0
+      type: "int"
+    selectors:
+      - matchArgs:
+          - index: 0
+            operator: "Equal"
+            values:
+              - "/proc/sys/kernel/core_pattern"
+              - "/proc/sys/kernel/modprobe"
+              - "/proc/sysrq-trigger"
+          - index: 1
+            operator: "Equal"
+            values:
+              - "2" # MAY_WRITE
+        matchActions:
+          - action: Sigkill
+      - matchArgs:
+          - index: 0
+            operator: "Postfix"
+            values:
+              - "release_agent"
+              - "notify_on_release"
+          - index: 1
+            operator: "Equal"
+            values:
+              - "2" # MAY_WRITE
+        matchActions:
+          - action: Sigkill
+      - matchArgs:
+          - index: 0
+            operator: "Equal"
+            values:
+              - "/proc/kcore"
+          - index: 1
+            operator: "Equal"
+            values:
+              - "4" # MAY_READ
+        matchActions:
+          - action: Sigkill
