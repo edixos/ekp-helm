@@ -1,0 +1,56 @@
+# Reports the execution of a known cryptocurrency-miner binary by name.
+#
+# Hooks the execve syscall (`syscall: true`, so Tetragon resolves the
+# architecture-specific symbol) and matches the program path by suffix against
+# the common miner binaries. This is the same execve+Postfix pattern used across
+# the upstream Tetragon examples, so it loads on any supported kernel.
+#
+# Resource abuse (crypto mining) is the most likely payload on a stolen lab:
+# there is no user data to steal, but there is CPU. Name-based matching is the
+# high-signal, near-zero-false-positive layer — none of these names belong to
+# any legitimate lab image. It is deliberately paired with the platform's other
+# resource controls (per-session ResourceQuota/LimitRange cap how much CPU a lab
+# can consume, which blunts mining even when the binary is renamed to evade this
+# list).
+#
+# Scoped to containers only (Pid namespace not the host).
+#
+# Report only: the single action is Post. The matching enforcement policy is
+# enforcement/block-crypto-miner-execution.yaml.
+kprobes:
+  - call: "sys_execve"
+    syscall: true
+    args:
+      - index: 0
+        type: "string" # program path
+    selectors:
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchArgs:
+          - index: 0
+            operator: "Postfix"
+            values:
+              - "/xmrig"
+              - "/minerd"
+              - "/cpuminer"
+              - "/cpuminer-multi"
+              - "/ethminer"
+              - "/cgminer"
+              - "/bfgminer"
+              - "/nbminer"
+              - "/t-rex"
+              - "/teamredminer"
+              - "/xmr-stak"
+              - "/xmr-stak-rx"
+              - "/phoenixminer"
+              - "/lolminer"
+              - "/gminer"
+              - "/nanominer"
+              - "/srbminer"
+              - "/srbminer-multi"
+        matchActions:
+          - action: Post
+            rateLimit: "30s"

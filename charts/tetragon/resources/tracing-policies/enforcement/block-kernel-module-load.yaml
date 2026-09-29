@@ -1,0 +1,29 @@
+# ENFORCING. SIGKILLs a process in the target namespace that asks the host
+# kernel to load a module.
+#
+# The enforcement twin of observation/kernel-module-load.yaml: same
+# `security_kernel_module_request` LSM hook, with a Sigkill action.
+#
+# Safe to enforce ONLY for Kata-backed lab namespaces: there, a workload loading
+# a *host* kernel module is always an escape or rootkit attempt, because the
+# lab's own modules load inside the Kata microVM guest kernel, which the node's
+# Tetragon agent does not see.
+#
+# DO NOT enable this for a sysbox-backed namespace (the sysbox kubeadm/k3s
+# providers) or any host-privileged infrastructure: sysbox labs share the host
+# kernel and legitimately trigger host module autoloads (br_netfilter/overlay at
+# node-prep, nf_conntrack via kube-proxy), which this policy would SIGKILL.
+# Review a namespace's observation events (observation/kernel-module-load.yaml)
+# and confirm the backend is Kata before adding it here.
+#
+# Installed as a TracingPolicyNamespaced into the namespaces listed under
+# tracingPolicies.enforcement.namespaces only — it never applies cluster-wide.
+kprobes:
+  - call: "security_kernel_module_request"
+    syscall: false
+    args:
+      - index: 0
+        type: "string" # requested module name
+    selectors:
+      - matchActions:
+          - action: Sigkill

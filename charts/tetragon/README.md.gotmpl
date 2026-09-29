@@ -37,6 +37,30 @@ repository ships in `resources/tracing-policies`:
 Process execution and exit visibility needs no policy at all: the agent reports
 `PROCESS_EXEC` and `PROCESS_EXIT` for every container as soon as it runs.
 
+### Bundled policies
+
+Every observation policy is scoped to containers (Pid namespace not the host) and
+is report-only. The three enforcement policies are the kill-on-match twins of the
+observation policies whose match set never overlaps legitimate workloads; the
+others are detection-only on purpose (their trigger is legitimate in some lab
+scenarios, so it is a signal to correlate, not a safe kill point).
+
+| Observation policy | Reports | Enforcement twin |
+|--------------------|---------|------------------|
+| `sensitive-file-access` | reads of credential/boot files, writes into executable dirs | `block-sensitive-file-write` |
+| `process-credential-changes` | `commit_creds` — setuid/capability/userns privilege changes | — |
+| `host-escape-attempts` | writes to `core_pattern`/`modprobe`/`sysrq`/cgroup `release_agent`, reads of `/proc/kcore` | `block-host-escape` |
+| `serviceaccount-token-access` | reads of a mounted Kubernetes ServiceAccount token | — (fires for platform pods at start-up) |
+| `kernel-module-load` | `security_kernel_module_request` — a container asking the host kernel to load a module | `block-kernel-module-load` (Kata-backed namespaces only — sysbox labs share the host kernel and load modules legitimately) |
+| `dangerous-capabilities` | use of `CAP_SYS_MODULE`/`RAWIO`/`BOOT`/`TIME`/`MAC_*` | — |
+| `process-injection` | `ptrace` attach / cross-process memory writes | — (legitimate for debugging labs) |
+| `crypto-miner-execution` | exec of a known miner binary by name | `block-crypto-miner-execution` |
+
+The alert rules in `resources/prometheus-rules/tetragon-security-events.yaml` fire
+off the per-policy `tetragon_policy_events_total` metric, so the near-zero-false-
+positive policies (host escape, kernel module, cryptominer) page on a single
+event even where no event-log pipeline ships the raw events.
+
 Enforcement takes two explicit decisions, a policy and a namespace, and stays
 off until both are made:
 

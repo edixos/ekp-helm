@@ -1,0 +1,55 @@
+# Reports a container exercising a Linux capability that a lab workload never
+# legitimately needs, and that grants host-level control.
+#
+# `cap_capable` is the kernel function behind every capability check; its third
+# argument is the capability number. This policy matches only the capabilities
+# whose *use* is by itself a strong compromise signal:
+#
+#   * CAP_SYS_MODULE (16)  — load/unload host kernel modules
+#   * CAP_SYS_RAWIO  (17)  — raw I/O port and /dev/mem access
+#   * CAP_SYS_BOOT   (22)  — reboot / kexec the node
+#   * CAP_SYS_TIME   (25)  — set the host clock
+#   * CAP_MAC_OVERRIDE (32) / CAP_MAC_ADMIN (33) — override or reconfigure the
+#     kernel MAC (AppArmor/SELinux) policy
+#
+# Deliberately NOT matched: CAP_SYS_ADMIN, CAP_NET_ADMIN, CAP_SYS_RESOURCE,
+# CAP_BPF, CAP_PERFMON and CAP_SYS_PTRACE. The machine-backed lab backends
+# (sysbox and Kata) are granted SYS_ADMIN/NET_ADMIN/SYS_RESOURCE by design, and
+# the eBPF lab uses BPF/PERFMON, so matching those would report normal lab
+# behaviour on every check.
+#
+# Scoped to containers only (Pid namespace not the host): host services use
+# these capabilities routinely.
+#
+# Report only: the single action is Post. No enforcement variant — a capability
+# check is not a safe kill point (the check may be advisory), so this stays a
+# detection signal to correlate with the file/module/exec policies.
+kprobes:
+  - call: "cap_capable"
+    syscall: false
+    args:
+      - index: 0
+        type: "nop"
+      - index: 1
+        type: "nop"
+      - index: 2
+        type: "int" # capability number
+    selectors:
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchArgs:
+          - index: 2
+            operator: "Equal"
+            values:
+              - "16" # CAP_SYS_MODULE
+              - "17" # CAP_SYS_RAWIO
+              - "22" # CAP_SYS_BOOT
+              - "25" # CAP_SYS_TIME
+              - "32" # CAP_MAC_OVERRIDE
+              - "33" # CAP_MAC_ADMIN
+        matchActions:
+          - action: Post
+            rateLimit: "1m"

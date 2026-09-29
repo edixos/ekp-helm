@@ -1,6 +1,6 @@
 # tetragon
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.1](https://img.shields.io/badge/AppVersion-1.7.1-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.1](https://img.shields.io/badge/AppVersion-1.7.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -198,7 +198,7 @@ Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps the
 | tracingPolicies.enforcement.policies | list | `[]` | Bundled enforcement policies to install, by file name (without the extension) in `resources/tracing-policies/enforcement` |
 | tracingPolicies.extra | list | `[]` | Policies defined inline instead of coming from the bundles. Each item: `name` (required), `spec` (required, a TracingPolicy spec), `namespace` (optional — when set the policy is rendered as a TracingPolicyNamespaced in that namespace instead of cluster-wide) |
 | tracingPolicies.observation.enabled | bool | `true` | Install the bundled observation policies. They carry no enforcing action, they only make the matching kernel events show up in the Tetragon event stream |
-| tracingPolicies.observation.policies | list | `["sensitive-file-access","process-credential-changes"]` | Bundled observation policies to install, by file name (without the extension) in `resources/tracing-policies/observation`. Installed cluster-wide as TracingPolicy resources |
+| tracingPolicies.observation.policies | list | `["sensitive-file-access","process-credential-changes","host-escape-attempts","serviceaccount-token-access","kernel-module-load","dangerous-capabilities","process-injection","crypto-miner-execution"]` | Bundled observation policies to install, by file name (without the extension) in `resources/tracing-policies/observation`. Installed cluster-wide as TracingPolicy resources |
 | victoriaMetrics.enabled | bool | `false` | Render VMServiceScrape and VMRule resources instead of Prometheus Operator resources |
 | victoriaMetrics.rules.enabled | bool | `true` | Render the bundled alert groups as VMRules |
 | victoriaMetrics.serviceScrapes.enabled | bool | `true` | Scrape both the Tetragon agent and its operator |
@@ -217,6 +217,30 @@ repository ships in `resources/tracing-policies`:
 
 Process execution and exit visibility needs no policy at all: the agent reports
 `PROCESS_EXEC` and `PROCESS_EXIT` for every container as soon as it runs.
+
+### Bundled policies
+
+Every observation policy is scoped to containers (Pid namespace not the host) and
+is report-only. The three enforcement policies are the kill-on-match twins of the
+observation policies whose match set never overlaps legitimate workloads; the
+others are detection-only on purpose (their trigger is legitimate in some lab
+scenarios, so it is a signal to correlate, not a safe kill point).
+
+| Observation policy | Reports | Enforcement twin |
+|--------------------|---------|------------------|
+| `sensitive-file-access` | reads of credential/boot files, writes into executable dirs | `block-sensitive-file-write` |
+| `process-credential-changes` | `commit_creds` — setuid/capability/userns privilege changes | — |
+| `host-escape-attempts` | writes to `core_pattern`/`modprobe`/`sysrq`/cgroup `release_agent`, reads of `/proc/kcore` | `block-host-escape` |
+| `serviceaccount-token-access` | reads of a mounted Kubernetes ServiceAccount token | — (fires for platform pods at start-up) |
+| `kernel-module-load` | `security_kernel_module_request` — a container asking the host kernel to load a module | `block-kernel-module-load` (Kata-backed namespaces only — sysbox labs share the host kernel and load modules legitimately) |
+| `dangerous-capabilities` | use of `CAP_SYS_MODULE`/`RAWIO`/`BOOT`/`TIME`/`MAC_*` | — |
+| `process-injection` | `ptrace` attach / cross-process memory writes | — (legitimate for debugging labs) |
+| `crypto-miner-execution` | exec of a known miner binary by name | `block-crypto-miner-execution` |
+
+The alert rules in `resources/prometheus-rules/tetragon-security-events.yaml` fire
+off the per-policy `tetragon_policy_events_total` metric, so the near-zero-false-
+positive policies (host escape, kernel module, cryptominer) page on a single
+event even where no event-log pipeline ships the raw events.
 
 Enforcement takes two explicit decisions, a policy and a namespace, and stays
 off until both are made:
@@ -301,7 +325,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: tetragon
     path: ''
     helm:

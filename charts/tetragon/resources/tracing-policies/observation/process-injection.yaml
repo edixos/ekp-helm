@@ -1,0 +1,42 @@
+# Reports one process attaching to another to read or rewrite its memory —
+# ptrace-based code injection, credential theft from another process, and
+# debugger-style tampering.
+#
+# `security_ptrace_access_check` is the LSM hook the kernel calls before any
+# ptrace attach or cross-process memory access (ptrace(PTRACE_ATTACH),
+# process_vm_writev, /proc/<pid>/mem). Its second argument is the access mode;
+# this policy matches only modes with the ATTACH bit set, using a bit Mask so it
+# is independent of the REALCREDS/FSCREDS flag combinations different call paths
+# use.
+#
+# Scoped to containers only (Pid namespace not the host).
+#
+# KNOWN FALSE POSITIVE: interactive debugging is a legitimate lab activity
+# (gdb/strace/dlv attaching to a process the learner started). This is why the
+# policy is report-only and has no enforcement variant: the value is spotting an
+# attach that targets a process the learner did *not* start, correlated with the
+# exec and file policies, not blocking ptrace outright.
+#
+# Report only: the single action is Post.
+kprobes:
+  - call: "security_ptrace_access_check"
+    syscall: false
+    args:
+      - index: 0
+        type: "nop"
+      - index: 1
+        type: "int" # ptrace access mode bitmask
+    selectors:
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchArgs:
+          - index: 1
+            operator: "Mask"
+            values:
+              - "2" # PTRACE_MODE_ATTACH
+        matchActions:
+          - action: Post
+            rateLimit: "1m"

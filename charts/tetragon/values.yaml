@@ -68,6 +68,12 @@ tracingPolicies:
     policies:
       - sensitive-file-access
       - process-credential-changes
+      - host-escape-attempts
+      - serviceaccount-token-access
+      - kernel-module-load
+      - dangerous-capabilities
+      - process-injection
+      - crypto-miner-execution
   enforcement:
     # -- Install the bundled enforcement policies. These policies SIGKILL the
     # process that matched, which can take down a legitimate workload if its
