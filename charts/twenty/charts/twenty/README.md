@@ -1,95 +1,147 @@
-# Twenty Helm Chart
+# twenty
 
-Deploy Twenty CRM on Kubernetes with server, worker, PostgreSQL, and Redis components.
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.14.0](https://img.shields.io/badge/AppVersion-v1.14.0-informational?style=flat-square)
 
-## Features
-- Server and worker deployments with full env exposure via `values.yaml`.
-- Internal PostgreSQL (Spilo) and Redis deployments included.
-- PVC-based persistence using dynamic storage classes (no static PV manifests).
-- Ingress with configurable annotations, hosts, and TLS.
-- Database readiness and migrations handled by server/worker init containers by default.
-– Standard Kubernetes Jobs for DB creation/user and migrations have been removed to simplify installs. Readiness and migrations run in init containers.
+A Helm chart to deploy Twenty CRM (server + worker) with optional PostgreSQL and Redis dependencies.
 
-## Quick Start
+## Values
 
-See [QUICKSTART.md](QUICKSTART.md) for a simple 2-line install with your domain.
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| db.enabled | bool | `true` |  |
+| db.external.database | string | `"twenty"` |  |
+| db.external.host | string | `""` |  |
+| db.external.password | string | `""` |  |
+| db.external.passwordKey | string | `""` |  |
+| db.external.port | int | `5432` |  |
+| db.external.secretName | string | `""` |  |
+| db.external.ssl | bool | `false` |  |
+| db.external.user | string | `"twenty_app_user"` |  |
+| db.internal.appPassword | string | `""` |  |
+| db.internal.appUser | string | `"twenty_app_user"` |  |
+| db.internal.database | string | `"twenty"` |  |
+| db.internal.env.ALLOW_NOSSL | string | `"true"` |  |
+| db.internal.env.PGPASSWORD_SUPERUSER | string | `"postgres"` |  |
+| db.internal.env.PGUSER_SUPERUSER | string | `"postgres"` |  |
+| db.internal.env.SPILO_PROVIDER | string | `"local"` |  |
+| db.internal.image.repository | string | `"twentycrm/twenty-postgres-spilo"` |  |
+| db.internal.image.tag | string | `"3.3-p2"` |  |
+| db.internal.persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| db.internal.persistence.enabled | bool | `true` |  |
+| db.internal.persistence.existingClaim | string | `""` |  |
+| db.internal.persistence.size | string | `"10Gi"` |  |
+| db.internal.persistence.storageClass | string | `""` |  |
+| db.internal.resources.limits.cpu | string | `"1000m"` |  |
+| db.internal.resources.limits.memory | string | `"1024Mi"` |  |
+| db.internal.resources.requests.cpu | string | `"250m"` |  |
+| db.internal.resources.requests.memory | string | `"256Mi"` |  |
+| fullnameOverride | string | `""` |  |
+| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.repository | string | `"twentycrm/twenty"` |  |
+| image.tag | string | `""` |  |
+| nameOverride | string | `""` |  |
+| redis.external.host | string | `""` |  |
+| redis.external.password | string | `""` |  |
+| redis.external.passwordKey | string | `""` |  |
+| redis.external.port | int | `6379` |  |
+| redis.external.secretName | string | `""` |  |
+| redisInternal.enabled | bool | `true` |  |
+| redisInternal.image.pullPolicy | string | `"IfNotPresent"` |  |
+| redisInternal.image.repository | string | `"redis/redis-stack-server"` |  |
+| redisInternal.image.tag | string | `"7.2.0-v10"` |  |
+| redisInternal.persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| redisInternal.persistence.enabled | bool | `false` |  |
+| redisInternal.persistence.existingClaim | string | `""` |  |
+| redisInternal.persistence.size | string | `"1Gi"` |  |
+| redisInternal.persistence.storageClass | string | `""` |  |
+| redisInternal.resources.limits.cpu | string | `"500m"` |  |
+| redisInternal.resources.limits.memory | string | `"2048Mi"` |  |
+| redisInternal.resources.requests.cpu | string | `"250m"` |  |
+| redisInternal.resources.requests.memory | string | `"1024Mi"` |  |
+| redisInternal.service.port | int | `6379` |  |
+| secrets.tokens.accessToken | string | `""` |  |
+| secrets.tokens.create | bool | `true` |  |
+| secrets.tokens.name | string | `"tokens"` |  |
+| securityContext.fsGroup | int | `1000` |  |
+| securityContext.runAsUser | int | `1000` |  |
+| server.affinity | object | `{}` |  |
+| server.dnsConfig | object | `{}` |  |
+| server.dnsPolicy | string | `nil` |  |
+| server.dockerDataPersistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| server.dockerDataPersistence.enabled | bool | `true` |  |
+| server.dockerDataPersistence.existingClaim | string | `""` |  |
+| server.dockerDataPersistence.size | string | `"100Mi"` |  |
+| server.dockerDataPersistence.storageClass | string | `""` |  |
+| server.enabled | bool | `true` |  |
+| server.env.ACCESS_TOKEN_EXPIRES_IN | string | `"7d"` |  |
+| server.env.LOGIN_TOKEN_EXPIRES_IN | string | `"1h"` |  |
+| server.env.SIGN_IN_PREFILLED | string | `"false"` |  |
+| server.extraEnv | list | `[]` |  |
+| server.extraVolumeMounts | list | `[]` |  |
+| server.image | object | `{}` |  |
+| server.ingress.acme | bool | `true` |  |
+| server.ingress.annotations | object | `{}` |  |
+| server.ingress.className | string | `"nginx"` |  |
+| server.ingress.enabled | bool | `true` |  |
+| server.ingress.hosts[0].host | string | `"crm.example.com"` |  |
+| server.ingress.hosts[0].paths[0].path | string | `"/"` |  |
+| server.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
+| server.ingress.tls[0].hosts[0] | string | `"crm.example.com"` |  |
+| server.ingress.tls[0].secretName | string | `"twenty-tls"` |  |
+| server.livenessProbe.failureThreshold | int | `3` |  |
+| server.livenessProbe.httpGet.path | string | `"/healthz"` |  |
+| server.livenessProbe.httpGet.port | string | `"http-tcp"` |  |
+| server.livenessProbe.periodSeconds | int | `30` |  |
+| server.livenessProbe.timeoutSeconds | int | `5` |  |
+| server.nodeSelector | object | `{}` |  |
+| server.persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| server.persistence.enabled | bool | `true` |  |
+| server.persistence.existingClaim | string | `""` |  |
+| server.persistence.size | string | `"10Gi"` |  |
+| server.persistence.storageClass | string | `""` |  |
+| server.readinessProbe.failureThreshold | int | `3` |  |
+| server.readinessProbe.httpGet.path | string | `"/healthz"` |  |
+| server.readinessProbe.httpGet.port | string | `"http-tcp"` |  |
+| server.readinessProbe.periodSeconds | int | `10` |  |
+| server.readinessProbe.timeoutSeconds | int | `5` |  |
+| server.replicaCount | int | `1` |  |
+| server.resources.limits.cpu | string | `"1000m"` |  |
+| server.resources.limits.memory | string | `"1024Mi"` |  |
+| server.resources.requests.cpu | string | `"250m"` |  |
+| server.resources.requests.memory | string | `"256Mi"` |  |
+| server.service.port | int | `3000` |  |
+| server.service.type | string | `"ClusterIP"` |  |
+| server.startupProbe.failureThreshold | int | `30` |  |
+| server.startupProbe.httpGet.path | string | `"/healthz"` |  |
+| server.startupProbe.httpGet.port | string | `"http-tcp"` |  |
+| server.startupProbe.periodSeconds | int | `10` |  |
+| server.startupProbe.timeoutSeconds | int | `5` |  |
+| server.tolerations | list | `[]` |  |
+| serviceAccount.annotations | object | `{}` |  |
+| serviceAccount.automount | bool | `true` |  |
+| serviceAccount.create | bool | `false` |  |
+| serviceAccount.name | string | `""` |  |
+| storage.s3.accessKeyId | string | `""` |  |
+| storage.s3.bucket | string | `""` |  |
+| storage.s3.endpoint | string | `""` |  |
+| storage.s3.region | string | `""` |  |
+| storage.s3.secretAccessKey | string | `""` |  |
+| storage.type | string | `"local"` |  |
+| worker.affinity | object | `{}` |  |
+| worker.command[0] | string | `"yarn"` |  |
+| worker.command[1] | string | `"worker:prod"` |  |
+| worker.dnsConfig | object | `{}` |  |
+| worker.dnsPolicy | string | `nil` |  |
+| worker.enabled | bool | `true` |  |
+| worker.extraEnv | list | `[]` |  |
+| worker.image | object | `{}` |  |
+| worker.nodeSelector | object | `{}` |  |
+| worker.replicaCount | int | `1` |  |
+| worker.resources.limits.cpu | string | `"1000m"` |  |
+| worker.resources.limits.memory | string | `"2048Mi"` |  |
+| worker.resources.requests.cpu | string | `"250m"` |  |
+| worker.resources.requests.memory | string | `"1024Mi"` |  |
+| worker.tolerations | list | `[]` |  |
 
-## Installing
-
-**Prerequisites:** Kubernetes 1.21+, Helm 3.8+, default StorageClass
-
-Internal DB + Redis (default):
-```bash
-helm install my-twenty ./packages/twenty-docker/helm/twenty \
-  --namespace twentycrm --create-namespace
-```
-
-External DB/Redis:
-```bash
-helm install my-twenty ./packages/twenty-docker/helm/twenty \
-  --namespace twentycrm --create-namespace \
-  --set db.enabled=false \
-  --set db.external.host=db.example.com \
-  --set redisInternal.enabled=false
-```
-
-## Key Values
-
-
-See `values.yaml` for a comprehensive list.
-
-## Notes
-
-- Database URL and Redis URL are composed automatically from chart settings
-- Database `twenty` and schema `core` are created automatically by server init container
-- No optional jobs: the chart no longer provides separate Jobs for DB or migrations.
-- Access token auto-generated (32 chars) if not provided; reuses existing secret if present
-  - For production, provide a strong `secrets.tokens.accessToken` value via a secure values file; the auto-generated token is a convenience fallback.
-- TLS enabled by default via cert-manager (`acme: true`)
-- Requires default StorageClass for PVC provisioning
-## Testing
-
-```bash
-helm lint ./packages/twenty-docker/helm/twenty
-helm template my-twenty ./packages/twenty-docker/helm/twenty
-helm plugin install https://github.com/quintush/helm-unittest
-helm unittest ./packages/twenty-docker/helm/twenty
-```
-
-## Storage
-
-**Local (default):** Uses PVCs for persistence
-
-**S3:** Set `storage.type=s3` and provide credentials using a values file. You can either pass credentials directly or reference an existing Kubernetes Secret.
-```bash
-# values-secrets.yaml (do not commit)
-# storage:
-#   type: s3
-#   s3:
-#     bucket: my-bucket
-#     region: us-east-1
-#     # Option A: direct values
-#     accessKeyId: AKIA...
-#     secretAccessKey: ...
-#     # Option B: reference a Secret
-#     # secretName: my-s3-creds
-#     # accessKeyIdKey: accessKeyId
-#     # secretAccessKeyKey: secretAccessKey
-
-helm install my-twenty ./packages/twenty-docker/helm/twenty -f values-secrets.yaml
-```
-
-## Production Tips
-
-- **Image versioning:** The chart defaults to `Chart.yaml`'s `appVersion` (currently v1.14.0). Override via `image.tag` in values to pin a different version or use `latest` for rolling updates.
-- **Keep secrets secure:** Avoid `--set` for sensitive values; use `-f values-secrets.yaml` or reference existing Kubernetes Secrets via `server.extraEnvFrom`.
-  - S3 credentials can be referenced via `storage.s3.secretName + accessKeyIdKey/secretAccessKeyKey` to avoid embedding them in pod specs.
-- **Cloud IAM via ServiceAccount:** Server and worker pods run under the namespace's `default` ServiceAccount unless `serviceAccount.create=true`, which creates a dedicated one named after the release (or `serviceAccount.name`, if set). Grant cloud permissions (e.g. S3 access) without static credentials by enabling it and annotating it:
-  ```yaml
-  serviceAccount:
-    create: true
-    annotations:
-      eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/twenty-role   # AWS IRSA
-      # iam.gke.io/gcp-service-account: twenty@my-project.iam.gserviceaccount.com  # GCP Workload Identity
-  ```
-  Set `serviceAccount.automount=false` to skip mounting the Kubernetes API token; the server and worker never call the API, and IRSA / Workload Identity keep working.
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
