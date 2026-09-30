@@ -1,6 +1,6 @@
 # cnpg
 
-![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.30.0](https://img.shields.io/badge/AppVersion-1.30.0-informational?style=flat-square)
+![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.30.1](https://img.shields.io/badge/AppVersion-1.30.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://cloudnative-pg.github.io/charts | cnpg(cloudnative-pg) | 0.29.0 |
+| https://cloudnative-pg.github.io/charts | cnpg(cloudnative-pg) | 0.29.1 |
 
 ## Description
 
@@ -65,6 +65,7 @@ A Helm chart for Kubernetes
 | cnpg.rbac.create | bool | `true` | Specifies whether ClusterRole and ClusterRoleBinding should be created. |
 | cnpg.replicaCount | int | `1` |  |
 | cnpg.resources | object | `{}` |  |
+| cnpg.scratchData.emptyDir | object | `{}` | EmptyDir options for the scratch-data volume. |
 | cnpg.service.ipFamilies | list | `[]` | Sets the families that should be supported and the order in which they should be applied to ClusterIP as well. Can be IPv4 and/or IPv6. |
 | cnpg.service.ipFamilyPolicy | string | `""` | Set the ip family policy to configure dual-stack see [Configure dual-stack](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services) |
 | cnpg.service.name | string | `"cnpg-webhook-service"` | The name of the Webhook Service. |
@@ -105,7 +106,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.5"
+    targetRevision: "0.1.6"
     chart: cnpg
     path: ''
     helm:
