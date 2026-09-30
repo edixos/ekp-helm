@@ -1,0 +1,147 @@
+# twenty
+
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.14.0](https://img.shields.io/badge/AppVersion-v1.14.0-informational?style=flat-square)
+
+A Helm chart to deploy Twenty CRM (server + worker) with optional PostgreSQL and Redis dependencies.
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| db.enabled | bool | `true` |  |
+| db.external.database | string | `"twenty"` |  |
+| db.external.host | string | `""` |  |
+| db.external.password | string | `""` |  |
+| db.external.passwordKey | string | `""` |  |
+| db.external.port | int | `5432` |  |
+| db.external.secretName | string | `""` |  |
+| db.external.ssl | bool | `false` |  |
+| db.external.user | string | `"twenty_app_user"` |  |
+| db.internal.appPassword | string | `""` |  |
+| db.internal.appUser | string | `"twenty_app_user"` |  |
+| db.internal.database | string | `"twenty"` |  |
+| db.internal.env.ALLOW_NOSSL | string | `"true"` |  |
+| db.internal.env.PGPASSWORD_SUPERUSER | string | `"postgres"` |  |
+| db.internal.env.PGUSER_SUPERUSER | string | `"postgres"` |  |
+| db.internal.env.SPILO_PROVIDER | string | `"local"` |  |
+| db.internal.image.repository | string | `"twentycrm/twenty-postgres-spilo"` |  |
+| db.internal.image.tag | string | `"3.3-p2"` |  |
+| db.internal.persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| db.internal.persistence.enabled | bool | `true` |  |
+| db.internal.persistence.existingClaim | string | `""` |  |
+| db.internal.persistence.size | string | `"10Gi"` |  |
+| db.internal.persistence.storageClass | string | `""` |  |
+| db.internal.resources.limits.cpu | string | `"1000m"` |  |
+| db.internal.resources.limits.memory | string | `"1024Mi"` |  |
+| db.internal.resources.requests.cpu | string | `"250m"` |  |
+| db.internal.resources.requests.memory | string | `"256Mi"` |  |
+| fullnameOverride | string | `""` |  |
+| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.repository | string | `"twentycrm/twenty"` |  |
+| image.tag | string | `""` |  |
+| nameOverride | string | `""` |  |
+| redis.external.host | string | `""` |  |
+| redis.external.password | string | `""` |  |
+| redis.external.passwordKey | string | `""` |  |
+| redis.external.port | int | `6379` |  |
+| redis.external.secretName | string | `""` |  |
+| redisInternal.enabled | bool | `true` |  |
+| redisInternal.image.pullPolicy | string | `"IfNotPresent"` |  |
+| redisInternal.image.repository | string | `"redis/redis-stack-server"` |  |
+| redisInternal.image.tag | string | `"7.2.0-v10"` |  |
+| redisInternal.persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| redisInternal.persistence.enabled | bool | `false` |  |
+| redisInternal.persistence.existingClaim | string | `""` |  |
+| redisInternal.persistence.size | string | `"1Gi"` |  |
+| redisInternal.persistence.storageClass | string | `""` |  |
+| redisInternal.resources.limits.cpu | string | `"500m"` |  |
+| redisInternal.resources.limits.memory | string | `"2048Mi"` |  |
+| redisInternal.resources.requests.cpu | string | `"250m"` |  |
+| redisInternal.resources.requests.memory | string | `"1024Mi"` |  |
+| redisInternal.service.port | int | `6379` |  |
+| secrets.tokens.accessToken | string | `""` |  |
+| secrets.tokens.create | bool | `true` |  |
+| secrets.tokens.name | string | `"tokens"` |  |
+| securityContext.fsGroup | int | `1000` |  |
+| securityContext.runAsUser | int | `1000` |  |
+| server.affinity | object | `{}` |  |
+| server.dnsConfig | object | `{}` |  |
+| server.dnsPolicy | string | `nil` |  |
+| server.dockerDataPersistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| server.dockerDataPersistence.enabled | bool | `true` |  |
+| server.dockerDataPersistence.existingClaim | string | `""` |  |
+| server.dockerDataPersistence.size | string | `"100Mi"` |  |
+| server.dockerDataPersistence.storageClass | string | `""` |  |
+| server.enabled | bool | `true` |  |
+| server.env.ACCESS_TOKEN_EXPIRES_IN | string | `"7d"` |  |
+| server.env.LOGIN_TOKEN_EXPIRES_IN | string | `"1h"` |  |
+| server.env.SIGN_IN_PREFILLED | string | `"false"` |  |
+| server.extraEnv | list | `[]` |  |
+| server.extraVolumeMounts | list | `[]` |  |
+| server.image | object | `{}` |  |
+| server.ingress.acme | bool | `true` |  |
+| server.ingress.annotations | object | `{}` |  |
+| server.ingress.className | string | `"nginx"` |  |
+| server.ingress.enabled | bool | `true` |  |
+| server.ingress.hosts[0].host | string | `"crm.example.com"` |  |
+| server.ingress.hosts[0].paths[0].path | string | `"/"` |  |
+| server.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
+| server.ingress.tls[0].hosts[0] | string | `"crm.example.com"` |  |
+| server.ingress.tls[0].secretName | string | `"twenty-tls"` |  |
+| server.livenessProbe.failureThreshold | int | `3` |  |
+| server.livenessProbe.httpGet.path | string | `"/healthz"` |  |
+| server.livenessProbe.httpGet.port | string | `"http-tcp"` |  |
+| server.livenessProbe.periodSeconds | int | `30` |  |
+| server.livenessProbe.timeoutSeconds | int | `5` |  |
+| server.nodeSelector | object | `{}` |  |
+| server.persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| server.persistence.enabled | bool | `true` |  |
+| server.persistence.existingClaim | string | `""` |  |
+| server.persistence.size | string | `"10Gi"` |  |
+| server.persistence.storageClass | string | `""` |  |
+| server.readinessProbe.failureThreshold | int | `3` |  |
+| server.readinessProbe.httpGet.path | string | `"/healthz"` |  |
+| server.readinessProbe.httpGet.port | string | `"http-tcp"` |  |
+| server.readinessProbe.periodSeconds | int | `10` |  |
+| server.readinessProbe.timeoutSeconds | int | `5` |  |
+| server.replicaCount | int | `1` |  |
+| server.resources.limits.cpu | string | `"1000m"` |  |
+| server.resources.limits.memory | string | `"1024Mi"` |  |
+| server.resources.requests.cpu | string | `"250m"` |  |
+| server.resources.requests.memory | string | `"256Mi"` |  |
+| server.service.port | int | `3000` |  |
+| server.service.type | string | `"ClusterIP"` |  |
+| server.startupProbe.failureThreshold | int | `30` |  |
+| server.startupProbe.httpGet.path | string | `"/healthz"` |  |
+| server.startupProbe.httpGet.port | string | `"http-tcp"` |  |
+| server.startupProbe.periodSeconds | int | `10` |  |
+| server.startupProbe.timeoutSeconds | int | `5` |  |
+| server.tolerations | list | `[]` |  |
+| serviceAccount.annotations | object | `{}` |  |
+| serviceAccount.automount | bool | `true` |  |
+| serviceAccount.create | bool | `false` |  |
+| serviceAccount.name | string | `""` |  |
+| storage.s3.accessKeyId | string | `""` |  |
+| storage.s3.bucket | string | `""` |  |
+| storage.s3.endpoint | string | `""` |  |
+| storage.s3.region | string | `""` |  |
+| storage.s3.secretAccessKey | string | `""` |  |
+| storage.type | string | `"local"` |  |
+| worker.affinity | object | `{}` |  |
+| worker.command[0] | string | `"yarn"` |  |
+| worker.command[1] | string | `"worker:prod"` |  |
+| worker.dnsConfig | object | `{}` |  |
+| worker.dnsPolicy | string | `nil` |  |
+| worker.enabled | bool | `true` |  |
+| worker.extraEnv | list | `[]` |  |
+| worker.image | object | `{}` |  |
+| worker.nodeSelector | object | `{}` |  |
+| worker.replicaCount | int | `1` |  |
+| worker.resources.limits.cpu | string | `"1000m"` |  |
+| worker.resources.limits.memory | string | `"2048Mi"` |  |
+| worker.resources.requests.cpu | string | `"250m"` |  |
+| worker.resources.requests.memory | string | `"1024Mi"` |  |
+| worker.tolerations | list | `[]` |  |
+
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
