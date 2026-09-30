@@ -1,6 +1,6 @@
 dependencies:
 - name: kube-ovn-v2
   repository: https://kubeovn.github.io/kube-ovn/
-  version: v1.16.2
-digest: sha256:7c1ac9da1912398e97323e277f758011310c80027141a0a749eb0a8f1589dfee
-generated: "2026-08-12T11:04:50.74202924Z"
+  version: v1.16.9
+digest: sha256:8ca92cf11f764d154704da1a45efa04fa284d6bef5131a22fb2f56cdf9048c0a
+generated: "2026-09-30T16:22:29.155762135Z"
