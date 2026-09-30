@@ -1,0 +1,19 @@
+apiVersion: v2
+name: twenty
+description: Twenty CRM, wired to an externally managed PostgreSQL and the platform Gateway
+type: application
+version: 0.1.0
+appVersion: "v2.26.0"
+annotations:
+  # The official chart is not published to any Helm or OCI repository, so it is
+  # vendored under charts/twenty from twentyhq/twenty at this commit. To update,
+  # replace that directory with packages/twenty-docker/helm/twenty from a newer
+  # commit, update this annotation, and bump this chart's version.
+  ekp-helm/upstream-source: "https://github.com/twentyhq/twenty/tree/33ba245f08615bd5b3b50e35ad54a584fbed3989/packages/twenty-docker/helm/twenty"
+dependencies:
+  - name: twenty
+    version: 0.1.0
+    # Empty on purpose: Helm resolves a dependency with no repository from the
+    # vendored charts/twenty directory.
+    repository: ""
+    alias: twenty

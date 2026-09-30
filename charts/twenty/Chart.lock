@@ -1,0 +1,6 @@
+dependencies:
+- name: twenty
+  repository: ""
+  version: 0.1.0
+digest: sha256:bf850cfaf0348c53b21f47f108d342a63ef7dd2f025f3126eaf5304621cbec70
+generated: "2026-09-30T10:32:54.621209+01:00"
