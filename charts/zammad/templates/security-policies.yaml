@@ -1,0 +1,26 @@
+{{/*
+Envoy Gateway SecurityPolicies for the Zammad release.
+
+Passed through as-is so each environment can attach policies (for example an
+IP allowlist) to the HTTPRoutes defined under `httpRoutes`. Requires the Envoy
+Gateway CRDs.
+*/}}
+{{- range $name, $policy := .Values.securityPolicies }}
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: {{ $name }}
+  namespace: {{ $policy.namespace | default $.Release.Namespace }}
+  labels:
+    {{- include "zammad-wrapper.labels" $ | nindent 4 }}
+    {{- with $policy.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $policy.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- toYaml $policy.spec | nindent 2 }}
+{{- end }}

@@ -269,5 +269,8 @@ externalSecrets: []
 # -- Map of Gateway API HTTPRoutes to deploy, keyed by route name
 httpRoutes: {}
 
+# -- Map of Envoy Gateway SecurityPolicies to deploy, keyed by policy name (e.g. an IP allowlist attached to an HTTPRoute)
+securityPolicies: {}
+
 # -- Map of NetworkPolicies to deploy, keyed by policy name
 networkPolicies: {}

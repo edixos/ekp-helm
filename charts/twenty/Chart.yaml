@@ -2,7 +2,7 @@ apiVersion: v2
 name: twenty
 description: Twenty CRM, wired to an externally managed PostgreSQL and the platform Gateway
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "v2.26.0"
 annotations:
   # The official chart is not published to any Helm or OCI repository, so it is

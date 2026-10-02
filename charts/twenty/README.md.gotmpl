@@ -11,6 +11,7 @@
 - Helm v{{ if eq .ApiVersion "v2" }}3{{ else }}2{{end}}
 - External Secrets Operator (for `externalSecrets`)
 - Gateway API CRDs and a Gateway to attach to (for `httpRoutes`)
+- Envoy Gateway CRDs (for `securityPolicies`)
 - A PostgreSQL 16+ database and role for Twenty, when `twenty.db.enabled` is false
 
 ## Upstream chart
