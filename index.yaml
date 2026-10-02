@@ -1167,6 +1167,41 @@ entries:
   dex:
   - apiVersion: v2
     appVersion: 2.42.0
+    created: "2026-10-02T16:14:16.56274916Z"
+    dependencies:
+    - alias: dex
+      name: dex
+      repository: https://charts.dexidp.io
+      version: 0.24.0
+    - alias: workloadIdentity
+      name: gcp-workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    - alias: iamPolicyMembers
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.2
+    description: A Helm chart for Dex - OpenID Connect Identity (OIDC) and OAuth 2.0
+      Provider with Pluggable Connectors
+    digest: 493a9f9cf993b3c98868218c2ee0f6b4e6cb47f7090a7be16b1047752348d67a
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: dex
+    type: application
+    urls:
+    - dex-0.1.10.tgz
+    version: 0.1.10
+  - apiVersion: v2
+    appVersion: 2.42.0
     created: "2026-03-26T16:01:28.086812756Z"
     dependencies:
     - alias: dex
@@ -4669,6 +4704,24 @@ entries:
       ekp-helm/upstream-source: https://github.com/twentyhq/twenty/tree/33ba245f08615bd5b3b50e35ad54a584fbed3989/packages/twenty-docker/helm/twenty
     apiVersion: v2
     appVersion: v2.26.0
+    created: "2026-10-02T16:14:17.257774438Z"
+    dependencies:
+    - alias: twenty
+      name: twenty
+      repository: ""
+      version: 0.1.0
+    description: Twenty CRM, wired to an externally managed PostgreSQL and the platform
+      Gateway
+    digest: c5c806f7cfd1f9bbcf522237b008be66403812ddcb932416a4ddc1af6b3455d4
+    name: twenty
+    type: application
+    urls:
+    - twenty-0.1.1.tgz
+    version: 0.1.1
+  - annotations:
+      ekp-helm/upstream-source: https://github.com/twentyhq/twenty/tree/33ba245f08615bd5b3b50e35ad54a584fbed3989/packages/twenty-docker/helm/twenty
+    apiVersion: v2
+    appVersion: v2.26.0
     created: "2026-09-30T11:13:11.25762939Z"
     dependencies:
     - alias: twenty
@@ -5343,6 +5396,22 @@ entries:
     version: 0.1.0
   zammad:
   - apiVersion: v2
+    appVersion: 7.1.2-0004
+    created: "2026-10-02T16:14:17.566491795Z"
+    dependencies:
+    - alias: zammad
+      name: zammad
+      repository: https://zammad.github.io/zammad-helm
+      version: 17.0.1
+    description: Zammad helpdesk, wired to an externally managed PostgreSQL and the
+      platform Gateway
+    digest: ea0d72ab94544fe747403484cd374bb5d124590cac36f3cf7e687cd015b76de5
+    name: zammad
+    type: application
+    urls:
+    - zammad-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
     appVersion: 7.1.3-0000
     created: "2026-08-29T22:29:57.479318963Z"
     dependencies:
@@ -5374,4 +5443,4 @@ entries:
     urls:
     - zammad-0.1.0.tgz
     version: 0.1.0
-generated: "2026-09-30T11:13:11.257956333Z"
+generated: "2026-10-02T16:14:17.566775009Z"
