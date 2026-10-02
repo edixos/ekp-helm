@@ -372,6 +372,9 @@ dex:
     parentRefs: []
     rules: []
 
+  # -- Map of Envoy Gateway SecurityPolicies to deploy, keyed by policy name (e.g. an IP allowlist attached to an HTTPRoute)
+  securityPolicies: {}
+
 tags:
   # -- Enables Config Connector features
   configConnector: false

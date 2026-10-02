@@ -1,12 +1,13 @@
 # twenty
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.26.0](https://img.shields.io/badge/AppVersion-v2.26.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.26.0](https://img.shields.io/badge/AppVersion-v2.26.0-informational?style=flat-square)
 
 ## Prerequisites
 
 - Helm v3
 - External Secrets Operator (for `externalSecrets`)
 - Gateway API CRDs and a Gateway to attach to (for `httpRoutes`)
+- Envoy Gateway CRDs (for `securityPolicies`)
 - A PostgreSQL 16+ database and role for Twenty, when `twenty.db.enabled` is false
 
 ## Upstream chart
@@ -38,6 +39,7 @@ Twenty CRM, wired to an externally managed PostgreSQL and the platform Gateway
 | externalSecrets | list | `[]` | List of ExternalSecrets to deploy |
 | httpRoutes | object | `{}` | Map of Gateway API HTTPRoutes to deploy, keyed by route name |
 | networkPolicies | object | `{}` | Map of NetworkPolicies to deploy, keyed by policy name |
+| securityPolicies | object | `{}` | Map of Envoy Gateway SecurityPolicies to deploy, keyed by policy name (e.g. an IP allowlist attached to an HTTPRoute) |
 | twenty.db.enabled | bool | `true` |  |
 | twenty.db.external.database | string | `"twenty"` |  |
 | twenty.db.external.host | string | `""` |  |
@@ -201,7 +203,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.0"
+    targetRevision: "0.1.1"
     chart: twenty
     path: ''
     helm:
