@@ -3,9 +3,9 @@ name: zammad
 description: Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gateway
 type: application
 version: 0.1.2
-appVersion: "7.1.2-0004"
+appVersion: "7.2.0-0011"
 dependencies:
   - name: zammad
-    version: 17.0.1
+    version: 19.1.1
     repository: "https://zammad.github.io/zammad-helm"
     alias: zammad

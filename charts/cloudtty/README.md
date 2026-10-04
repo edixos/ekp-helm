@@ -1,6 +1,6 @@
 # cloudtty
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.8.9](https://img.shields.io/badge/AppVersion-0.8.9-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.8.10](https://img.shields.io/badge/AppVersion-0.8.10-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://cloudtty.github.io/cloudtty | cloudtty(cloudtty) | 0.8.9 |
+| https://cloudtty.github.io/cloudtty | cloudtty(cloudtty) | 0.8.10 |
 
 ## Maintainers
 
@@ -30,7 +30,7 @@ A Helm chart for Kubernetes
 | cloudtty.affinity | object | `{}` |  |
 | cloudtty.cloudshell.image.registry | string | `"ghcr.io"` |  |
 | cloudtty.cloudshell.image.repository | string | `"cloudtty/cloudshell"` |  |
-| cloudtty.cloudshell.image.tag | string | `"v0.8.9"` |  |
+| cloudtty.cloudshell.image.tag | string | `"v0.8.10"` |  |
 | cloudtty.cloudshell.nodeSelector | object | `{}` |  |
 | cloudtty.cloudshell.resources | object | `{}` |  |
 | cloudtty.coreWorkerLimit | int | `5` |  |
@@ -40,7 +40,7 @@ A Helm chart for Kubernetes
 | cloudtty.image.pullSecrets | list | `[]` |  |
 | cloudtty.image.registry | string | `"ghcr.io"` |  |
 | cloudtty.image.repository | string | `"cloudtty/cloudshell-operator"` |  |
-| cloudtty.image.tag | string | `"v0.8.9"` |  |
+| cloudtty.image.tag | string | `"v0.8.10"` |  |
 | cloudtty.installCRDs | bool | `true` |  |
 | cloudtty.labels | object | `{}` |  |
 | cloudtty.livenessProbe.enabled | bool | `false` |  |
@@ -48,6 +48,9 @@ A Helm chart for Kubernetes
 | cloudtty.nodeSelector | object | `{}` |  |
 | cloudtty.podAnnotations | object | `{}` |  |
 | cloudtty.podLabels | object | `{}` |  |
+| cloudtty.pprof.bindAddress | string | `":6060"` |  |
+| cloudtty.pprof.enabled | bool | `false` |  |
+| cloudtty.pprof.port | int | `6060` |  |
 | cloudtty.readinessProbe.enabled | bool | `false` |  |
 | cloudtty.replicaCount | int | `1` |  |
 | cloudtty.resources | object | `{}` |  |
@@ -78,7 +81,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: cloudtty
     path: ''
     helm:
