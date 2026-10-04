@@ -10,6 +10,7 @@
 
 - Helm v{{ if eq .ApiVersion "v2" }}3{{ else }}2{{end}}
 - Config Connector installed (v1.6.0)
+- Envoy Gateway CRDs (for `dex.securityPolicies`)
 
 {{ template "chart.requirementsSection" . }}
 

@@ -1,11 +1,12 @@
 # dex
 
-![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.42.0](https://img.shields.io/badge/AppVersion-2.42.0-informational?style=flat-square)
+![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.42.0](https://img.shields.io/badge/AppVersion-2.42.0-informational?style=flat-square)
 
 ## Prerequisites
 
 - Helm v3
 - Config Connector installed (v1.6.0)
+- Envoy Gateway CRDs (for `dex.securityPolicies`)
 
 ## Requirements
 
@@ -78,6 +79,7 @@ A Helm chart for Dex - OpenID Connect Identity (OIDC) and OAuth 2.0 Provider wit
 | dex.resources | object | No requests or limits. | Container resource [requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/). See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources) for details. |
 | dex.revisionHistoryLimit | int | `10` | Define the [count of deployment revisions](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy) to be kept. May be set to 0 in case of GitOps deployment approach. |
 | dex.securityContext | object | `{}` | Container [security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container). See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1) for details. |
+| dex.securityPolicies | object | `{}` | Map of Envoy Gateway SecurityPolicies to deploy, keyed by policy name (e.g. an IP allowlist attached to an HTTPRoute) |
 | dex.service.annotations | object | `{}` | Annotations to be added to the service. |
 | dex.service.clusterIP | string | `""` | Internal cluster service IP (when applicable) |
 | dex.service.loadBalancerIP | string | `""` | Load balancer service IP (when applicable) |
@@ -151,7 +153,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.9"
+    targetRevision: "0.1.10"
     chart: dex
     path: ''
 
