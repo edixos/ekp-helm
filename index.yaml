@@ -174,6 +174,25 @@ entries:
     version: 0.1.0
   argocd:
   - apiVersion: v2
+    appVersion: v3.5.3
+    created: "2026-10-04T08:53:00.768299498Z"
+    dependencies:
+    - alias: argocd
+      name: argo-cd
+      repository: https://argoproj.github.io/argo-helm
+      version: 10.9.5
+    description: A Helm chart for Kubernetes
+    digest: 03003f99aa71d28a7d59ebe43cf50487d1f9a04b6bcb8c2200622eeb8baaf0ca
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: argocd
+    type: application
+    urls:
+    - argocd-0.1.16.tgz
+    version: 0.1.16
+  - apiVersion: v2
     appVersion: v3.5.1
     created: "2026-08-29T22:29:55.061859319Z"
     dependencies:
@@ -496,6 +515,40 @@ entries:
     - https://edixos.github.io/ekp-helm/bucket-0.1.0.tgz
     version: 0.1.0
   cert-manager:
+  - apiVersion: v2
+    appVersion: v1.21.2
+    created: "2026-10-04T08:53:01.003462028Z"
+    dependencies:
+    - alias: certmanager
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: v1.21.2
+    - alias: workloadIdentity
+      name: gcp-workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    - alias: iamPolicyMembers
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.2
+    description: A Helm chart for cert-manager
+    digest: daacad32bac808fdff952afb89351f8c0b0bb26d8fb98b0cc4f6cf655f64bd3d
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: cert-manager
+    type: application
+    urls:
+    - cert-manager-0.1.10.tgz
+    version: 0.1.10
   - apiVersion: v2
     appVersion: v1.21.1
     created: "2026-08-15T12:48:22.144021551Z"
@@ -895,6 +948,25 @@ entries:
     version: 0.1.0
   cilium:
   - apiVersion: v2
+    appVersion: 1.20.2
+    created: "2026-10-04T08:53:01.250371225Z"
+    dependencies:
+    - condition: cilium.enabled
+      name: cilium
+      repository: https://helm.cilium.io/
+      version: 1.20.2
+    description: A Helm chart for Kubernetes
+    digest: 70b08ff6cfbb57228a55828bbe5a5422b8689fe3826d99068226f52cf2e8c55c
+    maintainers:
+    - email: ilyas.abdellaoui21@gmail.com
+      name: ilyasabdellaoui
+      url: https://github.com/ilyasabdellaoui
+    name: cilium
+    type: application
+    urls:
+    - cilium-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
     appVersion: 1.20.1
     created: "2026-08-29T22:29:55.298939449Z"
     dependencies:
@@ -972,6 +1044,25 @@ entries:
     version: 0.1.0
   cloudtty:
   - apiVersion: v2
+    appVersion: 0.8.10
+    created: "2026-10-04T08:53:01.474780303Z"
+    dependencies:
+    - alias: cloudtty
+      name: cloudtty
+      repository: https://cloudtty.github.io/cloudtty
+      version: 0.8.10
+    description: A Helm chart for Kubernetes
+    digest: 855e84109e202567512fb356081b1efbaadcfabbb21e191d91992998315dafaa
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: cloudtty
+    type: application
+    urls:
+    - cloudtty-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
     appVersion: 0.8.9
     created: "2026-08-15T12:48:22.815939558Z"
     dependencies:
@@ -1029,6 +1120,21 @@ entries:
     - cloudtty-0.1.0.tgz
     version: 0.1.0
   cnpg:
+  - apiVersion: v2
+    appVersion: 1.30.1
+    created: "2026-10-04T08:53:01.699529331Z"
+    dependencies:
+    - alias: cnpg
+      name: cloudnative-pg
+      repository: https://cloudnative-pg.github.io/charts
+      version: 0.29.1
+    description: A Helm chart for Kubernetes
+    digest: 4931d099e2214d26343900da61d12230adddc47666b13a5acecb893febfe39bf
+    name: cnpg
+    type: application
+    urls:
+    - cnpg-0.1.6.tgz
+    version: 0.1.6
   - apiVersion: v2
     appVersion: 1.30.0
     created: "2026-08-15T12:48:23.038750243Z"
@@ -1557,6 +1663,25 @@ entries:
     version: 0.1.0
   envoy-gateway:
   - apiVersion: v2
+    appVersion: v1.9.2
+    created: "2026-10-04T08:53:01.92275362Z"
+    dependencies:
+    - alias: envoy-gateway
+      name: gateway-helm
+      repository: oci://docker.io/envoyproxy
+      version: 1.9.2
+    description: Helm chart to deploy Envoy Gateway on Kubernetes
+    digest: a4c52019cf4e53eb73a08aef95cf91c28e40722a0b4c16a98a468d4810f304b2
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: envoy-gateway
+    type: application
+    urls:
+    - envoy-gateway-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
     appVersion: v1.9.0
     created: "2026-08-29T22:29:55.474231658Z"
     dependencies:
@@ -1728,6 +1853,28 @@ entries:
     - envoy-gateway-0.1.0.tgz
     version: 0.1.0
   eso:
+  - apiVersion: v2
+    appVersion: v2.11.0
+    created: "2026-10-04T08:53:02.151520562Z"
+    dependencies:
+    - alias: eso
+      name: external-secrets
+      repository: https://charts.external-secrets.io
+      version: 2.11.0
+    description: A Helm chart ESO for Kubernetes
+    digest: e483064b7e0a37e51254e08b53e213a423ae7f77469dc2678e5d2b7c86a340e4
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: eso
+    type: application
+    urls:
+    - eso-0.2.3.tgz
+    version: 0.2.3
   - apiVersion: v2
     appVersion: v2.9.0
     created: "2026-08-15T12:48:23.509514757Z"
@@ -2728,6 +2875,27 @@ entries:
     version: 0.1.1
   goldilocks:
   - apiVersion: v2
+    appVersion: v4.16.2
+    created: "2026-10-04T08:53:02.363529655Z"
+    dependencies:
+    - name: goldilocks
+      repository: https://charts.fairwinds.com/stable
+      version: 11.2.0
+    description: Goldilocks packaged for the Edixos Kubernetes Platform.
+    digest: 8db8d6c077804626699b7aa3a97f145f8c34448ee626bfaed03605626caab3b0
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: goldilocks
+    sources:
+    - https://github.com/FairwindsOps/goldilocks
+    - https://github.com/FairwindsOps/charts/tree/master/stable/goldilocks
+    type: application
+    urls:
+    - goldilocks-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: v4.16.1
     created: "2026-08-20T12:04:04.396684824Z"
     dependencies:
@@ -2840,6 +3008,25 @@ entries:
     - https://edixos.github.io/ekp-helm/grafana-stack-0.1.0.tgz
     version: 0.1.0
   hydra:
+  - apiVersion: v2
+    appVersion: v26.2.0
+    created: "2026-10-04T08:53:02.544294904Z"
+    dependencies:
+    - alias: hydra
+      name: hydra
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.64.0
+    description: A Helm chart for Kubernetes
+    digest: 40da3400a9c69eb054f4d08ce0dff60b0628cbbe5980f28246cb0b7b535dc628
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: hydra
+    type: application
+    urls:
+    - hydra-0.1.3.tgz
+    version: 0.1.3
   - apiVersion: v2
     appVersion: v26.2.0
     created: "2026-08-15T12:48:23.917376572Z"
@@ -3052,6 +3239,28 @@ entries:
     version: 0.1.0
   kargo:
   - apiVersion: v2
+    appVersion: v1.11.5
+    created: "2026-10-04T08:53:02.766681053Z"
+    dependencies:
+    - alias: kargo
+      name: kargo
+      repository: oci://ghcr.io/akuity/kargo-charts
+      version: 1.11.5
+    description: 'Kargo, packaged for the Klastro platform. Wraps the upstream Akuity
+      Kargo chart and adds the platform extensions it does not provide: ExternalSecrets
+      the Kargo workloads consume, PushSecrets that publish a control plane''s shard
+      credential to another cluster, the HTTPRoute exposing the Kargo API, and the
+      in-cluster identity + RBAC for Kargo controller shards running in other clusters.
+      Every extension is optional and driven entirely by values.'
+    digest: de26cb0643130114956b4eac0a9da4f8068ea04a15e115161b10e7efb68bb949
+    name: kargo
+    sources:
+    - https://github.com/akuity/kargo/tree/main/charts/kargo
+    type: application
+    urls:
+    - kargo-0.2.3.tgz
+    version: 0.2.3
+  - apiVersion: v2
     appVersion: v1.11.2
     created: "2026-08-29T22:29:55.688619085Z"
     dependencies:
@@ -3193,6 +3402,24 @@ entries:
     - kargo-0.1.0.tgz
     version: 0.1.0
   keto:
+  - apiVersion: v2
+    appVersion: v26.2.0
+    created: "2026-10-04T08:53:02.946233206Z"
+    dependencies:
+    - alias: keto
+      name: keto
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.64.0
+    description: A Helm chart for Kubernetes
+    digest: 90d3b4fb3e790ae3900ef8fa25d797d06943ac3ee6199098f8f4789dc964a538
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: keto
+    urls:
+    - keto-0.1.9.tgz
+    version: 0.1.9
   - apiVersion: v2
     appVersion: v26.2.0
     created: "2026-08-15T12:48:24.370286523Z"
@@ -3356,6 +3583,24 @@ entries:
     - keto-0.1.0.tgz
     version: 0.1.0
   kratos:
+  - apiVersion: v2
+    appVersion: v26.2.0
+    created: "2026-10-04T08:53:03.201277358Z"
+    dependencies:
+    - alias: kratos
+      name: kratos
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.64.0
+    description: A Helm chart for Kubernetes
+    digest: c18edec801c8dea7f52cf4148f58107c01050316a721b83b09367022f130545e
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: kratos
+    urls:
+    - kratos-0.1.8.tgz
+    version: 0.1.8
   - apiVersion: v2
     appVersion: v26.2.0
     created: "2026-08-15T12:48:24.569862029Z"
@@ -3618,6 +3863,25 @@ entries:
     version: 0.1.0
   kube-ovn-v2:
   - apiVersion: v2
+    appVersion: 1.16.9
+    created: "2026-10-04T08:53:03.378082425Z"
+    dependencies:
+    - alias: kube-ovn
+      name: kube-ovn-v2
+      repository: https://kubeovn.github.io/kube-ovn/
+      version: v1.16.9
+    description: Helm chart for Kube-OVN
+    digest: 7ce93499da33b73c3ba0a87365fa66db8cf5c3de4b5437b34ad40513ad0197aa
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: kube-ovn-v2
+    type: application
+    urls:
+    - kube-ovn-v2-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
     appVersion: 1.16.2
     created: "2026-08-15T12:48:24.754367039Z"
     dependencies:
@@ -3656,6 +3920,21 @@ entries:
     - kube-ovn-v2-0.1.7.tgz
     version: 0.1.7
   kube-prometheus-stack:
+  - apiVersion: v2
+    appVersion: v0.94.1
+    created: "2026-10-04T08:53:03.679826314Z"
+    dependencies:
+    - alias: kubePrometheusStack
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 91.8.2
+    description: A Helm chart for Kubernetes
+    digest: 3b5fb623d9e8b44e434b5c1ca46f3b6344e7f20cb19cb2fabd0d0480d9495353
+    name: kube-prometheus-stack
+    type: application
+    urls:
+    - kube-prometheus-stack-0.1.16.tgz
+    version: 0.1.16
   - apiVersion: v2
     appVersion: v0.93.1
     created: "2026-08-29T22:29:55.898870741Z"
@@ -3943,6 +4222,27 @@ entries:
     version: 0.1.0
   kyverno:
   - apiVersion: v2
+    appVersion: v1.19.1
+    created: "2026-10-04T08:53:03.921523054Z"
+    dependencies:
+    - name: kyverno
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.9.1
+    description: A Helm chart for kyverno
+    digest: d593cb5c2723f2df80fc70240beaef0f3bc145bf2cb4bc0818817a52731a2ac8
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: kyverno
+    type: application
+    urls:
+    - kyverno-0.1.8.tgz
+    version: 0.1.8
+  - apiVersion: v2
     appVersion: v1.19.0
     created: "2026-08-29T22:29:56.184321765Z"
     dependencies:
@@ -4105,6 +4405,28 @@ entries:
     version: 0.1.0
   kyverno-policies:
   - apiVersion: v2
+    appVersion: v1.19.1
+    created: "2026-10-04T08:53:04.094188662Z"
+    dependencies:
+    - alias: kyvernopolicies
+      name: kyverno-policies
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.9.1
+    description: A Helm chart for Kubernetes
+    digest: 760d7903247e2eb4e0fb6dcf99ecee2de40ce68340a26af50ae254a1421b9e99
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: kyverno-policies
+    type: application
+    urls:
+    - kyverno-policies-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
     appVersion: v1.19.0
     created: "2026-08-29T22:29:56.38564305Z"
     dependencies:
@@ -4260,6 +4582,21 @@ entries:
     version: 0.1.0
   longhorn:
   - apiVersion: v2
+    appVersion: v1.13.0
+    created: "2026-10-04T08:53:04.328860286Z"
+    dependencies:
+    - alias: longhorn
+      name: longhorn
+      repository: https://charts.longhorn.io
+      version: 1.13.0
+    description: A Helm chart for Longhorn
+    digest: d3f1f53025ff94573e940e5f02f5f127a03b8072db37e3a6553156444713c810
+    name: longhorn
+    type: application
+    urls:
+    - longhorn-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
     appVersion: v1.12.1
     created: "2026-08-29T22:29:56.5696298Z"
     dependencies:
@@ -4354,6 +4691,25 @@ entries:
     - multus-0.1.0.tgz
     version: 0.1.0
   oathkeeper:
+  - apiVersion: v2
+    appVersion: v26.2.0
+    created: "2026-10-04T08:53:04.532385303Z"
+    dependencies:
+    - alias: oathkeeper
+      name: oathkeeper
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.64.0
+    description: A Helm chart for Kubernetes
+    digest: 2f521c065eb87011e07abe570c66dc14f4392d4b54db691b3bd1baacd2d08f89
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: oathkeeper
+    type: application
+    urls:
+    - oathkeeper-0.1.4.tgz
+    version: 0.1.4
   - apiVersion: v2
     appVersion: v26.2.0
     created: "2026-08-15T12:48:25.941852147Z"
@@ -4738,6 +5094,51 @@ entries:
     version: 0.1.0
   velero:
   - apiVersion: v2
+    appVersion: 1.18.2
+    created: "2026-10-04T08:53:04.724960709Z"
+    dependencies:
+    - name: velero
+      repository: https://vmware-tanzu.github.io/helm-charts
+      version: 12.2.0
+    - alias: workloadIdentity
+      name: gcp-workload-identity
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.1
+    - alias: iamPolicyMembers
+      name: gcp-iam-policy-members
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.2
+    - alias: iamCustomRole
+      name: gcp-iam-custom-role
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.0
+    - alias: gcpbucket
+      name: gcp-bucket
+      repository: https://edixos.github.io/ekp-helm
+      tags:
+      - configConnector
+      version: 0.1.0
+    description: A Helm chart for velero
+    digest: a5ac78248c939a63307cc6c4effb1f6fdc2228b626fd57240b523e4eb0142206
+    maintainers:
+    - email: wiem.aouadi3@gmail.com
+      name: wiemaouadi
+      url: https://github.com/wiemaouadi
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: velero
+    type: application
+    urls:
+    - velero-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
     appVersion: 1.18.1
     created: "2026-08-15T12:48:26.330245645Z"
     dependencies:
@@ -5120,6 +5521,34 @@ entries:
     version: 0.1.0
   victoria-metrics-agent:
   - apiVersion: v2
+    appVersion: v1.153.0
+    created: "2026-10-04T08:53:04.912640097Z"
+    dependencies:
+    - alias: vmagent
+      name: victoria-metrics-agent
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.49.0
+    description: 'vmagent, packaged for the Edixos Kubernetes Platform. Wraps the
+      upstream VictoriaMetrics agent chart — which scrapes targets and forwards samples
+      to one or more remote write endpoints — and adds the platform extensions it
+      does not provide: ExternalSecrets for the credentials vmagent consumes (remote
+      write basic auth or bearer tokens, enterprise license), curated PrometheusRule
+      alerts covering the persistent queue, scraping and remote write, and the official
+      vmagent Grafana dashboard shipped as a sidecar-discoverable ConfigMap. Every
+      extension is optional and driven entirely by values.'
+    digest: 1bcbcbebefdd1d165c2749d8dde31de38473d0995067714e3d10cba1c1b761c7
+    maintainers:
+    - email: aziz@edixos.com
+      name: mo-hamedaziz
+    name: victoria-metrics-agent
+    sources:
+    - https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-agent
+    - https://docs.victoriametrics.com/helm/victoria-metrics-agent/
+    type: application
+    urls:
+    - victoria-metrics-agent-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
     appVersion: v1.150.0
     created: "2026-08-29T22:29:56.773302582Z"
     dependencies:
@@ -5205,6 +5634,34 @@ entries:
     version: 0.1.0
   victoria-metrics-cluster:
   - apiVersion: v2
+    appVersion: v1.153.0
+    created: "2026-10-04T08:53:05.172101669Z"
+    dependencies:
+    - alias: vmcluster
+      name: victoria-metrics-cluster
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.52.0
+    description: 'VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage
+      / vmauth), packaged for the Edixos Kubernetes Platform. Wraps the upstream VictoriaMetrics
+      cluster chart and adds the platform extensions it does not provide: ExternalSecrets
+      for the credentials the components consume (enterprise license, vmauth config,
+      vmbackupmanager object storage), curated PrometheusRule alerts for cluster and
+      process health, and the official VictoriaMetrics cluster Grafana dashboard shipped
+      as a sidecar-discoverable ConfigMap. Every extension is optional and driven
+      entirely by values.'
+    digest: ef283bd7b6dfc7af717b7e9547a7685fb75f3b70828867630cb857254638e1be
+    maintainers:
+    - email: aziz@edixos.com
+      name: mo-hamedaziz
+    name: victoria-metrics-cluster
+    sources:
+    - https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-cluster
+    - https://docs.victoriametrics.com/helm/victoria-metrics-cluster/
+    type: application
+    urls:
+    - victoria-metrics-cluster-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
     appVersion: v1.150.0
     created: "2026-08-29T22:29:56.977459989Z"
     dependencies:
@@ -5289,6 +5746,35 @@ entries:
     - victoria-metrics-cluster-0.1.0.tgz
     version: 0.1.0
   victoria-metrics-k8s-stack:
+  - apiVersion: v2
+    appVersion: v1.153.0
+    created: "2026-10-04T08:53:05.404046121Z"
+    dependencies:
+    - alias: vmstack
+      name: victoria-metrics-k8s-stack
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.95.0
+    description: Kubernetes monitoring on VictoriaMetrics, packaged for the Edixos
+      Kubernetes Platform. Wraps the upstream VictoriaMetrics K8s Stack chart, including
+      the VictoriaMetrics Operator and CRDs, VMAgent, VictoriaMetrics storage, VMAlert,
+      Grafana, kube-state-metrics, node-exporter, Kubernetes scrape resources, recording
+      and alerting rules, and curated dashboards. Adds optional EKP file-backed Grafana
+      dashboards, PrometheusRule resources, and ExternalSecrets for GitOps and externally
+      managed monitoring integrations. All upstream settings are available under the
+      vmstack values key.
+    digest: 04940ddb239f96977ad69658f48ee07a858f3ad76070bcc92c8737cd36865155
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: victoria-metrics-k8s-stack
+    sources:
+    - https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-k8s-stack
+    - https://docs.victoriametrics.com/helm/victoria-metrics-k8s-stack/
+    type: application
+    urls:
+    - victoria-metrics-k8s-stack-0.1.3.tgz
+    version: 0.1.3
   - apiVersion: v2
     appVersion: v1.150.0
     created: "2026-08-29T22:29:57.253809725Z"
@@ -5443,4 +5929,4 @@ entries:
     urls:
     - zammad-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-02T16:14:17.566775009Z"
+generated: "2026-10-04T08:53:05.623093053Z"
