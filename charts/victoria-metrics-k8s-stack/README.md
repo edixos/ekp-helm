@@ -1,6 +1,6 @@
 # victoria-metrics-k8s-stack
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.153.0](https://img.shields.io/badge/AppVersion-v1.153.0-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.153.0](https://img.shields.io/badge/AppVersion-v1.153.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmstack(victoria-metrics-k8s-stack) | 0.95.0 |
+| https://victoriametrics.github.io/helm-charts/ | vmstack(victoria-metrics-k8s-stack) | 0.95.2 |
 
 ## Maintainers
 
@@ -224,7 +224,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.global.extraAnnotations | object | `{}` | Annotations added to all resources |
 | vmstack.global.extraLabels | object | `{}` | Labels added to all resources |
 | vmstack.global.license | object | `{"key":"","keyRef":{}}` | Global license configuration |
-| vmstack.global.versions | object | `{"alertmanager":"v0.34.0","anomaly":"v1.30.4","logs":"v1.52.0","metrics":"v1.153.0","traces":"v0.10.0"}` | Default component versions. Propagated automatically (as a global value) to the embedded operator chart's own `global.versions`, which it uses to populate its default-version env vars, so that CRs created outside this chart (no explicit spec.image.tag) get the same version this chart deploys. Keep in sync with the corresponding renovate-tracked tags/appVersion below. |
+| vmstack.global.versions | object | `{"alertmanager":"v0.34.0","anomaly":"v1.30.4","logs":"v1.53.0","metrics":"v1.153.0","traces":"v0.10.0"}` | Default component versions. Propagated automatically (as a global value) to the embedded operator chart's own `global.versions`, which it uses to populate its default-version env vars, so that CRs created outside this chart (no explicit spec.image.tag) get the same version this chart deploys. Keep in sync with the corresponding renovate-tracked tags/appVersion below. |
 | vmstack.grafana | object | `{"enabled":true,"forceDeployDatasource":false,"ingress":{"annotations":{},"enabled":false,"extraPaths":[],"hosts":["grafana.domain.com"],"labels":{},"path":"/","pathType":"Prefix","tls":[]},"sidecar":{"dashboards":{"defaultFolderName":"default","enabled":true,"folder":"/var/lib/grafana/dashboards","label":"grafana_dashboard","labelValue":"1","multicluster":false,"provider":{"name":"default","orgid":1}},"datasources":{"enabled":true,"label":"grafana_datasource","labelValue":"1"}},"vmScrape":{"enabled":true,"spec":{"endpoints":[{"port":"{{ .Values.grafana.service.portName }}"}],"selector":{"matchLabels":{"app.kubernetes.io/name":"{{ include \"grafana.name\" .Subcharts.grafana }}"}}}}}` | Grafana dependency chart configuration. For possible values refer [here](https://github.com/grafana-community/helm-charts/tree/main/charts/grafana#configuration) |
 | vmstack.grafana.forceDeployDatasource | bool | `false` | Create datasource configmap even if grafana deployment has been disabled |
 | vmstack.grafana.ingress.extraPaths | list | `[]` | Extra paths to prepend to every host configuration. This is useful when working with annotation based services. |
@@ -389,14 +389,14 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.vlcluster.route.vlstorage.matches | list | `[{"path":{"type":"PathPrefix","value":"{{ dig \"extraArgs\" \"http.pathPrefix\" \"/\" .Values.vlcluster.spec.vlstorage }}"}}]` | Matches for a default rule in HTTPRoute |
 | vmstack.vlcluster.route.vlstorage.parentRefs | list | `[]` | HTTPGateway objects refs |
 | vmstack.vlcluster.route.vlstorage.port | string | `"{{ .Values.vlcluster.spec.vlstorage.port }}"` | Route port |
-| vmstack.vlcluster.spec | object | `{"clusterVersion":"v1.52.0","vlinsert":{"enabled":true,"extraArgs":{},"port":"9481","replicaCount":2,"resources":{}},"vlselect":{"enabled":true,"extraArgs":{},"port":"9471","replicaCount":2,"resources":{}},"vlstorage":{"port":"9491","replicaCount":2,"resources":{},"retentionPeriod":"14d","storage":{"volumeClaimTemplate":{"spec":{"resources":{"requests":{"storage":"10Gi"}}}}},"storageDataPath":"/vl-data"}}` | Full spec for VLCluster CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vlclusterspec) |
+| vmstack.vlcluster.spec | object | `{"clusterVersion":"v1.53.0","vlinsert":{"enabled":true,"extraArgs":{},"port":"9481","replicaCount":2,"resources":{}},"vlselect":{"enabled":true,"extraArgs":{},"port":"9471","replicaCount":2,"resources":{}},"vlstorage":{"port":"9491","replicaCount":2,"resources":{},"retentionPeriod":"14d","storage":{"volumeClaimTemplate":{"spec":{"resources":{"requests":{"storage":"10Gi"}}}}},"storageDataPath":"/vl-data"}}` | Full spec for VLCluster CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vlclusterspec) |
 | vmstack.vlcluster.spec.vlinsert.enabled | bool | `true` | Set this value to false to disable VMInsert |
 | vmstack.vlcluster.spec.vlselect.enabled | bool | `true` | Set this value to false to disable VMSelect |
 | vmstack.vlcluster.spec.vlstorage.retentionPeriod | string | `"14d"` | Data retention period. Possible units character: h(ours), d(ays), w(eeks), y(ears), if no unit character specified - month. The minimum retention period is 24h. See these [docs](https://docs.victoriametrics.com/victorialogs/#retention) |
 | vmstack.vldistributed.annotations | object | `{}` | VLDistributed annotations |
 | vmstack.vldistributed.enabled | bool | `false` | Create VLDistributed CR |
 | vmstack.vldistributed.labels | object | `{}` | VLDistributed labels |
-| vmstack.vldistributed.spec | object | `{"vmauth":{"spec":{"port":"8427"}},"zoneCommon":{"vlcluster":{"spec":{"clusterVersion":"v1.52.0","vlinsert":{"replicaCount":2},"vlselect":{"replicaCount":2},"vlstorage":{"replicaCount":2,"retentionPeriod":"14d","storage":{"volumeClaimTemplate":{"spec":{"resources":{"requests":{"storage":"10Gi"}}}}},"storageDataPath":"/vl-data"}}}},"zones":[{"name":"zone-0"}]}` | Full spec for VLDistributed CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vldistributedspec) |
+| vmstack.vldistributed.spec | object | `{"vmauth":{"spec":{"port":"8427"}},"zoneCommon":{"vlcluster":{"spec":{"clusterVersion":"v1.53.0","vlinsert":{"replicaCount":2},"vlselect":{"replicaCount":2},"vlstorage":{"replicaCount":2,"retentionPeriod":"14d","storage":{"volumeClaimTemplate":{"spec":{"resources":{"requests":{"storage":"10Gi"}}}}},"storageDataPath":"/vl-data"}}}},"zones":[{"name":"zone-0"}]}` | Full spec for VLDistributed CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vldistributedspec) |
 | vmstack.vlsingle.annotations | object | `{}` | VLSingle annotations |
 | vmstack.vlsingle.enabled | bool | `false` | Create VLSingle CR |
 | vmstack.vlsingle.ingress.annotations | object | `{}` | Ingress annotations |
@@ -671,7 +671,7 @@ spec:
   project: infra
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: victoria-metrics-k8s-stack
     helm:
       releaseName: vmks
