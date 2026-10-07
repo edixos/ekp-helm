@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.16](https://img.shields.io/badge/Version-0.1.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.94.1](https://img.shields.io/badge/AppVersion-v0.94.1-informational?style=flat-square)
+![Version: 0.1.17](https://img.shields.io/badge/Version-0.1.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.94.1](https://img.shields.io/badge/AppVersion-v0.94.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 91.8.2 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 92.1.0 |
 
 ## Description
 
@@ -61,7 +61,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.alertmanagerSpec.logFormat | string | `"logfmt"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.logLevel | string | `"info"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.minReadySeconds | int | `0` |  |
-| kubePrometheusStack.alertmanager.alertmanagerSpec.nodeSelector | object | `{}` |  |
+| kubePrometheusStack.alertmanager.alertmanagerSpec.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.paused | bool | `false` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.persistentVolumeClaimRetentionPolicy | object | `{}` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.podAntiAffinity | string | `"soft"` |  |
@@ -283,7 +283,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.crds.upgradeJob.image.kubectl.sha | string | `""` |  |
 | kubePrometheusStack.crds.upgradeJob.image.kubectl.tag | string | `""` |  |
 | kubePrometheusStack.crds.upgradeJob.labels | object | `{}` |  |
-| kubePrometheusStack.crds.upgradeJob.nodeSelector | object | `{}` |  |
+| kubePrometheusStack.crds.upgradeJob.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | kubePrometheusStack.crds.upgradeJob.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.crds.upgradeJob.podLabels | object | `{}` |  |
 | kubePrometheusStack.crds.upgradeJob.podSecurityContext.fsGroup | int | `65534` |  |
@@ -887,7 +887,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.minReadySeconds | int | `0` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.nameEscapingScheme | string | `""` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.nameValidationScheme | string | `""` |  |
-| kubePrometheusStack.prometheus.prometheusSpec.nodeSelector | object | `{}` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.otlp | object | `{}` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.overrideHonorLabels | bool | `false` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.overrideHonorTimestamps | bool | `false` |  |
@@ -1131,7 +1131,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.livenessProbe.periodSeconds | int | `10` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.livenessProbe.successThreshold | int | `1` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.livenessProbe.timeoutSeconds | int | `1` |  |
-| kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.nodeSelector | object | `{}` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podDisruptionBudget.enabled | bool | `false` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.deployment.podDisruptionBudget.minAvailable | int | `1` |  |
@@ -1190,7 +1190,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.repository | string | `"jkroepke/kube-webhook-certgen"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.sha | string | `""` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.image.tag | string | `"1.8.9"` |  |
-| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.nodeSelector | object | `{}` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.priorityClassName | string | `""` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.resources | object | `{}` |  |
@@ -1250,7 +1250,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.namespaces | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.networkPolicy.enabled | bool | `false` |  |
 | kubePrometheusStack.prometheusOperator.networkPolicy.flavor | string | `"kubernetes"` |  |
-| kubePrometheusStack.prometheusOperator.nodeSelector | object | `{}` |  |
+| kubePrometheusStack.prometheusOperator.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | kubePrometheusStack.prometheusOperator.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.podDisruptionBudget.enabled | bool | `false` |  |
 | kubePrometheusStack.prometheusOperator.podDisruptionBudget.minAvailable | int | `1` |  |
@@ -1414,7 +1414,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.logFormat | string | `"logfmt"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.logLevel | string | `"info"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.minReadySeconds | string | `nil` |  |
-| kubePrometheusStack.thanosRuler.thanosRulerSpec.nodeSelector | object | `{}` |  |
+| kubePrometheusStack.thanosRuler.thanosRulerSpec.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.objectStorageConfig.existingSecret | object | `{}` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.objectStorageConfig.secret | object | `{}` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.objectStorageConfigFile | string | `""` |  |
@@ -1487,7 +1487,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.16"
+    targetRevision: "0.1.17"
     chart: kube-prometheus-stack
     path: ''
     helm:
