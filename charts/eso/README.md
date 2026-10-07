@@ -1,6 +1,6 @@
 # eso
 
-![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.11.0](https://img.shields.io/badge/AppVersion-v2.11.0-informational?style=flat-square)
+![Version: 0.2.4](https://img.shields.io/badge/Version-0.2.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.12.0](https://img.shields.io/badge/AppVersion-v2.12.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.external-secrets.io | eso(external-secrets) | 2.11.0 |
+| https://charts.external-secrets.io | eso(external-secrets) | 2.12.0 |
 
 ## Maintainers
 
@@ -168,7 +168,7 @@ A Helm chart ESO for Kubernetes
 | eso.image.tag | string | `""` | The image tag to use. The default is the chart appVersion. |
 | eso.imagePullSecrets | list | `[]` |  |
 | eso.installCRDs | bool | `true` | If set, install and upgrade CRDs through helm chart. |
-| eso.leaderElect | bool | `false` | If true, external-secrets will perform leader election between instances to ensure no more than one instance of external-secrets operates at a time. |
+| eso.leaderElect | bool | `false` | If true, external-secrets will perform leader election between instances to ensure no more than one instance of external-secrets operates at a time. Should be enabled when replicaCount or certController.replicaCount is greater than 1. |
 | eso.leaderElectionID | string | "external-secrets-controller" | ID of the lease object used for leader election. Leave empty to use the default ('external-secrets-controller'). Set to a unique value when running multiple independent ESO deployments in the same namespace. |
 | eso.leaderElectionLeaseDuration | string | "15s" | Duration that non-leader candidates will wait to force acquire leadership. Increase this along with renewDeadline to tolerate a busy or briefly unavailable API server (for example during control plane maintenance) without churning leadership. Leave empty to use the controller default ('15s'). |
 | eso.leaderElectionRenewDeadline | string | "10s" | Duration that the acting leader will retry refreshing leadership before giving up. Must be less than leaderElectionLeaseDuration. Leave empty to use the controller default ('10s'). |
@@ -219,6 +219,7 @@ A Helm chart ESO for Kubernetes
 | eso.rbac.aggregateToEdit | bool | `true` | Specifies whether permissions are aggregated to the edit ClusterRole |
 | eso.rbac.aggregateToView | bool | `true` | Specifies whether permissions are aggregated to the view ClusterRole |
 | eso.rbac.create | bool | `true` | Specifies whether role and rolebinding resources should be created. |
+| eso.rbac.leaderElection | object | `{"create":true}` | Specifies whether the namespaced leader election Role and RoleBinding are created. These are only used when leaderElect is true; set to false to omit them when running without leader election. Only takes effect when rbac.create is true. |
 | eso.rbac.serviceAccountTokenCreate | bool | `true` | Specifies whether the serviceaccounts/token create permission is included in the controller RBAC. When set to false, users must create per-ServiceAccount Role/RoleBinding with resourceNames constraint to grant ESO token creation for specific ServiceAccounts referenced in SecretStore specs. |
 | eso.rbac.servicebindings.create | bool | `true` | Specifies whether a clusterrole to give servicebindings read access should be created. |
 | eso.readinessProbe.enabled | bool | `false` | Determines whether the readiness probe is enabled. Disabled by default. Enabling this will auto-start the health server (--live-addr) even if livenessProbe is disabled. Health server address/port are configured via livenessProbe.spec.address and livenessProbe.spec.port. |
@@ -406,7 +407,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.2.3"
+    targetRevision: "0.2.4"
     chart: eso
     path: ''
 

@@ -1,6 +1,6 @@
 # kargo
 
-![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.11.5](https://img.shields.io/badge/AppVersion-v1.11.5-informational?style=flat-square)
+![Version: 0.2.4](https://img.shields.io/badge/Version-0.2.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.12.2](https://img.shields.io/badge/AppVersion-v1.12.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://ghcr.io/akuity/kargo-charts | kargo(kargo) | 1.11.5 |
+| oci://ghcr.io/akuity/kargo-charts | kargo(kargo) | 1.12.2 |
 
 ## Description
 
@@ -41,6 +41,7 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.api.basePath | string | `""` |  |
 | kargo.api.cabundle.configMapName | string | `""` |  |
 | kargo.api.cabundle.secretName | string | `""` |  |
+| kargo.api.clientIPHeader | string | `""` |  |
 | kargo.api.clusterRoles.admin.additionalRules | string | `nil` |  |
 | kargo.api.clusterRoles.projectCreator.additionalRules | string | `nil` |  |
 | kargo.api.clusterRoles.user.additionalRules | string | `nil` |  |
@@ -122,6 +123,8 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.api.probes.startupProbe.failureThreshold | int | `30` |  |
 | kargo.api.probes.startupProbe.initialDelaySeconds | int | `10` |  |
 | kargo.api.replicas | int | `1` |  |
+| kargo.api.requestLog.allEnabled | bool | `false` |  |
+| kargo.api.requestLog.sourceIPEnabled | bool | `false` |  |
 | kargo.api.resources | object | `{}` |  |
 | kargo.api.revisionHistoryLimit | int | `10` |  |
 | kargo.api.rollingUpdate | object | `{}` |  |
@@ -144,6 +147,7 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.api.tls.terminatedUpstream | bool | `false` |  |
 | kargo.api.tolerations | list | `[]` |  |
 | kargo.api.topologySpreadConstraints | list | `[]` |  |
+| kargo.api.trustedProxies | list | `[]` |  |
 | kargo.api.volumeMounts | list | `[]` |  |
 | kargo.api.volumes | list | `[]` |  |
 | kargo.argocd.dataPlane.install | bool | `true` |  |
@@ -162,12 +166,11 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.controller.envFrom | list | `[]` |  |
 | kargo.controller.gitClient.email | string | `"no-reply@kargo.io"` |  |
 | kargo.controller.gitClient.name | string | `"Kargo"` |  |
-| kargo.controller.gitClient.pushIntegrationPolicy | string | `"AlwaysRebase"` |  |
+| kargo.controller.gitClient.pushIntegrationPolicy | string | `"RebaseOrMerge"` |  |
 | kargo.controller.gitClient.signingKeySecret.name | string | `""` |  |
 | kargo.controller.gitClient.signingKeySecret.type | string | `""` |  |
 | kargo.controller.githubPush.maxRevisions | int | `10` |  |
 | kargo.controller.githubPush.verifyUntrustedCommits | bool | `false` |  |
-| kargo.controller.globalCredentials.namespaces | list | `[]` |  |
 | kargo.controller.images.cache.cacheByTagPolicy | string | `"Allow"` |  |
 | kargo.controller.images.cache.maxEntries | int | `100000` |  |
 | kargo.controller.images.push.maxArtifactSize | int | `1073741824` |  |
@@ -198,6 +201,7 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.controller.podLabels | object | `{}` |  |
 | kargo.controller.reconcilers.controlFlowStages.maxConcurrentReconciles | string | `nil` |  |
 | kargo.controller.reconcilers.maxConcurrentReconciles | int | `4` |  |
+| kargo.controller.reconcilers.promotionRequests.maxConcurrentReconciles | string | `nil` |  |
 | kargo.controller.reconcilers.promotions.maxConcurrentReconciles | string | `nil` |  |
 | kargo.controller.reconcilers.stages.maxConcurrentReconciles | string | `nil` |  |
 | kargo.controller.reconcilers.warehouses.maxConcurrentReconciles | string | `nil` |  |
@@ -300,9 +304,6 @@ Kargo, packaged for the Klastro platform. Wraps the upstream Akuity Kargo chart 
 | kargo.garbageCollector.workers | int | `3` |  |
 | kargo.global.affinity | object | `{}` |  |
 | kargo.global.annotations | object | `{}` |  |
-| kargo.global.clusterSecretsNamespace | string | `"kargo-cluster-secrets"` |  |
-| kargo.global.createClusterSecretsNamespace | bool | `true` |  |
-| kargo.global.createClusterSecretsRBAC | bool | `true` |  |
 | kargo.global.env | list | `[]` |  |
 | kargo.global.envFrom | list | `[]` |  |
 | kargo.global.labels | object | `{}` |  |
@@ -453,7 +454,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.2.3"
+    targetRevision: "0.2.4"
     chart: kargo
     path: ''
     helm:
