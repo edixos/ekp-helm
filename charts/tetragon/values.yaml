@@ -49,14 +49,21 @@ victoriaMetrics:
 # lifecycle visibility (exec/exit) Tetragon reports without any policy.
 #
 # The split is deliberate: everything under `observation` only reports events,
-# so it can be rolled out cluster-wide without changing the behaviour of any
-# workload. Everything under `enforcement` terminates the matching process with
-# SIGKILL, so it stays off until a policy *and* a namespace are named
-# explicitly.
+# so it can be rolled out without changing workload behaviour. In the default
+# chart mode observation is cluster-wide and enforcement is opt-in by namespace.
+# In sessionPolicies mode both bundles become a controller catalog: selected
+# policies apply only to session namespaces, with blocking still opt-in.
 tracingPolicies:
   # -- Render the TracingPolicy resources of this chart. The CRDs they need are
   # created by the Tetragon operator (`crds.installMethod`)
   enabled: true
+  sessionPolicies:
+    # -- Publish the selected bundles as a ConfigMap for klastro-controller.
+    # Replaces all chart-owned policies with per-session namespaced policies.
+    # Enforcement, when explicitly enabled below, applies to every session;
+    # review backend compatibility before enabling any blocking bundle.
+    enabled: false
+    catalogName: klastro-session-tracing-policies
   observation:
     # -- Install the bundled observation policies. They carry no enforcing
     # action, they only make the matching kernel events show up in the Tetragon
@@ -64,7 +71,7 @@ tracingPolicies:
     enabled: true
     # -- Bundled observation policies to install, by file name (without the
     # extension) in `resources/tracing-policies/observation`. Installed
-    # cluster-wide as TracingPolicy resources
+    # cluster-wide as TracingPolicy resources, or published in the session catalog
     policies:
       - sensitive-file-access
       - process-credential-changes
@@ -82,10 +89,9 @@ tracingPolicies:
     # -- Bundled enforcement policies to install, by file name (without the
     # extension) in `resources/tracing-policies/enforcement`
     policies: []
-    # -- Namespaces the enforcement policies are installed into, as
-    # TracingPolicyNamespaced resources. An empty list enforces nothing, which
-    # is what keeps enforcement opt-in per workload namespace instead of
-    # cluster-wide
+    # -- Namespaces for chart-owned enforcement policies. An empty list installs
+    # none in the default mode. Must be empty in sessionPolicies mode, where
+    # enabled enforcement bundles instead apply to every session namespace.
     namespaces: []
   # -- Policies defined inline instead of coming from the bundles. Each item:
   # `name` (required), `spec` (required, a TracingPolicy spec), `namespace`
