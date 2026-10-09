@@ -1,6 +1,6 @@
 # tetragon
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.1](https://img.shields.io/badge/AppVersion-1.7.1-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.1](https://img.shields.io/badge/AppVersion-1.7.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -194,11 +194,13 @@ Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps the
 | tetragon.updateStrategy | object | `{}` |  |
 | tracingPolicies.enabled | bool | `true` | Render the TracingPolicy resources of this chart. The CRDs they need are created by the Tetragon operator (`crds.installMethod`) |
 | tracingPolicies.enforcement.enabled | bool | `false` | Install the bundled enforcement policies. These policies SIGKILL the process that matched, which can take down a legitimate workload if its behaviour was not reviewed first — keep this off until it was |
-| tracingPolicies.enforcement.namespaces | list | `[]` | Namespaces the enforcement policies are installed into, as TracingPolicyNamespaced resources. An empty list enforces nothing, which is what keeps enforcement opt-in per workload namespace instead of cluster-wide |
+| tracingPolicies.enforcement.namespaces | list | `[]` | Namespaces for chart-owned enforcement policies. An empty list installs none in the default mode. Must be empty in sessionPolicies mode, where enabled enforcement bundles instead apply to every session namespace. |
 | tracingPolicies.enforcement.policies | list | `[]` | Bundled enforcement policies to install, by file name (without the extension) in `resources/tracing-policies/enforcement` |
 | tracingPolicies.extra | list | `[]` | Policies defined inline instead of coming from the bundles. Each item: `name` (required), `spec` (required, a TracingPolicy spec), `namespace` (optional — when set the policy is rendered as a TracingPolicyNamespaced in that namespace instead of cluster-wide) |
 | tracingPolicies.observation.enabled | bool | `true` | Install the bundled observation policies. They carry no enforcing action, they only make the matching kernel events show up in the Tetragon event stream |
-| tracingPolicies.observation.policies | list | `["sensitive-file-access","process-credential-changes","host-escape-attempts","serviceaccount-token-access","kernel-module-load","dangerous-capabilities","process-injection","crypto-miner-execution"]` | Bundled observation policies to install, by file name (without the extension) in `resources/tracing-policies/observation`. Installed cluster-wide as TracingPolicy resources |
+| tracingPolicies.observation.policies | list | `["sensitive-file-access","process-credential-changes","host-escape-attempts","serviceaccount-token-access","kernel-module-load","dangerous-capabilities","process-injection","crypto-miner-execution"]` | Bundled observation policies to install, by file name (without the extension) in `resources/tracing-policies/observation`. Installed cluster-wide as TracingPolicy resources, or published in the session catalog |
+| tracingPolicies.sessionPolicies.catalogName | string | `"klastro-session-tracing-policies"` |  |
+| tracingPolicies.sessionPolicies.enabled | bool | `false` | Publish the selected bundles as a ConfigMap for klastro-controller. Replaces all chart-owned policies with per-session namespaced policies. Enforcement, when explicitly enabled below, applies to every session; review backend compatibility before enabling any blocking bundle. |
 | victoriaMetrics.enabled | bool | `false` | Render VMServiceScrape and VMRule resources instead of Prometheus Operator resources |
 | victoriaMetrics.rules.enabled | bool | `true` | Render the bundled alert groups as VMRules |
 | victoriaMetrics.serviceScrapes.enabled | bool | `true` | Scrape both the Tetragon agent and its operator |
@@ -217,6 +219,38 @@ repository ships in `resources/tracing-policies`:
 
 Process execution and exit visibility needs no policy at all: the agent reports
 `PROCESS_EXEC` and `PROCESS_EXIT` for every container as soon as it runs.
+
+### Controller-managed session policies
+
+For Klastro's dynamic learner and authoring namespaces, enable
+`tracingPolicies.sessionPolicies.enabled`. The chart then publishes the selected
+observation and enforcement specs in the `policies.json` key of the
+`klastro-session-tracing-policies` ConfigMap in the release namespace, instead of
+creating any tracing policies itself. Configure the matching catalog namespace
+and name under the controller's `controllerConfig.sessionTracingPolicies`.
+
+The controller creates `TracingPolicyNamespaced` resources before provisioning
+session workloads, repairs drift, and prunes only its own obsolete policies.
+Resources are owned by their namespace, so namespace deletion removes them.
+Observation policies use `policy-mode: monitor`; blocking bundles are explicitly
+opt-in and use `policy-mode: enforce`.
+
+In this mode `enforcement.namespaces` and `extra` must be empty. Enabling an
+enforcement bundle applies it to **every session**, so review backend compatibility
+first (especially kernel-module blocking on Sysbox). An empty catalog array
+removes managed policies; missing or malformed catalogs fail reconciliation.
+Disabling the controller feature leaves existing policies in place.
+
+The agents still run on every node and collect base process lifecycle events.
+Klastro GitOps restricts JSON export to learner and authoring namespaces using
+Tetragon 1.7.1's `namespace_regex` filter. Export filtering does not restrict
+unfiltered gRPC clients, internal process tracking, or metrics.
+
+Policy resource creation is not proof of agent loading. Without runtime hooks,
+upstream describes namespace association as best effort; verify agent policy
+states before enabling blocking. During migration, publish the catalog and
+deploy the new controller before pruning old cluster-wide policies. See the
+controller's `docs/tetragon-session-security.md` for the detailed rollout.
 
 ### Bundled policies
 
@@ -325,7 +359,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.2"
+    targetRevision: "0.1.3"
     chart: tetragon
     path: ''
     helm:

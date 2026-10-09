@@ -37,6 +37,38 @@ repository ships in `resources/tracing-policies`:
 Process execution and exit visibility needs no policy at all: the agent reports
 `PROCESS_EXEC` and `PROCESS_EXIT` for every container as soon as it runs.
 
+### Controller-managed session policies
+
+For Klastro's dynamic learner and authoring namespaces, enable
+`tracingPolicies.sessionPolicies.enabled`. The chart then publishes the selected
+observation and enforcement specs in the `policies.json` key of the
+`klastro-session-tracing-policies` ConfigMap in the release namespace, instead of
+creating any tracing policies itself. Configure the matching catalog namespace
+and name under the controller's `controllerConfig.sessionTracingPolicies`.
+
+The controller creates `TracingPolicyNamespaced` resources before provisioning
+session workloads, repairs drift, and prunes only its own obsolete policies.
+Resources are owned by their namespace, so namespace deletion removes them.
+Observation policies use `policy-mode: monitor`; blocking bundles are explicitly
+opt-in and use `policy-mode: enforce`.
+
+In this mode `enforcement.namespaces` and `extra` must be empty. Enabling an
+enforcement bundle applies it to **every session**, so review backend compatibility
+first (especially kernel-module blocking on Sysbox). An empty catalog array
+removes managed policies; missing or malformed catalogs fail reconciliation.
+Disabling the controller feature leaves existing policies in place.
+
+The agents still run on every node and collect base process lifecycle events.
+Klastro GitOps restricts JSON export to learner and authoring namespaces using
+Tetragon 1.7.1's `namespace_regex` filter. Export filtering does not restrict
+unfiltered gRPC clients, internal process tracking, or metrics.
+
+Policy resource creation is not proof of agent loading. Without runtime hooks,
+upstream describes namespace association as best effort; verify agent policy
+states before enabling blocking. During migration, publish the catalog and
+deploy the new controller before pruning old cluster-wide policies. See the
+controller's `docs/tetragon-session-security.md` for the detailed rollout.
+
 ### Bundled policies
 
 Every observation policy is scoped to containers (Pid namespace not the host) and

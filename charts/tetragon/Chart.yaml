@@ -9,7 +9,7 @@ description: >-
   observation-only; enforcement is opt-in per policy and per namespace. All
   upstream settings are available under the tetragon values key.
 type: application
-version: 0.1.2
+version: 0.1.3
 appVersion: "1.7.1"
 maintainers:
   - name: hamzatalbi

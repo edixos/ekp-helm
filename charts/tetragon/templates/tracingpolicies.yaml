@@ -9,7 +9,7 @@ Both bundles hold the *spec* of a policy; the resource around it is built here
 so that the mode a policy runs in is a property of this chart and not of the
 file, and so that the same file can never be installed cluster-wide by mistake.
 */}}
-{{- if and .Values.tracingPolicies.enabled .Values.tetragon.enabled }}
+{{- if and .Values.tracingPolicies.enabled .Values.tetragon.enabled (not .Values.tracingPolicies.sessionPolicies.enabled) }}
 {{- $root := . }}
 {{- if .Values.tracingPolicies.observation.enabled }}
 {{- range $name := .Values.tracingPolicies.observation.policies }}

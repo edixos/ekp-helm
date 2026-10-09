@@ -1,0 +1,28 @@
+{{- if and .Values.tetragon.enabled .Values.tracingPolicies.enabled .Values.tracingPolicies.sessionPolicies.enabled }}
+{{- if or .Values.tracingPolicies.extra .Values.tracingPolicies.enforcement.namespaces }}
+{{- fail "sessionPolicies mode requires empty tracingPolicies.extra and enforcement.namespaces; policies are owned by klastro-controller in session namespaces" }}
+{{- end }}
+{{- $policies := list }}
+{{- range $mode := list "observation" "enforcement" }}
+{{- $bundle := index $.Values.tracingPolicies $mode }}
+{{- if $bundle.enabled }}
+{{- range $name := $bundle.policies }}
+{{- $path := printf "resources/tracing-policies/%s/%s.yaml" $mode $name }}
+{{- $raw := $.Files.Get $path }}
+{{- if not $raw }}
+{{- fail (printf "%s is not a bundled %s policy" $name $mode) }}
+{{- end }}
+{{- $policies = append $policies (dict "name" $name "mode" $mode "spec" ($raw | fromYaml)) }}
+{{- end }}
+{{- end }}
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ required "sessionPolicies.catalogName is required" .Values.tracingPolicies.sessionPolicies.catalogName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tetragon.labels" . | nindent 4 }}
+data:
+  policies.json: {{ $policies | toJson | quote }}
+{{- end }}
