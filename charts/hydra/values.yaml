@@ -17,6 +17,11 @@ prometheus:
 
 # Default values for hydra.
 hydra:
+  # -- Gateway API HTTPRoutes rendered by this chart (not part of the upstream chart).
+  # Each item: { name, namespace?, parentRefs, hostnames, rules }. Route only the
+  # public port: the admin API must never be exposed.
+  httproutes: []
+
   # -- Global setting, passed down to all pods
   global:
     # -- Specify pod metadata, this metadata is added directly to the pod, and not higher objects
@@ -757,3 +762,12 @@ hydra:
       registry: "docker.io"
       repository: busybox
       tag: stable
+
+# -- ExternalSecrets configuration. This is used to create ExternalSecret resources (e.g. Hydra's system and cookie secrets and its DSN).
+externalSecrets: []
+
+# -- Databases configuration. This is used to create PostgreSQL Database resources for the application.
+databases: []
+
+# -- Passwords configuration. This is used to create Password resources using external-secrets.
+passwords: []
