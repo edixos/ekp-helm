@@ -1,6 +1,6 @@
 # envoy-gateway
 
-![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.9.2](https://img.shields.io/badge/AppVersion-v1.9.2-informational?style=flat-square)
+![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.9.2](https://img.shields.io/badge/AppVersion-v1.9.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -147,6 +147,7 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | prometheus.serviceMonitor.scrapeTimeout | string | `"10s"` | Scrape timeout. If not set, the Prometheus default scrape timeout is used. |
 | prometheus.serviceMonitor.tlsConfig | object | `{}` | TLS configuration to use when scraping the endpoint. For example if using istio mTLS. Of type: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#tlsconfig |
 | referenceGrants | list | `[]` |  |
+| securityPolicies | object | `{}` | SecurityPolicies (CORS, extAuth, JWT, ...) keyed by name. Each value: { namespace?, annotations?, labels?, spec }. |
 
 ## Installing the Chart
 
@@ -173,7 +174,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.9"
+    targetRevision: "0.1.10"
     chart: envoy-gateway
     path: ''
     helm:
