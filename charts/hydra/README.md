@@ -1,6 +1,6 @@
 # hydra
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v26.2.0](https://img.shields.io/badge/AppVersion-v26.2.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -27,6 +27,8 @@ A Helm chart for Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| databases | list | `[]` | Databases configuration. This is used to create PostgreSQL Database resources for the application. |
+| externalSecrets | list | `[]` | ExternalSecrets configuration. This is used to create ExternalSecret resources (e.g. Hydra's system and cookie secrets and its DSN). |
 | hydra.affinity | object | `{}` |  |
 | hydra.configmap.hashSumEnabled | bool | `true` | switch to false to prevent checksum annotations being maintained and propogated to the pods |
 | hydra.cronjob.janitor.affinity | object | `{}` | Configure node affinity |
@@ -113,6 +115,7 @@ A Helm chart for Kubernetes
 | hydra.global.podMetadata | object | `{"annotations":{},"labels":{}}` | Specify pod metadata, this metadata is added directly to the pod, and not higher objects |
 | hydra.global.podMetadata.annotations | object | `{}` | Extra pod level annotations |
 | hydra.global.podMetadata.labels | object | `{}` | Extra pod level labels |
+| hydra.httproutes | list | `[]` | Gateway API HTTPRoutes rendered by this chart (not part of the upstream chart). Each item: { name, namespace?, parentRefs, hostnames, rules }. Route only the public port: the admin API must never be exposed. |
 | hydra.hydra-maester.adminService.name | string | `""` | The service name value may need to be set if you use `fullnameOverride` for the parent chart |
 | hydra.hydra.automigration.customArgs | list | `[]` | Ability to override arguments of the entrypoint. Can be used in-depended of customCommand eg: - sleep 5;   - kratos |
 | hydra.hydra.automigration.customCommand | list | `[]` | Ability to override the entrypoint of the automigration container (e.g. to source dynamic secrets or export environment dynamic variables) |
@@ -231,6 +234,7 @@ A Helm chart for Kubernetes
 | hydra.watcher.revisionHistoryLimit | int | `5` | Number of revisions kept in history |
 | hydra.watcher.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsNonRoot":true,"runAsUser":100,"seccompProfile":{"type":"RuntimeDefault"}}` | container securityContext for watcher deployment |
 | hydra.watcher.watchLabelKey | string | `"ory.sh/watcher"` | Label key used for managing applications |
+| passwords | list | `[]` | Passwords configuration. This is used to create Password resources using external-secrets. |
 | prometheus.enabled | bool | `false` | Enables Prometheus Operator monitoring |
 | prometheus.grafanaDashboard.enabled | bool | `true` | Add grafana dashboard as a configmap |
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | label to apply to the config map. Used by Grafana sidecar to automatically install the dashboard |
@@ -262,7 +266,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: hydra
     path: ''
     helm:
