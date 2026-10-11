@@ -5139,6 +5139,25 @@ entries:
     urls:
     - twenty-0.1.0.tgz
     version: 0.1.0
+  valkey:
+  - apiVersion: v2
+    appVersion: 9.1.2
+    created: "2026-10-11T11:31:23.053821973Z"
+    dependencies:
+    - alias: valkey
+      name: valkey
+      repository: https://valkey.io/valkey-helm/
+      version: 0.12.0
+    description: Valkey, the open-source key/value store, from the official valkey-io
+      chart
+    digest: 3f452f0f0b57e24948c332103f473cb5c0eff7efa9b5506cd6e760678e5d8cc3
+    maintainers:
+    - name: edixos
+    name: valkey
+    type: application
+    urls:
+    - valkey-0.1.0.tgz
+    version: 0.1.0
   velero:
   - apiVersion: v2
     appVersion: 1.18.2
@@ -5976,4 +5995,4 @@ entries:
     urls:
     - zammad-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-11T11:30:51.225183019Z"
+generated: "2026-10-11T11:31:23.054161685Z"
