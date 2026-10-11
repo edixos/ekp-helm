@@ -306,3 +306,6 @@ clientTrafficPolicies: {}
 backendTrafficPolicies: {}
 
 referenceGrants: []
+
+# -- SecurityPolicies (CORS, extAuth, JWT, ...) keyed by name. Each value: { namespace?, annotations?, labels?, spec }.
+securityPolicies: {}
