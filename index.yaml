@@ -3010,6 +3010,25 @@ entries:
   hydra:
   - apiVersion: v2
     appVersion: v26.2.0
+    created: "2026-10-11T11:30:51.224836597Z"
+    dependencies:
+    - alias: hydra
+      name: hydra
+      repository: https://k8s.ory.sh/helm/charts
+      version: 0.64.0
+    description: A Helm chart for Kubernetes
+    digest: d162de4b959bf81cc159f806e8df2818fa54ae76b1d084d6e97c9a0add9ac8c9
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: hydra
+    type: application
+    urls:
+    - hydra-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: v26.2.0
     created: "2026-10-04T08:53:02.544294904Z"
     dependencies:
     - alias: hydra
@@ -5957,4 +5976,4 @@ entries:
     urls:
     - zammad-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-09T09:46:38.887859824Z"
+generated: "2026-10-11T11:30:51.225183019Z"
