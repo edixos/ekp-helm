@@ -30,6 +30,7 @@ chart-repos:
   - metrics-server=https://kubernetes-sigs.github.io/metrics-server/
   - goldilocks=https://charts.fairwinds.com/stable
   - tetragon=https://helm.cilium.io/
+  - valkey=https://valkey.io/valkey-helm/
 
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false

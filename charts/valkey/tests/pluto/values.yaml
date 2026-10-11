@@ -1,0 +1,15 @@
+networkPolicies:
+  valkey-clients:
+    spec:
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: valkey
+      policyTypes: [Ingress]
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: envoy-gateway-system
+          ports:
+            - port: 6379
+              protocol: TCP

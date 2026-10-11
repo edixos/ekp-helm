@@ -1,0 +1,7 @@
+remote: origin
+chart-dirs:
+  - charts
+helm-extra-args: --timeout=500
+chart-repos:
+  - valkey=https://valkey.io/valkey-helm/
+check-version-increment: true
