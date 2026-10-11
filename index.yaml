@@ -1671,7 +1671,7 @@ entries:
       repository: oci://docker.io/envoyproxy
       version: 1.9.2
     description: Helm chart to deploy Envoy Gateway on Kubernetes
-    digest: b802834ef5080edfddd04bff7b3ea56fd68f797a8773a16a0f707e77411ebf2e
+    digest: dc7f003ae183422aaee9a52378f978498acd8d86ac79ef3a45fd4a8c0b8129ab
     maintainers:
     - email: hamzatalbi831@gmail.com
       name: hamzatalbi
