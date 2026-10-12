@@ -1,6 +1,6 @@
 # tetragon
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.1](https://img.shields.io/badge/AppVersion-1.7.1-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.1](https://img.shields.io/badge/AppVersion-1.7.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -193,14 +193,14 @@ Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps the
 | tetragon.tolerations[0].operator | string | `"Exists"` |  |
 | tetragon.updateStrategy | object | `{}` |  |
 | tracingPolicies.enabled | bool | `true` | Render the TracingPolicy resources of this chart. The CRDs they need are created by the Tetragon operator (`crds.installMethod`) |
-| tracingPolicies.enforcement.enabled | bool | `false` | Install the bundled enforcement policies. These policies SIGKILL the process that matched, which can take down a legitimate workload if its behaviour was not reviewed first — keep this off until it was |
+| tracingPolicies.enforcement.enabled | bool | `false` | Install the bundled enforcement policies. These policies SIGKILL the process that matched (block-host-escape first denies the operation), which can take down a legitimate workload if its behaviour was not reviewed first — keep this off until it was |
 | tracingPolicies.enforcement.namespaces | list | `[]` | Namespaces for chart-owned enforcement policies. An empty list installs none in the default mode. Must be empty in sessionPolicies mode, where enabled enforcement bundles instead apply to every session namespace. |
-| tracingPolicies.enforcement.policies | list | `[]` | Bundled enforcement policies to install, by file name (without the extension) in `resources/tracing-policies/enforcement` |
+| tracingPolicies.enforcement.policies | list | `[]` | Bundled enforcement policies to install, by file name (without the extension) in `resources/tracing-policies/enforcement`. In sessionPolicies mode, block-sensitive-file-write and block-kernel-module-load are rejected |
 | tracingPolicies.extra | list | `[]` | Policies defined inline instead of coming from the bundles. Each item: `name` (required), `spec` (required, a TracingPolicy spec), `namespace` (optional — when set the policy is rendered as a TracingPolicyNamespaced in that namespace instead of cluster-wide) |
 | tracingPolicies.observation.enabled | bool | `true` | Install the bundled observation policies. They carry no enforcing action, they only make the matching kernel events show up in the Tetragon event stream |
 | tracingPolicies.observation.policies | list | `["sensitive-file-access","process-credential-changes","host-escape-attempts","serviceaccount-token-access","kernel-module-load","dangerous-capabilities","process-injection","crypto-miner-execution"]` | Bundled observation policies to install, by file name (without the extension) in `resources/tracing-policies/observation`. Installed cluster-wide as TracingPolicy resources, or published in the session catalog |
 | tracingPolicies.sessionPolicies.catalogName | string | `"klastro-session-tracing-policies"` |  |
-| tracingPolicies.sessionPolicies.enabled | bool | `false` | Publish the selected bundles as a ConfigMap for klastro-controller. Replaces all chart-owned policies with per-session namespaced policies. Enforcement, when explicitly enabled below, applies to every session; review backend compatibility before enabling any blocking bundle. |
+| tracingPolicies.sessionPolicies.enabled | bool | `false` | Publish the selected bundles as a ConfigMap for klastro-controller. Replaces all chart-owned policies with per-session namespaced policies. Enforcement, when explicitly enabled below, applies to every session. Only block-host-escape and block-crypto-miner-execution are accepted there; the other blocking bundles fail rendering in this mode. |
 | victoriaMetrics.enabled | bool | `false` | Render VMServiceScrape and VMRule resources instead of Prometheus Operator resources |
 | victoriaMetrics.rules.enabled | bool | `true` | Render the bundled alert groups as VMRules |
 | victoriaMetrics.serviceScrapes.enabled | bool | `true` | Scrape both the Tetragon agent and its operator |
@@ -215,7 +215,7 @@ repository ships in `resources/tracing-policies`:
 | Bundle | Rendered as | Default | Effect |
 |--------|-------------|---------|--------|
 | `observation` | `TracingPolicy` (cluster-wide) | installed | reports the matching kernel events, changes no workload behaviour |
-| `enforcement` | `TracingPolicyNamespaced` (per namespace) | not installed | **SIGKILLs** the process that matched |
+| `enforcement` | `TracingPolicyNamespaced` (per namespace) | not installed | **SIGKILLs** the process that matched (`block-host-escape` first denies the operation with `EPERM`) |
 
 Process execution and exit visibility needs no policy at all: the agent reports
 `PROCESS_EXEC` and `PROCESS_EXIT` for every container as soon as it runs.
@@ -236,10 +236,36 @@ Observation policies use `policy-mode: monitor`; blocking bundles are explicitly
 opt-in and use `policy-mode: enforce`.
 
 In this mode `enforcement.namespaces` and `extra` must be empty. Enabling an
-enforcement bundle applies it to **every session**, so review backend compatibility
-first (especially kernel-module blocking on Sysbox). An empty catalog array
-removes managed policies; missing or malformed catalogs fail reconciliation.
-Disabling the controller feature leaves existing policies in place.
+enforcement bundle applies it to **every session**, whatever its lab backend, so
+only the two policies that no session ever triggers legitimately are accepted:
+
+```yaml
+tracingPolicies:
+  sessionPolicies:
+    enabled: true
+  enforcement:
+    enabled: true
+    policies:
+      - block-host-escape
+      - block-crypto-miner-execution
+```
+
+`block-host-escape` uses the `file_permission` BPF LSM hook to deny the write or
+read with `EPERM` before killing the process, because a SIGKILL alone lands after
+a procfs or cgroupfs write has taken effect. It needs the BPF LSM enabled on the
+nodes (`bpf` in `/sys/kernel/security/lsm`, the Talos default); where it is not,
+the policy fails to load and `TetragonTracingPolicyLoadFailed` fires.
+
+Every other enforcement bundle fails rendering in this mode. In particular
+`block-sensitive-file-write` and `block-kernel-module-load` cannot be used: the SSH executor and terminal pods of every session write `/root/.ssh`,
+machine bootstrap installs packages into `/usr/bin`, and Sysbox labs load host
+kernel modules. klastro-controller also rejects a catalog whose enforcement
+policies have a selector without the `Pid NotIn host_ns` guard, so a Kata shim or
+hypervisor process attributed to a lab pod can never be killed. Kata and KubeVirt
+lab machines run in a guest kernel the node agent does not see; enforcement there
+covers the session's container-level pods. An empty catalog array removes managed
+policies; missing or malformed catalogs fail reconciliation. Disabling the
+controller feature leaves existing policies in place.
 
 The agents still run on every node and collect base process lifecycle events.
 Klastro GitOps restricts JSON export to learner and authoring namespaces using
@@ -254,11 +280,14 @@ controller's `docs/tetragon-session-security.md` for the detailed rollout.
 
 ### Bundled policies
 
-Every observation policy is scoped to containers (Pid namespace not the host) and
-is report-only. The three enforcement policies are the kill-on-match twins of the
-observation policies whose match set never overlaps legitimate workloads; the
-others are detection-only on purpose (their trigger is legitimate in some lab
-scenarios, so it is a signal to correlate, not a safe kill point).
+Every enforcement policy, and every observation policy except
+`sensitive-file-access`, is scoped to containers (Pid namespace not the host).
+Observation policies are report-only. The four enforcement policies are the
+kill-on-match twins of observation policies with a narrow match set; only
+`block-host-escape` and `block-crypto-miner-execution` are safe for every Klastro
+session (see above). The others are detection-only on purpose (their trigger is
+legitimate in some lab scenarios, so it is a signal to correlate, not a safe kill
+point).
 
 | Observation policy | Reports | Enforcement twin |
 |--------------------|---------|------------------|
@@ -359,7 +388,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: tetragon
     path: ''
     helm:

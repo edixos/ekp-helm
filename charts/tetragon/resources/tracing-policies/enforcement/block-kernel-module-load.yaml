@@ -18,6 +18,11 @@
 #
 # Installed as a TracingPolicyNamespaced into the namespaces listed under
 # tracingPolicies.enforcement.namespaces only — it never applies cluster-wide.
+# The chart refuses to publish it in the sessionPolicies catalog, which would
+# apply it to every session namespace.
+#
+# Scoped to containers only (Pid namespace not the host), like its observation
+# twin.
 kprobes:
   - call: "security_kernel_module_request"
     syscall: false
@@ -25,5 +30,10 @@ kprobes:
       - index: 0
         type: "string" # requested module name
     selectors:
-      - matchActions:
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchActions:
           - action: Sigkill

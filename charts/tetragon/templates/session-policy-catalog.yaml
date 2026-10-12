@@ -2,6 +2,20 @@
 {{- if or .Values.tracingPolicies.extra .Values.tracingPolicies.enforcement.namespaces }}
 {{- fail "sessionPolicies mode requires empty tracingPolicies.extra and enforcement.namespaces; policies are owned by klastro-controller in session namespaces" }}
 {{- end }}
+{{- /*
+The catalog applies to every session namespace, whatever its lab backend, so
+only blocking policies reviewed against every session are accepted. The others
+kill legitimate session work there: platform pods write /root/.ssh and machine
+bootstrap installs packages (block-sensitive-file-write), and Sysbox labs load
+host kernel modules (block-kernel-module-load).
+*/}}
+{{- if .Values.tracingPolicies.enforcement.enabled }}
+{{- range $name := .Values.tracingPolicies.enforcement.policies }}
+{{- if not (has $name (list "block-host-escape" "block-crypto-miner-execution")) }}
+{{- fail (printf "%s cannot be enforced in sessionPolicies mode: it applies to every session and is not reviewed against every lab backend" $name) }}
+{{- end }}
+{{- end }}
+{{- end }}
 {{- $policies := list }}
 {{- range $mode := list "observation" "enforcement" }}
 {{- $bundle := index $.Values.tracingPolicies $mode }}

@@ -32,7 +32,7 @@ repository ships in `resources/tracing-policies`:
 | Bundle | Rendered as | Default | Effect |
 |--------|-------------|---------|--------|
 | `observation` | `TracingPolicy` (cluster-wide) | installed | reports the matching kernel events, changes no workload behaviour |
-| `enforcement` | `TracingPolicyNamespaced` (per namespace) | not installed | **SIGKILLs** the process that matched |
+| `enforcement` | `TracingPolicyNamespaced` (per namespace) | not installed | **SIGKILLs** the process that matched (`block-host-escape` first denies the operation with `EPERM`) |
 
 Process execution and exit visibility needs no policy at all: the agent reports
 `PROCESS_EXEC` and `PROCESS_EXIT` for every container as soon as it runs.
@@ -53,10 +53,36 @@ Observation policies use `policy-mode: monitor`; blocking bundles are explicitly
 opt-in and use `policy-mode: enforce`.
 
 In this mode `enforcement.namespaces` and `extra` must be empty. Enabling an
-enforcement bundle applies it to **every session**, so review backend compatibility
-first (especially kernel-module blocking on Sysbox). An empty catalog array
-removes managed policies; missing or malformed catalogs fail reconciliation.
-Disabling the controller feature leaves existing policies in place.
+enforcement bundle applies it to **every session**, whatever its lab backend, so
+only the two policies that no session ever triggers legitimately are accepted:
+
+```yaml
+tracingPolicies:
+  sessionPolicies:
+    enabled: true
+  enforcement:
+    enabled: true
+    policies:
+      - block-host-escape
+      - block-crypto-miner-execution
+```
+
+`block-host-escape` uses the `file_permission` BPF LSM hook to deny the write or
+read with `EPERM` before killing the process, because a SIGKILL alone lands after
+a procfs or cgroupfs write has taken effect. It needs the BPF LSM enabled on the
+nodes (`bpf` in `/sys/kernel/security/lsm`, the Talos default); where it is not,
+the policy fails to load and `TetragonTracingPolicyLoadFailed` fires.
+
+Every other enforcement bundle fails rendering in this mode. In particular
+`block-sensitive-file-write` and `block-kernel-module-load` cannot be used: the SSH executor and terminal pods of every session write `/root/.ssh`,
+machine bootstrap installs packages into `/usr/bin`, and Sysbox labs load host
+kernel modules. klastro-controller also rejects a catalog whose enforcement
+policies have a selector without the `Pid NotIn host_ns` guard, so a Kata shim or
+hypervisor process attributed to a lab pod can never be killed. Kata and KubeVirt
+lab machines run in a guest kernel the node agent does not see; enforcement there
+covers the session's container-level pods. An empty catalog array removes managed
+policies; missing or malformed catalogs fail reconciliation. Disabling the
+controller feature leaves existing policies in place.
 
 The agents still run on every node and collect base process lifecycle events.
 Klastro GitOps restricts JSON export to learner and authoring namespaces using
@@ -71,11 +97,14 @@ controller's `docs/tetragon-session-security.md` for the detailed rollout.
 
 ### Bundled policies
 
-Every observation policy is scoped to containers (Pid namespace not the host) and
-is report-only. The three enforcement policies are the kill-on-match twins of the
-observation policies whose match set never overlaps legitimate workloads; the
-others are detection-only on purpose (their trigger is legitimate in some lab
-scenarios, so it is a signal to correlate, not a safe kill point).
+Every enforcement policy, and every observation policy except
+`sensitive-file-access`, is scoped to containers (Pid namespace not the host).
+Observation policies are report-only. The four enforcement policies are the
+kill-on-match twins of observation policies with a narrow match set; only
+`block-host-escape` and `block-crypto-miner-execution` are safe for every Klastro
+session (see above). The others are detection-only on purpose (their trigger is
+legitimate in some lab scenarios, so it is a signal to correlate, not a safe kill
+point).
 
 | Observation policy | Reports | Enforcement twin |
 |--------------------|---------|------------------|

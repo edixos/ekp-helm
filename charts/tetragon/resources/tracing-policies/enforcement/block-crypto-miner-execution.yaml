@@ -10,8 +10,13 @@
 # ResourceQuota/LimitRange (mining is CPU-bound and the quota caps CPU) and by
 # the report-only observation policy, which stays cluster-wide.
 #
-# Installed as a TracingPolicyNamespaced into the namespaces listed under
-# tracingPolicies.enforcement.namespaces only — it never applies cluster-wide.
+# Installed as a TracingPolicyNamespaced, never cluster-wide: into the namespaces
+# listed under tracingPolicies.enforcement.namespaces, or, in sessionPolicies
+# mode, into every Klastro session namespace by klastro-controller.
+#
+# Scoped to containers only (Pid namespace not the host), like its observation
+# twin: host-namespace processes that the node attributes to a pod (a Kata shim
+# or hypervisor) are never killed.
 kprobes:
   - call: "sys_execve"
     syscall: true
@@ -19,7 +24,12 @@ kprobes:
       - index: 0
         type: "string" # program path
     selectors:
-      - matchArgs:
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchArgs:
           - index: 0
             operator: "Postfix"
             values:
