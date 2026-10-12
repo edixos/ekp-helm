@@ -1,8 +1,8 @@
-# ENFORCING. SIGKILLs a process in the target namespace that writes a host-kernel
-# control file or reads host kernel memory.
+# ENFORCING. Denies, then SIGKILLs, a process in the target namespace that writes
+# a host-kernel control file or reads host kernel memory.
 #
 # The enforcement twin of observation/host-escape-attempts.yaml, narrowed to the
-# operations that are *never* part of a legitimate workload, so killing on them
+# operations that are *never* part of a legitimate workload, so blocking them
 # cannot take down a real lab:
 #
 #   * writing /proc/sys/kernel/core_pattern, /proc/sys/kernel/modprobe or
@@ -14,24 +14,36 @@
 #
 # The generic `mount` primitive is deliberately NOT enforced here: the eBPF lab
 # mounts debugfs/tracefs/bpffs and the kubeadm/k3s labs mount for their nested
-# runtime, all legitimate. Only the host-escape control files above are killed.
+# runtime, all legitimate. Only the host-escape control files above are blocked.
 #
-# Installed as a TracingPolicyNamespaced into the namespaces listed under
-# tracingPolicies.enforcement.namespaces only — it never applies cluster-wide.
-kprobes:
-  - call: "security_file_permission"
-    syscall: false
-    return: true
+# A SIGKILL alone does not stop these writes: procfs, sysrq and cgroupfs handlers
+# complete the write before the signal is delivered. The policy therefore hooks
+# the `file_permission` BPF LSM hook and first overrides its return value with
+# -EPERM, so the operation never happens, then kills the process. This needs the
+# BPF LSM (`bpf` in /sys/kernel/security/lsm, enabled by default on Talos), not
+# CONFIG_BPF_KPROBE_OVERRIDE, which Talos kernels do not set.
+#
+# Installed as a TracingPolicyNamespaced, never cluster-wide: into the namespaces
+# listed under tracingPolicies.enforcement.namespaces, or, in sessionPolicies
+# mode, into every Klastro session namespace by klastro-controller.
+#
+# Scoped to containers only (Pid namespace not the host), like its observation
+# twin: host-namespace processes that the node attributes to a pod (a Kata shim
+# or hypervisor) are never blocked.
+lsmhooks:
+  - hook: "file_permission"
     args:
       - index: 0
         type: "file"
       - index: 1
         type: "int" # 0x04 MAY_READ, 0x02 MAY_WRITE
-    returnArg:
-      index: 0
-      type: "int"
     selectors:
-      - matchArgs:
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchArgs:
           - index: 0
             operator: "Equal"
             values:
@@ -43,8 +55,15 @@ kprobes:
             values:
               - "2" # MAY_WRITE
         matchActions:
+          - action: Override
+            argError: -1 # EPERM
           - action: Sigkill
-      - matchArgs:
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchArgs:
           - index: 0
             operator: "Postfix"
             values:
@@ -55,8 +74,15 @@ kprobes:
             values:
               - "2" # MAY_WRITE
         matchActions:
+          - action: Override
+            argError: -1 # EPERM
           - action: Sigkill
-      - matchArgs:
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchArgs:
           - index: 0
             operator: "Equal"
             values:
@@ -66,4 +92,6 @@ kprobes:
             values:
               - "4" # MAY_READ
         matchActions:
+          - action: Override
+            argError: -1 # EPERM
           - action: Sigkill

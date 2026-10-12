@@ -12,6 +12,12 @@
 #
 # Installed as a TracingPolicyNamespaced, into the namespaces listed under
 # `tracingPolicies.enforcement.namespaces` only — it never applies cluster-wide.
+# The chart refuses to publish it in the sessionPolicies catalog: every Klastro
+# session runs platform pods that write /root/.ssh (SSH known_hosts and node
+# keys), and machine bootstrap installs packages into /usr/bin.
+#
+# Scoped to containers only (Pid namespace not the host).
+#
 # Run the workloads of a namespace against the observation bundle first and read
 # the events before adding that namespace here.
 kprobes:
@@ -27,7 +33,12 @@ kprobes:
       index: 0
       type: "int"
     selectors:
-      - matchArgs:
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchArgs:
           - index: 0
             operator: "Prefix"
             values:
@@ -59,7 +70,12 @@ kprobes:
       index: 0
       type: "int"
     selectors:
-      - matchArgs:
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchArgs:
           - index: 0
             operator: "Prefix"
             values:

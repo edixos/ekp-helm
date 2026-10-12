@@ -60,8 +60,9 @@ tracingPolicies:
   sessionPolicies:
     # -- Publish the selected bundles as a ConfigMap for klastro-controller.
     # Replaces all chart-owned policies with per-session namespaced policies.
-    # Enforcement, when explicitly enabled below, applies to every session;
-    # review backend compatibility before enabling any blocking bundle.
+    # Enforcement, when explicitly enabled below, applies to every session.
+    # Only block-host-escape and block-crypto-miner-execution are accepted
+    # there; the other blocking bundles fail rendering in this mode.
     enabled: false
     catalogName: klastro-session-tracing-policies
   observation:
@@ -83,11 +84,12 @@ tracingPolicies:
       - crypto-miner-execution
   enforcement:
     # -- Install the bundled enforcement policies. These policies SIGKILL the
-    # process that matched, which can take down a legitimate workload if its
+    # process that matched (block-host-escape first denies the operation), which can take down a legitimate workload if its
     # behaviour was not reviewed first — keep this off until it was
     enabled: false
     # -- Bundled enforcement policies to install, by file name (without the
-    # extension) in `resources/tracing-policies/enforcement`
+    # extension) in `resources/tracing-policies/enforcement`. In sessionPolicies
+    # mode, block-sensitive-file-write and block-kernel-module-load are rejected
     policies: []
     # -- Namespaces for chart-owned enforcement policies. An empty list installs
     # none in the default mode. Must be empty in sessionPolicies mode, where
