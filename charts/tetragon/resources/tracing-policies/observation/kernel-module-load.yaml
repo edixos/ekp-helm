@@ -1,39 +1,49 @@
-# Reports a container asking the host kernel to load a kernel module.
+# Reports a container loading a kernel module into the host kernel.
 #
-# `security_kernel_module_request` is the LSM hook the kernel calls when a
-# module is auto-loaded by name (the path taken by `modprobe`, and by kernel
-# subsystems that request a module on demand). Its first argument is the module
-# name as a string, so the event names what was requested.
+# `init_module(2)` and `finit_module(2)` are the only two ways userspace loads a
+# module (`modprobe` and `insmod` both end in one of them). Both need
+# CAP_SYS_MODULE, so from a container the call is either an escape in progress
+# or a failed attempt at one; the kprobe fires on syscall entry and reports
+# both.
 #
 # A container loading a module runs attacker code in the *host* kernel — the
 # strongest possible escape and the usual way a rootkit is installed.
 #
+# Kernel-initiated autoloads (`request_module`, the
+# `security_kernel_module_request` LSM hook) are deliberately NOT matched. An
+# ordinary socket(), netlink or filesystem call makes the kernel autoload a
+# module the first time a node needs it, so every vcluster start
+# (kube-apiserver, kine, coredns) produced a burst of events describing normal
+# behaviour. An autoload can only pull in a module already installed on the
+# host. The enforcement twin (enforcement/block-kernel-module-load.yaml) still
+# hooks that request path.
+#
 # Legitimacy depends on the lab backend:
 #   * Kata-backed labs (the eBPF and Kata kubeadm/k3s scenarios) load modules
-#     inside a microVM guest kernel the node agent does not see, so a request it
+#     inside a microVM guest kernel the node agent does not see, so a load it
 #     does see is never one of those.
 #   * sysbox-backed labs (e.g. the sysbox kubeadm/k3s providers) SHARE the host
-#     kernel, and their node-prep can trigger a host module autoload — for
-#     example br_netfilter/overlay, or nf_conntrack pulled in by kube-proxy. On
-#     those namespaces a module request is EXPECTED, so this stays report-only
-#     cluster-wide and its enforcement twin must not be enabled for a
-#     sysbox-hosting namespace (see enforcement/block-kernel-module-load.yaml).
+#     kernel, and their node-prep can `modprobe` br_netfilter/overlay. On those
+#     namespaces a load is EXPECTED, so this stays report-only cluster-wide.
 #
 # Scoped to containers only (Pid namespace not the host): the node loads modules
 # at boot and on hardware events.
 #
-# Coverage note: a statically linked `finit_module(2)` that does not go through
-# the request path is not caught here; that call needs CAP_SYS_MODULE, which the
-# dangerous-capabilities policy reports.
-#
-# Report only: the single action is Post. The matching enforcement policy is
-# enforcement/block-kernel-module-load.yaml.
+# Report only: the single action is Post.
 kprobes:
-  - call: "security_kernel_module_request"
-    syscall: false
-    args:
-      - index: 0
-        type: "string" # requested module name
+  - call: "sys_init_module"
+    syscall: true
+    selectors:
+      - matchNamespaces:
+          - namespace: Pid
+            operator: NotIn
+            values:
+              - "host_ns"
+        matchActions:
+          - action: Post
+            rateLimit: "1m"
+  - call: "sys_finit_module"
+    syscall: true
     selectors:
       - matchNamespaces:
           - namespace: Pid

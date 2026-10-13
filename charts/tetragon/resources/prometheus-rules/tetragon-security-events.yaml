@@ -18,7 +18,7 @@ groups:
     labels:
       severity: critical
     annotations:
-      summary: "Container requested a host kernel module load"
+      summary: "Container tried to load a host kernel module"
       description: "The kernel-module-load policy matched {{ printf \"%.0f\" $value }} event(s) in the last 5m. Lab guests that legitimately load modules do so inside a Kata microVM, so a request seen on the node is an escape or rootkit attempt."
 
   - alert: TetragonCryptoMinerExecution
@@ -39,7 +39,7 @@ groups:
       severity: warning
     annotations:
       summary: "Container exercised a high-risk Linux capability"
-      description: "The dangerous-capabilities policy has matched for 5m (CAP_SYS_MODULE/RAWIO/BOOT/TIME/MAC_*). Correlate with the host-escape, kernel-module and injection policies before actioning."
+      description: "The dangerous-capabilities policy has matched for 5m (CAP_SYS_MODULE/RAWIO/BOOT/TIME). Correlate with the host-escape, kernel-module and injection policies before actioning."
 
   - alert: TetragonProcessInjection
     expr: sum by (policy) (increase(tetragon_policy_events_total{policy="process-injection"}[5m])) > 5

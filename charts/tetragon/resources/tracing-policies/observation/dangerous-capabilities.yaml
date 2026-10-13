@@ -9,14 +9,17 @@
 #   * CAP_SYS_RAWIO  (17)  — raw I/O port and /dev/mem access
 #   * CAP_SYS_BOOT   (22)  — reboot / kexec the node
 #   * CAP_SYS_TIME   (25)  — set the host clock
-#   * CAP_MAC_OVERRIDE (32) / CAP_MAC_ADMIN (33) — override or reconfigure the
-#     kernel MAC (AppArmor/SELinux) policy
 #
 # Deliberately NOT matched: CAP_SYS_ADMIN, CAP_NET_ADMIN, CAP_SYS_RESOURCE,
 # CAP_BPF, CAP_PERFMON and CAP_SYS_PTRACE. The machine-backed lab backends
 # (sysbox and Kata) are granted SYS_ADMIN/NET_ADMIN/SYS_RESOURCE by design, and
 # the eBPF lab uses BPF/PERFMON, so matching those would report normal lab
-# behaviour on every check.
+# behaviour on every check. CAP_MAC_OVERRIDE (32) and CAP_MAC_ADMIN (33) are
+# left out too: the kernel probes CAP_MAC_ADMIN on behalf of any process that
+# reads a `security.*` xattr, so a plain `ls` or `sh` in a container matched.
+#
+# At most 4 values: an `Equal` matchArgs rejects a longer list ("selector does
+# not support more than 4 values") and the agent then loads nothing at all.
 #
 # Scoped to containers only (Pid namespace not the host): host services use
 # these capabilities routinely.
@@ -48,8 +51,6 @@ kprobes:
               - "17" # CAP_SYS_RAWIO
               - "22" # CAP_SYS_BOOT
               - "25" # CAP_SYS_TIME
-              - "32" # CAP_MAC_OVERRIDE
-              - "33" # CAP_MAC_ADMIN
         matchActions:
           - action: Post
             rateLimit: "1m"

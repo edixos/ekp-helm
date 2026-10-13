@@ -1,6 +1,6 @@
 # tetragon
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.1](https://img.shields.io/badge/AppVersion-1.7.1-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.1](https://img.shields.io/badge/AppVersion-1.7.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -295,8 +295,8 @@ point).
 | `process-credential-changes` | `commit_creds` — setuid/capability/userns privilege changes | — |
 | `host-escape-attempts` | writes to `core_pattern`/`modprobe`/`sysrq`/cgroup `release_agent`, reads of `/proc/kcore` | `block-host-escape` |
 | `serviceaccount-token-access` | reads of a mounted Kubernetes ServiceAccount token | — (fires for platform pods at start-up) |
-| `kernel-module-load` | `security_kernel_module_request` — a container asking the host kernel to load a module | `block-kernel-module-load` (Kata-backed namespaces only — sysbox labs share the host kernel and load modules legitimately) |
-| `dangerous-capabilities` | use of `CAP_SYS_MODULE`/`RAWIO`/`BOOT`/`TIME`/`MAC_*` | — |
+| `kernel-module-load` | `init_module`/`finit_module` — a container loading a module into the host kernel (kernel autoloads are not matched) | `block-kernel-module-load` (Kata-backed namespaces only — sysbox labs share the host kernel and load modules legitimately) |
+| `dangerous-capabilities` | use of `CAP_SYS_MODULE`/`RAWIO`/`BOOT`/`TIME` | — |
 | `process-injection` | `ptrace` attach / cross-process memory writes | — (legitimate for debugging labs) |
 | `crypto-miner-execution` | exec of a known miner binary by name | `block-crypto-miner-execution` |
 
@@ -388,7 +388,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: tetragon
     path: ''
     helm:
