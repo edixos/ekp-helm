@@ -50,11 +50,19 @@ groups:
       summary: "Sustained ptrace attach activity in a container"
       description: "The process-injection policy matched more than 5 ptrace-attach events in 5m. This is expected for a debugging lab; investigate if the namespace is not a debugging scenario."
 
+  # Two token readers in lab namespaces are expected and excluded, because
+  # client-go re-reads its token file about once a minute and so matches for
+  # as long as a session runs:
+  #   * the vcluster control plane (StatefulSet `vcluster-<hash>`), which talks
+  #     to the host API server by design;
+  #   * pods synced out of a virtual cluster (`<name>-x-<ns>-x-vcluster-<hash>`),
+  #     which hold a token issued by that virtual cluster, with no rights on
+  #     the host.
   - alert: TetragonServiceAccountTokenAccess
-    expr: sum by (policy) (increase(tetragon_policy_events_total{policy="serviceaccount-token-access"}[5m])) > 0
+    expr: sum by (policy, namespace, workload) (increase(tetragon_policy_events_total{policy="serviceaccount-token-access", workload!~"vcluster-[0-9a-f]+|.+-x-.+-x-vcluster-[0-9a-f]+"}[5m])) > 0
     for: 10m
     labels:
       severity: warning
     annotations:
       summary: "Sustained ServiceAccount token reads in containers"
-      description: "The serviceaccount-token-access policy has matched for 10m. Platform pods read their own token once at start-up (expected); a token read from a lab session namespace is not expected and should be investigated."
+      description: "Workload {{ $labels.namespace }}/{{ $labels.workload }} has been reading its ServiceAccount token for 10m. Platform pods read their own token once at start-up (expected); a token read from a lab session namespace is not expected and should be investigated."
