@@ -1,6 +1,6 @@
 # victoria-metrics-cluster
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.153.0](https://img.shields.io/badge/AppVersion-v1.153.0-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.154.0](https://img.shields.io/badge/AppVersion-v1.154.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmcluster(victoria-metrics-cluster) | 0.52.0 |
+| https://victoriametrics.github.io/helm-charts/ | vmcluster(victoria-metrics-cluster) | 0.53.0 |
 
 ## Maintainers
 
@@ -307,7 +307,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmselect.persistentVolume.name | string | `""` | Override Persistent Volume Claim name |
 | vmcluster.vmselect.persistentVolume.size | string | `"2Gi"` | Size of the volume. Better to set the same as resource limit memory property |
 | vmcluster.vmselect.persistentVolume.subPath | string | `""` | Mount subpath |
-| vmcluster.vmselect.persistentVolume.volumeAttributesClassName | string | `nil` | VolumeClassAttribute to user for persistent volume |
+| vmcluster.vmselect.persistentVolume.volumeAttributesClassName | string | `nil` | VolumeAttributesClass to use for persistent volume |
 | vmcluster.vmselect.podAnnotations | object | `{}` | Pod's annotations |
 | vmcluster.vmselect.podDisruptionBudget | object | `{"enabled":false,"labels":{},"maxUnavailable":0,"minAvailable":0,"unhealthyPodEvictionPolicy":null}` | See `kubectl explain poddisruptionbudget.spec` for more. Details are [here](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) |
 | vmcluster.vmselect.podDisruptionBudget.enabled | bool | `false` | See `kubectl explain poddisruptionbudget.spec` for more. Details are [here](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) |
@@ -412,7 +412,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmstorage.persistentVolume.size | string | `"8Gi"` | Size of the volume. |
 | vmcluster.vmstorage.persistentVolume.storageClassName | string | `""` | Storage class name. Will be empty if not set |
 | vmcluster.vmstorage.persistentVolume.subPath | string | `""` | Mount subpath |
-| vmcluster.vmstorage.persistentVolume.volumeAttributesClassName | string | `nil` | VolumeClassAttribute to user for persistent volume |
+| vmcluster.vmstorage.persistentVolume.volumeAttributesClassName | string | `nil` | VolumeAttributesClass to use for persistent volume |
 | vmcluster.vmstorage.podAnnotations | object | `{}` | Pod's annotations |
 | vmcluster.vmstorage.podDisruptionBudget | object | `{"enabled":false,"labels":{},"maxUnavailable":0,"minAvailable":0,"unhealthyPodEvictionPolicy":null}` | See `kubectl explain poddisruptionbudget.spec` for more. Details are [here](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) |
 | vmcluster.vmstorage.podDisruptionBudget.maxUnavailable | int | `0` | max number or percentage of pods that can be unavailable |
@@ -512,7 +512,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: victoria-metrics-cluster
     path: ''
     helm:
