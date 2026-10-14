@@ -1,6 +1,6 @@
 # victoria-metrics-agent
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.153.0](https://img.shields.io/badge/AppVersion-v1.153.0-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.154.0](https://img.shields.io/badge/AppVersion-v1.154.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmagent(victoria-metrics-agent) | 0.49.0 |
+| https://victoriametrics.github.io/helm-charts/ | vmagent(victoria-metrics-agent) | 0.50.0 |
 
 ## Maintainers
 
@@ -116,7 +116,7 @@ vmagent, packaged for the Edixos Kubernetes Platform. Wraps the upstream Victori
 | vmagent.persistentVolume.name | string | `""` | Override Persistent Volume Claim name |
 | vmagent.persistentVolume.size | string | `"10Gi"` | Size of the volume. Should be calculated based on the logs you send and retention policy you set. |
 | vmagent.persistentVolume.storageClassName | string | `""` | StorageClass to use for persistent volume. Requires server.persistentVolume.enabled: true. If defined, PVC created automatically |
-| vmagent.persistentVolume.volumeAttributesClassName | string | `nil` | VolumeClassAttribute to user for persistent volume |
+| vmagent.persistentVolume.volumeAttributesClassName | string | `nil` | VolumeAttributesClass to use for persistent volume |
 | vmagent.podAnnotations | object | `{}` | Annotations to be added to pod |
 | vmagent.podDisruptionBudget | object | `{"enabled":false,"labels":{},"maxUnavailable":0,"minAvailable":0,"unhealthyPodEvictionPolicy":null}` | See `kubectl explain poddisruptionbudget.spec` for more or check [official documentation](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) |
 | vmagent.podDisruptionBudget.maxUnavailable | int | `0` | max number or percentage of pods that can be unavailable |
@@ -210,7 +210,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: victoria-metrics-agent
     path: ''
     helm:
