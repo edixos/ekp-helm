@@ -1,0 +1,40 @@
+---
+rule_files:
+  - ../../resources/prometheus-rules/tetragon-security-events.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # TEST1: vcluster control plane and synced pods refresh their tokens - no alert
+  - name: TetragonServiceAccountTokenAccess ignores vcluster token refreshes
+    interval: 1m
+    input_series:
+      - series: 'tetragon_policy_events_total{policy="serviceaccount-token-access", namespace="klastro-session-c5b9753f", workload="vcluster-c5b9753f"}'
+        values: '0+1x30'
+      - series: 'tetragon_policy_events_total{policy="serviceaccount-token-access", namespace="klastro-session-c5b9753f", workload="coredns-7d4bf7f497-qv8ww-x-kube-system-x-vcluster-c5b9753f"}'
+        values: '0+1x30'
+    alert_rule_test:
+      - eval_time: 25m
+        alertname: TetragonServiceAccountTokenAccess
+        exp_alerts: []
+
+  # TEST2: any other workload reading its token for 10m still fires, and names itself
+  - name: TetragonServiceAccountTokenAccess fires for a non-vcluster workload
+    interval: 1m
+    input_series:
+      - series: 'tetragon_policy_events_total{policy="serviceaccount-token-access", namespace="klastro-session-c5b9753f", workload="cloudshell-c5b9753f"}'
+        values: '0+1x30'
+      - series: 'tetragon_policy_events_total{policy="serviceaccount-token-access", namespace="klastro-session-c5b9753f", workload="vcluster-c5b9753f"}'
+        values: '0+1x30'
+    alert_rule_test:
+      - eval_time: 25m
+        alertname: TetragonServiceAccountTokenAccess
+        exp_alerts:
+          - exp_labels:
+              policy: serviceaccount-token-access
+              namespace: klastro-session-c5b9753f
+              workload: cloudshell-c5b9753f
+              severity: warning
+            exp_annotations:
+              summary: "Sustained ServiceAccount token reads in containers"
+              description: "Workload klastro-session-c5b9753f/cloudshell-c5b9753f has been reading its ServiceAccount token for 10m. Platform pods read their own token once at start-up (expected); a token read from a lab session namespace is not expected and should be investigated."
