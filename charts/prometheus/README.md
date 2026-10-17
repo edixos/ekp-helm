@@ -1,6 +1,6 @@
 # prometheus
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![AppVersion: v3.0.1](https://img.shields.io/badge/AppVersion-v3.0.1-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![AppVersion: v3.0.1](https://img.shields.io/badge/AppVersion-v3.0.1-informational?style=flat-square)
 
 ----
 
@@ -17,7 +17,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://oauth2-proxy.github.io/manifests | oidc(oauth2-proxy) | 10.7.0 |
+| https://oauth2-proxy.github.io/manifests | oidc(oauth2-proxy) | 10.7.1 |
 
 ## Maintainers
 
@@ -330,7 +330,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.7"
+    targetRevision: "0.1.8"
     chart: prometheus
     path: ''
 
