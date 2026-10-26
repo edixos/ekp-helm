@@ -19,3 +19,16 @@ spec:
         externalTrafficPolicy: {{ .Values.envoyProxy.externalTrafficPolicy }}
 {{- end }}
 {{- end }}
+
+{{- range $name, $config := .Values.envoyProxies }}
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: {{ $name }}
+  namespace: {{ $config.namespace | default $.Release.Namespace }}
+  labels:
+    {{- include "envoy-gateway.labels" $ | nindent 4 }}
+spec:
+  {{- toYaml (required (printf "envoyProxies.%s.spec is required" $name) $config.spec) | nindent 2 }}
+{{- end }}

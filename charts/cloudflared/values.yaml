@@ -1,0 +1,99 @@
+# -- Override the chart name used in resource names
+nameOverride: ""
+# -- Override the full resource names (takes precedence over nameOverride)
+fullnameOverride: ""
+
+image:
+  # -- cloudflared image repository
+  repository: cloudflare/cloudflared
+  # -- Image tag. Defaults to the chart appVersion; never use `latest`.
+  tag: ""
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+
+# -- Connector replicas. Every replica runs the same tunnel (4 edge connections
+# each); two keep the tunnel up through a node drain or a rollout.
+replicaCount: 2
+
+# The tunnel is remotely managed: its routes and settings live in the
+# Cloudflare dashboard/API, and cloudflared only needs the tunnel token. The
+# token is a credential, so it is never a chart value: point at a Secret that
+# exists in the release namespace (typically written by `externalSecrets`).
+tunnelToken:
+  # -- Name of the Secret holding the tunnel token
+  secretName: cloudflared-tunnel-token
+  # -- Key in that Secret
+  secretKey: token
+
+# -- cloudflared log level (debug, info, warn, error, fatal)
+logLevel: info
+
+# -- Extra `cloudflared tunnel` flags, inserted before `run`
+# (e.g. ["--protocol", "quic"]).
+extraArgs: []
+
+metrics:
+  # -- Port of the metrics server. It also serves /ready, used by the probes,
+  # which returns 200 only while the connector holds an edge connection.
+  port: 2000
+
+# -- Static /etc/hosts entries (Pod `hostAliases`). cloudflared resolves the
+# destination of private hostname routes with the pod resolver, so this is
+# where such a hostname can be pointed at an in-cluster address.
+hostAliases: []
+
+serviceAccount:
+  # -- Name of the ServiceAccount (defaults to the fullname). cloudflared never
+  # calls the Kubernetes API, so no token is mounted.
+  name: ""
+
+podDisruptionBudget:
+  # -- Create a PodDisruptionBudget (only rendered with more than one replica,
+  # where it cannot block a node drain)
+  enabled: true
+  # -- Minimum connectors kept during voluntary disruptions
+  minAvailable: 1
+
+# -- Container resources
+resources: {}
+
+# -- Extra pod labels
+podLabels: {}
+# -- Extra pod annotations
+podAnnotations: {}
+# -- Pod priority class
+priorityClassName: ""
+# -- Node selector
+nodeSelector: {}
+# -- Tolerations
+tolerations: []
+# -- Affinity
+affinity: {}
+# -- Topology spread constraints
+topologySpreadConstraints: []
+
+# -- Pod security context. The image runs as the distroless `nonroot` user.
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+# -- Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+# -- NetworkPolicies for the connector pods, keyed by name. Each value: { spec }.
+# The tunnel's routes live in Cloudflare, outside Git review, so egress limited
+# to the edge and the intended origins keeps a mis-added route from reaching the
+# rest of the cluster network.
+networkPolicies: {}
+
+# -- ExternalSecrets rendered in the release namespace, typically the one that
+# writes `tunnelToken.secretName`. Each item: { name, namespace?, spec }.
+externalSecrets: []
