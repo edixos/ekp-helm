@@ -8,6 +8,14 @@ metadata:
     {{- include "envoy-gateway.labels" $ | nindent 4 }}
 spec:
   gatewayClassName: {{ $config.gatewayClassName }}
+  {{- with $config.addresses }}
+  addresses:
+{{ toYaml . | indent 4 }}
+  {{- end }}
+  {{- with $config.infrastructure }}
+  infrastructure:
+{{ toYaml . | indent 4 }}
+  {{- end }}
   listeners:
 {{ toYaml $config.listeners | indent 4 }}
 ---

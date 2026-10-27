@@ -1,6 +1,6 @@
 # envoy-gateway
 
-![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.9.2](https://img.shields.io/badge/AppVersion-v1.9.2-informational?style=flat-square)
+![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.9.2](https://img.shields.io/badge/AppVersion-v1.9.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -122,6 +122,7 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | envoy-gateway.service.type | string | `"ClusterIP"` | Service type. Can be set to LoadBalancer with specific IP, e.g.: type: LoadBalancer loadBalancerIP: 10.236.90.20 |
 | envoy-gateway.topologyInjector.annotations | object | `{}` |  |
 | envoy-gateway.topologyInjector.enabled | bool | `true` |  |
+| envoyProxies | object | `{}` | Additional EnvoyProxy resources keyed by name, for Gateways that must not inherit the GatewayClass-level `envoyProxy` (e.g. an internal ClusterIP-only Gateway). Reference one from a Gateway with `infrastructure.parametersRef`; that is a local reference, so the EnvoyProxy must live in the Gateway's namespace. Each value: { namespace?, spec }. |
 | envoyProxy.enabled | bool | `true` |  |
 | envoyProxy.externalTrafficPolicy | string | `"Local"` |  |
 | envoyProxy.name | string | `"custom-proxy-config"` |  |
@@ -130,8 +131,9 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | gatewayClass.controllerName | string | `"gateway.envoyproxy.io/gatewayclass-controller"` |  |
 | gatewayClass.enabled | bool | `true` |  |
 | gatewayClass.name | string | `"envoy-gateway"` |  |
-| gateways | object | `{}` |  |
+| gateways | object | `{}` | Gateways keyed by name. Each value: { namespace, gatewayClassName, addresses?, infrastructure?, listeners }. `addresses` and `infrastructure` are passed through verbatim (Gateway API `spec.addresses` / `spec.infrastructure`); with a ClusterIP EnvoyProxy Service, the first IPAddress pins its clusterIP. |
 | httpRoutes | object | `{}` |  |
+| networkPolicies | object | `{}` | NetworkPolicies keyed by name, e.g. to restrict who may connect to a Gateway's Envoy pods (select them with the `gateway.envoyproxy.io/owning-gateway-name` label). Listener ports below 1024 are served on container port + 10000 (443 -> 10443). Each value: { namespace?, spec }. |
 | prometheus.enabled | bool | `false` | Enables prometheus operator resources |
 | prometheus.grafanaDashboard.enabled | bool | `false` | If `true`, deploy grafana dashboard |
 | prometheus.grafanaDashboard.label | object | `{"grafana_dashboard":"1"}` | Labels to apply to dashboard configmap |
@@ -174,7 +176,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.10"
+    targetRevision: "0.1.11"
     chart: envoy-gateway
     path: ''
     helm:

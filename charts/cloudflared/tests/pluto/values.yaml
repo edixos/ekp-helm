@@ -1,0 +1,13 @@
+externalSecrets:
+  - name: cloudflared-tunnel-token
+    spec:
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: example
+      target:
+        name: cloudflared-tunnel-token
+      data:
+        - secretKey: token
+          remoteRef:
+            key: cloudflared-tunnel-token
+            property: token

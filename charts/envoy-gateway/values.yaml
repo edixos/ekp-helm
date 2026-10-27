@@ -295,6 +295,17 @@ envoyProxy:
   type: LoadBalancer
   externalTrafficPolicy: Local
 
+# -- Additional EnvoyProxy resources keyed by name, for Gateways that must not
+# inherit the GatewayClass-level `envoyProxy` (e.g. an internal ClusterIP-only
+# Gateway). Reference one from a Gateway with `infrastructure.parametersRef`;
+# that is a local reference, so the EnvoyProxy must live in the Gateway's
+# namespace. Each value: { namespace?, spec }.
+envoyProxies: {}
+
+# -- Gateways keyed by name. Each value: { namespace, gatewayClassName,
+# addresses?, infrastructure?, listeners }. `addresses` and `infrastructure` are
+# passed through verbatim (Gateway API `spec.addresses` / `spec.infrastructure`);
+# with a ClusterIP EnvoyProxy Service, the first IPAddress pins its clusterIP.
 gateways: {}
 
 certificates: {}
@@ -309,3 +320,9 @@ referenceGrants: []
 
 # -- SecurityPolicies (CORS, extAuth, JWT, ...) keyed by name. Each value: { namespace?, annotations?, labels?, spec }.
 securityPolicies: {}
+
+# -- NetworkPolicies keyed by name, e.g. to restrict who may connect to a
+# Gateway's Envoy pods (select them with the
+# `gateway.envoyproxy.io/owning-gateway-name` label). Listener ports below 1024
+# are served on container port + 10000 (443 -> 10443). Each value: { namespace?, spec }.
+networkPolicies: {}

@@ -1,0 +1,18 @@
+apiVersion: v2
+name: cloudflared
+description: Cloudflare Tunnel connector (cloudflared) for a remotely-managed tunnel, with its token delivered by External Secrets
+type: application
+version: 0.1.0
+appVersion: "2026.10.0"
+maintainers:
+  - name: hamzatalbi
+    email: hamzatalbi831@gmail.com
+    url: https://github.com/TalbiHamza
+home: https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/
+sources:
+  - https://github.com/cloudflare/cloudflared
+keywords:
+  - cloudflare
+  - tunnel
+  - zero-trust
+  - warp

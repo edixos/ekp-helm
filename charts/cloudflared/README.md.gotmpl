@@ -1,0 +1,51 @@
+# {{ .Name }}
+
+{{ template "chart.versionBadge" .}}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Prerequisites
+
+- Helm v{{ if eq .ApiVersion "v2" }}3{{ else }}2{{end}}
+- A **remotely-managed** Cloudflare Tunnel (created in the Cloudflare One dashboard or API) and its token
+- External Secrets Operator, if the token Secret is delivered through `externalSecrets`
+
+{{ template "chart.maintainersSection" . }}
+
+## Description
+
+{{ template "chart.description" . }}
+
+The chart runs `cloudflared tunnel run` for a tunnel whose configuration lives in
+Cloudflare. It holds no tunnel routes of its own: public hostnames, private
+network (CIDR) routes and private hostname routes are all managed on the tunnel
+in Cloudflare. The token is read from an existing Secret and is never a chart
+value.
+
+{{ template "chart.sourcesSection" . }}
+
+## Installing the Chart
+
+```bash
+helm repo add ekp-helm https://edixos.github.io/ekp-helm
+helm repo update
+kubectl -n infra-cloudflared create secret generic cloudflared-tunnel-token --from-literal=token=<tunnel token>
+helm install cloudflared ekp-helm/{{ .Name }} --namespace infra-cloudflared
+```
+
+{{ template "chart.valuesSection" . }}
+
+## Develop
+
+### Update Documentation
+
+```bash
+docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 helm-docs
+```
+
+### Run Pluto
+
+```bash
+helm template {{ .Name }} . -f tests/pluto/values.yaml --output-dir /tmp/pluto
+pluto detect-files -d /tmp/pluto -o wide -t "k8s=v1.31.0"
+```
