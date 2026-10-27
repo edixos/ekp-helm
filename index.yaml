@@ -1080,6 +1080,30 @@ entries:
     urls:
     - cilium-0.1.0.tgz
     version: 0.1.0
+  cloudflared:
+  - apiVersion: v2
+    appVersion: 2026.10.0
+    created: "2026-10-27T17:27:39.193845677Z"
+    description: Cloudflare Tunnel connector (cloudflared) for a remotely-managed
+      tunnel, with its token delivered by External Secrets
+    digest: f174aba72f4678a331d83d6607026c23e464e4d4033563c7ae6cc8f6f8e29f8f
+    home: https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/
+    keywords:
+    - cloudflare
+    - tunnel
+    - zero-trust
+    - warp
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: cloudflared
+    sources:
+    - https://github.com/cloudflare/cloudflared
+    type: application
+    urls:
+    - cloudflared-0.1.0.tgz
+    version: 0.1.0
   cloudtty:
   - apiVersion: v2
     appVersion: 0.8.10
@@ -1700,6 +1724,25 @@ entries:
     - https://edixos.github.io/ekp-helm/dns-zone-0.1.0.tgz
     version: 0.1.0
   envoy-gateway:
+  - apiVersion: v2
+    appVersion: v1.9.2
+    created: "2026-10-27T17:27:39.470961817Z"
+    dependencies:
+    - alias: envoy-gateway
+      name: gateway-helm
+      repository: oci://docker.io/envoyproxy
+      version: 1.9.2
+    description: Helm chart to deploy Envoy Gateway on Kubernetes
+    digest: c373eeffb8f6555be396ed4d0a85a22cb088926bc70d0b3b8e04828f72e4dfca
+    maintainers:
+    - email: hamzatalbi831@gmail.com
+      name: hamzatalbi
+      url: https://github.com/TalbiHamza
+    name: envoy-gateway
+    type: application
+    urls:
+    - envoy-gateway-0.1.11.tgz
+    version: 0.1.11
   - apiVersion: v2
     appVersion: v1.9.2
     created: "2026-10-11T15:36:09.766848746Z"
@@ -6416,4 +6459,4 @@ entries:
     urls:
     - zammad-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-27T08:35:22.289991688Z"
+generated: "2026-10-27T17:27:39.471275155Z"
