@@ -5361,6 +5361,24 @@ entries:
     version: 0.1.0
   twenty:
   - annotations:
+      ekp-helm/upstream-source: https://github.com/twentyhq/twenty/tree/15e4826d3b5fc5867baeabeeb42b253892b2d4da/packages/twenty-docker/helm/twenty
+    apiVersion: v2
+    appVersion: v2.51.0
+    created: "2026-10-27T08:35:22.289560587Z"
+    dependencies:
+    - alias: twenty
+      name: twenty
+      repository: ""
+      version: 0.1.0
+    description: Twenty CRM, wired to an externally managed PostgreSQL and the platform
+      Gateway
+    digest: 1e9568265b344ba1f2f084eb2798c0527f0544e7e5e88f19038c81f52bb2c982
+    name: twenty
+    type: application
+    urls:
+    - twenty-0.1.2.tgz
+    version: 0.1.2
+  - annotations:
       ekp-helm/upstream-source: https://github.com/twentyhq/twenty/tree/33ba245f08615bd5b3b50e35ad54a584fbed3989/packages/twenty-docker/helm/twenty
     apiVersion: v2
     appVersion: v2.26.0
@@ -6398,4 +6416,4 @@ entries:
     urls:
     - zammad-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-23T15:40:27.794213178Z"
+generated: "2026-10-27T08:35:22.289991688Z"
