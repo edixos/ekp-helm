@@ -11,7 +11,7 @@ twenty:
     # ekp-helm: pinned. The vendored chart's own appVersion (v1.14.0) is never
     # bumped upstream, so leaving this empty would deploy a year-old image.
     # Kept equal to this chart's appVersion.
-    tag: "v2.26.0"
+    tag: "v2.51.0"
     pullPolicy: IfNotPresent
 
   nameOverride: ""
