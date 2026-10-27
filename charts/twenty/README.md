@@ -1,6 +1,6 @@
 # twenty
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.26.0](https://img.shields.io/badge/AppVersion-v2.26.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.51.0](https://img.shields.io/badge/AppVersion-v2.51.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -21,6 +21,22 @@ dependency with an empty `repository` so Helm resolves it from that directory.
 To update it, replace `charts/twenty` with the chart from a newer upstream
 commit, update the annotation, and bump `version` in `Chart.yaml`. The automated
 dependency bump cannot do this: it only understands published repositories.
+
+Local schema patch: server and worker `replicaCount` accept zero so an ArgoCD
+upgrade can stop all Twenty database writers while keeping the Deployments and
+PVCs. Retain this patch when re-vendoring. Do not use `server.enabled: false`
+for maintenance: upstream also removes the server PVCs from the rendered chart.
+
+## Upgrading to v2.51.0
+
+This image contains Node 24.22.1 on AMD64 and ARM64, addressing the October 2026
+Node security release. Upstream supports the direct upgrade from v2.26.0, but
+requires PostgreSQL 15+ and runs database migrations at server startup.
+Back up the database, local storage, and existing encryption/signing secrets
+before starting the new server. Keep workers at zero until migrations finish.
+Check `yarn command:prod upgrade:status --failed-only` even when `/healthz` is
+healthy: the image entrypoint can continue after an upgrade command fails.
+See the [upstream upgrade guide](https://docs.twenty.com/developers/self-host/capabilities/upgrade-guide).
 
 ## Requirements
 
@@ -70,7 +86,7 @@ Twenty CRM, wired to an externally managed PostgreSQL and the platform Gateway
 | twenty.fullnameOverride | string | `""` |  |
 | twenty.image.pullPolicy | string | `"IfNotPresent"` |  |
 | twenty.image.repository | string | `"twentycrm/twenty"` |  |
-| twenty.image.tag | string | `"v2.26.0"` |  |
+| twenty.image.tag | string | `"v2.51.0"` |  |
 | twenty.nameOverride | string | `""` |  |
 | twenty.redis.external.host | string | `""` |  |
 | twenty.redis.external.password | string | `""` |  |
@@ -203,7 +219,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.1"
+    targetRevision: "0.1.2"
     chart: twenty
     path: ''
     helm:

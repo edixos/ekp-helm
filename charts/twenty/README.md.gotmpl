@@ -26,6 +26,22 @@ To update it, replace `charts/twenty` with the chart from a newer upstream
 commit, update the annotation, and bump `version` in `Chart.yaml`. The automated
 dependency bump cannot do this: it only understands published repositories.
 
+Local schema patch: server and worker `replicaCount` accept zero so an ArgoCD
+upgrade can stop all Twenty database writers while keeping the Deployments and
+PVCs. Retain this patch when re-vendoring. Do not use `server.enabled: false`
+for maintenance: upstream also removes the server PVCs from the rendered chart.
+
+## Upgrading to v2.51.0
+
+This image contains Node 24.22.1 on AMD64 and ARM64, addressing the October 2026
+Node security release. Upstream supports the direct upgrade from v2.26.0, but
+requires PostgreSQL 15+ and runs database migrations at server startup.
+Back up the database, local storage, and existing encryption/signing secrets
+before starting the new server. Keep workers at zero until migrations finish.
+Check `yarn command:prod upgrade:status --failed-only` even when `/healthz` is
+healthy: the image entrypoint can continue after an upgrade command fails.
+See the [upstream upgrade guide](https://docs.twenty.com/developers/self-host/capabilities/upgrade-guide).
+
 {{ template "chart.requirementsSection" . }}
 
 {{ template "chart.maintainersSection" . }}
