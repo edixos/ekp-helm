@@ -67,9 +67,13 @@ vmstack:
     cluster:
       # -- K8s cluster domain suffix, uses for building storage pods' FQDN. Details are [here](https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/)
       dnsDomain: cluster.local.
-    # -- Labels added to all resources
+    # -- Labels added to resources templated by this chart and the embedded operator chart. Also passed to the operator
+    # (`VM_COMMON_LABELS`), which adds them to every resource it creates from VM CRs. Not applied to CRDs, `extraObjects`
+    # and bundled subcharts, use `grafana.extraLabels`, `kube-state-metrics.customLabels` and
+    # `prometheus-node-exporter.commonLabels` for the latter
     extraLabels: {}
-    # -- Annotations added to all resources
+    # -- Annotations passed to the operator (`VM_COMMON_ANNOTATIONS`), which adds them to every resource it creates from
+    # VM CRs. Not applied to bundled subcharts
     extraAnnotations: {}
     # -- Default component versions. Propagated automatically (as a global value) to the embedded operator chart's
     # own `global.versions`, which it uses to populate its default-version env vars, so that CRs created outside this
@@ -77,15 +81,15 @@ vmstack:
     # renovate-tracked tags/appVersion below.
     versions:
       # renovate: image=victoriametrics/victoria-metrics
-      metrics: v1.154.0
+      metrics: v1.155.0
       # renovate: image=victoriametrics/victoria-logs
       logs: v1.53.0
       # renovate: image=victoriametrics/victoria-traces
-      traces: v0.10.0
+      traces: v0.12.1
       # renovate: image=victoriametrics/vmanomaly
-      anomaly: v1.30.4
+      anomaly: v1.31.1
       # renovate: image=prom/alertmanager
-      alertmanager: v0.34.0
+      alertmanager: v0.34.1
   # -- Override chart name
   nameOverride: ""
   # -- Resource full name override
@@ -233,7 +237,6 @@ vmstack:
     enabled: true
     image:
       repository: ghcr.io/victoriametrics/sync-job
-      # renovate: image=ghcr.io/victoriametrics/sync-job
       tag: v0.0.17
       pullPolicy: IfNotPresent
     # -- Image pull secrets for the sync-job Pod. Needed when `image.repository` points at a
@@ -656,8 +659,6 @@ vmstack:
     namespaceOverride: ""
     # -- Full spec for VLCluster CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vlclusterspec)
     spec:
-      # renovate: image=victoriametrics/victoria-logs
-      clusterVersion: v1.53.0
       vlstorage:
         replicaCount: 2
         # -- Data retention period. Possible units character: h(ours), d(ays), w(eeks), y(ears), if no unit character specified - month. The minimum retention period is 24h. See these [docs](https://docs.victoriametrics.com/victorialogs/#retention)
@@ -886,8 +887,6 @@ vmstack:
       zoneCommon:
         vlcluster:
           spec:
-            # renovate: image=victoriametrics/victoria-logs
-            clusterVersion: v1.53.0
             vlstorage:
               replicaCount: 2
               retentionPeriod: 14d
@@ -1074,8 +1073,6 @@ vmstack:
     namespaceOverride: ""
     # -- Full spec for VTCluster CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vtclusterspec)
     spec:
-      # renovate: image=victoriametrics/victoria-traces
-      clusterVersion: v0.9.4
       vtstorage:
         replicaCount: 2
         storageDataPath: /vt-data
@@ -1925,7 +1922,11 @@ vmstack:
     # -- Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace.
     namespaceOverride: ""
     # -- (object) Full spec for VMAuth CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vmauthspec)
-    # It's possible to use given below predefined variables in spec:
+    # If `unauthorizedUserAccessSpec.url_map`, `.url_prefix` and `.targetRefs` are all left unset, the chart
+    # automatically routes to vmsingle/vmcluster (or `external.vm.read`/`external.vm.write`) using `targetRefs`
+    # with `crd` references, so the operator derives all backend routes (e.g. `/admin/tenants`) automatically.
+    # Set `url_map`, `url_prefix` or `targetRefs` explicitly to take full control of routing instead.
+    # It's possible to use given below predefined variables in a custom spec:
     # * `{{ .vm.read }}` - parsed vmselect, vmsingle or external.vm.read URL
     # * `{{ .vm.write }}` - parsed vminsert, vmsingle or external.vm.write URL
     # * `{{ .vl.read }}` - parsed vlselect, vlsingle or external.vl.read URL
@@ -1938,15 +1939,6 @@ vmstack:
         # -- Flag, that allows to disable default VMAuth unauthorized user access config
         disabled: false
         discover_backend_ips: true
-        url_map:
-          - src_paths:
-              - '{{ .vm.read.path }}/.*'
-            url_prefix:
-              - '{{ urlJoin (omit .vm.read "path") }}/'
-          - src_paths:
-              - '{{ .vm.write.path }}/.*'
-            url_prefix:
-              - '{{ urlJoin (omit .vm.write "path") }}/'
   vmagent:
     # -- Create VMAgent CR
     enabled: true
@@ -2220,9 +2212,10 @@ vmstack:
         enabled: true
         spec:
           path: /metrics/probes
-      # -- Enabled scraping /metrics/resource from kubelet's service
+      # -- Enable scraping /metrics/resource from kubelet's service. Disabled by default to avoid duplicating
+      # /metrics/cadvisor series, which the bundled rules and dashboards rely on.
       resources:
-        enabled: true
+        enabled: false
         spec:
           path: /metrics/resource
       kubelet:
@@ -2491,21 +2484,15 @@ vmstack:
       # -- name is a template for the internal VMAuth CR used for vmalert datasource routing
       name: '{{ .fullname }}-internal'
       # -- (object) Spec for internal VMAuth CRD used as a vmalert datasource proxy.
-      # It's possible to use given below predefined variables in spec:
+      # If `unauthorizedUserAccessSpec.url_map`, `.url_prefix` and `.targetRefs` are all left unset, the chart
+      # automatically routes `/select/logsql/.*` to vlsingle/vlcluster (or `external.vl.read`) and everything
+      # else to vmsingle/vmcluster (or `external.vm.read`) using `targetRefs` with `crd` references.
+      # Set `url_map`, `url_prefix` or `targetRefs` explicitly to take full control of routing instead.
+      # It's possible to use given below predefined variables in a custom spec:
       # * `{{ .vm.read }}` - parsed vmselect, vmsingle or external.vm.read URL
       # * `{{ .vl.read }}` - parsed vlselect, vlsingle or external.vl.read URL
       # * `{{ .vt.read }}` - parsed vtselect, vtsingle or external.vt.read URL
       spec:
         port: "8427"
-        unauthorizedUserAccessSpec:
-          url_map:
-            - src_paths:
-                - '/select/logsql/.*'
-              url_prefix:
-                - '{{ urlJoin (omit .vl.read "path") }}/'
-            - src_paths:
-                - '/.*'
-              url_prefix:
-                - '{{ (include "vm.prometheus.read" . | fromYaml).url }}/'
   # -- Add extra objects dynamically to this chart
   extraObjects: []
