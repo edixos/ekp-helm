@@ -1,6 +1,6 @@
 # zammad
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 7.2.2-0003](https://img.shields.io/badge/AppVersion-7.2.2--0003-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 7.2.2-0023](https://img.shields.io/badge/AppVersion-7.2.2--0023-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://zammad.github.io/zammad-helm | zammad(zammad) | 19.1.5 |
+| https://zammad.github.io/zammad-helm | zammad(zammad) | 20.0.2 |
 
 ## Description
 
@@ -132,6 +132,7 @@ Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gate
 | zammad.zammadConfig.elasticsearch.pass | string | `""` |  |
 | zammad.zammadConfig.elasticsearch.port | int | `9200` |  |
 | zammad.zammadConfig.elasticsearch.reindex | bool | `false` |  |
+| zammad.zammadConfig.elasticsearch.reindexWorkers | int | `0` |  |
 | zammad.zammadConfig.elasticsearch.schema | string | `"http"` |  |
 | zammad.zammadConfig.elasticsearch.user | string | `""` |  |
 | zammad.zammadConfig.initContainers.elasticsearch.resources | object | `{}` |  |
@@ -155,10 +156,11 @@ Zammad helpdesk, wired to an externally managed PostgreSQL and the platform Gate
 | zammad.zammadConfig.initContainers.volumePermissions.enabled | bool | `true` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.image.pullPolicy | string | `"IfNotPresent"` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.image.repository | string | `"alpine"` |  |
-| zammad.zammadConfig.initContainers.volumePermissions.image.tag | string | `"3.24.2"` |  |
+| zammad.zammadConfig.initContainers.volumePermissions.image.tag | string | `"3.24.3"` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.resources | object | `{}` |  |
+| zammad.zammadConfig.initContainers.volumePermissions.securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| zammad.zammadConfig.initContainers.volumePermissions.securityContext.privileged | bool | `true` |  |
+| zammad.zammadConfig.initContainers.volumePermissions.securityContext.privileged | bool | `false` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.securityContext.runAsNonRoot | bool | `false` |  |
 | zammad.zammadConfig.initContainers.volumePermissions.securityContext.runAsUser | int | `0` |  |
@@ -327,7 +329,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.3"
+    targetRevision: "0.1.4"
     chart: zammad
     path: ''
     helm:
