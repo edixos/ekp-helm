@@ -2,12 +2,12 @@ apiVersion: v2
 name: valkey
 description: Valkey, the open-source key/value store, from the official valkey-io chart
 type: application
-version: 0.1.0
-appVersion: "9.1.2"
+version: 0.1.1
+appVersion: "9.1.3"
 maintainers:
   - name: edixos
 dependencies:
   - name: valkey
-    version: 0.12.0
+    version: 0.12.1
     repository: "https://valkey.io/valkey-helm/"
     alias: valkey
