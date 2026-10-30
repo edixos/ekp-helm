@@ -1,0 +1,46 @@
+# {{ .Name }}
+
+{{ template "chart.versionBadge" .}}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Prerequisites
+
+- Helm v{{ if eq .ApiVersion "v2" }}3{{ else }}2{{end}}
+- An OIDC provider
+- External Secrets Operator, if the client credentials are delivered through `externalSecrets`
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+## Description
+
+{{ template "chart.description" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+## Installing the Chart
+
+```bash
+helm repo add ekp-helm https://edixos.github.io/ekp-helm
+helm repo update
+helm install oauth2-proxy ekp-helm/{{ .Name }} --namespace oauth2-proxy
+```
+
+{{ template "chart.valuesSection" . }}
+
+## Develop
+
+### Update Documentation
+
+```bash
+docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 helm-docs
+```
+
+### Run Pluto
+
+```bash
+helm template {{ .Name }} . -f tests/pluto/values.yaml --output-dir /tmp/pluto
+pluto detect-files -d /tmp/pluto -o wide -t "k8s=v1.31.0"
+```

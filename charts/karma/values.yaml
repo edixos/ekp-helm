@@ -1,0 +1,87 @@
+# -- Override the chart name used in resource names
+nameOverride: ""
+# -- Override the full resource names (takes precedence over nameOverride)
+fullnameOverride: ""
+
+image:
+  # -- karma image repository
+  repository: ghcr.io/prymitive/karma
+  # -- Image tag. Defaults to `v` + the chart appVersion; never use `latest`.
+  tag: ""
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+
+# -- Replicas. karma keeps no state of its own: alerts and silences are read
+# from Alertmanager on every refresh.
+replicaCount: 1
+
+# -- Port karma listens on
+port: 8080
+
+# -- karma configuration, written verbatim to its config file. See
+# https://github.com/prymitive/karma/blob/main/docs/CONFIGURATION.md. karma has
+# no login of its own: without `authentication`, anyone reaching the Service
+# can read alerts and manage silences, so keep it behind an authenticating
+# proxy and restrict the Service with `networkPolicies`.
+config:
+  alertmanager:
+    servers: []
+
+service:
+  # -- Service type
+  type: ClusterIP
+  # -- Service port
+  port: 8080
+
+serviceAccount:
+  # -- Name of the ServiceAccount (defaults to the fullname). karma never calls
+  # the Kubernetes API, so no token is mounted.
+  name: ""
+
+podDisruptionBudget:
+  # -- Create a PodDisruptionBudget (only rendered with more than one replica,
+  # where it cannot block a node drain)
+  enabled: false
+  # -- Minimum replicas kept during voluntary disruptions
+  minAvailable: 1
+
+# -- Container resources
+resources: {}
+
+# -- Extra pod labels
+podLabels: {}
+# -- Extra pod annotations
+podAnnotations: {}
+# -- Pod priority class
+priorityClassName: ""
+# -- Node selector
+nodeSelector: {}
+# -- Tolerations
+tolerations: []
+# -- Affinity
+affinity: {}
+# -- Topology spread constraints
+topologySpreadConstraints: []
+
+# -- Pod security context. The image is distroless and sets no user.
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+# -- Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+# -- NetworkPolicies for the karma pods, keyed by name. Each value: { spec }.
+networkPolicies: {}
+
+# -- ExternalSecrets rendered in the release namespace.
+# Each item: { name, namespace?, spec }.
+externalSecrets: []

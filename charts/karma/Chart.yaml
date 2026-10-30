@@ -1,0 +1,17 @@
+apiVersion: v2
+name: karma
+description: Karma, a dashboard for Alertmanager alerts, configured from chart values
+type: application
+version: 0.1.0
+appVersion: "0.134"
+maintainers:
+  - name: smileisak
+    email: ikaboubi@gmail.com
+    url: https://github.com/smileisak
+home: https://github.com/prymitive/karma
+sources:
+  - https://github.com/prymitive/karma
+keywords:
+  - alertmanager
+  - alerts
+  - dashboard

@@ -1,0 +1,7 @@
+# -- Values of the upstream oauth2-proxy chart. See
+# https://github.com/oauth2-proxy/manifests/blob/main/helm/oauth2-proxy/values.yaml.
+oauth2-proxy: {}
+
+# -- ExternalSecrets rendered in the release namespace, typically the one that
+# writes `oauth2-proxy.config.existingSecret`. Each item: { name, namespace?, spec }.
+externalSecrets: []

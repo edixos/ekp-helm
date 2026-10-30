@@ -1,0 +1,18 @@
+apiVersion: v2
+name: oauth2-proxy
+description: A Helm chart for oauth2-proxy, with its OAuth client credentials delivered by External Secrets
+type: application
+version: 0.1.0
+appVersion: "7.15.5"
+maintainers:
+  - name: smileisak
+    email: ikaboubi@gmail.com
+    url: https://github.com/smileisak
+home: https://oauth2-proxy.github.io/oauth2-proxy/
+sources:
+  - https://github.com/oauth2-proxy/oauth2-proxy
+dependencies:
+  - name: oauth2-proxy
+    version: 10.7.1
+    repository: "https://oauth2-proxy.github.io/manifests"
+    alias: oauth2-proxy
