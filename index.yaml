@@ -3494,6 +3494,28 @@ entries:
   kargo:
   - apiVersion: v2
     appVersion: v1.12.5
+    created: "2026-10-30T13:14:45.295270901Z"
+    dependencies:
+    - alias: kargo
+      name: kargo
+      repository: oci://ghcr.io/akuity/kargo-charts
+      version: 1.12.5
+    description: 'Kargo, packaged for the Klastro platform. Wraps the upstream Akuity
+      Kargo chart and adds the platform extensions it does not provide: ExternalSecrets
+      the Kargo workloads consume, PushSecrets that publish a control plane''s shard
+      credential to another cluster, the HTTPRoute exposing the Kargo API, and the
+      in-cluster identity + RBAC for Kargo controller shards running in other clusters.
+      Every extension is optional and driven entirely by values.'
+    digest: a1a3a37a1b1b38622aaff404787415d8828f1bf82eaf4dedbc5aebd4873d332a
+    name: kargo
+    sources:
+    - https://github.com/akuity/kargo/tree/main/charts/kargo
+    type: application
+    urls:
+    - kargo-0.2.6.tgz
+    version: 0.2.6
+  - apiVersion: v2
+    appVersion: v1.12.5
     created: "2026-10-30T13:07:15.705576859Z"
     dependencies:
     - alias: kargo
@@ -6790,4 +6812,4 @@ entries:
     urls:
     - zammad-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-30T13:07:18.281064144Z"
+generated: "2026-10-30T13:14:45.295750293Z"
