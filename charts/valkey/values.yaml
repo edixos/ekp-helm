@@ -328,7 +328,7 @@ valkey:
   affinity: {}
 
   # Set Deployment strategy. See https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
-  deploymentStrategy: RollingUpdate # @schema enum:[RollingUpdate,Recreate]
+  deploymentStrategy: RollingUpdate  # @schema enum:[RollingUpdate,Recreate]
 
   # See https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints
   topologySpreadConstraints: []
@@ -517,7 +517,6 @@ valkey:
       #   for: 1s
       #   labels:
       #     severity: error
-
 # -- Map of NetworkPolicies to deploy, keyed by policy name. Each value: { namespace?, labels?, annotations?, spec }.
 # The upstream pods carry `app.kubernetes.io/name: valkey` and `app.kubernetes.io/instance: <release>`.
 networkPolicies: {}

@@ -1,6 +1,6 @@
 # kube-ovn-v2
 
-![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.14](https://img.shields.io/badge/AppVersion-1.16.14-informational?style=flat-square)
+![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.15](https://img.shields.io/badge/AppVersion-1.16.15-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn-v2) | v1.16.14 |
+| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn-v2) | v1.16.15 |
 
 ## Maintainers
 
@@ -47,6 +47,11 @@ Helm chart for Kube-OVN
 | kube-ovn.agent | object | "{}" | Configuration for kube-ovn-cni, the agent responsible for handling CNI requests from the CRI. |
 | kube-ovn.agent.annotations | object | `{}` | Annotations to be added to all top-level agent objects (resources under templates/agent) |
 | kube-ovn.agent.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-cni pods. |
+| kube-ovn.agent.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for kube-ovn-cni. Empty fields fall back to the global kube-ovn image. |
+| kube-ovn.agent.image.pullPolicy | string | `""` | Pull policy override for this component image. Defaults to `.image.pullPolicy`. |
+| kube-ovn.agent.image.registry | string | `""` | Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`. |
+| kube-ovn.agent.image.repository | string | `""` | Repository override for this component image. Defaults to `.global.images.kubeovn.repository`. |
+| kube-ovn.agent.image.tag | string | `""` | Tag override for this component image. Defaults to `.global.images.kubeovn.tag`. |
 | kube-ovn.agent.labels | object | `{}` | Labels to be added to all top-level agent objects (resources under templates/agent) |
 | kube-ovn.agent.metrics | object | "{}" | Agent metrics configuration. |
 | kube-ovn.agent.metrics.port | int | `10665` | Configure the port on which the agent service will serve metrics. |
@@ -88,6 +93,11 @@ Helm chart for Kube-OVN
 | kube-ovn.bgpSpeaker.args | list | `[]` | Args passed to the kube-ovn-speaker pod. |
 | kube-ovn.bgpSpeaker.enabled | bool | `false` | Enable the kube-ovn-speaker. |
 | kube-ovn.bgpSpeaker.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-speaker pods. |
+| kube-ovn.bgpSpeaker.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for kube-ovn-speaker. Empty fields fall back to the global kube-ovn image. |
+| kube-ovn.bgpSpeaker.image.pullPolicy | string | `""` | Pull policy override for this component image. Defaults to `.image.pullPolicy`. |
+| kube-ovn.bgpSpeaker.image.registry | string | `""` | Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`. |
+| kube-ovn.bgpSpeaker.image.repository | string | `""` | Repository override for this component image. Defaults to `.global.images.kubeovn.repository`. |
+| kube-ovn.bgpSpeaker.image.tag | string | `""` | Tag override for this component image. Defaults to `.global.images.kubeovn.tag`. |
 | kube-ovn.bgpSpeaker.labels | object | `{}` | Labels to be added to all top-level kube-ovn-speaker objects (resources under templates/speaker) |
 | kube-ovn.bgpSpeaker.nodeSelector | object | `{}` | Node selector to restrict the deployment of the speaker to specific nodes. |
 | kube-ovn.bgpSpeaker.podAnnotations | object | `{}` | Annotations to be added to kube-ovn-speaker pods. |
@@ -102,6 +112,11 @@ Helm chart for Kube-OVN
 | kube-ovn.central.annotations | object | `{}` | Annotations to be added to all top-level ovn-central objects (resources under templates/central) |
 | kube-ovn.central.extraEnv | list | `[]` | Extra environment variables to be added to ovn-central pods. |
 | kube-ovn.central.hcp | object | `{"enabled":false,"namespace":"hcp","nbAddress":"","replicas":3,"sbAddress":"","service":{"nbNodePort":30641,"sbNodePort":30642,"type":"NodePort"},"storage":{"size":"5Gi","storageClassName":""}}` | Deploy ovn-central as a PVC-backed StatefulSet that can be exposed to workload clusters. |
+| kube-ovn.central.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for ovn-central. Empty fields fall back to the global kube-ovn image. |
+| kube-ovn.central.image.pullPolicy | string | `""` | Pull policy override for this component image. Defaults to `.image.pullPolicy`. |
+| kube-ovn.central.image.registry | string | `""` | Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`. |
+| kube-ovn.central.image.repository | string | `""` | Repository override for this component image. Defaults to `.global.images.kubeovn.repository`. |
+| kube-ovn.central.image.tag | string | `""` | Tag override for this component image. Defaults to `.global.images.kubeovn.tag`. |
 | kube-ovn.central.labels | object | `{}` | Labels to be added to all top-level ovn-central objects (resources under templates/central) |
 | kube-ovn.central.nodeAffinity | object | `{"preferredDuringSchedulingIgnoredDuringExecution":[],"requiredDuringSchedulingIgnoredDuringExecution":[]}` | More information on formatting nodeAffinity can be found at https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity |
 | kube-ovn.central.podAnnotations | object | `{}` | Annotations to be added to ovn-central pods. |
@@ -122,7 +137,7 @@ Helm chart for Kube-OVN
 |-----|------|---------|-------------|
 | kube-ovn.clusterDomain | string | `"cluster.local"` | Domain used by the cluster. |
 | kube-ovn.fullnameOverride | string | `""` | Full name override. |
-| kube-ovn.global | object | `{"images":{"kubeovn":{"repository":"kube-ovn","tag":"v1.16.14"}},"registry":{"address":"docker.io/kubeovn","imagePullSecrets":[]}}` | Global configuration. |
+| kube-ovn.global | object | `{"images":{"kubeovn":{"repository":"kube-ovn","tag":"v1.16.15"}},"registry":{"address":"docker.io/kubeovn","imagePullSecrets":[]}}` | Global configuration. |
 | kube-ovn.image | object | "{}" | Image configuration. |
 | kube-ovn.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for all images. |
 | kube-ovn.masterNodes | list | `[]` | Comma-separated list of IPs for each master node. If not specified, fallback to auto-identifying masters based on "masterNodesLabels" |
@@ -138,6 +153,7 @@ Helm chart for Kube-OVN
 | kube-ovn.cni.binaryDirectory | string | `"/opt/cni/bin"` | Location on the node where the agent will inject the Kube-OVN binary. |
 | kube-ovn.cni.configDirectory | string | `"/etc/cni/net.d"` | Location of the CNI configuration on the node. |
 | kube-ovn.cni.configPriority | string | `"01"` | Priority of Kube-OVN within the CNI configuration directory on the node. Should be a string representing a double-digit integer. |
+| kube-ovn.cni.installCNIPlugins | bool | `true` | Whether to install the bundled CNI plugins besides kube-ovn. |
 | kube-ovn.cni.localConfigFile | string | `"/kube-ovn/01-kube-ovn.conflist"` | Location of the CNI configuration inside the agent's pod. |
 | kube-ovn.cni.mountConfigDirectory | string | `"/etc/cni/net.d"` | Location of the CNI configuration to be mounted inside the pod. |
 | kube-ovn.cni.mountToolingDirectory | bool | `false` | Whether to mount the node's tooling directory into the pod. |
@@ -151,6 +167,11 @@ Helm chart for Kube-OVN
 | kube-ovn.controller | object | "{}" | Configuration for kube-ovn-controller, the controller responsible for syncing K8s with OVN. |
 | kube-ovn.controller.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-controller objects (resources under templates/controller) |
 | kube-ovn.controller.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-controller pods. |
+| kube-ovn.controller.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for kube-ovn-controller. Empty fields fall back to the global kube-ovn image. |
+| kube-ovn.controller.image.pullPolicy | string | `""` | Pull policy override for this component image. Defaults to `.image.pullPolicy`. |
+| kube-ovn.controller.image.registry | string | `""` | Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`. |
+| kube-ovn.controller.image.repository | string | `""` | Repository override for this component image. Defaults to `.global.images.kubeovn.repository`. |
+| kube-ovn.controller.image.tag | string | `""` | Tag override for this component image. Defaults to `.global.images.kubeovn.tag`. |
 | kube-ovn.controller.labels | object | `{}` | Labels to be added to all top-level kube-ovn-controller objects (resources under templates/controller) |
 | kube-ovn.controller.leaderElection | object | `{"leaseDuration":"","renewDeadline":"","retryPeriod":""}` | Leader election timing configuration. |
 | kube-ovn.controller.leaderElection.leaseDuration | string | `""` | Duration non-leader candidates wait after observing a renewal before attempting to acquire leadership. Empty uses the controller default of 30s. |
@@ -175,7 +196,7 @@ Helm chart for Kube-OVN
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| kube-ovn.features | object | `{"ENABLE_ANP":false,"ENABLE_BIND_LOCAL_IP":true,"ENABLE_DNS_NAME_RESOLVER":false,"ENABLE_OVN_LB_PREFER_LOCAL":false,"LS_CT_SKIP_DST_LPORT_IPS":true,"LS_DNAT_MOD_DL_DST":true,"OVSDB_CON_TIMEOUT":3,"OVSDB_INACTIVITY_TIMEOUT":10,"SET_VXLAN_TX_OFF":false,"enableExternalVpcs":false,"enableHardwareOffload":false,"enableKeepVmIps":true,"enableLiveMigrationOptimization":true,"enableLoadbalancer":true,"enableLoadbalancerService":false,"enableNatGateways":true,"enableNetworkPolicies":true,"enableOvnInterconnections":false,"enableOvnIpsec":false,"enableSecureServing":false,"enableTproxy":false,"enableU2OInterconnections":false}` | Features of Kube-OVN we wish to enable/disable. |
+| kube-ovn.features | object | `{"ENABLE_ANP":false,"ENABLE_BIND_LOCAL_IP":true,"ENABLE_DNS_NAME_RESOLVER":false,"ENABLE_OVN_LB_PREFER_LOCAL":false,"LS_CT_SKIP_DST_LPORT_IPS":true,"LS_DNAT_MOD_DL_DST":true,"OVSDB_CON_TIMEOUT":3,"OVSDB_INACTIVITY_TIMEOUT":10,"SET_VXLAN_TX_OFF":false,"enableExternalVpcs":false,"enableHardwareOffload":false,"enableKeepVmIps":true,"enableLiveMigrationOptimization":true,"enableLoadbalancer":true,"enableLoadbalancerService":false,"enableNatGateways":true,"enableNetworkPolicies":true,"enableOvnInterconnections":false,"enableOvnIpsec":false,"enableRecompute":true,"enableSecureServing":false,"enableTproxy":false,"enableU2OInterconnections":false}` | Features of Kube-OVN we wish to enable/disable. |
 | kube-ovn.features.enableExternalVpcs | bool | `false` | Enable external VPCs |
 | kube-ovn.features.enableHardwareOffload | bool | `false` | Enable hardware offloads |
 | kube-ovn.features.enableKeepVmIps | bool | `true` | Enable persistent VM IPs |
@@ -186,6 +207,7 @@ Helm chart for Kube-OVN
 | kube-ovn.features.enableNetworkPolicies | bool | `true` | Enable Kube-OVN network policies |
 | kube-ovn.features.enableOvnInterconnections | bool | `false` | Enable OVN interconnections |
 | kube-ovn.features.enableOvnIpsec | bool | `false` | Enable IPSEC |
+| kube-ovn.features.enableRecompute | bool | `true` | Enable periodic ovn-controller recompute |
 | kube-ovn.features.enableSecureServing | bool | `false` | Enable secure serving |
 | kube-ovn.features.enableTproxy | bool | `false` | Enable TProxy |
 | kube-ovn.features.enableU2OInterconnections | bool | `false` | Enable underlay to overlay interconnections |
@@ -196,6 +218,11 @@ Helm chart for Kube-OVN
 |-----|------|---------|-------------|
 | kube-ovn.ic | object | "{}" | Configuration for the OVN interconnection (IC) controller. |
 | kube-ovn.ic.extraEnv | list | `[]` | Extra environment variables to be added to ovn-ic-controller pods. |
+| kube-ovn.ic.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for the OVN IC controller. Empty fields fall back to the global kube-ovn image. |
+| kube-ovn.ic.image.pullPolicy | string | `""` | Pull policy override for this component image. Defaults to `.image.pullPolicy`. |
+| kube-ovn.ic.image.registry | string | `""` | Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`. |
+| kube-ovn.ic.image.repository | string | `""` | Repository override for this component image. Defaults to `.global.images.kubeovn.repository`. |
+| kube-ovn.ic.image.tag | string | `""` | Tag override for this component image. Defaults to `.global.images.kubeovn.tag`. |
 | kube-ovn.ic.nodeAffinity | object | `{"preferredDuringSchedulingIgnoredDuringExecution":[],"requiredDuringSchedulingIgnoredDuringExecution":[]}` | More information on formatting nodeAffinity can be found at https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity |
 
 ### Kubelet configuration
@@ -219,6 +246,11 @@ Helm chart for Kube-OVN
 | kube-ovn.monitor | object | "{}" | Configuration for kube-ovn-monitor, the agent monitoring and returning metrics for the northbound/southbound DBs and northd. |
 | kube-ovn.monitor.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-monitor objects (resources under templates/monitor) |
 | kube-ovn.monitor.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-monitor pods. |
+| kube-ovn.monitor.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for kube-ovn-monitor. Empty fields fall back to the global kube-ovn image. |
+| kube-ovn.monitor.image.pullPolicy | string | `""` | Pull policy override for this component image. Defaults to `.image.pullPolicy`. |
+| kube-ovn.monitor.image.registry | string | `""` | Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`. |
+| kube-ovn.monitor.image.repository | string | `""` | Repository override for this component image. Defaults to `.global.images.kubeovn.repository`. |
+| kube-ovn.monitor.image.tag | string | `""` | Tag override for this component image. Defaults to `.global.images.kubeovn.tag`. |
 | kube-ovn.monitor.labels | object | `{}` | Labels to be added to all top-level kube-ovn-monitor objects (resources under templates/monitor) |
 | kube-ovn.monitor.metrics | object | "{}" | kube-ovn-monitor metrics configuration. |
 | kube-ovn.monitor.metrics.port | int | `10661` | Configure the port on which the kube-ovn-monitor service will serve metrics. |
@@ -239,11 +271,11 @@ Helm chart for Kube-OVN
 | kube-ovn.natGw.bgpSpeaker.image | object | "{}" | Image used by the NAT gateway sidecar. |
 | kube-ovn.natGw.bgpSpeaker.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | kube-ovn.natGw.bgpSpeaker.image.repository | string | `"docker.io/kubeovn/kube-ovn"` | Image repository. |
-| kube-ovn.natGw.bgpSpeaker.image.tag | string | `"v1.16.14"` | Image tag. |
+| kube-ovn.natGw.bgpSpeaker.image.tag | string | `"v1.16.15"` | Image tag. |
 | kube-ovn.natGw.image | object | "{}" | Image used by the NAT gateway. |
 | kube-ovn.natGw.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | kube-ovn.natGw.image.repository | string | `"docker.io/kubeovn/vpc-nat-gateway"` | Image repository. |
-| kube-ovn.natGw.image.tag | string | `"v1.16.14"` | Image tag. |
+| kube-ovn.natGw.image.tag | string | `"v1.16.15"` | Image tag. |
 | kube-ovn.natGw.namePrefix | string | `"vpc-nat-gw"` | Prefix appended to the name of the NAT gateways when generating the Pods. If this value is changed after NAT GWs have been provisioned, every NAT gateway will need to be manually destroyed and recreated. |
 
 ### Network Policies
@@ -310,10 +342,20 @@ Helm chart for Kube-OVN
 | kube-ovn.ovsOvn.dpdkHybrid | object | "{}" | DPDK-hybrid support for OVS. ref: https://kubeovn.github.io/docs/v1.12.x/en/advance/dpdk/ |
 | kube-ovn.ovsOvn.dpdkHybrid.affinity | object | `{}` | Affinity for the ovs-ovn-dpdk DaemonSet. |
 | kube-ovn.ovsOvn.dpdkHybrid.enabled | bool | `false` | Enables DPDK-hybrid support on OVS. |
+| kube-ovn.ovsOvn.dpdkHybrid.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for ovs-ovn-dpdk. Empty fields fall back to the global kube-ovn image and the DPDK tag below. |
+| kube-ovn.ovsOvn.dpdkHybrid.image.pullPolicy | string | `""` | Pull policy override for this component image. Defaults to `.image.pullPolicy`. |
+| kube-ovn.ovsOvn.dpdkHybrid.image.registry | string | `""` | Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`. |
+| kube-ovn.ovsOvn.dpdkHybrid.image.repository | string | `""` | Repository override for this component image. Defaults to `.global.images.kubeovn.repository`. |
+| kube-ovn.ovsOvn.dpdkHybrid.image.tag | string | `""` | Tag override for this component image. Defaults to `.ovsOvn.dpdkHybrid.tag`. |
 | kube-ovn.ovsOvn.dpdkHybrid.nodeSelector | object | `{"kubernetes.io/os":"linux","ovn.kubernetes.io/ovs_dp_type":"userspace"}` | Node selector to restrict the deployment of DPDK-hybrid OVS to specific nodes. |
 | kube-ovn.ovsOvn.dpdkHybrid.resources | object | `{"limits":{"cpu":"2","ephemeral-storage":"1Gi","hugepages-2Mi":"1Gi","memory":"1000Mi"},"requests":{"cpu":"200m","memory":"200Mi"}}` | ovs-ovn resource limits & requests when DPDK-hybrid is enabled. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
-| kube-ovn.ovsOvn.dpdkHybrid.tag | string | `"v1.16.14-dpdk"` | DPDK image tag. |
+| kube-ovn.ovsOvn.dpdkHybrid.tag | string | `"v1.16.15-dpdk"` | DPDK image tag. |
 | kube-ovn.ovsOvn.extraEnv | list | `[]` | Extra environment variables to be added to ovs-ovn pods. |
+| kube-ovn.ovsOvn.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for ovs-ovn. Empty fields fall back to the global kube-ovn image. |
+| kube-ovn.ovsOvn.image.pullPolicy | string | `""` | Pull policy override for this component image. Defaults to `.image.pullPolicy`. |
+| kube-ovn.ovsOvn.image.registry | string | `""` | Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`. |
+| kube-ovn.ovsOvn.image.repository | string | `""` | Repository override for this component image. Defaults to `.global.images.kubeovn.repository`. |
+| kube-ovn.ovsOvn.image.tag | string | `""` | Tag override for this component image. Defaults to `.global.images.kubeovn.tag`. |
 | kube-ovn.ovsOvn.labels | object | `{}` | Labels to be added to all top-level ovs-ovn objects (resources under templates/ovs-ovn) |
 | kube-ovn.ovsOvn.nodeSelector | object | `{"kubernetes.io/os":"linux"}` | Node selector to restrict the deployment of ovs-ovn to specific nodes. |
 | kube-ovn.ovsOvn.ovnDirectory | string | `"/etc/origin/ovn"` | Directory on the node where Open Virtual Network (OVN) lives. |
@@ -341,6 +383,11 @@ Helm chart for Kube-OVN
 | kube-ovn.pinger | object | "{}" | Configuration for kube-ovn-pinger, the agent monitoring and returning metrics for OVS/external connectivity. |
 | kube-ovn.pinger.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-pinger objects (resources under templates/pinger) |
 | kube-ovn.pinger.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-pinger pods. |
+| kube-ovn.pinger.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for kube-ovn-pinger. Empty fields fall back to the global kube-ovn image. |
+| kube-ovn.pinger.image.pullPolicy | string | `""` | Pull policy override for this component image. Defaults to `.image.pullPolicy`. |
+| kube-ovn.pinger.image.registry | string | `""` | Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`. |
+| kube-ovn.pinger.image.repository | string | `""` | Repository override for this component image. Defaults to `.global.images.kubeovn.repository`. |
+| kube-ovn.pinger.image.tag | string | `""` | Tag override for this component image. Defaults to `.global.images.kubeovn.tag`. |
 | kube-ovn.pinger.labels | object | `{}` | Labels to be added to all top-level kube-ovn-pinger objects (resources under templates/pinger) |
 | kube-ovn.pinger.metrics | object | "{}" | kube-ovn-pinger metrics configuration. |
 | kube-ovn.pinger.metrics.port | int | `8080` | Configure the port on which the kube-ovn-monitor service will serve metrics. |
@@ -365,6 +412,11 @@ Helm chart for Kube-OVN
 | kube-ovn.validatingWebhook.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-webhook objects (resources under templates/webhook) |
 | kube-ovn.validatingWebhook.enabled | bool | `false` | Enable the deployment of the validating webhook. |
 | kube-ovn.validatingWebhook.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-webhook pods. |
+| kube-ovn.validatingWebhook.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for kube-ovn-webhook. Empty fields fall back to the global kube-ovn image. |
+| kube-ovn.validatingWebhook.image.pullPolicy | string | `""` | Pull policy override for this component image. Defaults to `.image.pullPolicy`. |
+| kube-ovn.validatingWebhook.image.registry | string | `""` | Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`. |
+| kube-ovn.validatingWebhook.image.repository | string | `""` | Repository override for this component image. Defaults to `.global.images.kubeovn.repository`. |
+| kube-ovn.validatingWebhook.image.tag | string | `""` | Tag override for this component image. Defaults to `.global.images.kubeovn.tag`. |
 | kube-ovn.validatingWebhook.labels | object | `{}` | Labels to be added to all top-level kube-ovn-webhook objects (resources under templates/webhook) |
 | kube-ovn.validatingWebhook.podAnnotations | object | `{}` | Annotations to be added to kube-ovn-webhook pods. |
 | kube-ovn.validatingWebhook.podLabels | object | `{}` | Labels to be added to kube-ovn-webhook pods. |
@@ -428,7 +480,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.10"
+    targetRevision: "0.1.11"
     chart: kube-ovn-v2
     path: ''
     helm:

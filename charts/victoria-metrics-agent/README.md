@@ -1,6 +1,6 @@
 # victoria-metrics-agent
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.154.0](https://img.shields.io/badge/AppVersion-v1.154.0-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.155.0](https://img.shields.io/badge/AppVersion-v1.155.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmagent(victoria-metrics-agent) | 0.50.0 |
+| https://victoriametrics.github.io/helm-charts/ | vmagent(victoria-metrics-agent) | 0.51.0 |
 
 ## Maintainers
 
@@ -160,6 +160,7 @@ vmagent, packaged for the Edixos Kubernetes Platform. Wraps the upstream Victori
 | vmagent.service.ipFamilyPolicy | string | `""` | Service IP family policy. Check [here](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services) for details. |
 | vmagent.service.loadBalancerIP | string | `""` | Service load balancer IP |
 | vmagent.service.loadBalancerSourceRanges | list | `[]` | Load balancer source range |
+| vmagent.service.portOverrides | object | `{}` | Per-port Service overrides, keyed by port name. Each entry may override port, protocol, targetPort, nodePort and/or appProtocol |
 | vmagent.service.selectorLabels | object | `{}` | Extra selector labels common for service only |
 | vmagent.service.servicePort | string | `""` | Service port |
 | vmagent.service.trafficDistribution | string | `""` | Traffic Distribution. Check [Traffic distribution](https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution) |
@@ -210,7 +211,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: victoria-metrics-agent
     path: ''
     helm:

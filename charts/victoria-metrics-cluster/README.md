@@ -1,6 +1,6 @@
 # victoria-metrics-cluster
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.154.0](https://img.shields.io/badge/AppVersion-v1.154.0-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.155.0](https://img.shields.io/badge/AppVersion-v1.155.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmcluster(victoria-metrics-cluster) | 0.53.0 |
+| https://victoriametrics.github.io/helm-charts/ | vmcluster(victoria-metrics-cluster) | 0.54.0 |
 
 ## Maintainers
 
@@ -138,6 +138,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmauth.service.loadBalancerIP | string | `""` | Service load balancer IP |
 | vmcluster.vmauth.service.loadBalancerSourceRanges | list | `[]` | Load balancer source range |
 | vmcluster.vmauth.service.nodePort | string | `""` | Service node port |
+| vmcluster.vmauth.service.portOverrides | object | `{}` | Per-port Service overrides, keyed by port name. Each entry may override port, protocol, targetPort, nodePort and/or appProtocol |
 | vmcluster.vmauth.service.servicePort | string | `""` | Service port |
 | vmcluster.vmauth.service.trafficDistribution | string | `""` | Traffic Distribution. Check [Traffic distribution](https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution) |
 | vmcluster.vmauth.service.type | string | `"ClusterIP"` | Service type |
@@ -236,6 +237,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vminsert.service.loadBalancerIP | string | `""` | Service load balancer IP |
 | vmcluster.vminsert.service.loadBalancerSourceRanges | list | `[]` | Load balancer source range |
 | vmcluster.vminsert.service.nodePort | string | `""` | Service node port |
+| vmcluster.vminsert.service.portOverrides | object | `{}` | Per-port Service overrides, keyed by port name. Each entry may override port, protocol, targetPort, nodePort and/or appProtocol |
 | vmcluster.vminsert.service.servicePort | string | `""` | Service port |
 | vmcluster.vminsert.service.trafficDistribution | string | `""` | Traffic Distribution. Check [Traffic distribution](https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution) |
 | vmcluster.vminsert.service.type | string | `"ClusterIP"` | Service type |
@@ -335,7 +337,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmselect.runtimeClassName | string | `""` | Name of the [RuntimeClass](https://kubernetes.io/docs/concepts/containers/runtime-class/) used to run the pod, e.g. "gvisor" |
 | vmcluster.vmselect.securityContext | object | `{"enabled":true}` | Pod's security context. Details are [here](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) |
 | vmcluster.vmselect.service.annotations | object | `{}` | Service annotations |
-| vmcluster.vmselect.service.clusterIP | string | `""` | Service ClusterIP |
+| vmcluster.vmselect.service.clusterIP | string | `nil` | Service ClusterIP. When unset, the Service is a regular ClusterIP Service with legacy naming and headless (`None`), as in the VictoriaMetrics operator, with operator naming |
 | vmcluster.vmselect.service.enabled | bool | `true` | Create VMSelect service |
 | vmcluster.vmselect.service.externalIPs | list | `[]` | Service external IPs. Details are [here](https://kubernetes.io/docs/concepts/services-networking/service/#external-ips) |
 | vmcluster.vmselect.service.externalTrafficPolicy | string | `""` | Service external traffic policy. Check [here](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip) for details |
@@ -347,6 +349,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmselect.service.loadBalancerIP | string | `""` | Service load balancer IP |
 | vmcluster.vmselect.service.loadBalancerSourceRanges | list | `[]` | Load balancer source range |
 | vmcluster.vmselect.service.nodePort | string | `""` | Service node port |
+| vmcluster.vmselect.service.portOverrides | object | `{}` | Per-port Service overrides, keyed by port name. Each entry may override port, protocol, targetPort, nodePort and/or appProtocol |
 | vmcluster.vmselect.service.publishNotReadyAddresses | bool | `false` | Publish not-ready addresses. Set this to `true` together with `clusterIP: None` when vmselect is discovered via its headless service (e.g. behind vmauth balancing) before pods pass readiness checks |
 | vmcluster.vmselect.service.servicePort | string | `""` | Service port |
 | vmcluster.vmselect.service.trafficDistribution | string | `""` | Traffic Distribution. Check [Traffic distribution](https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution) |
@@ -408,7 +411,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmstorage.persistentVolume.existingClaim | string | `""` | Existing Claim name. Requires vmstorage.persistentVolume.enabled: true. If defined, PVC must be created manually before volume will be bound |
 | vmcluster.vmstorage.persistentVolume.extraLabels | object | `{}` | Persistent volume extra labels |
 | vmcluster.vmstorage.persistentVolume.mountPath | string | `"/storage"` | Data root path. Vmstorage data Persistent Volume mount root path |
-| vmcluster.vmstorage.persistentVolume.name | string | `"vmstorage-volume"` | Override Persistent Volume Claim name |
+| vmcluster.vmstorage.persistentVolume.name | string | `""` | Override Persistent Volume Claim template name. Defaults to `vmstorage-volume`, or to `vmstorage-db` when `useLegacyNaming` is `false` |
 | vmcluster.vmstorage.persistentVolume.size | string | `"8Gi"` | Size of the volume. |
 | vmcluster.vmstorage.persistentVolume.storageClassName | string | `""` | Storage class name. Will be empty if not set |
 | vmcluster.vmstorage.persistentVolume.subPath | string | `""` | Mount subpath |
@@ -441,6 +444,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmstorage.service.ipFamilyPolicy | string | `""` | Service IP family policy. Check [here](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services) for details. |
 | vmcluster.vmstorage.service.labels | object | `{}` | Service labels |
 | vmcluster.vmstorage.service.nodePort | string | `""` | Service node port |
+| vmcluster.vmstorage.service.portOverrides | object | `{}` | Per-port Service overrides, keyed by port name. Each entry may override port, protocol, targetPort, nodePort and/or appProtocol |
 | vmcluster.vmstorage.service.publishNotReadyAddresses | bool | `true` | Publish not-ready addresses for the headless service, so vminsert/vmselect can discover vmstorage pods via DNS before they pass readiness checks |
 | vmcluster.vmstorage.service.servicePort | string | `""` | Service port |
 | vmcluster.vmstorage.service.trafficDistribution | string | `""` | Traffic Distribution. Check [Traffic distribution](https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution) |
@@ -512,7 +516,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.4"
+    targetRevision: "0.1.5"
     chart: victoria-metrics-cluster
     path: ''
     helm:

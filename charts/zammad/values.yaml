@@ -106,6 +106,9 @@ zammad:
       pass: ""
       port: 9200
       reindex: false
+      # number of parallel worker processes (CPU cores) used when rebuilding the search index
+      # (zammad-init job and reindex cronjob); 0 indexes in a single process without forking
+      reindexWorkers: 0
       schema: http
       user: ""
 
@@ -333,8 +336,7 @@ zammad:
         pass: zammad
 
     scheduler:
-      # This component may only run once per cluster, so only 0 (disabled) and 1 are supported.
-      #   Higher values are capped to 1.
+      # This component may only run once per cluster, so only 0 (disabled) and 1 are allowed.
       replicas: 1
       resources: {}
         # requests:
@@ -383,8 +385,8 @@ zammad:
         #      app.kubernetes.io/name: zammad
 
     storageVolume:
-      # Enable this for 'File' based storage in Zammad. You must provide an externally managed 'extistingClaim'
-      #   with 'ReadWriteMany' permisssion in this case.
+      # Enable this for 'File' based storage in Zammad. This requires 'existingClaim': an externally
+      #   managed PersistentVolumeClaim with 'ReadWriteMany' access.
       enabled: false
       ##
       ## A manually managed Persistent Volume and Claim
@@ -413,8 +415,7 @@ zammad:
       #   readOnly: true
 
     websocket:
-      # This component may only run once per cluster, so only 0 (disabled) and 1 are supported.
-      #   Higher values are capped to 1.
+      # This component may only run once per cluster, so only 0 (disabled) and 1 are allowed.
       replicas: 1
       startupProbe:
         tcpSocket:
@@ -533,7 +534,7 @@ zammad:
         enabled: true
         image:
           repository: alpine
-          tag: "3.24.2"
+          tag: "3.24.3"
           pullPolicy: IfNotPresent
         command:
           - /bin/sh
@@ -548,11 +549,12 @@ zammad:
           #   cpu: 200m
           #   memory: 512Mi
         securityContext:
+          allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
           capabilities:
             drop:
               - ALL
-          privileged: true
+          privileged: false
           runAsNonRoot: false
           runAsUser: 0
       zammad:

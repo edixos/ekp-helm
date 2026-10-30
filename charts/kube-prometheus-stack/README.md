@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.17](https://img.shields.io/badge/Version-0.1.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.94.1](https://img.shields.io/badge/AppVersion-v0.94.1-informational?style=flat-square)
+![Version: 0.1.18](https://img.shields.io/badge/Version-0.1.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.94.2](https://img.shields.io/badge/AppVersion-v0.94.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 92.6.0 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 92.14.1 |
 
 ## Description
 
@@ -213,6 +213,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.serviceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.alertmanager.serviceMonitor.sampleLimit | int | `0` |  |
 | kubePrometheusStack.alertmanager.serviceMonitor.scheme | string | `""` |  |
+| kubePrometheusStack.alertmanager.serviceMonitor.scrapeClass | string | `""` |  |
 | kubePrometheusStack.alertmanager.serviceMonitor.selfMonitor | bool | `true` |  |
 | kubePrometheusStack.alertmanager.serviceMonitor.targetLimit | int | `0` |  |
 | kubePrometheusStack.alertmanager.serviceMonitor.tlsConfig | object | `{}` |  |
@@ -257,6 +258,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.coreDns.serviceMonitor.proxyUrl | string | `""` |  |
 | kubePrometheusStack.coreDns.serviceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.coreDns.serviceMonitor.sampleLimit | int | `0` |  |
+| kubePrometheusStack.coreDns.serviceMonitor.scrapeClass | string | `""` |  |
 | kubePrometheusStack.coreDns.serviceMonitor.selector | object | `{}` |  |
 | kubePrometheusStack.coreDns.serviceMonitor.targetLabels | list | `[]` |  |
 | kubePrometheusStack.coreDns.serviceMonitor.targetLimit | int | `0` |  |
@@ -508,6 +510,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeApiServer.serviceMonitor.proxyUrl | string | `""` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.sampleLimit | int | `0` |  |
+| kubePrometheusStack.kubeApiServer.serviceMonitor.scrapeClass | string | `""` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.selector.matchLabels.component | string | `"apiserver"` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.selector.matchLabels.provider | string | `"kubernetes"` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.targetLabels | list | `[]` |  |
@@ -542,6 +545,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.proxyUrl | string | `""` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.sampleLimit | int | `0` |  |
+| kubePrometheusStack.kubeControllerManager.serviceMonitor.scrapeClass | string | `""` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.selector | object | `{}` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.targetLabels | list | `[]` |  |
 | kubePrometheusStack.kubeControllerManager.serviceMonitor.targetLimit | int | `0` |  |
@@ -572,6 +576,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeDns.serviceMonitor.proxyUrl | string | `""` |  |
 | kubePrometheusStack.kubeDns.serviceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.kubeDns.serviceMonitor.sampleLimit | int | `0` |  |
+| kubePrometheusStack.kubeDns.serviceMonitor.scrapeClass | string | `""` |  |
 | kubePrometheusStack.kubeDns.serviceMonitor.selector | object | `{}` |  |
 | kubePrometheusStack.kubeDns.serviceMonitor.targetLabels | list | `[]` |  |
 | kubePrometheusStack.kubeDns.serviceMonitor.targetLimit | int | `0` |  |
@@ -600,6 +605,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeEtcd.serviceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.sampleLimit | int | `0` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.scheme | string | `"http"` |  |
+| kubePrometheusStack.kubeEtcd.serviceMonitor.scrapeClass | string | `""` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.selector | object | `{}` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.targetLabels | list | `[]` |  |
 | kubePrometheusStack.kubeEtcd.serviceMonitor.targetLimit | int | `0` |  |
@@ -630,6 +636,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeProxy.serviceMonitor.proxyUrl | string | `""` |  |
 | kubePrometheusStack.kubeProxy.serviceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.kubeProxy.serviceMonitor.sampleLimit | int | `0` |  |
+| kubePrometheusStack.kubeProxy.serviceMonitor.scrapeClass | string | `""` |  |
 | kubePrometheusStack.kubeProxy.serviceMonitor.selector | object | `{}` |  |
 | kubePrometheusStack.kubeProxy.serviceMonitor.targetLabels | list | `[]` |  |
 | kubePrometheusStack.kubeProxy.serviceMonitor.targetLimit | int | `0` |  |
@@ -665,6 +672,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeScheduler.serviceMonitor.resource.metricRelabelings | list | `[]` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.resource.relabelings | list | `[]` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.sampleLimit | int | `0` |  |
+| kubePrometheusStack.kubeScheduler.serviceMonitor.scrapeClass | string | `""` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.selector | object | `{}` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.targetLabels | list | `[]` |  |
 | kubePrometheusStack.kubeScheduler.serviceMonitor.targetLimit | int | `0` |  |
@@ -691,7 +699,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubelet.serviceMonitor.cAdvisorMetricRelabelings[1].regex | string | `"container_fs_(io_current|io_time_seconds_total|io_time_weighted_seconds_total|reads_merged_total|sector_reads_total|sector_writes_total|writes_merged_total)"` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.cAdvisorMetricRelabelings[1].sourceLabels[0] | string | `"__name__"` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.cAdvisorMetricRelabelings[2].action | string | `"drop"` |  |
-| kubePrometheusStack.kubelet.serviceMonitor.cAdvisorMetricRelabelings[2].regex | string | `"container_memory_(mapped_file|swap)"` |  |
+| kubePrometheusStack.kubelet.serviceMonitor.cAdvisorMetricRelabelings[2].regex | string | `"container_memory_mapped_file"` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.cAdvisorMetricRelabelings[2].sourceLabels[0] | string | `"__name__"` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.cAdvisorMetricRelabelings[3].action | string | `"drop"` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.cAdvisorMetricRelabelings[3].regex | string | `"container_(file_descriptors|tasks_state|threads_max)"` |  |
@@ -743,6 +751,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubelet.serviceMonitor.resourceRelabelings[0].sourceLabels[0] | string | `"__metrics_path__"` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.resourceRelabelings[0].targetLabel | string | `"metrics_path"` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.sampleLimit | int | `0` |  |
+| kubePrometheusStack.kubelet.serviceMonitor.scrapeClass | string | `""` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.targetLabels | list | `[]` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.targetLimit | int | `0` |  |
 | kubePrometheusStack.kubelet.serviceMonitor.tlsConfig.ca.configMap.key | string | `"ca.crt"` |  |
@@ -791,11 +800,15 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus-windows-exporter.prometheus.monitor.jobLabel | string | `"jobLabel"` |  |
 | kubePrometheusStack.prometheus-windows-exporter.releaseLabel | bool | `true` |  |
 | kubePrometheusStack.prometheus.additionalLabels | object | `{}` |  |
-| kubePrometheusStack.prometheus.additionalPodMonitors | list | `[]` |  |
+| kubePrometheusStack.prometheus.additionalPodMonitors | string | `nil` |  |
 | kubePrometheusStack.prometheus.additionalRulesForClusterRole | list | `[]` |  |
-| kubePrometheusStack.prometheus.additionalServiceMonitors | list | `[]` |  |
+| kubePrometheusStack.prometheus.additionalServiceMonitors | string | `nil` |  |
 | kubePrometheusStack.prometheus.agentMode | bool | `false` |  |
 | kubePrometheusStack.prometheus.annotations | object | `{}` |  |
+| kubePrometheusStack.prometheus.controlPlaneScrapeClass.authorization.credentialsFile | string | `"/var/run/secrets/kubernetes.io/serviceaccount/token"` |  |
+| kubePrometheusStack.prometheus.controlPlaneScrapeClass.authorization.type | string | `"Bearer"` |  |
+| kubePrometheusStack.prometheus.controlPlaneScrapeClass.enabled | bool | `false` |  |
+| kubePrometheusStack.prometheus.controlPlaneScrapeClass.name | string | `"kube-prometheus-stack-control-plane"` |  |
 | kubePrometheusStack.prometheus.enabled | bool | `true` |  |
 | kubePrometheusStack.prometheus.extraSecret.annotations | object | `{}` |  |
 | kubePrometheusStack.prometheus.extraSecret.data | object | `{}` |  |
@@ -874,7 +887,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.prometheusSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.repository | string | `"prometheus/prometheus"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.15.0-distroless"` |  |
+| kubePrometheusStack.prometheus.prometheusSpec.image.tag | string | `"v3.15.1-distroless"` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.keepDroppedTargets | int | `0` |  |
 | kubePrometheusStack.prometheus.prometheusSpec.labelLimit | int | `0` |  |
@@ -1030,6 +1043,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.serviceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.prometheus.serviceMonitor.sampleLimit | int | `0` |  |
 | kubePrometheusStack.prometheus.serviceMonitor.scheme | string | `""` |  |
+| kubePrometheusStack.prometheus.serviceMonitor.scrapeClass | string | `""` |  |
 | kubePrometheusStack.prometheus.serviceMonitor.selfMonitor | bool | `true` |  |
 | kubePrometheusStack.prometheus.serviceMonitor.targetLimit | int | `0` |  |
 | kubePrometheusStack.prometheus.serviceMonitor.tlsConfig | object | `{}` |  |
@@ -1194,6 +1208,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.podAnnotations | object | `{}` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.priorityClassName | string | `""` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.resources | object | `{}` |  |
+| kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.secretType | string | `"kubernetes.io/tls"` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.securityContext.runAsGroup | int | `2000` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.securityContext.runAsNonRoot | bool | `true` |  |
 | kubePrometheusStack.prometheusOperator.admissionWebhooks.patch.securityContext.runAsUser | int | `2000` |  |
@@ -1305,6 +1320,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.serviceMonitor.metricRelabelings | list | `[]` |  |
 | kubePrometheusStack.prometheusOperator.serviceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.prometheusOperator.serviceMonitor.sampleLimit | int | `0` |  |
+| kubePrometheusStack.prometheusOperator.serviceMonitor.scrapeClass | string | `""` |  |
 | kubePrometheusStack.prometheusOperator.serviceMonitor.scrapeTimeout | string | `""` |  |
 | kubePrometheusStack.prometheusOperator.serviceMonitor.selfMonitor | bool | `true` |  |
 | kubePrometheusStack.prometheusOperator.serviceMonitor.targetLimit | int | `0` |  |
@@ -1313,7 +1329,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.thanosImage.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.prometheusOperator.thanosImage.repository | string | `"thanos/thanos"` |  |
 | kubePrometheusStack.prometheusOperator.thanosImage.sha | string | `""` |  |
-| kubePrometheusStack.prometheusOperator.thanosImage.tag | string | `"v0.42.4"` |  |
+| kubePrometheusStack.prometheusOperator.thanosImage.tag | string | `"v0.42.5"` |  |
 | kubePrometheusStack.prometheusOperator.thanosRulerInstanceNamespaces | list | `[]` |  |
 | kubePrometheusStack.prometheusOperator.thanosRulerInstanceSelector | string | `""` |  |
 | kubePrometheusStack.prometheusOperator.tls.enabled | bool | `true` |  |
@@ -1376,6 +1392,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.serviceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.thanosRuler.serviceMonitor.sampleLimit | int | `0` |  |
 | kubePrometheusStack.thanosRuler.serviceMonitor.scheme | string | `""` |  |
+| kubePrometheusStack.thanosRuler.serviceMonitor.scrapeClass | string | `""` |  |
 | kubePrometheusStack.thanosRuler.serviceMonitor.selfMonitor | bool | `true` |  |
 | kubePrometheusStack.thanosRuler.serviceMonitor.targetLimit | int | `0` |  |
 | kubePrometheusStack.thanosRuler.serviceMonitor.tlsConfig | object | `{}` |  |
@@ -1406,7 +1423,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.image.repository | string | `"thanos/thanos"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.thanosRuler.thanosRulerSpec.image.tag | string | `"v0.42.4"` |  |
+| kubePrometheusStack.thanosRuler.thanosRulerSpec.image.tag | string | `"v0.42.5"` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.imagePullPolicy | string | `""` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.thanosRuler.thanosRulerSpec.labels | object | `{}` |  |
@@ -1487,7 +1504,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.17"
+    targetRevision: "0.1.18"
     chart: kube-prometheus-stack
     path: ''
     helm:

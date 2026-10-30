@@ -69,7 +69,7 @@ kube-ovn:
     images:
       kubeovn:
         repository: kube-ovn
-        tag: v1.16.14
+        tag: v1.16.15
 
   # -- Image configuration.
   # @section -- Global parameters
@@ -288,6 +288,9 @@ kube-ovn:
     # -- Enable TProxy
     # @section -- Opt-in/out Features
     enableTproxy: false
+    # -- Enable periodic ovn-controller recompute
+    # @section -- Opt-in/out Features
+    enableRecompute: true
     # -- Enable OVN interconnections
     # @section -- Opt-in/out Features
     enableOvnInterconnections: false
@@ -337,6 +340,9 @@ kube-ovn:
     # Should be a string representing a double-digit integer.
     # @section -- CNI configuration
     configPriority: "01"
+    # -- Whether to install the bundled CNI plugins besides kube-ovn.
+    # @section -- CNI configuration
+    installCNIPlugins: true
     # -- Whether to use Kube-OVN as non-primary CNI. When set to true, Kube-OVN will not allocate/handle primary network interfaces.
     # Interfaces are created using Network Attachment Definitions (NADs)
     # @section -- CNI configuration
@@ -351,6 +357,21 @@ kube-ovn:
     # -- Enable the deployment of the validating webhook.
     # @section -- Validating webhook configuration
     enabled: false
+    # -- Override image settings for kube-ovn-webhook. Empty fields fall back to the global kube-ovn image.
+    # @section -- Validating webhook configuration
+    image:
+      # -- Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`.
+      # @section -- Validating webhook configuration
+      registry: ""
+      # -- Repository override for this component image. Defaults to `.global.images.kubeovn.repository`.
+      # @section -- Validating webhook configuration
+      repository: ""
+      # -- Tag override for this component image. Defaults to `.global.images.kubeovn.tag`.
+      # @section -- Validating webhook configuration
+      tag: ""
+      # -- Pull policy override for this component image. Defaults to `.image.pullPolicy`.
+      # @section -- Validating webhook configuration
+      pullPolicy: ""
     # -- Annotations to be added to all top-level kube-ovn-webhook objects (resources under templates/webhook)
     # @section -- Validating webhook configuration
     annotations: {}
@@ -387,7 +408,7 @@ kube-ovn:
       repository: docker.io/kubeovn/vpc-nat-gateway
       # -- Image tag.
       # @section -- NAT gateways configuration
-      tag: v1.16.14
+      tag: v1.16.15
       # -- Image pull policy.
       # @section -- NAT gateways configuration
       pullPolicy: IfNotPresent
@@ -404,7 +425,7 @@ kube-ovn:
         repository: docker.io/kubeovn/kube-ovn
         # -- Image tag.
         # @section -- NAT gateways configuration
-        tag: v1.16.14
+        tag: v1.16.15
         # -- Image pull policy.
         # @section -- NAT gateways configuration
         pullPolicy: IfNotPresent
@@ -489,6 +510,21 @@ kube-ovn:
   # @section -- OVS/OVN daemons configuration
   # @default -- "{}"
   ovsOvn:
+    # -- Override image settings for ovs-ovn. Empty fields fall back to the global kube-ovn image.
+    # @section -- OVS/OVN daemons configuration
+    image:
+      # -- Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`.
+      # @section -- OVS/OVN daemons configuration
+      registry: ""
+      # -- Repository override for this component image. Defaults to `.global.images.kubeovn.repository`.
+      # @section -- OVS/OVN daemons configuration
+      repository: ""
+      # -- Tag override for this component image. Defaults to `.global.images.kubeovn.tag`.
+      # @section -- OVS/OVN daemons configuration
+      tag: ""
+      # -- Pull policy override for this component image. Defaults to `.image.pullPolicy`.
+      # @section -- OVS/OVN daemons configuration
+      pullPolicy: ""
     # -- Annotations to be added to all top-level ovs-ovn objects (resources under templates/ovs-ovn)
     # @section -- OVS/OVN daemons configuration
     annotations: {}
@@ -571,9 +607,24 @@ kube-ovn:
       # -- Enables DPDK-hybrid support on OVS.
       # @section -- OVS/OVN daemons configuration
       enabled: false
+      # -- Override image settings for ovs-ovn-dpdk. Empty fields fall back to the global kube-ovn image and the DPDK tag below.
+      # @section -- OVS/OVN daemons configuration
+      image:
+        # -- Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`.
+        # @section -- OVS/OVN daemons configuration
+        registry: ""
+        # -- Repository override for this component image. Defaults to `.global.images.kubeovn.repository`.
+        # @section -- OVS/OVN daemons configuration
+        repository: ""
+        # -- Tag override for this component image. Defaults to `.ovsOvn.dpdkHybrid.tag`.
+        # @section -- OVS/OVN daemons configuration
+        tag: ""
+        # -- Pull policy override for this component image. Defaults to `.image.pullPolicy`.
+        # @section -- OVS/OVN daemons configuration
+        pullPolicy: ""
       # -- DPDK image tag.
       # @section -- OVS/OVN daemons configuration
-      tag: v1.16.14-dpdk
+      tag: v1.16.15-dpdk
       # -- Affinity for the ovs-ovn-dpdk DaemonSet.
       # @section -- OVS/OVN daemons configuration
       affinity: {}
@@ -602,6 +653,21 @@ kube-ovn:
     # -- Enable the kube-ovn-speaker.
     # @section -- BGP speaker configuration
     enabled: false
+    # -- Override image settings for kube-ovn-speaker. Empty fields fall back to the global kube-ovn image.
+    # @section -- BGP speaker configuration
+    image:
+      # -- Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`.
+      # @section -- BGP speaker configuration
+      registry: ""
+      # -- Repository override for this component image. Defaults to `.global.images.kubeovn.repository`.
+      # @section -- BGP speaker configuration
+      repository: ""
+      # -- Tag override for this component image. Defaults to `.global.images.kubeovn.tag`.
+      # @section -- BGP speaker configuration
+      tag: ""
+      # -- Pull policy override for this component image. Defaults to `.image.pullPolicy`.
+      # @section -- BGP speaker configuration
+      pullPolicy: ""
     # -- Annotations to be added to all top-level kube-ovn-speaker objects (resources under templates/speaker)
     # @section -- BGP speaker configuration
     annotations: {}
@@ -647,6 +713,21 @@ kube-ovn:
   # @section -- Ping daemon configuration
   # @default -- "{}"
   pinger:
+    # -- Override image settings for kube-ovn-pinger. Empty fields fall back to the global kube-ovn image.
+    # @section -- Ping daemon configuration
+    image:
+      # -- Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`.
+      # @section -- Ping daemon configuration
+      registry: ""
+      # -- Repository override for this component image. Defaults to `.global.images.kubeovn.repository`.
+      # @section -- Ping daemon configuration
+      repository: ""
+      # -- Tag override for this component image. Defaults to `.global.images.kubeovn.tag`.
+      # @section -- Ping daemon configuration
+      tag: ""
+      # -- Pull policy override for this component image. Defaults to `.image.pullPolicy`.
+      # @section -- Ping daemon configuration
+      pullPolicy: ""
     # -- Annotations to be added to all top-level kube-ovn-pinger objects (resources under templates/pinger)
     # @section -- Ping daemon configuration
     annotations: {}
@@ -725,6 +806,21 @@ kube-ovn:
   # @section -- OVN monitoring daemon configuration
   # @default -- "{}"
   monitor:
+    # -- Override image settings for kube-ovn-monitor. Empty fields fall back to the global kube-ovn image.
+    # @section -- OVN monitoring daemon configuration
+    image:
+      # -- Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`.
+      # @section -- OVN monitoring daemon configuration
+      registry: ""
+      # -- Repository override for this component image. Defaults to `.global.images.kubeovn.repository`.
+      # @section -- OVN monitoring daemon configuration
+      repository: ""
+      # -- Tag override for this component image. Defaults to `.global.images.kubeovn.tag`.
+      # @section -- OVN monitoring daemon configuration
+      tag: ""
+      # -- Pull policy override for this component image. Defaults to `.image.pullPolicy`.
+      # @section -- OVN monitoring daemon configuration
+      pullPolicy: ""
     # -- Annotations to be added to all top-level kube-ovn-monitor objects (resources under templates/monitor)
     # @section -- OVN monitoring daemon configuration
     annotations: {}
@@ -811,6 +907,21 @@ kube-ovn:
       # -- Duration leader election clients wait between attempts. Empty uses the controller default of 6s.
       # @section -- Kube-OVN controller configuration
       retryPeriod: ""
+    # -- Override image settings for kube-ovn-controller. Empty fields fall back to the global kube-ovn image.
+    # @section -- Kube-OVN controller configuration
+    image:
+      # -- Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`.
+      # @section -- Kube-OVN controller configuration
+      registry: ""
+      # -- Repository override for this component image. Defaults to `.global.images.kubeovn.repository`.
+      # @section -- Kube-OVN controller configuration
+      repository: ""
+      # -- Tag override for this component image. Defaults to `.global.images.kubeovn.tag`.
+      # @section -- Kube-OVN controller configuration
+      tag: ""
+      # -- Pull policy override for this component image. Defaults to `.image.pullPolicy`.
+      # @section -- Kube-OVN controller configuration
+      pullPolicy: ""
     # -- Annotations to be added to all top-level kube-ovn-controller objects (resources under templates/controller)
     # @section -- Kube-OVN controller configuration
     annotations: {}
@@ -885,6 +996,21 @@ kube-ovn:
   # @section -- OVN-central daemon configuration
   # @default -- "{}"
   central:
+    # -- Override image settings for ovn-central. Empty fields fall back to the global kube-ovn image.
+    # @section -- OVN-central daemon configuration
+    image:
+      # -- Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`.
+      # @section -- OVN-central daemon configuration
+      registry: ""
+      # -- Repository override for this component image. Defaults to `.global.images.kubeovn.repository`.
+      # @section -- OVN-central daemon configuration
+      repository: ""
+      # -- Tag override for this component image. Defaults to `.global.images.kubeovn.tag`.
+      # @section -- OVN-central daemon configuration
+      tag: ""
+      # -- Pull policy override for this component image. Defaults to `.image.pullPolicy`.
+      # @section -- OVN-central daemon configuration
+      pullPolicy: ""
     # -- Annotations to be added to all top-level ovn-central objects (resources under templates/central)
     # @section -- OVN-central daemon configuration
     annotations: {}
@@ -971,6 +1097,21 @@ kube-ovn:
   # @section -- OVN IC controller configuration
   # @default -- "{}"
   ic:
+    # -- Override image settings for the OVN IC controller. Empty fields fall back to the global kube-ovn image.
+    # @section -- OVN IC controller configuration
+    image:
+      # -- Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`.
+      # @section -- OVN IC controller configuration
+      registry: ""
+      # -- Repository override for this component image. Defaults to `.global.images.kubeovn.repository`.
+      # @section -- OVN IC controller configuration
+      repository: ""
+      # -- Tag override for this component image. Defaults to `.global.images.kubeovn.tag`.
+      # @section -- OVN IC controller configuration
+      tag: ""
+      # -- Pull policy override for this component image. Defaults to `.image.pullPolicy`.
+      # @section -- OVN IC controller configuration
+      pullPolicy: ""
     # -- Node affinity configuration for the OVN IC controller.
     # -- More information on formatting nodeAffinity can be found at https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
     # @section -- OVN IC controller configuration
@@ -1004,6 +1145,21 @@ kube-ovn:
   # @section -- CNI agent configuration
   # @default -- "{}"
   agent:
+    # -- Override image settings for kube-ovn-cni. Empty fields fall back to the global kube-ovn image.
+    # @section -- CNI agent configuration
+    image:
+      # -- Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`.
+      # @section -- CNI agent configuration
+      registry: ""
+      # -- Repository override for this component image. Defaults to `.global.images.kubeovn.repository`.
+      # @section -- CNI agent configuration
+      repository: ""
+      # -- Tag override for this component image. Defaults to `.global.images.kubeovn.tag`.
+      # @section -- CNI agent configuration
+      tag: ""
+      # -- Pull policy override for this component image. Defaults to `.image.pullPolicy`.
+      # @section -- CNI agent configuration
+      pullPolicy: ""
     # -- Annotations to be added to all top-level agent objects (resources under templates/agent)
     # @section -- CNI agent configuration
     annotations: {}

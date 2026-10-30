@@ -1,6 +1,6 @@
 dependencies:
 - name: victoria-metrics-agent
   repository: https://victoriametrics.github.io/helm-charts/
-  version: 0.50.0
-digest: sha256:24090695160f8a564cfddedc4b04d623c41da5aa92865d32be8a2eaba404791e
-generated: "2026-10-14T14:57:39.587455047Z"
+  version: 0.51.0
+digest: sha256:dedf074f2871ce79289b63ab9f107424f0e6fe4add39dee49062bec8fdda658b
+generated: "2026-10-28T16:32:50.012766917Z"

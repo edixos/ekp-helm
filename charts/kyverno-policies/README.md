@@ -1,6 +1,6 @@
 # kyverno-policies
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.19.1](https://img.shields.io/badge/AppVersion-v1.19.1-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.19.2](https://img.shields.io/badge/AppVersion-v1.19.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kyverno.github.io/kyverno/ | kyvernopolicies(kyverno-policies) | 3.9.1 |
+| https://kyverno.github.io/kyverno/ | kyvernopolicies(kyverno-policies) | 3.9.2 |
 
 ## Maintainers
 
@@ -46,6 +46,7 @@ A Helm chart for Kubernetes
 | kyvernopolicies.podSecuritySeverity | string | `"medium"` | Pod Security Standard severity (`low`, `medium`, `high`). |
 | kyvernopolicies.podSecuritySeverityByPolicy | object | `{}` | Define podSecuritySeverity overrides for specific policies. Override the global `podSecuritySeverity` with an individual severity for individual policies. An empty string per-policy entry suppresses the annotation entirely. |
 | kyvernopolicies.podSecurityStandard | string | `"baseline"` | Pod Security Standard profile (`baseline`, `restricted`, `privileged`, `custom`). For more info https://kyverno.io/policies/pod-security. |
+| kyvernopolicies.podSecurityUserNamespaces | bool | `false` | Enable the Kubernetes Pod Security Admission relaxation for user namespace pods for ValidatingPolicy templates only. When `true`, the `disallow-proc-mount` (Baseline), `require-run-as-nonroot` and `require-run-as-non-root-user` (Restricted) ValidatingPolicies skip Pods that explicitly set `spec.hostUsers` to `false`. A Pod that omits `hostUsers` or sets it to `true` is always checked. The Restricted `disallow-proc-mount-strict` ValidatingPolicy never relaxes, and neither does `disallow-proc-mount` when the Restricted profile is installed. This setting has no effect on legacy `ClusterPolicy` templates. |
 | kyvernopolicies.policyExclude | object | `{}` | Exclude resources from individual policies (policyType: ClusterPolicy only). Policies with multiple rules can have individual rules excluded by using the name of the rule as the key in the `policyExclude` map. NOTE: This setting only applies when policyType is set to ClusterPolicy. For ValidatingPolicy, use vpolExclude/vpolExcludeByPolicy instead. |
 | kyvernopolicies.policyKind | string | `"ClusterPolicy"` | Policy kind (`ClusterPolicy`, `Policy`) Set to `Policy` if you need namespaced policies and not cluster policies. Only used when `policyType` is `ClusterPolicy` (the legacy kyverno.io types); with the default `policyType: ValidatingPolicy` cluster-wide CEL policies are installed. |
 | kyvernopolicies.policyPreconditions | object | `{}` | Add preconditions to individual policies. Policies with multiple rules can have individual rules excluded by using the name of the rule as the key in the `policyPreconditions` map. |
@@ -83,7 +84,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.7"
+    targetRevision: "0.1.8"
     chart: kyverno-policies
     path: ''
     helm:
