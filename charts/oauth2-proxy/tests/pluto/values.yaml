@@ -1,0 +1,5 @@
+oauth2-proxy:
+  gatewayApi:
+    enabled: true
+    hostnames:
+      - oauth2-proxy.example.com

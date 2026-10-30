@@ -1,0 +1,6 @@
+networkPolicies:
+  karma:
+    spec:
+      podSelector: {}
+      policyTypes:
+        - Ingress

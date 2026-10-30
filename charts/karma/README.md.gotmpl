@@ -1,0 +1,47 @@
+# {{ .Name }}
+
+{{ template "chart.versionBadge" .}}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Prerequisites
+
+- Helm v{{ if eq .ApiVersion "v2" }}3{{ else }}2{{end}}
+- An Alertmanager reachable from the release namespace
+- An authenticating proxy in front of karma: it has no login of its own
+
+{{ template "chart.maintainersSection" . }}
+
+## Description
+
+{{ template "chart.description" . }}
+
+No upstream chart is published, so this chart holds the Deployment itself. The
+`config` value is written verbatim to karma's config file.
+
+{{ template "chart.sourcesSection" . }}
+
+## Installing the Chart
+
+```bash
+helm repo add ekp-helm https://edixos.github.io/ekp-helm
+helm repo update
+helm install karma ekp-helm/{{ .Name }} --namespace monitoring
+```
+
+{{ template "chart.valuesSection" . }}
+
+## Develop
+
+### Update Documentation
+
+```bash
+docker run --rm -it -v $(pwd):/helm --workdir /helm jnorwood/helm-docs:v1.14.2 helm-docs
+```
+
+### Run Pluto
+
+```bash
+helm template {{ .Name }} . --output-dir /tmp/pluto
+pluto detect-files -d /tmp/pluto -o wide -t "k8s=v1.31.0"
+```
