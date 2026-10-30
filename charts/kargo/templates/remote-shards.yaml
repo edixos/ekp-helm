@@ -65,9 +65,11 @@ rules:
       - freights
       - projectconfigs
       - projects
+      - promotionrequests
       - promotions
       - promotiontasks
       - stages
+      - targets
       - warehouses
     verbs: [get, list, watch]
   - apiGroups: [""]
@@ -102,7 +104,7 @@ rules:
     resources: [projectconfigs, promotiontasks, warehouses]
     verbs: [get, list, watch]
   - apiGroups: [kargo.akuity.io]
-    resources: [promotions]
+    resources: [promotionrequests, promotions]
     verbs: [create, get, list, watch]
   - apiGroups: [kargo.akuity.io]
     resources: [freights]
@@ -113,6 +115,7 @@ rules:
   - apiGroups: [kargo.akuity.io]
     resources:
       - freights/status
+      - promotionrequests/status
       - promotions/status
       - stages/status
       - warehouses/finalizers
