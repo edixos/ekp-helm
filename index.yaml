@@ -3721,6 +3721,29 @@ entries:
     urls:
     - kargo-0.1.0.tgz
     version: 0.1.0
+  karma:
+  - apiVersion: v2
+    appVersion: "0.134"
+    created: "2026-10-30T13:54:11.91737184Z"
+    description: Karma, a dashboard for Alertmanager alerts, configured from chart
+      values
+    digest: 69fe07f6bbf5a19cebc17999f5a041a95f80de6a677705ff6ee1f317e4d7e3a0
+    home: https://github.com/prymitive/karma
+    keywords:
+    - alertmanager
+    - alerts
+    - dashboard
+    maintainers:
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: karma
+    sources:
+    - https://github.com/prymitive/karma
+    type: application
+    urls:
+    - karma-0.1.0.tgz
+    version: 0.1.0
   keto:
   - apiVersion: v2
     appVersion: v26.2.0
@@ -5216,6 +5239,30 @@ entries:
     type: application
     urls:
     - oathkeeper-0.1.0.tgz
+    version: 0.1.0
+  oauth2-proxy:
+  - apiVersion: v2
+    appVersion: 7.15.5
+    created: "2026-10-30T13:54:12.13596384Z"
+    dependencies:
+    - alias: oauth2-proxy
+      name: oauth2-proxy
+      repository: https://oauth2-proxy.github.io/manifests
+      version: 10.7.1
+    description: A Helm chart for oauth2-proxy, with its OAuth client credentials
+      delivered by External Secrets
+    digest: 0a789ecb8383ab4fb761c54ae9a415ed0a87fb4eaa9d39af66bb06813ab13a83
+    home: https://oauth2-proxy.github.io/oauth2-proxy/
+    maintainers:
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: oauth2-proxy
+    sources:
+    - https://github.com/oauth2-proxy/oauth2-proxy
+    type: application
+    urls:
+    - oauth2-proxy-0.1.0.tgz
     version: 0.1.0
   prometheus:
   - apiVersion: v2
@@ -6812,4 +6859,4 @@ entries:
     urls:
     - zammad-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-30T13:14:45.295750293Z"
+generated: "2026-10-30T13:54:12.136539015Z"
