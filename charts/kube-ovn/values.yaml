@@ -69,7 +69,7 @@ kube-ovn:
     images:
       kubeovn:
         repository: kube-ovn
-        tag: v1.16.15
+        tag: v1.16.17
 
   # -- Image configuration.
   # @section -- Global parameters
@@ -357,6 +357,10 @@ kube-ovn:
     # -- Enable the deployment of the validating webhook.
     # @section -- Validating webhook configuration
     enabled: false
+    certificate:
+      # -- Create the webhook Certificate and self-signed Issuer. Set to false to manage your own cert-manager Certificate and issuer outside this chart; the webhook remains enabled. See the README for required resource names and upgrade considerations.
+      # @section -- Validating webhook configuration
+      create: true
     # -- Override image settings for kube-ovn-webhook. Empty fields fall back to the global kube-ovn image.
     # @section -- Validating webhook configuration
     image:
@@ -408,7 +412,7 @@ kube-ovn:
       repository: docker.io/kubeovn/vpc-nat-gateway
       # -- Image tag.
       # @section -- NAT gateways configuration
-      tag: v1.16.15
+      tag: v1.16.17
       # -- Image pull policy.
       # @section -- NAT gateways configuration
       pullPolicy: IfNotPresent
@@ -425,7 +429,7 @@ kube-ovn:
         repository: docker.io/kubeovn/kube-ovn
         # -- Image tag.
         # @section -- NAT gateways configuration
-        tag: v1.16.15
+        tag: v1.16.17
         # -- Image pull policy.
         # @section -- NAT gateways configuration
         pullPolicy: IfNotPresent
@@ -624,7 +628,7 @@ kube-ovn:
         pullPolicy: ""
       # -- DPDK image tag.
       # @section -- OVS/OVN daemons configuration
-      tag: v1.16.15-dpdk
+      tag: v1.16.17-dpdk
       # -- Affinity for the ovs-ovn-dpdk DaemonSet.
       # @section -- OVS/OVN daemons configuration
       affinity: {}
