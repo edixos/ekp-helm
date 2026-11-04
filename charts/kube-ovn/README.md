@@ -1,6 +1,6 @@
 # kube-ovn-v2
 
-![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.15](https://img.shields.io/badge/AppVersion-1.16.15-informational?style=flat-square)
+![Version: 0.1.12](https://img.shields.io/badge/Version-0.1.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.17](https://img.shields.io/badge/AppVersion-1.16.17-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn-v2) | v1.16.15 |
+| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn-v2) | v1.16.17 |
 
 ## Maintainers
 
@@ -137,7 +137,7 @@ Helm chart for Kube-OVN
 |-----|------|---------|-------------|
 | kube-ovn.clusterDomain | string | `"cluster.local"` | Domain used by the cluster. |
 | kube-ovn.fullnameOverride | string | `""` | Full name override. |
-| kube-ovn.global | object | `{"images":{"kubeovn":{"repository":"kube-ovn","tag":"v1.16.15"}},"registry":{"address":"docker.io/kubeovn","imagePullSecrets":[]}}` | Global configuration. |
+| kube-ovn.global | object | `{"images":{"kubeovn":{"repository":"kube-ovn","tag":"v1.16.17"}},"registry":{"address":"docker.io/kubeovn","imagePullSecrets":[]}}` | Global configuration. |
 | kube-ovn.image | object | "{}" | Image configuration. |
 | kube-ovn.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for all images. |
 | kube-ovn.masterNodes | list | `[]` | Comma-separated list of IPs for each master node. If not specified, fallback to auto-identifying masters based on "masterNodesLabels" |
@@ -271,11 +271,11 @@ Helm chart for Kube-OVN
 | kube-ovn.natGw.bgpSpeaker.image | object | "{}" | Image used by the NAT gateway sidecar. |
 | kube-ovn.natGw.bgpSpeaker.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | kube-ovn.natGw.bgpSpeaker.image.repository | string | `"docker.io/kubeovn/kube-ovn"` | Image repository. |
-| kube-ovn.natGw.bgpSpeaker.image.tag | string | `"v1.16.15"` | Image tag. |
+| kube-ovn.natGw.bgpSpeaker.image.tag | string | `"v1.16.17"` | Image tag. |
 | kube-ovn.natGw.image | object | "{}" | Image used by the NAT gateway. |
 | kube-ovn.natGw.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | kube-ovn.natGw.image.repository | string | `"docker.io/kubeovn/vpc-nat-gateway"` | Image repository. |
-| kube-ovn.natGw.image.tag | string | `"v1.16.15"` | Image tag. |
+| kube-ovn.natGw.image.tag | string | `"v1.16.17"` | Image tag. |
 | kube-ovn.natGw.namePrefix | string | `"vpc-nat-gw"` | Prefix appended to the name of the NAT gateways when generating the Pods. If this value is changed after NAT GWs have been provisioned, every NAT gateway will need to be manually destroyed and recreated. |
 
 ### Network Policies
@@ -349,7 +349,7 @@ Helm chart for Kube-OVN
 | kube-ovn.ovsOvn.dpdkHybrid.image.tag | string | `""` | Tag override for this component image. Defaults to `.ovsOvn.dpdkHybrid.tag`. |
 | kube-ovn.ovsOvn.dpdkHybrid.nodeSelector | object | `{"kubernetes.io/os":"linux","ovn.kubernetes.io/ovs_dp_type":"userspace"}` | Node selector to restrict the deployment of DPDK-hybrid OVS to specific nodes. |
 | kube-ovn.ovsOvn.dpdkHybrid.resources | object | `{"limits":{"cpu":"2","ephemeral-storage":"1Gi","hugepages-2Mi":"1Gi","memory":"1000Mi"},"requests":{"cpu":"200m","memory":"200Mi"}}` | ovs-ovn resource limits & requests when DPDK-hybrid is enabled. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
-| kube-ovn.ovsOvn.dpdkHybrid.tag | string | `"v1.16.15-dpdk"` | DPDK image tag. |
+| kube-ovn.ovsOvn.dpdkHybrid.tag | string | `"v1.16.17-dpdk"` | DPDK image tag. |
 | kube-ovn.ovsOvn.extraEnv | list | `[]` | Extra environment variables to be added to ovs-ovn pods. |
 | kube-ovn.ovsOvn.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for ovs-ovn. Empty fields fall back to the global kube-ovn image. |
 | kube-ovn.ovsOvn.image.pullPolicy | string | `""` | Pull policy override for this component image. Defaults to `.image.pullPolicy`. |
@@ -410,6 +410,7 @@ Helm chart for Kube-OVN
 |-----|------|---------|-------------|
 | kube-ovn.validatingWebhook | object | "{}" | Configuration of the validating webhook used to verify custom resources before they are pushed to Kubernetes. Make sure cert-manager is installed for the generation of certificates for the webhook. See https://kubeovn.github.io/docs/stable/en/guide/webhook/ |
 | kube-ovn.validatingWebhook.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-webhook objects (resources under templates/webhook) |
+| kube-ovn.validatingWebhook.certificate.create | bool | `true` | Create the webhook Certificate and self-signed Issuer. Set to false to manage your own cert-manager Certificate and issuer outside this chart; the webhook remains enabled. See the README for required resource names and upgrade considerations. |
 | kube-ovn.validatingWebhook.enabled | bool | `false` | Enable the deployment of the validating webhook. |
 | kube-ovn.validatingWebhook.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-webhook pods. |
 | kube-ovn.validatingWebhook.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for kube-ovn-webhook. Empty fields fall back to the global kube-ovn image. |
@@ -480,7 +481,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.11"
+    targetRevision: "0.1.12"
     chart: kube-ovn-v2
     path: ''
     helm:
