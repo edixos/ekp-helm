@@ -1,0 +1,6 @@
+dependencies:
+- name: local-path-provisioner
+  repository: ""
+  version: 0.0.37
+digest: sha256:c73524da840d2c63512b8df1c43ad7dad668c1689cb3f95da43156ce7ff59163
+generated: "2026-11-10T02:37:30.802685+01:00"

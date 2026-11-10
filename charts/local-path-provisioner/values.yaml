@@ -1,0 +1,59 @@
+localPathProvisioner:
+  # -- Chart name used in labels. Must be set: the dependency alias (`localPathProvisioner`) would otherwise be used, and uppercase is invalid in resource names.
+  nameOverride: local-path-provisioner
+  # -- Base name of all resources. Must be set (see `nameOverride`). Also determines the default provisioner name `cluster.local/<fullname>` recorded on PVs, so do not change it once volumes exist.
+  fullnameOverride: local-path-provisioner
+
+  # -- Number of provisioner replicas.
+  replicaCount: 1
+
+  image:
+    # -- Provisioner image repository.
+    repository: docker.io/rancher/local-path-provisioner
+    # -- Provisioner image tag.
+    tag: v0.0.37
+    # -- Provisioner image pull policy.
+    pullPolicy: IfNotPresent
+
+  helperImage:
+    # -- Image used by the helper pods that create and delete volume directories.
+    repository: docker.io/library/busybox
+    # -- Helper image tag, pinned (never `latest`).
+    tag: "1.37.0"
+
+  storageClass:
+    # -- Create the StorageClass.
+    create: true
+    # -- StorageClass name.
+    name: local-path
+    # -- Mark the StorageClass as the cluster default.
+    defaultClass: false
+    # -- Volume type created by the class, `hostPath` or `local`. With `local`, PVs carry node affinity natively.
+    defaultVolumeType: hostPath
+    # -- StorageClass reclaim policy, `Delete` or `Retain`.
+    reclaimPolicy: Delete
+    # -- StorageClass volume binding mode, `Immediate` or `WaitForFirstConsumer`.
+    volumeBindingMode: WaitForFirstConsumer
+
+  # -- Where data is stored on each node. A node not listed uses the `DEFAULT_PATH_FOR_NON_LISTED_NODES` entry; a node listed with `paths: []` is refused. Mutually exclusive with `sharedFileSystemPath`.
+  nodePathMap:
+    - node: DEFAULT_PATH_FOR_NON_LISTED_NODES
+      paths:
+        - /opt/local-path-provisioner
+
+  # -- Node selector for the provisioner Deployment.
+  nodeSelector: {}
+
+  # -- Tolerations for the provisioner Deployment.
+  tolerations: []
+
+  # -- Affinity for the provisioner Deployment.
+  affinity: {}
+
+  # -- Resource requests and limits for the provisioner.
+  resources: {}
+
+  configmap:
+    helperPod:
+      # -- Tolerations for the helper pods (they must be able to schedule on the node that holds the volume).
+      tolerations: []
