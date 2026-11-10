@@ -5034,6 +5034,25 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/kyverno-policies-0.1.0.tgz
     version: 0.1.0
+  local-path-provisioner:
+  - annotations:
+      ekp-helm/upstream-source: https://github.com/rancher/local-path-provisioner/tree/v0.0.37/deploy/chart/local-path-provisioner
+    apiVersion: v2
+    appVersion: v0.0.37
+    created: "2026-11-10T08:27:19.318281018Z"
+    dependencies:
+    - alias: localPathProvisioner
+      name: local-path-provisioner
+      repository: ""
+      version: 0.0.37
+    description: Rancher local-path-provisioner, dynamic node-local PersistentVolumes
+      backed by host paths
+    digest: 6f46690130416fe6c24f02a3ceb84ef4bc9fc46615dba1d3b830cea674c55270
+    name: local-path-provisioner
+    type: application
+    urls:
+    - local-path-provisioner-0.1.0.tgz
+    version: 0.1.0
   longhorn:
   - apiVersion: v2
     appVersion: v1.13.0
@@ -6859,4 +6878,4 @@ entries:
     urls:
     - zammad-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-30T13:54:12.136539015Z"
+generated: "2026-11-10T08:27:19.318685997Z"
