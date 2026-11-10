@@ -1,0 +1,23 @@
+apiVersion: v2
+name: local-path-provisioner
+description: Rancher local-path-provisioner, dynamic node-local PersistentVolumes backed by host paths
+type: application
+version: 0.1.0
+appVersion: "v0.0.37"
+annotations:
+  # The upstream project publishes no Helm repository, so its chart is vendored
+  # under charts/local-path-provisioner from rancher/local-path-provisioner at
+  # this tag. To update, replace that directory with deploy/chart/local-path-provisioner
+  # from a newer tag, retain the container-name patch below, update this
+  # annotation and the dependency version, and bump this chart's version.
+  # Patch: templates/deployment.yaml names the container with the lowercase
+  # include "local-path-provisioner.name" instead of .Chart.Name, because the
+  # dependency alias (localPathProvisioner) is uppercase and invalid there.
+  ekp-helm/upstream-source: "https://github.com/rancher/local-path-provisioner/tree/v0.0.37/deploy/chart/local-path-provisioner"
+dependencies:
+  - name: local-path-provisioner
+    version: 0.0.37
+    # Empty on purpose: Helm resolves a dependency with no repository from the
+    # vendored charts/local-path-provisioner directory.
+    repository: ""
+    alias: localPathProvisioner
