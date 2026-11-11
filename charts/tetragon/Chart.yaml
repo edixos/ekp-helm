@@ -9,8 +9,8 @@ description: >-
   observation-only; enforcement is opt-in per policy and per namespace. All
   upstream settings are available under the tetragon values key.
 type: application
-version: 0.1.6
-appVersion: "1.7.1"
+version: 0.1.7
+appVersion: "1.8.0"
 maintainers:
   - name: hamzatalbi
     email: hamzatalbi831@gmail.com
@@ -20,6 +20,6 @@ sources:
   - https://github.com/cilium/tetragon/tree/main/install/kubernetes/tetragon
 dependencies:
   - name: tetragon
-    version: 1.7.1
+    version: 1.8.0
     repository: "https://helm.cilium.io/"
     condition: tetragon.enabled

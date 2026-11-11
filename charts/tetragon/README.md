@@ -1,6 +1,6 @@
 # tetragon
 
-![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.1](https://img.shields.io/badge/AppVersion-1.7.1-informational?style=flat-square)
+![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.8.0](https://img.shields.io/badge/AppVersion-1.8.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://helm.cilium.io/ | tetragon | 1.7.1 |
+| https://helm.cilium.io/ | tetragon | 1.8.0 |
 
 ## Maintainers
 
@@ -40,17 +40,28 @@ Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps the
 | prometheus.rules.enabled | bool | `true` | Enables prometheus operator rules |
 | prometheus.rules.labels | object | `{"prometheus":"prometheus-operator-prometheus"}` | Labels to affect to the Prometheus Rules |
 | tetragon.affinity | object | `{}` |  |
+| tetragon.certgen | object | `{"affinity":{},"annotations":{"cronJob":{},"job":{}},"cronJob":{"failedJobsHistoryLimit":1,"successfulJobsHistoryLimit":1},"generateCA":true,"hostUsers":true,"image":{"override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/certgen","tag":"v0.4.13"},"nodeSelector":{},"podLabels":{},"resources":{},"tolerations":[],"ttlSecondsAfterFinished":1800}` | cilium-certgen settings used by tetragon.grpc.tls.auto.method=cronJob. Mirrors the same block in cilium/cilium so operators familiar with the hubble TLS workflow find consistent knobs. |
+| tetragon.certgen.affinity | object | `{}` | Affinity for certgen pods. |
+| tetragon.certgen.annotations | object | `{"cronJob":{},"job":{}}` | Annotations applied to certgen Job/CronJob objects. |
+| tetragon.certgen.cronJob.failedJobsHistoryLimit | int | `1` | Number of failed CronJob runs to retain. |
+| tetragon.certgen.cronJob.successfulJobsHistoryLimit | int | `1` | Number of successful CronJob runs to retain. |
+| tetragon.certgen.generateCA | bool | `true` | Whether the certgen invocation should generate a CA when one isn't found in the configured CA Secret. |
+| tetragon.certgen.hostUsers | bool | `true` | Run the certgen pods in the host user namespace. certgen needs no host access, set to false to run it in a user namespace. Requires Kubernetes 1.33 or later. |
+| tetragon.certgen.nodeSelector | object | `{}` | Node selector for certgen pods. |
+| tetragon.certgen.podLabels | object | `{}` | Pod labels added to certgen pods. |
+| tetragon.certgen.resources | object | `{}` | Resource requests/limits for the certgen container. |
+| tetragon.certgen.tolerations | list | `[]` | Tolerations for certgen pods. |
+| tetragon.certgen.ttlSecondsAfterFinished | int | `1800` | TTL applied to the bootstrap Job once it completes. |
 | tetragon.crds.installMethod | string | `"operator"` | Method for installing CRDs. Supported values are: "operator", "helm" and "none". The "operator" method allows for fine-grained control over which CRDs are installed and by default doesn't perform CRD downgrades. These can be configured in tetragonOperator section. The "helm" method always installs all CRDs for the chart version. |
 | tetragon.daemonSetAnnotations | object | `{}` |  |
 | tetragon.daemonSetLabelsOverride | object | `{}` |  |
 | tetragon.dnsPolicy | string | `"Default"` | DNS policy for Tetragon pods.  https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy |
 | tetragon.enabled | bool | `true` |  |
-| tetragon.export | object | `{"filenames":["tetragon.log"],"mode":"stdout","resources":{"limits":{"memory":"128Mi"},"requests":{"cpu":"25m","memory":"64Mi"}},"securityContext":{},"stdout":{"argsOverride":[],"commandOverride":[],"enabledArgs":true,"enabledCommand":true,"envFromSecrets":[],"extraEnv":[],"extraEnvFrom":[],"extraVolumeMounts":[],"image":{"override":null,"repository":"quay.io/cilium/hubble-export-stdout","tag":"v1.1.1"}}}` | Tetragon events export settings |
-| tetragon.export.resources | object | `{"limits":{"memory":"128Mi"},"requests":{"cpu":"25m","memory":"64Mi"}}` | Resources of the export-stdout sidecar. It only tails the JSON export file and writes it to stdout, where the cluster log collector picks it up. |
+| tetragon.export | object | `{"filenames":["tetragon.log"],"mode":"stdout","resources":{},"securityContext":{},"stdout":{"argsOverride":[],"commandOverride":[],"enabledArgs":true,"enabledCommand":true,"envFromSecrets":[],"extraEnv":[],"extraEnvFrom":[],"extraVolumeMounts":[],"image":{"override":null,"repository":"quay.io/cilium/hubble-export-stdout","tag":"v1.1.1"}}}` | Tetragon events export settings |
 | tetragon.export.stdout.envFromSecrets | list | `[]` | A simplified way to add secret references to envFrom. Can be specified either as a string (just the secret name) or as an object with additional parameters. Example: envFromSecrets:   - my-simple-secret   - name: my-optional-secret     optional: true |
 | tetragon.export.stdout.extraEnv | list | `[]` | Extra environment variables to add to the export-stdout container. Example: extraEnv:   - name: FOO     value: bar   - name: SECRET_KEY     valueFrom:       secretKeyRef:         name: my-secret         key: secret-key |
 | tetragon.export.stdout.extraEnvFrom | list | `[]` | Extra envFrom sources to add to the export-stdout container. This allows adding any type of envFrom source (configMapRef, secretRef, etc.). Example: extraEnvFrom:   - configMapRef:       name: my-config-map   - secretRef:       name: my-secret       optional: true |
-| tetragon.exportDirectory | string | `"/var/run/cilium/tetragon"` | Directory to put Tetragon JSON export files. |
+| tetragon.exportDirectory | string | `"/var/log/tetragon"` | Directory to put Tetragon JSON export files. |
 | tetragon.extraConfigmapMounts | list | `[]` |  |
 | tetragon.extraHostPathMounts | list | `[]` |  |
 | tetragon.extraVolumes | list | `[]` |  |
@@ -62,15 +73,19 @@ Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps the
 | tetragon.podLabels | object | `{}` |  |
 | tetragon.podLabelsOverride | object | `{}` |  |
 | tetragon.podSecurityContext | object | `{}` |  |
-| tetragon.priorityClassName | string | `"system-node-critical"` | Priority class of the Tetragon agent DaemonSet. The agent is a node local security sensor: while it is not running the node reports nothing, so it is scheduled in the same tier as the CNI. |
-| tetragon.rthooks | object | `{"annotations":{},"enabled":false,"extraHookArgs":{},"extraLabels":{},"extraVolumeMounts":[],"failAllowNamespaces":"","image":{"override":null,"repository":"quay.io/cilium/tetragon-rthooks","tag":"v0.8"},"installDir":"/opt/tetragon","interface":"","nameOverride":"","nriHook":{"nriSocket":"/var/run/nri/nri.sock"},"ociHooks":{"hooksPath":"/usr/share/containers/oci/hooks.d"},"podAnnotations":{},"podSecurityContext":{},"priorityClassName":"","resources":{},"serviceAccount":{"name":""}}` | Method for installing Tetagon rthooks (tetragon-rthooks) daemonset The tetragon-rthooks daemonset is responsible for installing run-time hooks on the host. See: https://tetragon.io/docs/concepts/runtime-hooks |
+| tetragon.priorityClassName | string | `""` |  |
+| tetragon.rthooks | object | `{"annotations":{},"enabled":false,"exportLogs":{"enabled":true,"resources":{}},"extraHookArgs":{},"extraLabels":{},"extraVolumeMounts":[],"failAllowNamespaces":"","failAllowNamespacesRegex":[],"image":{"override":null,"repository":"quay.io/cilium/tetragon-rthooks","tag":"v0.9"},"installDir":"/opt/tetragon","interface":"","nameOverride":"","nriHook":{"nriSocket":"/var/run/nri/nri.sock"},"ociHooks":{"hooksPath":"/usr/share/containers/oci/hooks.d"},"podAnnotations":{},"podSecurityContext":{},"priorityClassName":"","resources":{},"serviceAccount":{"name":""}}` | Method for installing Tetagon rthooks (tetragon-rthooks) daemonset The tetragon-rthooks daemonset is responsible for installing run-time hooks on the host. See: https://tetragon.io/docs/concepts/runtime-hooks |
 | tetragon.rthooks.annotations | object | `{}` | Annotations for the Tetragon rthooks daemonset |
 | tetragon.rthooks.enabled | bool | `false` | Enable the Tetragon rthooks daemonset |
+| tetragon.rthooks.exportLogs | object | `{"enabled":true,"resources":{}}` | exportLogs sidecar: tail the hook log file and stream it to stdout. Uses the same image as the rthooks container. |
+| tetragon.rthooks.exportLogs.enabled | bool | `true` | Enable the exportLogs sidecar container. |
+| tetragon.rthooks.exportLogs.resources | object | `{}` | resources for the exportLogs sidecar. |
 | tetragon.rthooks.extraHookArgs | object | `{}` | extra args to pass to tetragon-oci-hook |
 | tetragon.rthooks.extraLabels | object | `{}` | Extra labels for the Tetrargon rthooks daemonset |
 | tetragon.rthooks.extraVolumeMounts | list | `[]` | Extra volume mounts to add to the oci-hook-setup init container |
 | tetragon.rthooks.failAllowNamespaces | string | `""` | Comma-separated list of namespaces to allow Pod creation for, in case tetragon-oci-hook fails to reach Tetragon agent. The namespace Tetragon is deployed in is always added as an exception and must not be added again. |
-| tetragon.rthooks.image | object | `{"override":null,"repository":"quay.io/cilium/tetragon-rthooks","tag":"v0.8"}` | image for the Tetragon rthooks pod |
+| tetragon.rthooks.failAllowNamespacesRegex | list | `[]` | List of RE2 regex patterns for namespaces to allow Pod creation for, in case tetragon-oci-hook fails to reach Tetragon agent. Patterns perform substring matching by default; use ^ and $ anchors for full-string matching (e.g. '^kube-.*$' matches only namespaces starting with 'kube-'). Can be combined with failAllowNamespaces. Ignored if extraHookArgs sets fail-cel-expr. Example: ["^acme-.*$", "^dev-.*$"] |
+| tetragon.rthooks.image | object | `{"override":null,"repository":"quay.io/cilium/tetragon-rthooks","tag":"v0.9"}` | image for the Tetragon rthooks pod |
 | tetragon.rthooks.installDir | string | `"/opt/tetragon"` | installDir is the host location where the tetragon-oci-hook binary will be installed |
 | tetragon.rthooks.interface | string | `""` | Method to use for installing  rthooks. Values:     "oci-hooks":       Add an apppriate file to "/usr/share/containers/oci/hooks.d". Use this with CRI-O.       See https://github.com/containers/common/blob/main/pkg/hooks/docs/oci-hooks.5.md       for more details.       Specific configuration for this interface can be found under "ociHooks".     "nri-hook":      Install the hook via NRI. Use this with containerd. Requires NRI being enabled.      see: https://github.com/containerd/containerd/blob/main/docs/NRI.md.      Specific configuration for this interface can be found under "nriHook".  |
 | tetragon.rthooks.nameOverride | string | `""` | tetragon-rthooks name override |
@@ -87,6 +102,8 @@ Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps the
 | tetragon.serviceAccount.annotations | object | `{}` |  |
 | tetragon.serviceAccount.create | bool | `true` |  |
 | tetragon.serviceAccount.name | string | `""` |  |
+| tetragon.serviceAnnotations | object | `{}` |  |
+| tetragon.serviceLabels | object | `{}` |  |
 | tetragon.serviceLabelsOverride | object | `{}` |  |
 | tetragon.tetragon.argsOverride | list | `[]` | Override the arguments. For advanced users only. |
 | tetragon.tetragon.btf | string | `""` |  |
@@ -96,14 +113,15 @@ Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps the
 | tetragon.tetragon.cri | object | `{"enabled":false,"socketHostPath":""}` | Configure tetragon pod so that it can contact the CRI running on the host |
 | tetragon.tetragon.cri.socketHostPath | string | `""` | path of the CRI socket on the host. This will typically be "/run/containerd/containerd.sock" for containerd or "/var/run/crio/crio.sock"  for crio. |
 | tetragon.tetragon.debug | bool | `false` | If you want to run Tetragon in debug mode change this value to true |
+| tetragon.tetragon.deletedPodCacheSize | int | `1024` | Tetragon keeps recently deleted pod/container mappings in an LRU cache to resolve pod metadata for late-arriving events. |
 | tetragon.tetragon.enableK8sAPI | bool | `true` | Access Kubernetes API to associate Tetragon events with Kubernetes pods. |
 | tetragon.tetragon.enableKeepSensorsOnExit | bool | `false` | Persistent enforcement to allow the enforcement policy to continue running even when its Tetragon process is gone. |
 | tetragon.tetragon.enableMsgHandlingLatency | bool | `false` | Enable latency monitoring in message handling |
 | tetragon.tetragon.enablePolicyFilter | bool | `true` | Enable policy filter. This is required for K8s namespace and pod-label filtering. |
 | tetragon.tetragon.enablePolicyFilterCgroupMap | bool | `false` | Enable policy filter cgroup map. |
 | tetragon.tetragon.enablePolicyFilterDebug | bool | `false` | Enable policy filter debug messages. |
-| tetragon.tetragon.enableProcessCred | bool | `true` | Enable Capabilities visibility in exec and kprobe events. Enabled by default here: without it an exec event does not say whether the process holds CAP_SYS_ADMIN, which is most of what makes the event useful for runtime security. |
-| tetragon.tetragon.enableProcessNs | bool | `true` | Enable Namespaces visibility in exec and kprobe events. Enabled by default here so events carry the namespaces of the process, which is how a container escape becomes visible. |
+| tetragon.tetragon.enableProcessCred | bool | `false` | Enable Capabilities visibility in exec and kprobe events. |
+| tetragon.tetragon.enableProcessNs | bool | `false` | Enable Namespaces visibility in exec and kprobe events. |
 | tetragon.tetragon.enabled | bool | `true` |  |
 | tetragon.tetragon.eventCacheRetries | int | `15` | Configure the number of retries in tetragon's event cache. |
 | tetragon.tetragon.eventCacheRetryDelay | int | `2` | Configure the delay (in seconds) between retires in tetragon's event cache. |
@@ -114,23 +132,40 @@ Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps the
 | tetragon.tetragon.exportFileMaxSizeMB | int | `10` | Size in megabytes at which to rotate JSON export files. |
 | tetragon.tetragon.exportFilePerm | string | `"600"` | JSON export file permissions as a string. Typically it's either "600" (to restrict access to owner) or "640"/"644" (to allow read access by logs collector or another agent). |
 | tetragon.tetragon.exportFilename | string | `"tetragon.log"` | JSON export filename. Set it to an empty string to disable JSON export altogether. |
-| tetragon.tetragon.exportRateLimit | int | `-1` | Rate-limit event export (events per minute), Set to -1 to export all events. |
+| tetragon.tetragon.exportRateLimit | int | `-1` | Rate-limit event export (events per minute). Must be a plain integer: -1 disables rate limiting and exports all events (default), 0 disables JSON export entirely, and a positive integer limits export to that many events per minute. Invalid (non-integer) values fall back to -1 and log a warning. |
 | tetragon.tetragon.extraArgs | object | `{}` |  |
 | tetragon.tetragon.extraEnv | list | `[]` |  |
 | tetragon.tetragon.extraVolumeMounts | list | `[]` |  |
 | tetragon.tetragon.fieldFilters | string | `""` | Filters to include or exclude fields from Tetragon events. Without any filters, all fields are included by default. The presence of at least one inclusion filter implies default-exclude (i.e. any fields that don't match an inclusion filter will be excluded). Field paths are expressed using dot notation like "a.b.c" and multiple field paths can be separated by commas like "a.b.c,d,e.f". An optional "event_set" may be specified to apply the field filter to a specific set of events.  For example, to exclude the "parent" field from all events and include the "process" field in PROCESS_KPROBE events while excluding all others:  fieldFilters: |   {"fields": "parent", "action": "EXCLUDE"}   {"event_set": ["PROCESS_KPROBE"], "fields": "process", "action": "INCLUDE"}  |
 | tetragon.tetragon.gops.address | string | `"localhost"` | The address at which to expose gops. |
-| tetragon.tetragon.gops.enabled | bool | `true` | Whether to enable exposing gops server. |
+| tetragon.tetragon.gops.enabled | bool | `false` | Whether to enable exposing gops server. |
 | tetragon.tetragon.gops.port | int | `8118` | The port at which to expose gops. |
-| tetragon.tetragon.grpc.address | string | `"unix:///var/run/tetragon/tetragon.sock"` | The address at which to expose gRPC. Examples: localhost:54321, unix:///var/run/tetragon/tetragon.sock |
+| tetragon.tetragon.grpc.address | string | `"unix:///var/run/tetragon/tetragon.sock"` | The address at which to expose gRPC. Examples: localhost:54321, unix:///var/run/tetragon/tetragon.sock WARNING: Exposing gRPC on a TCP socket without TLS client verification exposes Tetragon to unprivileged users on the host or with network access. |
 | tetragon.tetragon.grpc.enabled | bool | `true` | Whether to enable exposing Tetragon gRPC. |
+| tetragon.tetragon.grpc.tls | object | `{"auto":{"certManagerIssuerRef":{},"certValidityDuration":365,"enabled":true,"method":"helm","schedule":"0 0 1 */4 *"},"ca":{"cert":"","certValidityDuration":1095,"key":""},"enabled":false,"requireClientCert":false,"server":{"existingSecret":"","extraDnsNames":[],"extraIpAddresses":[]}}` | gRPC TLS / mTLS configuration for the optional TCP listener (tetragon.grpc.address); the always-on unix-domain listener at /var/run/tetragon/tetragon.sock is unaffected.  The auto-provisioned server cert uses a wildcard SAN over a synthetic DNS domain (*.tetragon-grpc.cilium.io) so a single Secret covers every DaemonSet pod. Clients must override SNI to <any>.tetragon-grpc.cilium.io to validate. See _helpers.tpl `tetragon.grpcTls.domain` for details; add Service-style or per-node identities via server.extraDnsNames / server.extraIpAddresses below. |
+| tetragon.tetragon.grpc.tls.auto | object | `{"certManagerIssuerRef":{},"certValidityDuration":365,"enabled":true,"method":"helm","schedule":"0 0 1 */4 *"}` | Configure automatic TLS certificate generation. |
+| tetragon.tetragon.grpc.tls.auto.certManagerIssuerRef | object | `{}` | cert-manager IssuerRef used when method=certmanager. [Example] certManagerIssuerRef:   group: cert-manager.io   kind: ClusterIssuer   name: ca-issuer |
+| tetragon.tetragon.grpc.tls.auto.certValidityDuration | int | `365` | Generated certificate validity duration in days. Defaults to 365 (1 year). |
+| tetragon.tetragon.grpc.tls.auto.enabled | bool | `true` | Auto-generate certificates. When false, you must provide a Secret yourself (see server.existingSecret). |
+| tetragon.tetragon.grpc.tls.auto.method | string | `"helm"` | Method used to auto-generate certificates. Supported values: - helm:        Helm renders the cert/key Secret directly. - cronJob:     A Kubernetes CronJob runs cilium-certgen to (re)issue                the cert; a one-shot Job seeds it on install. - certmanager: cert-manager issues and rotates the cert. |
+| tetragon.tetragon.grpc.tls.auto.schedule | string | `"0 0 1 */4 *"` | Schedule for certificate regeneration; only honored when method=cronJob. Empty disables the recurring CronJob, leaving only the one-shot bootstrap Job. |
+| tetragon.tetragon.grpc.tls.ca | object | `{"cert":"","certValidityDuration":1095,"key":""}` | In-cluster CA used by the helm and cronJob methods. |
+| tetragon.tetragon.grpc.tls.ca.cert | string | `""` | base64-encoded PEM CA certificate. When both cert and key are set, helm/cronJob reuse this CA instead of generating a fresh one. |
+| tetragon.tetragon.grpc.tls.ca.certValidityDuration | int | `1095` | Validity duration in days for an auto-generated CA. Only used when ca.cert/key are unset. |
+| tetragon.tetragon.grpc.tls.ca.key | string | `""` | base64-encoded PEM CA private key. Required when ca.cert is set. |
+| tetragon.tetragon.grpc.tls.enabled | bool | `false` | Enable TLS on the TCP gRPC listener. When false, the listener (if any) is plaintext. |
+| tetragon.tetragon.grpc.tls.requireClientCert | bool | `false` | Require and verify client certificates (mTLS). When true, the agent rejects TCP gRPC connections that don't present a valid client cert signed by one of the bundled CAs. |
+| tetragon.tetragon.grpc.tls.server | object | `{"existingSecret":"","extraDnsNames":[],"extraIpAddresses":[]}` | Server cert configuration. |
+| tetragon.tetragon.grpc.tls.server.existingSecret | string | `""` | Use an existing Secret (must contain tls.crt + tls.key, plus ca.crt when requireClientCert is true) instead of provisioning one. Disables all auto-* methods when set. |
+| tetragon.tetragon.grpc.tls.server.extraDnsNames | list | `[]` | Extra DNS SANs added to auto-generated certificates. |
+| tetragon.tetragon.grpc.tls.server.extraIpAddresses | list | `[]` | Extra IP SANs added to auto-generated certificates. |
 | tetragon.tetragon.healthGrpc.enabled | bool | `true` | Whether to enable health gRPC server. |
 | tetragon.tetragon.healthGrpc.interval | int | `10` | The interval at which to check the health of the agent. |
 | tetragon.tetragon.healthGrpc.port | int | `6789` | The port at which to expose health gRPC. |
 | tetragon.tetragon.hostProcPath | string | `"/proc"` | Location of the host proc filesystem in the runtime environment. If the runtime runs in the host, the path is /proc. Exceptions to this are environments like kind, where the runtime itself does not run on the host. |
 | tetragon.tetragon.image.override | string | `nil` |  |
 | tetragon.tetragon.image.repository | string | `"quay.io/cilium/tetragon"` |  |
-| tetragon.tetragon.image.tag | string | `"v1.7.1"` |  |
+| tetragon.tetragon.image.tag | string | `"v1.8.0"` |  |
 | tetragon.tetragon.livenessProbe | object | `{}` | Overrides the default livenessProbe for the tetragon container. |
 | tetragon.tetragon.nameOverride | string | `""` |  |
 | tetragon.tetragon.podAnnotations.enabled | bool | `false` |  |
@@ -148,9 +183,18 @@ Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps the
 | tetragon.tetragon.prometheus.serviceMonitor.extraLabels | object | `{}` | Extra labels to be added on the Tetragon ServiceMonitor. |
 | tetragon.tetragon.prometheus.serviceMonitor.labelsOverride | object | `{}` | The set of labels to place on the 'ServiceMonitor' resource. |
 | tetragon.tetragon.prometheus.serviceMonitor.scrapeInterval | string | `"60s"` | Interval at which metrics should be scraped. If not specified, Prometheus' global scrape interval is used. |
-| tetragon.tetragon.redactionFilters | string | `""` | Filters to redact secrets from the args fields in Tetragon events. To perform redactions, redaction filters define RE2 regular expressions in the `redact` field. Any capture groups in these RE2 regular expressions are redacted and replaced with "*****".  For more control, you can select which binary or binaries should have their arguments redacted with the `binary_regex` field.  NOTE: This feature uses RE2 as its regular expression library. Make sure that you follow RE2 regular expression guidelines as you may observe unexpected results otherwise. More information on RE2 syntax can be found [here](https://github.com/google/re2/wiki/Syntax).  NOTE: When writing regular expressions in JSON, it is important to escape backslash characters. For instance `\Wpasswd\W?` would be written as `{"redact": "\\Wpasswd\\W?"}`.  As a concrete example, the following will redact all passwords passed to processes with the "--password" argument:    {"redact": ["--password(?:\\s+|=)(\\S*)"]}  Now, an event which contains the string "--password=foo" would have that string replaced with "--password=*****".  Suppose we also see some passwords passed via the -p shorthand for a specific binary, foo. We can also redact these as follows:    {"binary_regex": ["(?:^|/)foo$"], "redact": ["-p(?:\\s+|=)(\\S*)"]}  With both of the above redaction filters in place, we are now redacting all password arguments. |
-| tetragon.tetragon.resources | object | `{"limits":{"memory":"1Gi"},"requests":{"cpu":"100m","memory":"256Mi"}}` | Resources of the Tetragon agent container. The agent keeps its process cache (`processCacheSize`) and its BPF maps in memory, so memory scales with the number of processes on the node rather than with the request rate. Only memory is capped: a CPU limit would throttle the ring buffer reader and lose events. |
-| tetragon.tetragon.securityContext.privileged | bool | `true` |  |
+| tetragon.tetragon.redactionFilters | string | `""` | Filters to redact secrets from the args fields in Tetragon events. To perform redactions, redaction filters define RE2 regular expressions in the `redact` field. Any capture groups in these RE2 regular expressions are redacted and replaced with "*****".  For more control, you can select which binary or binaries should have their arguments redacted with the `binary_regex` field.  NOTE: This feature uses RE2 as its regular expression library. Make sure that you follow RE2 regular expression guidelines as you may observe unexpected results otherwise. More information on RE2 syntax can be found [here](https://github.com/google/re2/wiki/Syntax).  NOTE: When writing regular expressions in JSON, it is important to escape backslash characters. For instance `\Wpasswd\W?` would be written as `{"redact": "\\Wpasswd\\W?"}`.  As a concrete example, the following will redact all passwords passed to processes with the "--password" argument:    {"redact": ["--password(?:\\s+|=)(\\S*)"]}  Now, an event which contains the string "--password=foo" would have that string replaced with "--password=*****".  Suppose we also see some passwords passed via the -p shorthand for a specific binary, foo. We can also redact these as follows:    {"binary_regex": ["(?:^|/)foo$"], "redact": ["-p(?:\\s+|=)(\\S*)"]}  With both of the above redaction filters in place, we are now redacting all password arguments.  Optionally, you can specify a custom replacement string using the `redact_str` field. If not specified, it defaults to "*****". This is useful for distinguishing different redaction rules:    {"redact": ["--password(?:\\\\s+|=)(\\\\S*)"], "redact_str": "<redacted:password>"}  |
+| tetragon.tetragon.resources | object | `{}` |  |
+| tetragon.tetragon.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| tetragon.tetragon.securityContext.appArmorProfile.type | string | `"Unconfined"` |  |
+| tetragon.tetragon.securityContext.capabilities.add[0] | string | `"SYS_ADMIN"` |  |
+| tetragon.tetragon.securityContext.capabilities.add[1] | string | `"SYS_PTRACE"` |  |
+| tetragon.tetragon.securityContext.capabilities.add[2] | string | `"SYS_RESOURCE"` |  |
+| tetragon.tetragon.securityContext.capabilities.add[3] | string | `"DAC_OVERRIDE"` |  |
+| tetragon.tetragon.securityContext.capabilities.add[4] | string | `"SYSLOG"` |  |
+| tetragon.tetragon.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| tetragon.tetragon.securityContext.privileged | bool | `false` |  |
+| tetragon.tetragon.startupProbe | object | `{}` | Overrides the default startupProbe for the tetragon container. |
 | tetragon.tetragon.usePerfRingBuffer | bool | `false` |  |
 | tetragon.tetragonOperator.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/name" | string | `"tetragon-operator"` |  |
 | tetragon.tetragonOperator.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
@@ -169,7 +213,8 @@ Tetragon runtime security packaged for the Edixos Kubernetes Platform. Wraps the
 | tetragon.tetragonOperator.failoverLease.leaseRetryPeriod | string | `"2s"` | The timeout between retries if renewal fails |
 | tetragon.tetragonOperator.failoverLease.namespace | string | `""` | Kubernetes Namespace in which the Lease resource is created. Defaults to the namespace where Tetragon is deployed in, if it's empty. |
 | tetragon.tetragonOperator.forceUpdateCRDs | bool | `false` |  |
-| tetragon.tetragonOperator.image | object | `{"override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/tetragon-operator","tag":"v1.7.1"}` | tetragon-operator image. |
+| tetragon.tetragonOperator.hostUsers | bool | `true` | Run the Tetragon Operator Deployment Pods in the host user namespace. The operator needs no host access, set to false to run it in a user namespace. Requires Kubernetes 1.33 or later. |
+| tetragon.tetragonOperator.image | object | `{"override":null,"pullPolicy":"IfNotPresent","repository":"quay.io/cilium/tetragon-operator","tag":"v1.8.0"}` | tetragon-operator image. |
 | tetragon.tetragonOperator.nameOverride | string | `""` | The name of the Tetragon Operator deployment. |
 | tetragon.tetragonOperator.nodeSelector | object | `{}` | Steer the Tetragon Operator Deployment Pod placement via nodeSelector, tolerations and affinity rules. |
 | tetragon.tetragonOperator.podAnnotations | object | `{}` | Annotations for the Tetragon Operator Deployment Pods. |
@@ -388,7 +433,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.6"
+    targetRevision: "0.1.7"
     chart: tetragon
     path: ''
     helm:
