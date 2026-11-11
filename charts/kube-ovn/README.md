@@ -1,6 +1,6 @@
 # kube-ovn-v2
 
-![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.15](https://img.shields.io/badge/AppVersion-1.16.15-informational?style=flat-square)
+![Version: 0.1.12](https://img.shields.io/badge/Version-0.1.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.17.0](https://img.shields.io/badge/AppVersion-1.17.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn-v2) | v1.16.15 |
+| https://kubeovn.github.io/kube-ovn/ | kube-ovn(kube-ovn-v2) | v1.17.0 |
 
 ## Maintainers
 
@@ -47,11 +47,14 @@ Helm chart for Kube-OVN
 | kube-ovn.agent | object | "{}" | Configuration for kube-ovn-cni, the agent responsible for handling CNI requests from the CRI. |
 | kube-ovn.agent.annotations | object | `{}` | Annotations to be added to all top-level agent objects (resources under templates/agent) |
 | kube-ovn.agent.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-cni pods. |
+| kube-ovn.agent.gatewayNetfilterDetectTimeout | string | `""` | Maximum time to wait for the kube-proxy mode during cold start; leave empty to use the daemon default of 30s. |
+| kube-ovn.agent.gatewayNetfilterMode | string | `""` | Gateway netfilter backend: auto, iptables, or nftables; leave empty to use the daemon default of auto. |
 | kube-ovn.agent.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for kube-ovn-cni. Empty fields fall back to the global kube-ovn image. |
 | kube-ovn.agent.image.pullPolicy | string | `""` | Pull policy override for this component image. Defaults to `.image.pullPolicy`. |
 | kube-ovn.agent.image.registry | string | `""` | Registry override for this component image. This becomes the rendered image address. Defaults to `.global.registry.address`. |
 | kube-ovn.agent.image.repository | string | `""` | Repository override for this component image. Defaults to `.global.images.kubeovn.repository`. |
 | kube-ovn.agent.image.tag | string | `""` | Tag override for this component image. Defaults to `.global.images.kubeovn.tag`. |
+| kube-ovn.agent.kubeProxyModeEndpoint | string | `""` | Local kube-proxy proxyMode endpoint; leave empty to use the daemon default endpoint. |
 | kube-ovn.agent.labels | object | `{}` | Labels to be added to all top-level agent objects (resources under templates/agent) |
 | kube-ovn.agent.metrics | object | "{}" | Agent metrics configuration. |
 | kube-ovn.agent.metrics.port | int | `10665` | Configure the port on which the agent service will serve metrics. |
@@ -91,6 +94,8 @@ Helm chart for Kube-OVN
 | kube-ovn.bgpSpeaker | object | "{}" | Configuration for kube-ovn-speaker, the BGP speaker announcing routes to the external world. |
 | kube-ovn.bgpSpeaker.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-speaker objects (resources under templates/speaker) |
 | kube-ovn.bgpSpeaker.args | list | `[]` | Args passed to the kube-ovn-speaker pod. |
+| kube-ovn.bgpSpeaker.configMap | string | `""` | The name of the configMap that will be mounted in the kube-ovn-speaker pod. The ConfigMap can provide YAML configuration files for kube-ovn-speaker. To use a specific file, pass its mounted file path via '--config' or set 'KUBE_OVN_BGP_SPEAKER_CONFIG_FILE'. |
+| kube-ovn.bgpSpeaker.configMapMountPath | string | `"/etc/kube-ovn/"` | Directory where the ConfigMap will be mounted in the kube-ovn-speaker pod. |
 | kube-ovn.bgpSpeaker.enabled | bool | `false` | Enable the kube-ovn-speaker. |
 | kube-ovn.bgpSpeaker.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-speaker pods. |
 | kube-ovn.bgpSpeaker.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for kube-ovn-speaker. Empty fields fall back to the global kube-ovn image. |
@@ -122,6 +127,7 @@ Helm chart for Kube-OVN
 | kube-ovn.central.podAnnotations | object | `{}` | Annotations to be added to ovn-central pods. |
 | kube-ovn.central.podLabels | object | `{}` | Labels to be added to ovn-central pods. |
 | kube-ovn.central.resources | object | `{"limits":{"cpu":"3","ephemeral-storage":"1Gi","memory":"4Gi"},"requests":{"cpu":"300m","memory":"200Mi"}}` | ovn-central resource limits & requests. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
+| kube-ovn.central.tolerations | list | `[{"effect":"NoSchedule","operator":"Exists"},{"effect":"NoExecute","operator":"Exists"},{"key":"CriticalAddonsOnly","operator":"Exists"}]` | Tolerations for ovn-central pods. |
 
 ### OVN-central daemon configuration.
 
@@ -137,7 +143,7 @@ Helm chart for Kube-OVN
 |-----|------|---------|-------------|
 | kube-ovn.clusterDomain | string | `"cluster.local"` | Domain used by the cluster. |
 | kube-ovn.fullnameOverride | string | `""` | Full name override. |
-| kube-ovn.global | object | `{"images":{"kubeovn":{"repository":"kube-ovn","tag":"v1.16.15"}},"registry":{"address":"docker.io/kubeovn","imagePullSecrets":[]}}` | Global configuration. |
+| kube-ovn.global | object | `{"images":{"kubeovn":{"repository":"kube-ovn","tag":"v1.17.0"}},"registry":{"address":"docker.io/kubeovn","imagePullSecrets":[]}}` | Global configuration. |
 | kube-ovn.image | object | "{}" | Image configuration. |
 | kube-ovn.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for all images. |
 | kube-ovn.masterNodes | list | `[]` | Comma-separated list of IPs for each master node. If not specified, fallback to auto-identifying masters based on "masterNodesLabels" |
@@ -185,6 +191,7 @@ Helm chart for Kube-OVN
 | kube-ovn.controller.resources | object | `{"limits":{"cpu":"1000m","ephemeral-storage":"1Gi","memory":"1Gi"},"requests":{"cpu":"200m","memory":"200Mi"}}` | kube-ovn-controller resource limits & requests. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
 | kube-ovn.controller.serviceMonitor | object | "{}" | Controller serviceMonitor configuration. |
 | kube-ovn.controller.serviceMonitor.enabled | bool | `false` | Enable the deployment of the ServiceMonitor for the Kube-OVN controller. |
+| kube-ovn.controller.tolerations | list | `[{"effect":"NoSchedule","operator":"Exists"},{"key":"CriticalAddonsOnly","operator":"Exists"}]` | Tolerations for kube-ovn-controller pods. |
 
 ### Extra objects
 
@@ -196,21 +203,35 @@ Helm chart for Kube-OVN
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| kube-ovn.features | object | `{"ENABLE_ANP":false,"ENABLE_BIND_LOCAL_IP":true,"ENABLE_DNS_NAME_RESOLVER":false,"ENABLE_OVN_LB_PREFER_LOCAL":false,"LS_CT_SKIP_DST_LPORT_IPS":true,"LS_DNAT_MOD_DL_DST":true,"OVSDB_CON_TIMEOUT":3,"OVSDB_INACTIVITY_TIMEOUT":10,"SET_VXLAN_TX_OFF":false,"enableExternalVpcs":false,"enableHardwareOffload":false,"enableKeepVmIps":true,"enableLiveMigrationOptimization":true,"enableLoadbalancer":true,"enableLoadbalancerService":false,"enableNatGateways":true,"enableNetworkPolicies":true,"enableOvnInterconnections":false,"enableOvnIpsec":false,"enableRecompute":true,"enableSecureServing":false,"enableTproxy":false,"enableU2OInterconnections":false}` | Features of Kube-OVN we wish to enable/disable. |
+| kube-ovn.features | object | `{"ENABLE_ANP":false,"ENABLE_BIND_LOCAL_IP":true,"ENABLE_DNS_NAME_RESOLVER":false,"LS_CT_SKIP_DST_LPORT_IPS":true,"LS_DNAT_MOD_DL_DST":true,"OVSDB_CON_TIMEOUT":3,"OVSDB_INACTIVITY_TIMEOUT":10,"SET_GENEVE_TX_OFF":false,"SET_VXLAN_TX_OFF":false,"enableExternalVpcs":false,"enableGwNftableLoadbalancerService":false,"enableGwNftableServiceClusterIp":false,"enableHardwareOffload":false,"enableHostTunnelSrc":false,"enableKeepVmIps":true,"enableLiveMigrationOptimization":true,"enableLoadbalancer":true,"enableLoadbalancerService":false,"enableNatGateways":true,"enableNetworkPolicies":true,"enableOvnInterconnections":false,"enableOvnIpsec":false,"enableRecompute":false,"enableSecureServing":false,"enableTproxy":false,"enableU2OInterconnections":false}` | Features of Kube-OVN we wish to enable/disable. |
 | kube-ovn.features.enableExternalVpcs | bool | `false` | Enable external VPCs |
+| kube-ovn.features.enableGwNftableLoadbalancerService | bool | `false` | Enable Kube-OVN nftable share DNAT based loadbalancer services on vpc nat gateway. Mutually exclusive with enableLoadbalancerService. |
+| kube-ovn.features.enableGwNftableServiceClusterIp | bool | `false` | Enable ClusterIP services through nftable share DNAT on a VPC NAT gateway. Mutually exclusive with enableLoadbalancer. |
 | kube-ovn.features.enableHardwareOffload | bool | `false` | Enable hardware offloads |
+| kube-ovn.features.enableHostTunnelSrc | bool | `false` | Allow a /32 address to be selected as the tunnel source (required on clouds that assign /32 to the host interface) |
 | kube-ovn.features.enableKeepVmIps | bool | `true` | Enable persistent VM IPs |
 | kube-ovn.features.enableLiveMigrationOptimization | bool | `true` | Enable optimized live migrations for VMs |
 | kube-ovn.features.enableLoadbalancer | bool | `true` | Enable Kube-OVN loadbalancers |
-| kube-ovn.features.enableLoadbalancerService | bool | `false` | Enable Kube-OVN loadbalancer services |
+| kube-ovn.features.enableLoadbalancerService | bool | `false` | Enable Kube-OVN loadbalancer services (one forwarding Pod per LoadBalancer Service). Mutually exclusive with enableGwNftableLoadbalancerService; it needs a ClusterIP data plane behind it, either enableLoadbalancer or enableGwNftableServiceClusterIp. |
 | kube-ovn.features.enableNatGateways | bool | `true` | Enable NAT gateways |
 | kube-ovn.features.enableNetworkPolicies | bool | `true` | Enable Kube-OVN network policies |
 | kube-ovn.features.enableOvnInterconnections | bool | `false` | Enable OVN interconnections |
 | kube-ovn.features.enableOvnIpsec | bool | `false` | Enable IPSEC |
-| kube-ovn.features.enableRecompute | bool | `true` | Enable periodic ovn-controller recompute |
+| kube-ovn.features.enableRecompute | bool | `false` | Enable periodic ovn-controller recompute |
 | kube-ovn.features.enableSecureServing | bool | `false` | Enable secure serving |
 | kube-ovn.features.enableTproxy | bool | `false` | Enable TProxy |
 | kube-ovn.features.enableU2OInterconnections | bool | `false` | Enable underlay to overlay interconnections |
+
+### Grafana dashboards configuration
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| kube-ovn.grafanaDashboards | object | "{}" | Configuration of the Grafana dashboard ConfigMaps, automatically picked up by the kube-prometheus-stack Grafana sidecar. One ConfigMap is emitted per dashboard under dist/monitoring. |
+| kube-ovn.grafanaDashboards.annotations | object | `{}` | Annotations added to the dashboard ConfigMaps. |
+| kube-ovn.grafanaDashboards.datasource | string | `"Prometheus"` | Name of the Grafana Prometheus datasource the dashboards should use. The bundled JSON files were exported from Grafana with `${DS_PROMETHEUS}` placeholders that are only resolved during UI import, not when loaded by the sidecar. The chart rewrites those placeholders to this value at render time so panels resolve to an existing datasource.  Must match `^[A-Za-z0-9_.-]+$`. The value is interpolated verbatim into dashboard JSON, so characters like quotes, backslashes or newlines would produce invalid JSON; the chart fails rendering if the constraint is violated. If your datasource name contains other characters, rename it. |
+| kube-ovn.grafanaDashboards.enabled | bool | `false` | Enable the deployment of the Grafana dashboard ConfigMaps. |
+| kube-ovn.grafanaDashboards.labels | object | `{"grafana_dashboard":"1"}` | Labels added to the dashboard ConfigMaps. The default label matches the kube-prometheus-stack Grafana sidecar convention. |
+| kube-ovn.grafanaDashboards.namespace | string | `""` | Namespace override for the dashboard ConfigMaps. Defaults to .Values.namespace when empty. |
 
 ### OVN IC controller configuration
 
@@ -224,6 +245,7 @@ Helm chart for Kube-OVN
 | kube-ovn.ic.image.repository | string | `""` | Repository override for this component image. Defaults to `.global.images.kubeovn.repository`. |
 | kube-ovn.ic.image.tag | string | `""` | Tag override for this component image. Defaults to `.global.images.kubeovn.tag`. |
 | kube-ovn.ic.nodeAffinity | object | `{"preferredDuringSchedulingIgnoredDuringExecution":[],"requiredDuringSchedulingIgnoredDuringExecution":[]}` | More information on formatting nodeAffinity can be found at https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity |
+| kube-ovn.ic.tolerations | list | `[{"effect":"NoSchedule","operator":"Exists"},{"effect":"NoExecute","operator":"Exists"},{"key":"CriticalAddonsOnly","operator":"Exists"}]` | Tolerations for ovn-ic-controller pods. |
 
 ### Kubelet configuration
 
@@ -257,9 +279,11 @@ Helm chart for Kube-OVN
 | kube-ovn.monitor.nodeAffinity | object | `{"preferredDuringSchedulingIgnoredDuringExecution":[],"requiredDuringSchedulingIgnoredDuringExecution":[]}` | More information on formatting nodeAffinity can be found at https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity |
 | kube-ovn.monitor.podAnnotations | object | `{}` | Annotations to be added to kube-ovn-monitor pods. |
 | kube-ovn.monitor.podLabels | object | `{}` | Labels to be added to kube-ovn-monitor pods. |
+| kube-ovn.monitor.replicas | int | `1` | Number of kube-ovn-monitor replicas. |
 | kube-ovn.monitor.resources | object | `{"limits":{"cpu":"200m","ephemeral-storage":"1Gi","memory":"200Mi"},"requests":{"cpu":"200m","memory":"200Mi"}}` | kube-ovn-monitor resource limits & requests. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
 | kube-ovn.monitor.serviceMonitor | object | "{}" | kube-ovn-monitor serviceMonitor configuration. |
 | kube-ovn.monitor.serviceMonitor.enabled | bool | `false` | Enable the deployment of the ServiceMonitor for the kube-ovn-monitor. |
+| kube-ovn.monitor.tolerations | list | `[{"effect":"NoSchedule","operator":"Exists"},{"key":"CriticalAddonsOnly","operator":"Exists"}]` | Tolerations for kube-ovn-monitor pods. |
 
 ### NAT gateways configuration
 
@@ -271,11 +295,11 @@ Helm chart for Kube-OVN
 | kube-ovn.natGw.bgpSpeaker.image | object | "{}" | Image used by the NAT gateway sidecar. |
 | kube-ovn.natGw.bgpSpeaker.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | kube-ovn.natGw.bgpSpeaker.image.repository | string | `"docker.io/kubeovn/kube-ovn"` | Image repository. |
-| kube-ovn.natGw.bgpSpeaker.image.tag | string | `"v1.16.15"` | Image tag. |
+| kube-ovn.natGw.bgpSpeaker.image.tag | string | `"v1.17.0"` | Image tag. |
 | kube-ovn.natGw.image | object | "{}" | Image used by the NAT gateway. |
 | kube-ovn.natGw.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | kube-ovn.natGw.image.repository | string | `"docker.io/kubeovn/vpc-nat-gateway"` | Image repository. |
-| kube-ovn.natGw.image.tag | string | `"v1.16.15"` | Image tag. |
+| kube-ovn.natGw.image.tag | string | `"v1.17.0"` | Image tag. |
 | kube-ovn.natGw.namePrefix | string | `"vpc-nat-gw"` | Prefix appended to the name of the NAT gateways when generating the Pods. If this value is changed after NAT GWs have been provisioned, every NAT gateway will need to be manually destroyed and recreated. |
 
 ### Network Policies
@@ -299,12 +323,14 @@ Helm chart for Kube-OVN
 | kube-ovn.networking.exchangeLinkName | bool | `false` | "" |
 | kube-ovn.networking.excludeIps | string | `""` | IPs to exclude from IPAM in the default subnet. |
 | kube-ovn.networking.externalGatewayConfigNs | string | `""` | Namespace where ovn-external-gw-config ConfigMap is located. Empty means it will use the same namespace as the controller (PodNamespace). |
+| kube-ovn.networking.externalGatewaySwitch | string | `""` | The name of the external gateway switch (OVS bridge providing external network). Empty means the default "external" is used. |
 | kube-ovn.networking.join | object | "{}" | Configuration of the "join" subnet, used by the nodes to contact (join) the pods in the default subnet. If .networking.stack is set to IPv4, only the .v4 key is used. If .networking.stack is set to IPv6, only the .v6 key is used. If .networking.stack is set to Dual, both keys are used. |
 | kube-ovn.networking.join.cidr | object | "{}" | CIDR used by the join subnet. |
 | kube-ovn.networking.join.cidr.v4 | string | `"100.64.0.0/16"` | IPv4 CIDR. |
 | kube-ovn.networking.join.cidr.v6 | string | `"fd00:100:64::/112"` | IPv6 CIDR. |
 | kube-ovn.networking.join.subnetName | string | `"join"` | Name of the join subnet once it gets generated in the cluster. |
 | kube-ovn.networking.kubeOvnTlsRotationInterval | string | `"8760h"` | How often kube-ovn-controller checks kube-ovn-tls for renewal. Set to 0 to disable. |
+| kube-ovn.networking.maxMtu | int | `0` | Upper bound applied to the auto-detected pod MTU (0 disables the cap). Useful when the underlay uses jumbo frames but pod traffic egresses to a 1500-byte path (e.g. the internet), where the uncapped value would cause fragmentation or PMTUD-dependent blackholes. Ignored when .networking.pods.mtu is set. This applies to custom and default subnets. |
 | kube-ovn.networking.networkType | string | `"geneve"` | Network type can be "geneve" or "vlan". |
 | kube-ovn.networking.nodeLocalDnsIp | string | `""` | Comma-separated string of NodeLocal DNS IP addresses. |
 | kube-ovn.networking.podNicType | string | `"veth-pair"` | NIC type used on pods to connect them to the CNI. |
@@ -317,7 +343,7 @@ Helm chart for Kube-OVN
 | kube-ovn.networking.pods.gateways | object | "{}" | Gateways used in the pod subnet. |
 | kube-ovn.networking.pods.gateways.v4 | string | `"10.16.0.1"` | IPv4 gateway. |
 | kube-ovn.networking.pods.gateways.v6 | string | `"fd00:10:16::1"` | IPv6 gateway. |
-| kube-ovn.networking.pods.mtu | int | `0` | MTU of the subnet. If set to 0, the MTU is auto-detected. |
+| kube-ovn.networking.pods.mtu | int | `0` | MTU of the subnet. If set to 0, the MTU is auto-detected. Refer to .networking.maxMtu to cap the MTU. |
 | kube-ovn.networking.pods.subnetName | string | `"ovn-default"` | Name of the pod subnet once it gets generated in the cluster. |
 | kube-ovn.networking.services | object | "{}" | Configuration for the service subnet. If .networking.stack is set to IPv4, only the .v4 key is used. If .networking.stack is set to IPv6, only the .v6 key is used. If .networking.stack is set to Dual, both keys are used. |
 | kube-ovn.networking.services.cidr | object | "{}" | CIDR used by the service subnet. |
@@ -349,7 +375,7 @@ Helm chart for Kube-OVN
 | kube-ovn.ovsOvn.dpdkHybrid.image.tag | string | `""` | Tag override for this component image. Defaults to `.ovsOvn.dpdkHybrid.tag`. |
 | kube-ovn.ovsOvn.dpdkHybrid.nodeSelector | object | `{"kubernetes.io/os":"linux","ovn.kubernetes.io/ovs_dp_type":"userspace"}` | Node selector to restrict the deployment of DPDK-hybrid OVS to specific nodes. |
 | kube-ovn.ovsOvn.dpdkHybrid.resources | object | `{"limits":{"cpu":"2","ephemeral-storage":"1Gi","hugepages-2Mi":"1Gi","memory":"1000Mi"},"requests":{"cpu":"200m","memory":"200Mi"}}` | ovs-ovn resource limits & requests when DPDK-hybrid is enabled. ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ |
-| kube-ovn.ovsOvn.dpdkHybrid.tag | string | `"v1.16.15-dpdk"` | DPDK image tag. |
+| kube-ovn.ovsOvn.dpdkHybrid.tag | string | `"v1.17.0"` | DPDK image tag. |
 | kube-ovn.ovsOvn.extraEnv | list | `[]` | Extra environment variables to be added to ovs-ovn pods. |
 | kube-ovn.ovsOvn.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for ovs-ovn. Empty fields fall back to the global kube-ovn image. |
 | kube-ovn.ovsOvn.image.pullPolicy | string | `""` | Pull policy override for this component image. Defaults to `.image.pullPolicy`. |
@@ -374,7 +400,6 @@ Helm chart for Kube-OVN
 | kube-ovn.performance | object | "{}" | Performance tuning parameters. |
 | kube-ovn.performance.gcInterval | int | `360` | "" |
 | kube-ovn.performance.inspectInterval | int | `20` | "" |
-| kube-ovn.performance.ovsVsctlConcurrency | int | `100` | "" |
 
 ### Ping daemon configuration
 
@@ -404,12 +429,24 @@ Helm chart for Kube-OVN
 | kube-ovn.pinger.targets.externalDomain.v4 | string | `"kube-ovn.io."` | Domain name resolving to an IPv4 only (A record) |
 | kube-ovn.pinger.targets.externalDomain.v6 | string | `"google.com."` | Domain name resolving to an IPv6 and IPv4 only (A/AAAA record) |
 
+### PrometheusRule configuration
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| kube-ovn.prometheusRule | object | "{}" | Configuration of the PrometheusRule shipping baseline Kube-OVN alerts. Requires prometheus-operator CRDs to be installed in the cluster.  Prerequisite: most bundled rules query metrics exposed by the controller, the OVN monitor, the pinger and the agent. Scrape-dependent alerts only fire when those metrics are actually being scraped, which means **either**:   1. enabling the matching ServiceMonitors shipped by this chart      (`controller.serviceMonitor.enabled`, `monitor.serviceMonitor.enabled`,      `pinger.serviceMonitor.enabled`, `agent.serviceMonitor.enabled`), **or**   2. configuring an external scrape (PodMonitor, custom scrape config, etc.)      that produces samples for the same job/metric labels.  When neither is true, scrape-dependent alerts stay inactive. Note however that `absent()`-style alerts (e.g. KubeOvnControllerAbsent) still fire in that configuration, because "no target" is precisely what they report. If you want to skip them until scraping is wired up, silence/inhibit them in Alertmanager or leave `prometheusRule.enabled` off. |
+| kube-ovn.prometheusRule.additionalGroups | list | `[]` | Extra rule groups appended to the bundled groups. Each item must follow the PrometheusRule `spec.groups[]` schema. |
+| kube-ovn.prometheusRule.annotations | object | `{}` | Extra annotations added to the PrometheusRule. |
+| kube-ovn.prometheusRule.enabled | bool | `false` | Enable the deployment of the bundled PrometheusRule. |
+| kube-ovn.prometheusRule.labels | object | `{}` | Extra labels added to the PrometheusRule. Typically used to match the `release` selector of a kube-prometheus-stack installation. |
+| kube-ovn.prometheusRule.namespace | string | `""` | Namespace override for the PrometheusRule. Defaults to .Values.namespace when empty. |
+
 ### Validating webhook configuration
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | kube-ovn.validatingWebhook | object | "{}" | Configuration of the validating webhook used to verify custom resources before they are pushed to Kubernetes. Make sure cert-manager is installed for the generation of certificates for the webhook. See https://kubeovn.github.io/docs/stable/en/guide/webhook/ |
 | kube-ovn.validatingWebhook.annotations | object | `{}` | Annotations to be added to all top-level kube-ovn-webhook objects (resources under templates/webhook) |
+| kube-ovn.validatingWebhook.certificate.create | bool | `true` | Create the webhook Certificate and self-signed Issuer. Set to false to manage your own cert-manager Certificate and issuer outside this chart; the webhook remains enabled. See the README for required resource names and upgrade considerations. |
 | kube-ovn.validatingWebhook.enabled | bool | `false` | Enable the deployment of the validating webhook. |
 | kube-ovn.validatingWebhook.extraEnv | list | `[]` | Extra environment variables to be added to kube-ovn-webhook pods. |
 | kube-ovn.validatingWebhook.image | object | `{"pullPolicy":"","registry":"","repository":"","tag":""}` | Override image settings for kube-ovn-webhook. Empty fields fall back to the global kube-ovn image. |
@@ -420,6 +457,7 @@ Helm chart for Kube-OVN
 | kube-ovn.validatingWebhook.labels | object | `{}` | Labels to be added to all top-level kube-ovn-webhook objects (resources under templates/webhook) |
 | kube-ovn.validatingWebhook.podAnnotations | object | `{}` | Annotations to be added to kube-ovn-webhook pods. |
 | kube-ovn.validatingWebhook.podLabels | object | `{}` | Labels to be added to kube-ovn-webhook pods. |
+| kube-ovn.validatingWebhook.tolerations | list | `[{"effect":"NoSchedule","operator":"Exists"}]` | Tolerations for kube-ovn-webhook pods. |
 
 ### Other Values
 
@@ -433,6 +471,15 @@ Helm chart for Kube-OVN
 | kube-ovn.controller.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution | list | `[]` | - antarctica-west1 |
 | kube-ovn.ic.nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution | list | `[]` | - antarctica-west1 |
 | kube-ovn.ic.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution | list | `[]` | - antarctica-west1 |
+| kube-ovn.ipsec.certManager.enabled | bool | `false` |  |
+| kube-ovn.ipsec.certManager.issuerName | string | `"kube-ovn"` |  |
+| kube-ovn.ipsec.certificateDuration | int | `63072000` |  |
+| kube-ovn.ipsec.priority | int | `-5` |  |
+| kube-ovn.ipsec.requestTimeout | string | `"300s"` |  |
+| kube-ovn.ipsec.resources.limits.cpu | string | `"1000m"` |  |
+| kube-ovn.ipsec.resources.limits.memory | string | `"256Mi"` |  |
+| kube-ovn.ipsec.resources.requests.cpu | string | `"10m"` |  |
+| kube-ovn.ipsec.resources.requests.memory | string | `"64Mi"` |  |
 | kube-ovn.monitor.nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution | list | `[]` | - antarctica-west1 |
 | kube-ovn.monitor.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution | list | `[]` | - antarctica-west1 |
 | kube-ovn.ovsOvn.upgrade.enabled | bool | `true` | Enable post-upgrade hooks to run upgrade logic of OVS/OVN. |
@@ -480,7 +527,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.11"
+    targetRevision: "0.1.12"
     chart: kube-ovn-v2
     path: ''
     helm:
