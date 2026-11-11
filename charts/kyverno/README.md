@@ -1,6 +1,6 @@
 # kyverno
 
-![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.19.2](https://img.shields.io/badge/AppVersion-v1.19.2-informational?style=flat-square)
+![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.20.0](https://img.shields.io/badge/AppVersion-v1.20.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kyverno.github.io/kyverno/ | kyverno | 3.9.2 |
+| https://kyverno.github.io/kyverno/ | kyverno | 3.10.0 |
 
 ## Maintainers
 
@@ -60,7 +60,7 @@ A Helm chart for kyverno
 | kyverno.admissionController.container.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | kyverno.admissionController.container.image.registry | string | `nil` | Image registry |
 | kyverno.admissionController.container.image.repository | string | `"kyverno/kyverno"` | Image repository |
-| kyverno.admissionController.container.image.tag | string | `nil` | Image tag Defaults to appVersion in Chart.yaml if omitted |
+| kyverno.admissionController.container.image.tag | string | `"v1.20.0"` | Image tag Defaults to appVersion in Chart.yaml if omitted |
 | kyverno.admissionController.container.lifecycle | object | `{}` | Container lifecycle hooks (e.g. a preStop sleep for graceful shutdown). The sleep action requires Kubernetes 1.30+. |
 | kyverno.admissionController.container.resources.limits | object | `{"memory":"384Mi"}` | Pod resource limits |
 | kyverno.admissionController.container.resources.requests | object | `{"cpu":"100m","memory":"128Mi"}` | Pod resource requests |
@@ -83,7 +83,7 @@ A Helm chart for kyverno
 | kyverno.admissionController.initContainer.image.pullPolicy | string | `nil` | Image pull policy If missing, defaults to image.pullPolicy |
 | kyverno.admissionController.initContainer.image.registry | string | `nil` | Image registry |
 | kyverno.admissionController.initContainer.image.repository | string | `"kyverno/kyvernopre"` | Image repository |
-| kyverno.admissionController.initContainer.image.tag | string | `nil` | Image tag If missing, defaults to image.tag |
+| kyverno.admissionController.initContainer.image.tag | string | `"v1.20.0"` | Image tag If missing, defaults to image.tag |
 | kyverno.admissionController.initContainer.resources.limits | object | `{"cpu":"100m","memory":"256Mi"}` | Pod resource limits |
 | kyverno.admissionController.initContainer.resources.requests | object | `{"cpu":"10m","memory":"64Mi"}` | Pod resource requests |
 | kyverno.admissionController.initContainer.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Container security context |
@@ -166,11 +166,12 @@ A Helm chart for kyverno
 | kyverno.apiCallToken | object | `{"audience":"kyverno-svc.kyverno.io","expirationSeconds":3600}` | Scoped token injected into outbound APICall and CEL http requests. This token carries a custom audience so that if leaked to an external service it cannot be replayed against the Kubernetes API server. |
 | kyverno.apiCallToken.audience | string | `"kyverno-svc.kyverno.io"` | Audience for the projected token used in outbound requests. Set this to the audience your receiving service validates in the OIDC token's `aud` claim. The default is `kyverno-svc.kyverno.io`, which is a Kyverno-specific audience and prevents the token from being accepted by the Kubernetes API server. |
 | kyverno.apiCallToken.expirationSeconds | int | `3600` | Token lifetime in seconds for the projected outbound API call token. The default is `3600` (1 hour). The kubelet requests a replacement before the token expires, so lowering this reduces token lifetime while increasing rotation frequency. |
-| kyverno.apiVersionOverride.podDisruptionBudget | string | `nil` | Override api version used to create `PodDisruptionBudget`` resources. When not specified the chart will check if `policy/v1/PodDisruptionBudget` is available to determine the api version automatically. |
+| kyverno.apiVersionOverride.podDisruptionBudget | string | `nil` | Override api version used to create `PodDisruptionBudget` resources. When not specified the chart will check if `policy/v1/PodDisruptionBudget` is available to determine the api version automatically. |
 | kyverno.backgroundController.annotations | object | `{}` | Deployment annotations. |
 | kyverno.backgroundController.antiAffinity.enabled | bool | `true` | Pod antiAffinities toggle. Enabled by default but can be disabled if you want to schedule pods to the same node. |
 | kyverno.backgroundController.caCertificates.data | string | `nil` | CA certificates to use with Kyverno deployments This value is expected to be one large string of CA certificates |
 | kyverno.backgroundController.caCertificates.volume | object | `{}` | Volume to be mounted for CA certificates Not used when `.Values.backgroundController.caCertificates.data` is defined |
+| kyverno.backgroundController.crdWatcher | bool | `false` | Enable/Disable custom resource watcher to invalidate cache |
 | kyverno.backgroundController.dnsConfig | object | `{}` | `dnsConfig` allows to specify DNS configuration for the pod. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config. |
 | kyverno.backgroundController.dnsPolicy | string | `"ClusterFirst"` | `dnsPolicy` determines the manner in which DNS resolution happens in the cluster. In case of `hostNetwork: true`, usually, the `dnsPolicy` is suitable to be `ClusterFirstWithHostNet`. For further reference: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy. |
 | kyverno.backgroundController.enabled | bool | `true` | Enable background controller. |
@@ -184,7 +185,7 @@ A Helm chart for kyverno
 | kyverno.backgroundController.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | kyverno.backgroundController.image.registry | string | `nil` | Image registry |
 | kyverno.backgroundController.image.repository | string | `"kyverno/background-controller"` | Image repository |
-| kyverno.backgroundController.image.tag | string | `nil` | Image tag Defaults to appVersion in Chart.yaml if omitted |
+| kyverno.backgroundController.image.tag | string | `"v1.20.0"` | Image tag Defaults to appVersion in Chart.yaml if omitted |
 | kyverno.backgroundController.imagePullSecrets | list | `[]` | Image pull secrets |
 | kyverno.backgroundController.labels | object | `{}` | Deployment labels. |
 | kyverno.backgroundController.lifecycle | object | `{}` | Container lifecycle hooks (e.g. a preStop sleep for graceful shutdown). The sleep action requires Kubernetes 1.30+. |
@@ -285,7 +286,7 @@ A Helm chart for kyverno
 | kyverno.cleanupController.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | kyverno.cleanupController.image.registry | string | `nil` | Image registry |
 | kyverno.cleanupController.image.repository | string | `"kyverno/cleanup-controller"` | Image repository |
-| kyverno.cleanupController.image.tag | string | `nil` | Image tag Defaults to appVersion in Chart.yaml if omitted |
+| kyverno.cleanupController.image.tag | string | `"v1.20.0"` | Image tag Defaults to appVersion in Chart.yaml if omitted |
 | kyverno.cleanupController.imagePullSecrets | list | `[]` | Image pull secrets |
 | kyverno.cleanupController.labels | object | `{}` | Deployment labels. |
 | kyverno.cleanupController.lifecycle | object | `{}` | Container lifecycle hooks (e.g. a preStop sleep for graceful shutdown). The sleep action requires Kubernetes 1.30+. |
@@ -366,6 +367,7 @@ A Helm chart for kyverno
 | kyverno.config.create | bool | `true` | Create the configmap. |
 | kyverno.config.defaultRegistry | string | `"docker.io"` | The registry hostname used for the image mutation. |
 | kyverno.config.enableDefaultRegistryMutation | bool | `true` | Enable registry mutation for container images. Enabled by default. |
+| kyverno.config.enableUpdateRequestCleanup | bool | `false` | Enable cleanup of UpdateRequests. |
 | kyverno.config.excludeClusterRoles | list | `[]` | Exclude roles |
 | kyverno.config.excludeGroups | list | `["system:nodes"]` | Exclude groups |
 | kyverno.config.excludeKyvernoNamespace | bool | `true` | Exclude Kyverno namespace Determines if default Kyverno namespace exclusion is enabled for webhooks and resourceFilters |
@@ -382,6 +384,7 @@ A Helm chart for kyverno
 | kyverno.config.resourceFiltersInclude | list | `[]` | resourceFilters include list Items to include to config.resourceFilters |
 | kyverno.config.resourceFiltersIncludeNamespaces | list | `[]` | resourceFilter namespace include Namespaces to include to the default resourceFilters |
 | kyverno.config.successEventActions | string | "" (empty, all success events are emitted when generateSuccessEvents is true) | Comma-separated list of event actions for which success events should be generated. When set, only success events matching the specified actions are emitted. Requires `generateSuccessEvents` to be `true`. Valid values: "Resource Mutated", "Resource Passed", "Resource Generated", "Resource Cleaned Up". Example: "Resource Mutated" or "Resource Mutated,Resource Generated". |
+| kyverno.config.updateRequestCleanupTTL | string | `""` | Defines the TTL for UpdateRequests if cleanup is enabled. Format is a duration string (e.g. 1h, 24h, 168h). |
 | kyverno.config.updateRequestThreshold | int | `1000` | Sets the threshold for the total number of UpdateRequests generated for mutateExisitng and generate policies. |
 | kyverno.config.webhookAnnotations | object | `{"admissions.enforcer/disabled":"true"}` | Defines annotations to set on webhook configurations. |
 | kyverno.config.webhookLabels | object | `{}` | Defines labels to set on webhook configurations. |
@@ -399,7 +402,7 @@ A Helm chart for kyverno
 | kyverno.crds.migration.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | kyverno.crds.migration.image.registry | string | `nil` | Image registry |
 | kyverno.crds.migration.image.repository | string | `"kyverno/kyverno-cli"` | Image repository |
-| kyverno.crds.migration.image.tag | string | `nil` | Image tag Defaults to appVersion in Chart.yaml if omitted |
+| kyverno.crds.migration.image.tag | string | `"v1.20.0"` | Image tag Defaults to appVersion in Chart.yaml if omitted |
 | kyverno.crds.migration.imagePullSecrets | list | `[]` | Image pull secrets |
 | kyverno.crds.migration.nodeAffinity | object | `{}` | Node affinity constraints. |
 | kyverno.crds.migration.nodeSelector | object | `{}` | Node labels for pod assignment. Overrides `global.nodeSelector` when non-empty. When empty, the default is `kubernetes.io/os: linux`. |
@@ -410,7 +413,7 @@ A Helm chart for kyverno
 | kyverno.crds.migration.podResources.limits | object | `{"cpu":"100m","memory":"256Mi"}` | Pod resource limits |
 | kyverno.crds.migration.podResources.requests | object | `{"cpu":"10m","memory":"64Mi"}` | Pod resource requests |
 | kyverno.crds.migration.podSecurityContext | object | `{}` | Security context for the pod |
-| kyverno.crds.migration.resources | list | `["cleanuppolicies.kyverno.io","clustercleanuppolicies.kyverno.io","clusterpolicies.kyverno.io","globalcontextentries.kyverno.io","policies.kyverno.io","policyexceptions.kyverno.io","updaterequests.kyverno.io","deletingpolicies.policies.kyverno.io","generatingpolicies.policies.kyverno.io","imagevalidatingpolicies.policies.kyverno.io","mutatingpolicies.policies.kyverno.io","namespaceddeletingpolicies.policies.kyverno.io","namespacedgeneratingpolicies.policies.kyverno.io","namespacedimagevalidatingpolicies.policies.kyverno.io","namespacedmutatingpolicies.policies.kyverno.io","namespacedvalidatingpolicies.policies.kyverno.io","policyexceptions.policies.kyverno.io","validatingpolicies.policies.kyverno.io"]` | Resources to migrate |
+| kyverno.crds.migration.resources | list | `["globalcontextentries.kyverno.io","updaterequests.kyverno.io","deletingpolicies.policies.kyverno.io","generatingpolicies.policies.kyverno.io","imagevalidatingpolicies.policies.kyverno.io","mutatingpolicies.policies.kyverno.io","namespaceddeletingpolicies.policies.kyverno.io","namespacedgeneratingpolicies.policies.kyverno.io","namespacedimagevalidatingpolicies.policies.kyverno.io","namespacedmutatingpolicies.policies.kyverno.io","namespacedvalidatingpolicies.policies.kyverno.io","policyexceptions.policies.kyverno.io","validatingpolicies.policies.kyverno.io"]` | Resources to migrate |
 | kyverno.crds.migration.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the hook containers |
 | kyverno.crds.migration.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount. When set to false, a projected service account token is used instead which provides time-limited and audience-bound tokens for improved security. |
 | kyverno.crds.migration.serviceAccount.projectedServiceAccountToken | object | `{"audience":"","expirationSeconds":3600}` | Projected service account token configuration (only used when automountServiceAccountToken is false) |
@@ -446,6 +449,7 @@ A Helm chart for kyverno
 | kyverno.features.policyExceptions.enabled | bool | `false` | Enables the feature |
 | kyverno.features.policyExceptions.namespace | string | `""` | Restrict policy exceptions to a single namespace Set to "*" to allow exceptions in all namespaces |
 | kyverno.features.policyReports.enabled | bool | `true` | Enables the feature |
+| kyverno.features.protectGenerationLabels.enabled | bool | `true` | Enables generation label protection webhook |
 | kyverno.features.protectManagedResources.enabled | bool | `false` | Enables the feature |
 | kyverno.features.registryClient.allowInsecure | bool | `false` | Allow insecure registry |
 | kyverno.features.registryClient.credentialHelpers | list | `["default","google","amazon","azure","github"]` | Enable registry client helpers |
@@ -481,7 +485,7 @@ A Helm chart for kyverno
 | kyverno.metricsConfig.annotations | object | `{}` | Additional annotations to add to the configmap. |
 | kyverno.metricsConfig.bucketBoundaries | list | `[0.005,0.01,0.025,0.05,0.1,0.25,0.5,1,2.5,5,10,15,20,25,30]` | Configures the bucket boundaries for all Histogram metrics, changing this configuration requires restart of the kyverno admission controller |
 | kyverno.metricsConfig.create | bool | `true` | Create the configmap. |
-| kyverno.metricsConfig.metricsExposure | map | `{"kyverno_admission_requests_total":{"disabledLabelDimensions":["resource_namespace"]},"kyverno_admission_review_duration_seconds":{"disabledLabelDimensions":["resource_namespace"]},"kyverno_cleanup_controller_deletedobjects_total":{"disabledLabelDimensions":["resource_namespace","policy_namespace"]},"kyverno_generating_policy_execution_duration_seconds":{"disabledLabelDimensions":["resource_namespace","resource_request_operation"]},"kyverno_generating_policy_results_total":{"disabledLabelDimensions":["resource_namespace","policy_namespace"]},"kyverno_image_validating_policy_execution_duration_seconds":{"disabledLabelDimensions":["resource_namespace","resource_request_operation"]},"kyverno_image_validating_policy_results_total":{"disabledLabelDimensions":["resource_namespace","policy_namespace"]},"kyverno_mutating_policy_execution_duration_seconds":{"disabledLabelDimensions":["resource_namespace","resource_request_operation"]},"kyverno_mutating_policy_results_total":{"disabledLabelDimensions":["resource_namespace","policy_namespace"]},"kyverno_policy_execution_duration_seconds":{"disabledLabelDimensions":["resource_namespace","resource_request_operation"]},"kyverno_policy_results_total":{"disabledLabelDimensions":["resource_namespace","policy_namespace"]},"kyverno_policy_rule_info_total":{"disabledLabelDimensions":["resource_namespace","policy_namespace"]},"kyverno_validating_policy_execution_duration_seconds":{"disabledLabelDimensions":["resource_namespace","resource_request_operation"]},"kyverno_validating_policy_results_total":{"disabledLabelDimensions":["resource_namespace","policy_namespace"]}}` | Configures the exposure of individual metrics, by default all metrics and all labels are exported, changing this configuration requires restart of the kyverno admission controller |
+| kyverno.metricsConfig.metricsExposure | map | `{"kyverno_admission_requests_total":{"disabledLabelDimensions":["resource_namespace"]},"kyverno_admission_review_duration_seconds":{"disabledLabelDimensions":["resource_namespace"]},"kyverno_generating_policy_execution_duration_seconds":{"disabledLabelDimensions":["resource_namespace","resource_request_operation"]},"kyverno_generating_policy_results_total":{"disabledLabelDimensions":["resource_namespace","policy_namespace"]},"kyverno_image_validating_policy_execution_duration_seconds":{"disabledLabelDimensions":["resource_namespace","resource_request_operation"]},"kyverno_image_validating_policy_results_total":{"disabledLabelDimensions":["resource_namespace","policy_namespace"]},"kyverno_mutating_policy_execution_duration_seconds":{"disabledLabelDimensions":["resource_namespace","resource_request_operation"]},"kyverno_mutating_policy_results_total":{"disabledLabelDimensions":["resource_namespace","policy_namespace"]},"kyverno_validating_policy_execution_duration_seconds":{"disabledLabelDimensions":["resource_namespace","resource_request_operation"]},"kyverno_validating_policy_results_total":{"disabledLabelDimensions":["resource_namespace","policy_namespace"]}}` | Configures the exposure of individual metrics, by default all metrics and all labels are exported, changing this configuration requires restart of the kyverno admission controller |
 | kyverno.metricsConfig.metricsRefreshInterval | string | `nil` | Rate at which metrics should reset so as to clean up the memory footprint of kyverno metrics, if you might be expecting high memory footprint of Kyverno's metrics. Default: 0, no refresh of metrics. WARNING: This flag is not working since Kyverno 1.8.0 |
 | kyverno.metricsConfig.name | string | `nil` | The configmap name (required if `create` is `false`). |
 | kyverno.metricsConfig.namespaces.exclude | list | `[]` | list of namespaces to NOT capture metrics for. |
@@ -514,7 +518,7 @@ A Helm chart for kyverno
 | kyverno.reportsController.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | kyverno.reportsController.image.registry | string | `nil` | Image registry |
 | kyverno.reportsController.image.repository | string | `"kyverno/reports-controller"` | Image repository |
-| kyverno.reportsController.image.tag | string | `nil` | Image tag Defaults to appVersion in Chart.yaml if omitted |
+| kyverno.reportsController.image.tag | string | `"v1.20.0"` | Image tag Defaults to appVersion in Chart.yaml if omitted |
 | kyverno.reportsController.imagePullSecrets | list | `[]` | Image pull secrets |
 | kyverno.reportsController.labels | object | `{}` | Deployment labels. |
 | kyverno.reportsController.lifecycle | object | `{}` | Container lifecycle hooks (e.g. a preStop sleep for graceful shutdown). The sleep action requires Kubernetes 1.30+. |
@@ -595,7 +599,7 @@ A Helm chart for kyverno
 | kyverno.test.image.pullPolicy | string | `nil` | Image pull policy Defaults to image.pullPolicy if omitted |
 | kyverno.test.image.registry | string | `"ghcr.io"` | Image registry |
 | kyverno.test.image.repository | string | `"kyverno/readiness-checker"` | Image repository |
-| kyverno.test.image.tag | string | `nil` | Image tag Defaults to `latest` if omitted |
+| kyverno.test.image.tag | string | `"v1.20.0"` | Image tag Defaults to `latest` if omitted |
 | kyverno.test.imagePullSecrets | list | `[]` | Image pull secrets |
 | kyverno.test.nodeSelector | object | `{}` | Node labels for pod assignment. Overrides `global.nodeSelector` when non-empty. When empty, the default is `kubernetes.io/os: linux`. |
 | kyverno.test.podAnnotations | object | `{}` | Additional Pod annotations |
@@ -607,12 +611,38 @@ A Helm chart for kyverno
 | kyverno.test.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the test containers |
 | kyverno.test.sleep | int | `20` | Sleep time before running test |
 | kyverno.test.tolerations | list | `[]` | List of node taints to tolerate |
+| kyverno.upgrade.acknowledgeLegacyPoliciesNotEnforced | bool | `false` | Installing or upgrading is blocked by default when legacy kyverno.io policy resources (`ClusterPolicy`, `Policy`, `CleanupPolicy`, `ClusterCleanupPolicy`, `PolicyException`) are found on the cluster. As of 1.20, Kyverno no longer executes these legacy policy types even though their APIs remain available for read, list, export, and delete: setting this to true does not restore enforcement, it only acknowledges that legacy policies found on this cluster are not enforced. Migrate them to the `policies.kyverno.io` policy types (see https://kyverno.io/docs/guides/migration-to-cel/), or set this to true to bypass the check. This disables both the render-time check and the `legacyPolicyCheck` hook Job. |
 | kyverno.upgrade.fromV2 | bool | `false` | Upgrading from v2 to v3 is not allowed by default, set this to true once changes have been reviewed. |
+| kyverno.upgrade.legacyPolicyCheck.activeDeadlineSeconds | int | `120` | Maximum seconds the hook Job may run before it is failed, so a stalled or unreachable API server can't hang the install/upgrade. Set to 0 or null to disable. |
+| kyverno.upgrade.legacyPolicyCheck.enabled | bool | `true` | Enable the pre-install/pre-upgrade hook Job that checks for legacy kyverno.io policy resources on the cluster. This is a second, server-side check for GitOps tools that honor Helm hooks; it is independent from the render-time `lookup` check, which some GitOps tools and `helm template`/`--dry-run` do not evaluate against a live cluster. |
+| kyverno.upgrade.legacyPolicyCheck.image.defaultRegistry | string | `"reg.kyverno.io"` |  |
+| kyverno.upgrade.legacyPolicyCheck.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| kyverno.upgrade.legacyPolicyCheck.image.registry | string | `nil` | Image registry |
+| kyverno.upgrade.legacyPolicyCheck.image.repository | string | `"kyverno/kyverno-cli"` | Image repository |
+| kyverno.upgrade.legacyPolicyCheck.image.tag | string | `"v1.20.0"` | Image tag Defaults to appVersion in Chart.yaml if omitted |
+| kyverno.upgrade.legacyPolicyCheck.imagePullSecrets | list | `[]` | Image pull secrets |
+| kyverno.upgrade.legacyPolicyCheck.nodeAffinity | object | `{}` | Node affinity constraints. |
+| kyverno.upgrade.legacyPolicyCheck.nodeSelector | object | `{}` | Node labels for pod assignment. Overrides `global.nodeSelector` when non-empty. When empty, the default is `kubernetes.io/os: linux`. |
+| kyverno.upgrade.legacyPolicyCheck.podAffinity | object | `{}` | Pod affinity constraints. |
+| kyverno.upgrade.legacyPolicyCheck.podAnnotations | object | `{}` | Pod annotations. |
+| kyverno.upgrade.legacyPolicyCheck.podAntiAffinity | object | `{}` | Pod anti affinity constraints. |
+| kyverno.upgrade.legacyPolicyCheck.podLabels | object | `{}` | Pod labels. |
+| kyverno.upgrade.legacyPolicyCheck.podResources.limits | object | `{"cpu":"100m","memory":"256Mi"}` | Pod resource limits |
+| kyverno.upgrade.legacyPolicyCheck.podResources.requests | object | `{"cpu":"10m","memory":"64Mi"}` | Pod resource requests |
+| kyverno.upgrade.legacyPolicyCheck.podSecurityContext | object | `{}` | Security context for the pod |
+| kyverno.upgrade.legacyPolicyCheck.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the hook container |
+| kyverno.upgrade.legacyPolicyCheck.serviceAccount.automountServiceAccountToken | bool | `true` | Toggle automounting of the ServiceAccount. When set to false, a projected service account token is used instead which provides time-limited and audience-bound tokens for improved security. |
+| kyverno.upgrade.legacyPolicyCheck.serviceAccount.projectedServiceAccountToken | object | `{"audience":"","expirationSeconds":3600}` | Projected service account token configuration (only used when automountServiceAccountToken is false) |
+| kyverno.upgrade.legacyPolicyCheck.serviceAccount.projectedServiceAccountToken.audience | string | `""` | Audience for the projected service account token. If not set, the token will have no audience restriction. |
+| kyverno.upgrade.legacyPolicyCheck.serviceAccount.projectedServiceAccountToken.expirationSeconds | int | `3600` | Token expiration time in seconds. The kubelet will request a new token before the token expires. |
+| kyverno.upgrade.legacyPolicyCheck.tolerations | list | `[]` | List of node taints to tolerate |
+| kyverno.upgrade.legacyPolicyCheck.ttlSecondsAfterFinished | int | `300` | Seconds after the hook Job finishes before it (and its Pod) are auto-deleted. A failed Job's logs stay available until then. Set to 0 or null to keep it indefinitely. |
 | kyverno.webhooksCleanup.enabled | bool | `true` | Create a helm pre-delete hook to cleanup webhooks. |
+| kyverno.webhooksCleanup.image.defaultRegistry | string | `"ghcr.io"` | Default image registry, used only when neither `registry` nor `global.image.registry` is set |
 | kyverno.webhooksCleanup.image.pullPolicy | string | `nil` | Image pull policy Defaults to image.pullPolicy if omitted |
-| kyverno.webhooksCleanup.image.registry | string | `"ghcr.io"` | Image registry |
+| kyverno.webhooksCleanup.image.registry | string | `nil` | Image registry |
 | kyverno.webhooksCleanup.image.repository | string | `"kyverno/readiness-checker"` | Image repository |
-| kyverno.webhooksCleanup.image.tag | string | `nil` | Image tag Defaults to `latest` if omitted |
+| kyverno.webhooksCleanup.image.tag | string | `"v1.20.0"` | Image tag Defaults to `latest` if omitted |
 | kyverno.webhooksCleanup.imagePullSecrets | list | `[]` | Image pull secrets |
 | kyverno.webhooksCleanup.nodeAffinity | object | `{}` | Node affinity constraints. |
 | kyverno.webhooksCleanup.nodeSelector | object | `{}` | Node labels for pod assignment. Overrides `global.nodeSelector` when non-empty. When empty, the default is `kubernetes.io/os: linux`. |
@@ -660,7 +690,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.9"
+    targetRevision: "0.1.10"
     chart: kyverno
     path: ''
     helm:
