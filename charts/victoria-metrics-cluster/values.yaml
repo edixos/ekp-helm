@@ -154,9 +154,6 @@ vmcluster:
         tlsCertFile: ""
         tlsKeyFile: ""
         tlsMinVersion: ""
-        tlsAutocertHosts: ""
-        tlsAutocertEmail: ""
-        tlsAutocertCacheDir: ""
         mtls: false
         mtlsCAFile: ""
 
@@ -546,9 +543,6 @@ vmcluster:
         tlsCertFile: ""
         tlsKeyFile: ""
         tlsMinVersion: ""
-        tlsAutocertHosts: ""
-        tlsAutocertEmail: ""
-        tlsAutocertCacheDir: ""
         mtls: false
         mtlsCAFile: ""
 
@@ -906,9 +900,6 @@ vmcluster:
         tlsCertFile: ""
         tlsKeyFile: ""
         tlsMinVersion: ""
-        tlsAutocertHosts: ""
-        tlsAutocertEmail: ""
-        tlsAutocertCacheDir: ""
         mtls: false
         mtlsCAFile: ""
 
@@ -1239,9 +1230,6 @@ vmcluster:
         tlsCertFile: ""
         tlsKeyFile: ""
         tlsMinVersion: ""
-        tlsAutocertHosts: ""
-        tlsAutocertEmail: ""
-        tlsAutocertCacheDir: ""
         mtls: false
         mtlsCAFile: ""
 
