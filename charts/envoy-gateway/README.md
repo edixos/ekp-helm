@@ -1,6 +1,6 @@
 # envoy-gateway
 
-![Version: 0.1.12](https://img.shields.io/badge/Version-0.1.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.9.3](https://img.shields.io/badge/AppVersion-v1.9.3-informational?style=flat-square)
+![Version: 0.1.13](https://img.shields.io/badge/Version-0.1.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.10.0](https://img.shields.io/badge/AppVersion-v1.10.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://docker.io/envoyproxy | envoy-gateway(gateway-helm) | 1.9.3 |
+| oci://docker.io/envoyproxy | envoy-gateway(gateway-helm) | 1.10.0 |
 
 ## Maintainers
 
@@ -73,8 +73,10 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | envoy-gateway.deployment.pod.affinity | object | `{}` |  |
 | envoy-gateway.deployment.pod.annotations."prometheus.io/port" | string | `"19001"` |  |
 | envoy-gateway.deployment.pod.annotations."prometheus.io/scrape" | string | `"true"` |  |
+| envoy-gateway.deployment.pod.extraContainers | list | `[]` | Additional sidecar containers on the deployment definition. |
 | envoy-gateway.deployment.pod.extraVolumeMounts | list | `[]` |  |
 | envoy-gateway.deployment.pod.extraVolumes | list | `[]` |  |
+| envoy-gateway.deployment.pod.initContainers | list | `[]` | Additional init containers on the deployment definition. Also used for native sidecars (an init container with restartPolicy: Always). |
 | envoy-gateway.deployment.pod.labels | object | `{}` |  |
 | envoy-gateway.deployment.pod.nodeSelector | object | `{}` |  |
 | envoy-gateway.deployment.pod.securityContext.fsGroup | int | `65532` |  |
@@ -100,7 +102,7 @@ Helm chart to deploy Envoy Gateway on Kubernetes
 | envoy-gateway.deployment.replicas | int | `1` |  |
 | envoy-gateway.global.imagePullSecrets | list | `[]` | Global override for image pull secrets |
 | envoy-gateway.global.imageRegistry | string | `""` | Global override for image registry |
-| envoy-gateway.global.images.envoyGateway.image | string | `"docker.io/envoyproxy/gateway:v1.9.3"` | Full image for the Envoy Gateway control plane Deployment installed by this chart. |
+| envoy-gateway.global.images.envoyGateway.image | string | `"docker.io/envoyproxy/gateway:v1.10.0"` | Full image for the Envoy Gateway control plane Deployment installed by this chart. |
 | envoy-gateway.global.images.envoyGateway.pullPolicy | string | `"IfNotPresent"` | Image pull policy for the Envoy Gateway control plane Deployment. Default behavior: latest images will be Always else IfNotPresent. |
 | envoy-gateway.global.images.envoyGateway.pullSecrets | list | `[]` | Pull secrets for the Envoy Gateway control plane Deployment. |
 | envoy-gateway.global.images.envoyProxy.image | string | `""` | Full image for the managed Envoy Proxy data plane. This updates the generated `envoyProxy` config and does not change the `envoy-gateway` control plane Deployment image. If not specified, the default image built into `envoy-gateway` is used. |
@@ -176,7 +178,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.12"
+    targetRevision: "0.1.13"
     chart: envoy-gateway
     path: ''
     helm:

@@ -66,7 +66,7 @@ envoy-gateway:
     images:
       envoyGateway:
         # -- Full image for the Envoy Gateway control plane Deployment installed by this chart.
-        image: docker.io/envoyproxy/gateway:v1.9.3
+        image: docker.io/envoyproxy/gateway:v1.10.0
         # -- Image pull policy for the Envoy Gateway control plane Deployment.
         # Default behavior: latest images will be Always else IfNotPresent.
         pullPolicy: IfNotPresent
@@ -200,6 +200,15 @@ envoy-gateway:
       # - name: foo
       #   configMap:
       #     name: myconfigmap
+      # -- Additional init containers on the deployment definition. Also used for native sidecars (an init container with restartPolicy: Always).
+      initContainers: []
+      # - name: sidecar
+      #   image: my-sidecar:latest
+      #   restartPolicy: Always
+      # -- Additional sidecar containers on the deployment definition.
+      extraContainers: []
+      # - name: sidecar
+      #   image: my-sidecar:latest
       securityContext:
         runAsNonRoot: true
         runAsGroup: 65532
