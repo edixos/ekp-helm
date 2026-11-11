@@ -67,13 +67,14 @@ vmstack:
     cluster:
       # -- K8s cluster domain suffix, uses for building storage pods' FQDN. Details are [here](https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/)
       dnsDomain: cluster.local.
-    # -- Labels added to resources templated by this chart and the embedded operator chart. Also passed to the operator
+    # -- Labels added to resources templated by this chart and the embedded operator chart, and to dashboards and rules created
+    # by the sync-job. Also passed to the operator
     # (`VM_COMMON_LABELS`), which adds them to every resource it creates from VM CRs. Not applied to CRDs, `extraObjects`
     # and bundled subcharts, use `grafana.extraLabels`, `kube-state-metrics.customLabels` and
     # `prometheus-node-exporter.commonLabels` for the latter
     extraLabels: {}
     # -- Annotations passed to the operator (`VM_COMMON_ANNOTATIONS`), which adds them to every resource it creates from
-    # VM CRs. Not applied to bundled subcharts
+    # VM CRs. Also added to dashboards and rules created by the sync-job. Not applied to bundled subcharts
     extraAnnotations: {}
     # -- Default component versions. Propagated automatically (as a global value) to the embedded operator chart's
     # own `global.versions`, which it uses to populate its default-version env vars, so that CRs created outside this
@@ -81,15 +82,15 @@ vmstack:
     # renovate-tracked tags/appVersion below.
     versions:
       # renovate: image=victoriametrics/victoria-metrics
-      metrics: v1.155.0
+      metrics: v1.156.0
       # renovate: image=victoriametrics/victoria-logs
       logs: v1.53.0
       # renovate: image=victoriametrics/victoria-traces
-      traces: v0.12.1
+      traces: v0.13.0
       # renovate: image=victoriametrics/vmanomaly
-      anomaly: v1.31.1
+      anomaly: v1.32.0
       # renovate: image=prom/alertmanager
-      alertmanager: v0.34.1
+      alertmanager: v0.34.2
   # -- Override chart name
   nameOverride: ""
   # -- Resource full name override
@@ -121,9 +122,9 @@ vmstack:
   defaultDashboards:
     # -- Enable dashboard sync via sync-job
     enabled: true
-    # -- Additional labels for dashboard resources (ConfigMaps or GrafanaDashboard CRDs)
+    # -- Additional labels for dashboard resources (ConfigMaps or GrafanaDashboard CRDs), merged over `global.extraLabels`
     labels: {}
-    # -- Additional annotations for dashboard resources
+    # -- Additional annotations for dashboard resources, merged over `global.extraAnnotations`
     annotations: {}
     grafanaOperator:
       # -- Create GrafanaDashboard CRDs instead of ConfigMaps (requires grafana-operator)
@@ -134,33 +135,60 @@ vmstack:
             dashboards: grafana
         allowCrossNamespaceImport: false
     # -- Per-dashboard configuration. Keys match dashboard names from JSON content.
-    # Set enabled: false to skip a dashboard. Set clusterMetric to patch the cluster variable query.
+    # `enabled: false` skips a dashboard. `variables.<name>` sets a variable `query` (adds the variable if missing) and `regex` ("" removes it).
+    # The cluster picker is the variable with a label_values(..., cluster) query.
     dashboards:
       victoriametrics-single-node:
-        clusterMetric: vm_app_version
+        variables:
+          cluster:
+            query: label_values(vm_app_version, cluster)
       victoriametrics-vmagent:
-        clusterMetric: vm_app_version
+        variables:
+          cluster:
+            query: label_values(vm_app_version, cluster)
       victoriametrics-cluster:
-        clusterMetric: vm_app_version
+        variables:
+          cluster:
+            query: label_values(vm_app_version, cluster)
       victoriametrics-vmalert:
         enabled: true
-        clusterMetric: vm_app_version
+        variables:
+          cluster:
+            query: label_values(vm_app_version, cluster)
       victoriametrics-operator:
         enabled: true
-        clusterMetric: vm_app_version
+        variables:
+          cluster:
+            query: label_values(vm_app_version, cluster)
       victorialogs-cluster:
-        clusterMetric: vm_app_version
+        variables:
+          k8s_cluster:
+            query: label_values(vm_app_version, cluster)
       victorialogs-single-node:
-        clusterMetric: vm_app_version
+        variables:
+          cluster:
+            query: label_values(vm_app_version, cluster)
       victorialogs-vlagent:
-        clusterMetric: vm_app_version
+        variables:
+          cluster:
+            query: label_values(vm_app_version, cluster)
       victoriatraces-single-node:
-        clusterMetric: vm_app_version
+        variables:
+          cluster:
+            query: label_values(vm_app_version, cluster)
       victoriatraces-cluster:
-        clusterMetric: vm_app_version
+        variables:
+          cluster:
+            query: label_values(vm_app_version, cluster)
       node-exporter-full:
         enabled: true
-        clusterMetric: node_uname_info
+        variables:
+          cluster:
+            query: label_values(node_uname_info, cluster)
+      etcd:
+        variables:
+          k8s_cluster:
+            query: label_values(etcd_server_has_leader, cluster)
       alertmanager-overview:
         enabled: '{{ .Values.alertmanager.enabled }}'
       grafana-overview:
@@ -237,7 +265,7 @@ vmstack:
     enabled: true
     image:
       repository: ghcr.io/victoriametrics/sync-job
-      tag: v0.0.17
+      tag: v0.0.18
       pullPolicy: IfNotPresent
     # -- Image pull secrets for the sync-job Pod. Needed when `image.repository` points at a
     # private registry. Falls back to `global.imagePullSecrets` when not set.
@@ -452,9 +480,9 @@ vmstack:
         rules: {}
     # -- Runbook url prefix for default rules
     runbookUrl: https://runbooks.prometheus-operator.dev/runbooks
-    # -- Labels for default rules
+    # -- Labels for default rules, merged over `global.extraLabels`
     labels: {}
-    # -- Annotations for default rules
+    # -- Annotations for default rules, merged over `global.extraAnnotations`
     annotations: {}
     # -- Rule sources. Set enabled: false on any entry to disable it. Add new keys to extend.
     sources:
