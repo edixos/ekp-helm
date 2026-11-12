@@ -1,6 +1,6 @@
 # victoria-metrics-cluster
 
-![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.155.0](https://img.shields.io/badge/AppVersion-v1.155.0-informational?style=flat-square)
+![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.156.0](https://img.shields.io/badge/AppVersion-v1.156.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmcluster(victoria-metrics-cluster) | 0.54.0 |
+| https://victoriametrics.github.io/helm-charts/ | vmcluster(victoria-metrics-cluster) | 0.55.0 |
 
 ## Maintainers
 
@@ -84,7 +84,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmauth.horizontalPodAutoscaler.maxReplicas | int | `10` | Maximum replicas for HPA to use to to scale the vmauth component |
 | vmcluster.vmauth.horizontalPodAutoscaler.metrics | list | `[]` | Metric for HPA to use to scale the vmauth component |
 | vmcluster.vmauth.horizontalPodAutoscaler.minReplicas | int | `2` | Minimum replicas for HPA to use to scale the vmauth component |
-| vmcluster.vmauth.http | list | `[{"mtls":false,"mtlsCAFile":"","name":"http","primary":true,"tls":false,"tlsAutocertCacheDir":"","tlsAutocertEmail":"","tlsAutocertHosts":"","tlsCertFile":"","tlsKeyFile":"","tlsMinVersion":"","value":":8427"}]` | HTTP listen address configuration. See https://docs.victoriametrics.com/helm/victoria-metrics-cluster/#http-listen-address for details. |
+| vmcluster.vmauth.http | list | `[{"mtls":false,"mtlsCAFile":"","name":"http","primary":true,"tls":false,"tlsCertFile":"","tlsKeyFile":"","tlsMinVersion":"","value":":8427"}]` | HTTP listen address configuration. See https://docs.victoriametrics.com/helm/victoria-metrics-cluster/#http-listen-address for details. |
 | vmcluster.vmauth.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | vmcluster.vmauth.image.registry | string | `""` | Image registry |
 | vmcluster.vmauth.image.repository | string | `"victoriametrics/vmauth"` | Image repository |
@@ -179,7 +179,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vminsert.horizontalPodAutoscaler.maxReplicas | int | `10` | Maximum replicas for HPA to use to to scale the vminsert component |
 | vmcluster.vminsert.horizontalPodAutoscaler.metrics | list | `[]` | Metric for HPA to use to scale the vminsert component |
 | vmcluster.vminsert.horizontalPodAutoscaler.minReplicas | int | `2` | Minimum replicas for HPA to use to scale the vminsert component |
-| vmcluster.vminsert.http | list | `[{"mtls":false,"mtlsCAFile":"","name":"http","primary":true,"tls":false,"tlsAutocertCacheDir":"","tlsAutocertEmail":"","tlsAutocertHosts":"","tlsCertFile":"","tlsKeyFile":"","tlsMinVersion":"","value":":8480"}]` | HTTP listen address configuration. See https://docs.victoriametrics.com/helm/victoria-metrics-cluster/#http-listen-address for details. |
+| vmcluster.vminsert.http | list | `[{"mtls":false,"mtlsCAFile":"","name":"http","primary":true,"tls":false,"tlsCertFile":"","tlsKeyFile":"","tlsMinVersion":"","value":":8480"}]` | HTTP listen address configuration. See https://docs.victoriametrics.com/helm/victoria-metrics-cluster/#http-listen-address for details. |
 | vmcluster.vminsert.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | vmcluster.vminsert.image.registry | string | `""` | Image registry |
 | vmcluster.vminsert.image.repository | string | `"victoriametrics/vminsert"` | Image repository |
@@ -282,7 +282,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmselect.horizontalPodAutoscaler.maxReplicas | int | `10` | Maximum replicas for HPA to use to to scale the vmselect component |
 | vmcluster.vmselect.horizontalPodAutoscaler.metrics | list | `[]` | Metric for HPA to use to scale the vmselect component |
 | vmcluster.vmselect.horizontalPodAutoscaler.minReplicas | int | `2` | Minimum replicas for HPA to use to scale the vmselect component |
-| vmcluster.vmselect.http | list | `[{"mtls":false,"mtlsCAFile":"","name":"http","primary":true,"tls":false,"tlsAutocertCacheDir":"","tlsAutocertEmail":"","tlsAutocertHosts":"","tlsCertFile":"","tlsKeyFile":"","tlsMinVersion":"","value":":8481"}]` | HTTP listen address configuration. See https://docs.victoriametrics.com/helm/victoria-metrics-cluster/#http-listen-address for details. |
+| vmcluster.vmselect.http | list | `[{"mtls":false,"mtlsCAFile":"","name":"http","primary":true,"tls":false,"tlsCertFile":"","tlsKeyFile":"","tlsMinVersion":"","value":":8481"}]` | HTTP listen address configuration. See https://docs.victoriametrics.com/helm/victoria-metrics-cluster/#http-listen-address for details. |
 | vmcluster.vmselect.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | vmcluster.vmselect.image.registry | string | `""` | Image registry |
 | vmcluster.vmselect.image.repository | string | `"victoriametrics/vmselect"` | Image repository |
@@ -393,7 +393,7 @@ VictoriaMetrics in cluster mode (vmselect / vminsert / vmstorage / vmauth), pack
 | vmcluster.vmstorage.horizontalPodAutoscaler.maxReplicas | int | `10` | Maximum replicas for HPA to use to to scale the vmstorage component |
 | vmcluster.vmstorage.horizontalPodAutoscaler.metrics | list | `[]` | Metric for HPA to use to scale the vmstorage component |
 | vmcluster.vmstorage.horizontalPodAutoscaler.minReplicas | int | `2` | Minimum replicas for HPA to use to scale the vmstorage component |
-| vmcluster.vmstorage.http | list | `[{"mtls":false,"mtlsCAFile":"","name":"http","primary":true,"tls":false,"tlsAutocertCacheDir":"","tlsAutocertEmail":"","tlsAutocertHosts":"","tlsCertFile":"","tlsKeyFile":"","tlsMinVersion":"","value":":8482"}]` | HTTP listen address configuration. See https://docs.victoriametrics.com/helm/victoria-metrics-cluster/#http-listen-address for details. |
+| vmcluster.vmstorage.http | list | `[{"mtls":false,"mtlsCAFile":"","name":"http","primary":true,"tls":false,"tlsCertFile":"","tlsKeyFile":"","tlsMinVersion":"","value":":8482"}]` | HTTP listen address configuration. See https://docs.victoriametrics.com/helm/victoria-metrics-cluster/#http-listen-address for details. |
 | vmcluster.vmstorage.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | vmcluster.vmstorage.image.registry | string | `""` | Image registry |
 | vmcluster.vmstorage.image.repository | string | `"victoriametrics/vmstorage"` | Image repository |
@@ -516,7 +516,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.5"
+    targetRevision: "0.1.6"
     chart: victoria-metrics-cluster
     path: ''
     helm:

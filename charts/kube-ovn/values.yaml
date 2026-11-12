@@ -69,7 +69,7 @@ kube-ovn:
     images:
       kubeovn:
         repository: kube-ovn
-        tag: v1.16.15
+        tag: v1.17.0
 
   # -- Image configuration.
   # @section -- Global parameters
@@ -152,8 +152,10 @@ kube-ovn:
       enableLogicalGateways: false
       # -- MTU of the subnet.
       # If set to 0, the MTU is auto-detected.
+      # Refer to .networking.maxMtu to cap the MTU.
       # @section -- Network parameters of the CNI
       mtu: 0
+
     # -- Configuration for the service subnet.
     # If .networking.stack is set to IPv4, only the .v4 key is used.
     # If .networking.stack is set to IPv6, only the .v6 key is used.
@@ -230,6 +232,10 @@ kube-ovn:
     # Empty means it will use the same namespace as the controller (PodNamespace).
     # @section -- Network parameters of the CNI
     externalGatewayConfigNs: ""
+    # -- The name of the external gateway switch (OVS bridge providing external network).
+    # Empty means the default "external" is used.
+    # @section -- Network parameters of the CNI
+    externalGatewaySwitch: ""
     # -- Comma-separated string of NodeLocal DNS IP addresses.
     # @section -- Network parameters of the CNI
     nodeLocalDnsIp: ""
@@ -239,6 +245,14 @@ kube-ovn:
     # -- Enable listening on the metrics endpoint for the CNI daemons.
     # @section -- Network parameters of the CNI
     enableMetrics: true
+
+    # -- Upper bound applied to the auto-detected pod MTU (0 disables the cap).
+    # Useful when the underlay uses jumbo frames but pod traffic egresses to a
+    # 1500-byte path (e.g. the internet), where the uncapped value would cause
+    # fragmentation or PMTUD-dependent blackholes. Ignored when .networking.pods.mtu is set.
+    # This applies to custom and default subnets.
+    # @section -- Network parameters of the CNI
+    maxMtu: 0
 
     # -- Configuration if we're running on top of a VLAN.
     # @section -- Network parameters of the CNI
@@ -273,9 +287,15 @@ kube-ovn:
     # -- Enable hardware offloads
     # @section -- Opt-in/out Features
     enableHardwareOffload: false
-    # -- Enable Kube-OVN loadbalancer services
+    # -- Enable Kube-OVN loadbalancer services (one forwarding Pod per LoadBalancer Service). Mutually exclusive with enableGwNftableLoadbalancerService; it needs a ClusterIP data plane behind it, either enableLoadbalancer or enableGwNftableServiceClusterIp.
     # @section -- Opt-in/out Features
     enableLoadbalancerService: false
+    # -- Enable Kube-OVN nftable share DNAT based loadbalancer services on vpc nat gateway. Mutually exclusive with enableLoadbalancerService.
+    # @section -- Opt-in/out Features
+    enableGwNftableLoadbalancerService: false
+    # -- Enable ClusterIP services through nftable share DNAT on a VPC NAT gateway. Mutually exclusive with enableLoadbalancer.
+    # @section -- Opt-in/out Features
+    enableGwNftableServiceClusterIp: false
     # -- Enable persistent VM IPs
     # @section -- Opt-in/out Features
     enableKeepVmIps: true
@@ -290,7 +310,7 @@ kube-ovn:
     enableTproxy: false
     # -- Enable periodic ovn-controller recompute
     # @section -- Opt-in/out Features
-    enableRecompute: true
+    enableRecompute: false
     # -- Enable OVN interconnections
     # @section -- Opt-in/out Features
     enableOvnInterconnections: false
@@ -303,16 +323,19 @@ kube-ovn:
     # -- Enable optimized live migrations for VMs
     # @section -- Opt-in/out Features
     enableLiveMigrationOptimization: true
+    # -- Allow a /32 address to be selected as the tunnel source (required on clouds that assign /32 to the host interface)
+    # @section -- Opt-in/out Features
+    enableHostTunnelSrc: false
 
     ENABLE_BIND_LOCAL_IP: true
     LS_DNAT_MOD_DL_DST: true
     LS_CT_SKIP_DST_LPORT_IPS: true
     ENABLE_ANP: false
     ENABLE_DNS_NAME_RESOLVER: false
+    SET_GENEVE_TX_OFF: false
     SET_VXLAN_TX_OFF: false
     OVSDB_CON_TIMEOUT: 3
     OVSDB_INACTIVITY_TIMEOUT: 10
-    ENABLE_OVN_LB_PREFER_LOCAL: false
 
   # -- CNI binary/configuration injected on the nodes.
   # @section -- CNI configuration
@@ -357,6 +380,10 @@ kube-ovn:
     # -- Enable the deployment of the validating webhook.
     # @section -- Validating webhook configuration
     enabled: false
+    certificate:
+      # -- Create the webhook Certificate and self-signed Issuer. Set to false to manage your own cert-manager Certificate and issuer outside this chart; the webhook remains enabled. See the README for required resource names and upgrade considerations.
+      # @section -- Validating webhook configuration
+      create: true
     # -- Override image settings for kube-ovn-webhook. Empty fields fall back to the global kube-ovn image.
     # @section -- Validating webhook configuration
     image:
@@ -384,11 +411,93 @@ kube-ovn:
     # -- Labels to be added to kube-ovn-webhook pods.
     # @section -- Validating webhook configuration
     podLabels: {}
+    # -- Tolerations for kube-ovn-webhook pods.
+    # @section -- Validating webhook configuration
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
     # -- Extra environment variables to be added to kube-ovn-webhook pods.
     # @section -- Validating webhook configuration
     extraEnv: []
     #  - name: CUSTOM_ENV_VAR
     #    value: "custom-value"
+
+  # -- Configuration of the PrometheusRule shipping baseline Kube-OVN alerts.
+  # Requires prometheus-operator CRDs to be installed in the cluster.
+  #
+  # Prerequisite: most bundled rules query metrics exposed by the controller,
+  # the OVN monitor, the pinger and the agent. Scrape-dependent alerts only
+  # fire when those metrics are actually being scraped, which means **either**:
+  #   1. enabling the matching ServiceMonitors shipped by this chart
+  #      (`controller.serviceMonitor.enabled`, `monitor.serviceMonitor.enabled`,
+  #      `pinger.serviceMonitor.enabled`, `agent.serviceMonitor.enabled`), **or**
+  #   2. configuring an external scrape (PodMonitor, custom scrape config, etc.)
+  #      that produces samples for the same job/metric labels.
+  #
+  # When neither is true, scrape-dependent alerts stay inactive. Note however
+  # that `absent()`-style alerts (e.g. KubeOvnControllerAbsent) still fire in
+  # that configuration, because "no target" is precisely what they report.
+  # If you want to skip them until scraping is wired up, silence/inhibit them
+  # in Alertmanager or leave `prometheusRule.enabled` off.
+  # @section -- PrometheusRule configuration
+  # @default -- "{}"
+  prometheusRule:
+    # -- Enable the deployment of the bundled PrometheusRule.
+    # @section -- PrometheusRule configuration
+    enabled: false
+    # -- Namespace override for the PrometheusRule. Defaults to .Values.namespace when empty.
+    # @section -- PrometheusRule configuration
+    namespace: ""
+    # -- Extra labels added to the PrometheusRule. Typically used to match the
+    # `release` selector of a kube-prometheus-stack installation.
+    # @section -- PrometheusRule configuration
+    labels: {}
+    # -- Extra annotations added to the PrometheusRule.
+    # @section -- PrometheusRule configuration
+    annotations: {}
+    # -- Extra rule groups appended to the bundled groups. Each item must follow
+    # the PrometheusRule `spec.groups[]` schema.
+    # @section -- PrometheusRule configuration
+    additionalGroups: []
+    #  - name: custom.rules
+    #    rules:
+    #      - alert: CustomAlert
+    #        expr: vector(1)
+    #        labels:
+    #          severity: warning
+
+  # -- Configuration of the Grafana dashboard ConfigMaps, automatically picked
+  # up by the kube-prometheus-stack Grafana sidecar. One ConfigMap is emitted
+  # per dashboard under dist/monitoring.
+  # @section -- Grafana dashboards configuration
+  # @default -- "{}"
+  grafanaDashboards:
+    # -- Enable the deployment of the Grafana dashboard ConfigMaps.
+    # @section -- Grafana dashboards configuration
+    enabled: false
+    # -- Namespace override for the dashboard ConfigMaps. Defaults to .Values.namespace when empty.
+    # @section -- Grafana dashboards configuration
+    namespace: ""
+    # -- Name of the Grafana Prometheus datasource the dashboards should use.
+    # The bundled JSON files were exported from Grafana with `${DS_PROMETHEUS}`
+    # placeholders that are only resolved during UI import, not when loaded by
+    # the sidecar. The chart rewrites those placeholders to this value at
+    # render time so panels resolve to an existing datasource.
+    #
+    # Must match `^[A-Za-z0-9_.-]+$`. The value is interpolated verbatim into
+    # dashboard JSON, so characters like quotes, backslashes or newlines would
+    # produce invalid JSON; the chart fails rendering if the constraint is
+    # violated. If your datasource name contains other characters, rename it.
+    # @section -- Grafana dashboards configuration
+    datasource: "Prometheus"
+    # -- Labels added to the dashboard ConfigMaps. The default label matches
+    # the kube-prometheus-stack Grafana sidecar convention.
+    # @section -- Grafana dashboards configuration
+    labels:
+      grafana_dashboard: "1"
+    # -- Annotations added to the dashboard ConfigMaps.
+    # @section -- Grafana dashboards configuration
+    annotations: {}
 
   # -- Configuration for the NAT gateways.
   # @section -- NAT gateways configuration
@@ -408,7 +517,7 @@ kube-ovn:
       repository: docker.io/kubeovn/vpc-nat-gateway
       # -- Image tag.
       # @section -- NAT gateways configuration
-      tag: v1.16.15
+      tag: v1.17.0
       # -- Image pull policy.
       # @section -- NAT gateways configuration
       pullPolicy: IfNotPresent
@@ -425,7 +534,7 @@ kube-ovn:
         repository: docker.io/kubeovn/kube-ovn
         # -- Image tag.
         # @section -- NAT gateways configuration
-        tag: v1.16.15
+        tag: v1.17.0
         # -- Image pull policy.
         # @section -- NAT gateways configuration
         pullPolicy: IfNotPresent
@@ -624,7 +733,7 @@ kube-ovn:
         pullPolicy: ""
       # -- DPDK image tag.
       # @section -- OVS/OVN daemons configuration
-      tag: v1.16.15-dpdk
+      tag: v1.17.0
       # -- Affinity for the ovs-ovn-dpdk DaemonSet.
       # @section -- OVS/OVN daemons configuration
       affinity: {}
@@ -681,6 +790,15 @@ kube-ovn:
     # @section -- BGP speaker configuration
     podLabels: {}
 
+    # -- The name of the configMap that will be mounted in the kube-ovn-speaker pod.
+    # The ConfigMap can provide YAML configuration files for kube-ovn-speaker.
+    # To use a specific file, pass its mounted file path via '--config' or set 'KUBE_OVN_BGP_SPEAKER_CONFIG_FILE'.
+    # @section -- BGP speaker configuration
+    configMap: ""
+    # -- Directory where the ConfigMap will be mounted in the kube-ovn-speaker pod.
+    # @section -- BGP speaker configuration
+    configMapMountPath: "/etc/kube-ovn/"
+
     # -- Extra environment variables to be added to kube-ovn-speaker pods.
     # @section -- BGP speaker configuration
     extraEnv: []
@@ -708,6 +826,7 @@ kube-ovn:
     #  - --neighbor-address=10.32.32.1
     #  - --neighbor-as=65030
     #  - --cluster-as=65000
+    #  - --allowed-source-addresses=10.32.32.2,10.32.32.3,10.32.32.4,10.32.32.5
 
   # -- Configuration for kube-ovn-pinger, the agent monitoring and returning metrics for OVS/external connectivity.
   # @section -- Ping daemon configuration
@@ -806,6 +925,10 @@ kube-ovn:
   # @section -- OVN monitoring daemon configuration
   # @default -- "{}"
   monitor:
+    # -- Number of kube-ovn-monitor replicas.
+    # @section -- OVN monitoring daemon configuration
+    replicas: 1
+
     # -- Override image settings for kube-ovn-monitor. Empty fields fall back to the global kube-ovn image.
     # @section -- OVN monitoring daemon configuration
     image:
@@ -833,6 +956,13 @@ kube-ovn:
     # -- Labels to be added to kube-ovn-monitor pods.
     # @section -- OVN monitoring daemon configuration
     podLabels: {}
+    # -- Tolerations for kube-ovn-monitor pods.
+    # @section -- OVN monitoring daemon configuration
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - key: CriticalAddonsOnly
+        operator: Exists
 
     # -- Extra environment variables to be added to kube-ovn-monitor pods.
     # @section -- OVN monitoring daemon configuration
@@ -934,6 +1064,13 @@ kube-ovn:
     # -- Labels to be added to kube-ovn-controller pods.
     # @section -- Kube-OVN controller configuration
     podLabels: {}
+    # -- Tolerations for kube-ovn-controller pods.
+    # @section -- Kube-OVN controller configuration
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - key: CriticalAddonsOnly
+        operator: Exists
 
     # -- Extra environment variables to be added to kube-ovn-controller pods.
     # @section -- Kube-OVN controller configuration
@@ -1023,6 +1160,15 @@ kube-ovn:
     # -- Labels to be added to ovn-central pods.
     # @section -- OVN-central daemon configuration
     podLabels: {}
+    # -- Tolerations for ovn-central pods.
+    # @section -- OVN-central daemon configuration
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+      - key: CriticalAddonsOnly
+        operator: Exists
     # -- Extra environment variables to be added to ovn-central pods.
     # @section -- OVN-central daemon configuration
     extraEnv: []
@@ -1134,6 +1280,15 @@ kube-ovn:
       # --     - antarctica-east1
       # --     - antarctica-west1
       requiredDuringSchedulingIgnoredDuringExecution: []
+    # -- Tolerations for ovn-ic-controller pods.
+    # @section -- OVN IC controller configuration
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+      - key: CriticalAddonsOnly
+        operator: Exists
 
     # -- Extra environment variables to be added to ovn-ic-controller pods.
     # @section -- OVN IC controller configuration
@@ -1178,6 +1333,16 @@ kube-ovn:
     extraEnv: []
     #  - name: CUSTOM_ENV_VAR
     #    value: "custom-value"
+
+    # -- Gateway netfilter backend: auto, iptables, or nftables; leave empty to use the daemon default of auto.
+    # @section -- CNI agent configuration
+    gatewayNetfilterMode: ""
+    # -- Local kube-proxy proxyMode endpoint; leave empty to use the daemon default endpoint.
+    # @section -- CNI agent configuration
+    kubeProxyModeEndpoint: ""
+    # -- Maximum time to wait for the kube-proxy mode during cold start; leave empty to use the daemon default of 30s.
+    # @section -- CNI agent configuration
+    gatewayNetfilterDetectTimeout: ""
 
     # -- Agent daemon resource limits & requests.
     # ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
@@ -1252,9 +1417,6 @@ kube-ovn:
     # -- ""
     # @section -- Performance configuration
     inspectInterval: 20
-    # -- ""
-    # @section -- Performance configuration
-    ovsVsctlConcurrency: 100
 
   # -- Array of extra K8s manifests to deploy.
   # Note: Supports use of custom Helm templates (Go templating)
@@ -1288,3 +1450,19 @@ kube-ovn:
   #           }
   #         ]
   #       }
+
+  # Dedicated node IPsec container, rendered when the existing IPsec feature is enabled.
+  ipsec:
+    certManager:
+      enabled: false
+      issuerName: kube-ovn
+    certificateDuration: 63072000
+    requestTimeout: 300s
+    priority: -5
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        cpu: 1000m
+        memory: 256Mi

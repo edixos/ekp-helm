@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.18](https://img.shields.io/badge/Version-0.1.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.5.6](https://img.shields.io/badge/AppVersion-v3.5.6-informational?style=flat-square)
+![Version: 0.1.19](https://img.shields.io/badge/Version-0.1.19-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.6.1](https://img.shields.io/badge/AppVersion-v3.6.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 10.11.6 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 10.18.0 |
 
 ## Maintainers
 
@@ -88,7 +88,7 @@ A Helm chart for Kubernetes
 | argocd.applicationSet.listenerset.enabled | bool | `false` | Enable ListenerSet resource for Argo CD ApplicationSet webhook (Gateway API) |
 | argocd.applicationSet.listenerset.hostname | string | `""` | Hostname for the synthesized listener. Defaults to global.domain when empty. |
 | argocd.applicationSet.listenerset.labels | object | `{}` | Additional ListenerSet labels |
-| argocd.applicationSet.listenerset.listenerName | string | `"https"` | Name of the synthesized listener. Also used as sectionName in auto-derived httproute parentRefs. |
+| argocd.applicationSet.listenerset.listenerName | string | `"https"` | Name of the synthesized listener. Also used as sectionName in auto-derived httproute parentRefs. When `listeners` is set, sectionName is only kept if one of the listeners has this name. |
 | argocd.applicationSet.listenerset.listeners | list | `[]` (See [values.yaml]) | Listeners to attach to the parent Gateway. When non-empty, used verbatim and all synthesized listener fields above are ignored. |
 | argocd.applicationSet.listenerset.parentRef | object | `{}` (See [values.yaml]) | Gateway API parentRef for the ListenerSet # Must reference an existing Gateway. Unlike HTTPRoute, ListenerSet accepts exactly one parentRef. |
 | argocd.applicationSet.listenerset.port | int | `443` | Port for the synthesized listener |
@@ -471,7 +471,7 @@ A Helm chart for Kubernetes
 | argocd.dex.pdb.annotations | object | `{}` | Annotations to be added to Dex server pdb |
 | argocd.dex.pdb.enabled | bool | `false` | Deploy a [PodDisruptionBudget] for the Dex server |
 | argocd.dex.pdb.labels | object | `{}` | Labels to be added to Dex server pdb |
-| argocd.dex.pdb.maxUnavailable | string | `""` | Number of pods that are unavailble after eviction as number or percentage (eg.: 50%). # Has higher precedence over `dex.pdb.minAvailable` |
+| argocd.dex.pdb.maxUnavailable | string | `""` | Number of pods that are unavailable after eviction as number or percentage (eg.: 50%). # Has higher precedence over `dex.pdb.minAvailable` |
 | argocd.dex.pdb.minAvailable | string | `""` (defaults to 0 if not specified) | Number of pods that are available after eviction as number or percentage (eg.: 50%) |
 | argocd.dex.pdb.unhealthyPodEvictionPolicy | string | `""` | Policy for evicting unhealthy (not ready) pods, either `IfHealthyBudget` or `AlwaysAllow` # Defaults to `IfHealthyBudget` if not set |
 | argocd.dex.podAnnotations | object | `{}` | Annotations to be added to the Dex server pods |
@@ -486,6 +486,7 @@ A Helm chart for Kubernetes
 | argocd.dex.readinessProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
 | argocd.dex.readinessProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
 | argocd.dex.readinessProbe.timeoutSeconds | int | `1` | Number of seconds after which the [probe] times out |
+| argocd.dex.replicas | int | `1` | The number of Dex server pods to run # Values above 1 need a persistent storage backend in `configs.cm."dex.config"`, the in-memory default does not share state. |
 | argocd.dex.resources | object | `{}` | Resource limits and requests for dex |
 | argocd.dex.runtimeClassName | string | `""` (defaults to global.runtimeClassName) | Runtime class name for Dex |
 | argocd.dex.serviceAccount.annotations | object | `{}` | Annotations applied to created service account |
@@ -506,6 +507,7 @@ A Helm chart for Kubernetes
 | argocd.dex.startupProbe.periodSeconds | int | `10` | How often (in seconds) to perform the [probe] |
 | argocd.dex.startupProbe.successThreshold | int | `1` | Minimum consecutive successes for the [probe] to be considered successful after having failed |
 | argocd.dex.startupProbe.timeoutSeconds | int | `1` | Number of seconds after which the [probe] times out |
+| argocd.dex.storage.type | string | `""` (read from `storage.type` in `configs.cm."dex.config"`, `memory` when unset) | Dex storage type. Renders the RBAC for `kubernetes` storage and validates `dex.replicas`. # Only set it when `configs.cm.create` is false, so the chart cannot read `configs.cm."dex.config"`. |
 | argocd.dex.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds for container lifecycle hook |
 | argocd.dex.tolerations | list | `[]` (defaults to global.tolerations) | [Tolerations] for use with node taints |
 | argocd.dex.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to dex # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
@@ -524,7 +526,7 @@ A Helm chart for Kubernetes
 | argocd.externalRedis.port | int | `6379` | External Redis server port |
 | argocd.externalRedis.secretAnnotations | object | `{}` | External Redis Secret annotations |
 | argocd.externalRedis.username | string | `""` | External Redis username |
-| argocd.extraObjects | list | `[]` | Array of extra K8s manifests to deploy # Note: Supports use of custom Helm templates |
+| argocd.extraObjects | list | `[]` | Extra K8s manifests to deploy, as a list or a map. A map can be split over several values files, because Helm merges maps but replaces lists. # Note: Supports use of custom Helm templates |
 | argocd.fullnameOverride | string | `""` | String to fully override `"argo-cd.fullname"` |
 | argocd.global.addPrometheusAnnotations | bool | `false` | Add Prometheus scrape annotations to all metrics services. This can be used as an alternative to the ServiceMonitors. |
 | argocd.global.additionalLabels | object | `{}` | Common labels for the all resources |
@@ -556,7 +558,7 @@ A Helm chart for Kubernetes
 | argocd.global.priorityClassName | string | `""` | Default priority class for all components |
 | argocd.global.revisionHistoryLimit | int | `3` | Number of old deployment ReplicaSets to retain. The rest will be garbage collected. |
 | argocd.global.runtimeClassName | string | `""` | Runtime class name for all components |
-| argocd.global.securityContext | object | `{}` (See [values.yaml]) | Toggle and define pod-level security context. |
+| argocd.global.securityContext | object | See [values.yaml] | Toggle and define pod-level security context. |
 | argocd.global.statefulsetAnnotations | object | `{}` | Annotations for the all deployed Statefulsets |
 | argocd.global.statefulsetLabels | object | `{}` | Labels for the all deployed Statefulsets |
 | argocd.global.tolerations | list | `[]` | Default tolerations for all components |
@@ -670,7 +672,7 @@ A Helm chart for Kubernetes
 | argocd.redis-ha.existingSecret | string | `"argocd-redis"` | Existing Secret to use for redis-ha authentication. By default the redis-secret-init Job is generating this Secret. When `redisSecretInit.enabled` is `false`, the Argo CD components read the Redis password from this Secret too (key `redis-ha.authKey`). |
 | argocd.redis-ha.exporter.enabled | bool | `false` | Enable Prometheus redis-exporter sidecar |
 | argocd.redis-ha.exporter.image | string | `"ghcr.io/oliver006/redis_exporter"` | Repository to use for the redis-exporter |
-| argocd.redis-ha.exporter.tag | string | `"v1.96.0"` | Tag to use for the redis-exporter |
+| argocd.redis-ha.exporter.tag | string | `"v1.97.0"` | Tag to use for the redis-exporter |
 | argocd.redis-ha.haproxy.additionalAffinities | object | `{}` | Additional affinities to add to the haproxy pods. |
 | argocd.redis-ha.haproxy.affinity | string | `""` | Assign custom [affinity] rules to the haproxy pods. |
 | argocd.redis-ha.haproxy.containerSecurityContext | object | See [values.yaml] | HAProxy container-level security context |
@@ -712,7 +714,7 @@ A Helm chart for Kubernetes
 | argocd.redis.exporter.env | list | `[]` | Environment variables to pass to the Redis exporter |
 | argocd.redis.exporter.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for the redis-exporter |
 | argocd.redis.exporter.image.repository | string | `"ghcr.io/oliver006/redis_exporter"` | Repository to use for the redis-exporter |
-| argocd.redis.exporter.image.tag | string | `"v1.96.0"` | Tag to use for the redis-exporter |
+| argocd.redis.exporter.image.tag | string | `"v1.97.0"` | Tag to use for the redis-exporter |
 | argocd.redis.exporter.livenessProbe.enabled | bool | `false` | Enable Kubernetes liveness probe for Redis exporter |
 | argocd.redis.exporter.livenessProbe.failureThreshold | int | `5` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
 | argocd.redis.exporter.livenessProbe.initialDelaySeconds | int | `30` | Number of seconds after the container has started before [probe] is initiated |
@@ -764,7 +766,7 @@ A Helm chart for Kubernetes
 | argocd.redis.pdb.annotations | object | `{}` | Annotations to be added to Redis pdb |
 | argocd.redis.pdb.enabled | bool | `false` | Deploy a [PodDisruptionBudget] for the Redis |
 | argocd.redis.pdb.labels | object | `{}` | Labels to be added to Redis pdb |
-| argocd.redis.pdb.maxUnavailable | string | `""` | Number of pods that are unavailble after eviction as number or percentage (eg.: 50%). # Has higher precedence over `redis.pdb.minAvailable` |
+| argocd.redis.pdb.maxUnavailable | string | `""` | Number of pods that are unavailable after eviction as number or percentage (eg.: 50%). # Has higher precedence over `redis.pdb.minAvailable` |
 | argocd.redis.pdb.minAvailable | string | `""` (defaults to 0 if not specified) | Number of pods that are available after eviction as number or percentage (eg.: 50%) |
 | argocd.redis.pdb.unhealthyPodEvictionPolicy | string | `""` | Policy for evicting unhealthy (not ready) pods, either `IfHealthyBudget` or `AlwaysAllow` # Defaults to `IfHealthyBudget` if not set |
 | argocd.redis.podAnnotations | object | `{}` | Annotations to be added to the Redis server pods |
@@ -787,6 +789,11 @@ A Helm chart for Kubernetes
 | argocd.redis.serviceAccount.name | string | `""` | Service account name for redis pod |
 | argocd.redis.servicePort | int | `6379` | Redis service port |
 | argocd.redis.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds for container lifecycle hook |
+| argocd.redis.tls.caCertFile | string | `"ca.crt"` | Key of the CA certificate in that Secret, which the Argo CD components verify Redis with. Leave empty to verify Redis against the system CAs. |
+| argocd.redis.tls.certFile | string | `"tls.crt"` | Key of the server certificate in that Secret |
+| argocd.redis.tls.enabled | bool | `false` | Serve Redis over TLS only, and connect the Argo CD server, repo server and application controller to it over TLS. Only applies to the single node Redis deployment. |
+| argocd.redis.tls.keyFile | string | `"tls.key"` | Key of the server private key in that Secret |
+| argocd.redis.tls.secretName | string | `""` | Name of the Secret holding the Redis server certificate and key, such as one cert-manager creates. The certificate must name the Redis Service, which the Argo CD components connect to. |
 | argocd.redis.tolerations | list | `[]` (defaults to global.tolerations) | [Tolerations] for use with node taints |
 | argocd.redis.topologySpreadConstraints | list | `[]` (defaults to global.topologySpreadConstraints) | Assign custom [TopologySpreadConstraints] rules to redis # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ # If labelSelector is left out, it will default to the labelSelector configuration of the deployment |
 | argocd.redis.volumeMounts | list | `[]` | Additional volumeMounts to the redis container |
@@ -817,7 +824,7 @@ A Helm chart for Kubernetes
 | argocd.redisSecretInit.priorityClassName | string | `""` (defaults to global.priorityClassName) | Priority class for Redis secret-init Job |
 | argocd.redisSecretInit.resources | object | `{}` | Resource limits and requests for Redis secret-init Job |
 | argocd.redisSecretInit.runtimeClassName | string | `""` (defaults to global.runtimeClassName) | Runtime class name for the Redis secret-init Job |
-| argocd.redisSecretInit.securityContext | object | `{}` | Redis secret-init Job pod-level security context |
+| argocd.redisSecretInit.securityContext | object | See [values.yaml] | Redis secret-init Job pod-level security context |
 | argocd.redisSecretInit.serviceAccount.annotations | object | `{}` | Annotations applied to created service account |
 | argocd.redisSecretInit.serviceAccount.automountServiceAccountToken | bool | `true` | Automount API credentials for the Service Account |
 | argocd.redisSecretInit.serviceAccount.create | bool | `true` | Create a service account for the redis pod |
@@ -1055,7 +1062,7 @@ A Helm chart for Kubernetes
 | argocd.server.listenerset.enabled | bool | `false` | Enable ListenerSet resource for Argo CD server (Gateway API) |
 | argocd.server.listenerset.hostname | string | `""` | Hostname for the synthesized listener. Defaults to global.domain when empty. |
 | argocd.server.listenerset.labels | object | `{}` | Additional ListenerSet labels |
-| argocd.server.listenerset.listenerName | string | `"https"` | Name of the synthesized listener. Also used as sectionName in auto-derived httproute parentRefs. |
+| argocd.server.listenerset.listenerName | string | `"https"` | Name of the synthesized listener. Also used as sectionName in auto-derived httproute parentRefs. When `listeners` is set, sectionName is only kept if one of the listeners has this name. |
 | argocd.server.listenerset.listeners | list | `[]` (See [values.yaml]) | Listeners to attach to the parent Gateway. When non-empty, used verbatim and all synthesized listener fields above are ignored. |
 | argocd.server.listenerset.parentRef | object | `{}` (See [values.yaml]) | Gateway API parentRef for the ListenerSet # Must reference an existing Gateway. Unlike HTTPRoute, ListenerSet accepts exactly one parentRef. |
 | argocd.server.listenerset.port | int | `443` | Port for the synthesized listener |
@@ -1193,7 +1200,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.18"
+    targetRevision: "0.1.19"
     chart: argocd
     path: ''
     helm:
