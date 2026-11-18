@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.19](https://img.shields.io/badge/Version-0.1.19-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.6.1](https://img.shields.io/badge/AppVersion-v3.6.1-informational?style=flat-square)
+![Version: 0.1.20](https://img.shields.io/badge/Version-0.1.20-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.6.1](https://img.shields.io/badge/AppVersion-v3.6.1-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 10.18.0 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 10.18.1 |
 
 ## Maintainers
 
@@ -377,6 +377,8 @@ A Helm chart for Kubernetes
 | argocd.controller.revisionHistoryLimit | int | `5` | Maximum number of controller revisions that will be maintained in StatefulSet history |
 | argocd.controller.roleRules | list | `[]` | List of custom rules for the application controller's Role resource |
 | argocd.controller.runtimeClassName | string | `""` (defaults to global.runtimeClassName) | Runtime class name for the application controller |
+| argocd.controller.service.annotations | object | `{}` | Application controller service annotations |
+| argocd.controller.service.labels | object | `{}` | Application controller service labels |
 | argocd.controller.serviceAccount.annotations | object | `{}` | Annotations applied to created service account |
 | argocd.controller.serviceAccount.automountServiceAccountToken | bool | `true` | Automount API credentials for the Service Account |
 | argocd.controller.serviceAccount.create | bool | `true` | Create a service account for the application controller |
@@ -1200,7 +1202,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.19"
+    targetRevision: "0.1.20"
     chart: argocd
     path: ''
     helm:
