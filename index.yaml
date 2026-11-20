@@ -1442,6 +1442,30 @@ entries:
     urls:
     - https://edixos.github.io/ekp-helm/configconnector-operator-0.1.0.tgz
     version: 0.1.0
+  descheduler:
+  - apiVersion: v2
+    appVersion: 0.36.0
+    created: "2026-11-20T08:20:04.635399644Z"
+    dependencies:
+    - alias: descheduler
+      name: descheduler
+      repository: https://kubernetes-sigs.github.io/descheduler/
+      version: 0.36.0
+    description: A Helm chart for the Kubernetes descheduler, which evicts pods so
+      the scheduler can place them on better-suited nodes
+    digest: 8e4a8e8006c984dd3081e32028e59f8648d912352e828077290fc385c41b7330
+    home: https://sigs.k8s.io/descheduler
+    maintainers:
+    - email: ikaboubi@gmail.com
+      name: smileisak
+      url: https://github.com/smileisak
+    name: descheduler
+    sources:
+    - https://github.com/kubernetes-sigs/descheduler
+    type: application
+    urls:
+    - descheduler-0.1.0.tgz
+    version: 0.1.0
   dex:
   - apiVersion: v2
     appVersion: 2.42.0
@@ -7232,4 +7256,4 @@ entries:
     urls:
     - zammad-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-12T09:10:53.408356663Z"
+generated: "2026-11-20T08:20:04.63586723Z"
