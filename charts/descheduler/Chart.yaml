@@ -1,0 +1,18 @@
+apiVersion: v2
+name: descheduler
+description: A Helm chart for the Kubernetes descheduler, which evicts pods so the scheduler can place them on better-suited nodes
+type: application
+version: 0.1.0
+appVersion: "0.36.0"
+maintainers:
+  - name: smileisak
+    email: ikaboubi@gmail.com
+    url: https://github.com/smileisak
+home: https://sigs.k8s.io/descheduler
+sources:
+  - https://github.com/kubernetes-sigs/descheduler
+dependencies:
+  - name: descheduler
+    version: 0.36.0
+    repository: "https://kubernetes-sigs.github.io/descheduler/"
+    alias: descheduler
