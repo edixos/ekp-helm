@@ -976,6 +976,13 @@ argocd:
       # -- Metrics container port
       metrics: 8082
 
+    ## Application controller headless service configuration
+    service:
+      # -- Application controller service annotations
+      annotations: {}
+      # -- Application controller service labels
+      labels: {}
+
     # -- Host Network for application controller pods
     hostNetwork: false
 
