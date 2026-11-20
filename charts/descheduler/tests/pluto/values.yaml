@@ -1,0 +1,3 @@
+descheduler:
+  kind: CronJob
+  schedule: "*/20 * * * *"

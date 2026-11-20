@@ -31,6 +31,7 @@ chart-repos:
   - goldilocks=https://charts.fairwinds.com/stable
   - tetragon=https://helm.cilium.io/
   - valkey=https://valkey.io/valkey-helm/
+  - descheduler=https://kubernetes-sigs.github.io/descheduler/
 
 helm-extra-args: "--timeout 600s"
 validate-chart-schema: false
