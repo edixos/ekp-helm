@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 0.1.19](https://img.shields.io/badge/Version-0.1.19-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.95.2](https://img.shields.io/badge/AppVersion-v0.95.2-informational?style=flat-square)
+![Version: 0.1.20](https://img.shields.io/badge/Version-0.1.20-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.95.2](https://img.shields.io/badge/AppVersion-v0.95.2-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 93.2.0 |
+| https://prometheus-community.github.io/helm-charts | kubePrometheusStack(kube-prometheus-stack) | 93.11.0 |
 
 ## Description
 
@@ -55,7 +55,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.registry | string | `"quay.io"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.repository | string | `"prometheus/alertmanager"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.image.sha | string | `""` |  |
-| kubePrometheusStack.alertmanager.alertmanagerSpec.image.tag | string | `"v0.35.0"` |  |
+| kubePrometheusStack.alertmanager.alertmanagerSpec.image.tag | string | `"v0.35.1"` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.initContainers | list | `[]` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.limits | object | `{}` |  |
 | kubePrometheusStack.alertmanager.alertmanagerSpec.listenLocal | bool | `false` |  |
@@ -196,6 +196,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.alertmanager.service.sessionAffinity | string | `"None"` |  |
 | kubePrometheusStack.alertmanager.service.sessionAffinityConfig.clientIP.timeoutSeconds | int | `10800` |  |
 | kubePrometheusStack.alertmanager.service.targetPort | int | `9093` |  |
+| kubePrometheusStack.alertmanager.service.trafficDistribution | string | `""` |  |
 | kubePrometheusStack.alertmanager.service.type | string | `"ClusterIP"` |  |
 | kubePrometheusStack.alertmanager.serviceAccount.annotations | object | `{}` |  |
 | kubePrometheusStack.alertmanager.serviceAccount.automountServiceAccountToken | bool | `true` |  |
@@ -381,6 +382,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.defaultRules.kubeletServerCertificateExpiration.critical | int | `86400` |  |
 | kubePrometheusStack.defaultRules.kubeletServerCertificateExpiration.warning | int | `604800` |  |
 | kubePrometheusStack.defaultRules.labels | object | `{}` |  |
+| kubePrometheusStack.defaultRules.node.diskDeviceSelector | string | `"device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\""` |  |
 | kubePrometheusStack.defaultRules.node.fsSelector | string | `"fstype!=\"\""` |  |
 | kubePrometheusStack.defaultRules.rules.alertmanager | bool | `true` |  |
 | kubePrometheusStack.defaultRules.rules.configReloaders | bool | `true` |  |
@@ -508,6 +510,10 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.kubeApiServer.serviceMonitor.metricRelabelings[0].regex | string | `"(etcd_request|apiserver_request_slo|apiserver_request_sli|apiserver_request)_duration_seconds_bucket;(0\\.15|0\\.2|0\\.3|0\\.35|0\\.4|0\\.45|0\\.6|0\\.7|0\\.8|0\\.9|1\\.25|1\\.5|1\\.75|2|3|3\\.5|4|4\\.5|6|7|8|9|15|20|40|45|50)(\\.0)?"` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.metricRelabelings[0].sourceLabels[0] | string | `"__name__"` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.metricRelabelings[0].sourceLabels[1] | string | `"le"` |  |
+| kubePrometheusStack.kubeApiServer.serviceMonitor.metricRelabelings[1].action | string | `"drop"` |  |
+| kubePrometheusStack.kubeApiServer.serviceMonitor.metricRelabelings[1].regex | string | `"apiserver_watch_events_dispatch_duration_seconds_bucket;(0\\.0005|0\\.005|0\\.025|0\\.05|0\\.25|0\\.5|2\\.5)"` |  |
+| kubePrometheusStack.kubeApiServer.serviceMonitor.metricRelabelings[1].sourceLabels[0] | string | `"__name__"` |  |
+| kubePrometheusStack.kubeApiServer.serviceMonitor.metricRelabelings[1].sourceLabels[1] | string | `"le"` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.proxyUrl | string | `""` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.relabelings | list | `[]` |  |
 | kubePrometheusStack.kubeApiServer.serviceMonitor.sampleLimit | int | `0` |  |
@@ -1028,6 +1034,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.service.sessionAffinity | string | `"None"` |  |
 | kubePrometheusStack.prometheus.service.sessionAffinityConfig.clientIP.timeoutSeconds | int | `10800` |  |
 | kubePrometheusStack.prometheus.service.targetPort | int | `9090` |  |
+| kubePrometheusStack.prometheus.service.trafficDistribution | string | `""` |  |
 | kubePrometheusStack.prometheus.service.type | string | `"ClusterIP"` |  |
 | kubePrometheusStack.prometheus.serviceAccount.annotations | object | `{}` |  |
 | kubePrometheusStack.prometheus.serviceAccount.automountServiceAccountToken | bool | `true` |  |
@@ -1087,6 +1094,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.thanosService.portName | string | `"grpc"` |  |
 | kubePrometheusStack.prometheus.thanosService.targetHttpPort | string | `"http"` |  |
 | kubePrometheusStack.prometheus.thanosService.targetPort | string | `"grpc"` |  |
+| kubePrometheusStack.prometheus.thanosService.trafficDistribution | string | `""` |  |
 | kubePrometheusStack.prometheus.thanosService.type | string | `"ClusterIP"` |  |
 | kubePrometheusStack.prometheus.thanosServiceExternal.annotations | object | `{}` |  |
 | kubePrometheusStack.prometheus.thanosServiceExternal.enabled | bool | `false` |  |
@@ -1102,6 +1110,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheus.thanosServiceExternal.portName | string | `"grpc"` |  |
 | kubePrometheusStack.prometheus.thanosServiceExternal.targetHttpPort | string | `"http"` |  |
 | kubePrometheusStack.prometheus.thanosServiceExternal.targetPort | string | `"grpc"` |  |
+| kubePrometheusStack.prometheus.thanosServiceExternal.trafficDistribution | string | `""` |  |
 | kubePrometheusStack.prometheus.thanosServiceExternal.type | string | `"LoadBalancer"` |  |
 | kubePrometheusStack.prometheus.thanosServiceMonitor.additionalLabels | object | `{}` |  |
 | kubePrometheusStack.prometheus.thanosServiceMonitor.bearerTokenFile | string | `nil` |  |
@@ -1336,6 +1345,7 @@ A Helm chart for Kubernetes
 | kubePrometheusStack.prometheusOperator.thanosRulerInstanceSelector | string | `""` |  |
 | kubePrometheusStack.prometheusOperator.tls.enabled | bool | `true` |  |
 | kubePrometheusStack.prometheusOperator.tls.internalPort | int | `10250` |  |
+| kubePrometheusStack.prometheusOperator.tls.secretName | string | `""` |  |
 | kubePrometheusStack.prometheusOperator.tls.tlsMinVersion | string | `"VersionTLS13"` |  |
 | kubePrometheusStack.prometheusOperator.tolerations | list | `[]` |  |
 | kubePrometheusStack.prometheusOperator.verticalPodAutoscaler.controlledResources | list | `[]` |  |
@@ -1506,7 +1516,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.19"
+    targetRevision: "0.1.20"
     chart: kube-prometheus-stack
     path: ''
     helm:
