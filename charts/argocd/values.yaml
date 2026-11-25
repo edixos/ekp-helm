@@ -976,6 +976,13 @@ argocd:
       # -- Metrics container port
       metrics: 8082
 
+    ## Application controller headless service configuration
+    service:
+      # -- Application controller service annotations
+      annotations: {}
+      # -- Application controller service labels
+      labels: {}
+
     # -- Host Network for application controller pods
     hostNetwork: false
 
@@ -1698,7 +1705,7 @@ argocd:
         # -- Repository to use for the redis-exporter
         repository: ghcr.io/oliver006/redis_exporter
         # -- Tag to use for the redis-exporter
-        tag: v1.97.0
+        tag: v1.99.0
         # -- Image pull policy for the redis-exporter
         # @default -- `""` (defaults to global.image.imagePullPolicy)
         imagePullPolicy: ""
@@ -1901,7 +1908,7 @@ argocd:
     terminationGracePeriodSeconds: 30
 
     # -- Automount API credentials for the Service Account into the pod.
-    automountServiceAccountToken: true
+    automountServiceAccountToken: false
 
     serviceAccount:
       # -- Create a service account for the redis pod
@@ -1991,7 +1998,7 @@ argocd:
       # -- Repository to use for the redis-exporter
       image: ghcr.io/oliver006/redis_exporter
       # -- Tag to use for the redis-exporter
-      tag: v1.97.0
+      tag: v1.99.0
     persistentVolume:
       # -- Configures persistence on Redis nodes
       enabled: false
@@ -3581,7 +3588,8 @@ argocd:
       rules: []
 
     # -- Automount API credentials for the Service Account into the pod.
-    automountServiceAccountToken: true
+    # Always mounted when `repoServer.rbac` is not empty or `repoServer.clusterRoleRules.enabled` is true.
+    automountServiceAccountToken: false
 
     ## Repo server service account
     ## If create is set to true, make sure to uncomment the name and update the rbac section below
@@ -3595,7 +3603,7 @@ argocd:
       # -- Labels applied to created service account
       labels: {}
       # -- Automount API credentials for the Service Account
-      automountServiceAccountToken: true
+      automountServiceAccountToken: false
 
     # -- Repo server rbac rules
     rbac: []
@@ -4487,9 +4495,13 @@ argocd:
       # -- Whether helm chart creates notifications controller config map
       create: true
 
-    ## Enable this and set the rules: to whatever custom rules you want for the Cluster Role resource.
-    ## Defaults to off
+    ## Create a ClusterRole and ClusterRoleBinding for the notifications controller.
+    ## It is created automatically when `configs.params.application\.namespaces` or
+    ## `configs.params.notificationscontroller\.selfservice\.enabled` is enabled, or when custom rules are set.
+    ## Defaults to off otherwise, so the controller only gets namespace-scoped permissions.
     clusterRoleRules:
+      # -- Create the notifications controller's ClusterRole and ClusterRoleBinding when no automatic condition applies
+      enabled: false
       # -- List of custom rules for the notifications controller's ClusterRole resource
       rules: []
 
