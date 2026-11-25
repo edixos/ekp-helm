@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 0.1.19](https://img.shields.io/badge/Version-0.1.19-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.6.1](https://img.shields.io/badge/AppVersion-v3.6.1-informational?style=flat-square)
+![Version: 0.1.20](https://img.shields.io/badge/Version-0.1.20-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.6.3](https://img.shields.io/badge/AppVersion-v3.6.3-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 10.18.0 |
+| https://argoproj.github.io/argo-helm | argocd(argo-cd) | 10.20.0 |
 
 ## Maintainers
 
@@ -377,6 +377,8 @@ A Helm chart for Kubernetes
 | argocd.controller.revisionHistoryLimit | int | `5` | Maximum number of controller revisions that will be maintained in StatefulSet history |
 | argocd.controller.roleRules | list | `[]` | List of custom rules for the application controller's Role resource |
 | argocd.controller.runtimeClassName | string | `""` (defaults to global.runtimeClassName) | Runtime class name for the application controller |
+| argocd.controller.service.annotations | object | `{}` | Application controller service annotations |
+| argocd.controller.service.labels | object | `{}` | Application controller service labels |
 | argocd.controller.serviceAccount.annotations | object | `{}` | Annotations applied to created service account |
 | argocd.controller.serviceAccount.automountServiceAccountToken | bool | `true` | Automount API credentials for the Service Account |
 | argocd.controller.serviceAccount.create | bool | `true` | Create a service account for the application controller |
@@ -569,6 +571,7 @@ A Helm chart for Kubernetes
 | argocd.notifications.affinity | object | `{}` (defaults to global.affinity preset) | Assign custom [affinity] rules |
 | argocd.notifications.argocdUrl | string | `""` (defaults to https://`global.domain`) | Argo CD dashboard url; used in place of {{.context.argocdUrl}} in templates |
 | argocd.notifications.automountServiceAccountToken | bool | `true` | Automount API credentials for the Service Account into the pod. |
+| argocd.notifications.clusterRoleRules.enabled | bool | `false` | Create the notifications controller's ClusterRole and ClusterRoleBinding when no automatic condition applies |
 | argocd.notifications.clusterRoleRules.rules | list | `[]` | List of custom rules for the notifications controller's ClusterRole resource |
 | argocd.notifications.cm.create | bool | `true` | Whether helm chart creates notifications controller config map |
 | argocd.notifications.containerPorts.metrics | int | `9001` | Metrics container port |
@@ -672,7 +675,7 @@ A Helm chart for Kubernetes
 | argocd.redis-ha.existingSecret | string | `"argocd-redis"` | Existing Secret to use for redis-ha authentication. By default the redis-secret-init Job is generating this Secret. When `redisSecretInit.enabled` is `false`, the Argo CD components read the Redis password from this Secret too (key `redis-ha.authKey`). |
 | argocd.redis-ha.exporter.enabled | bool | `false` | Enable Prometheus redis-exporter sidecar |
 | argocd.redis-ha.exporter.image | string | `"ghcr.io/oliver006/redis_exporter"` | Repository to use for the redis-exporter |
-| argocd.redis-ha.exporter.tag | string | `"v1.97.0"` | Tag to use for the redis-exporter |
+| argocd.redis-ha.exporter.tag | string | `"v1.99.0"` | Tag to use for the redis-exporter |
 | argocd.redis-ha.haproxy.additionalAffinities | object | `{}` | Additional affinities to add to the haproxy pods. |
 | argocd.redis-ha.haproxy.affinity | string | `""` | Assign custom [affinity] rules to the haproxy pods. |
 | argocd.redis-ha.haproxy.containerSecurityContext | object | See [values.yaml] | HAProxy container-level security context |
@@ -697,7 +700,7 @@ A Helm chart for Kubernetes
 | argocd.redis-ha.topologySpreadConstraints.topologyKey | string | `""` (defaults to `topology.kubernetes.io/zone`) | Topology key for spread |
 | argocd.redis-ha.topologySpreadConstraints.whenUnsatisfiable | string | `""` (defaults to `ScheduleAnyway`) | Enforcement policy, hard or soft |
 | argocd.redis.affinity | object | `{}` (defaults to global.affinity preset) | Assign custom [affinity] rules to the deployment |
-| argocd.redis.automountServiceAccountToken | bool | `true` | Automount API credentials for the Service Account into the pod. |
+| argocd.redis.automountServiceAccountToken | bool | `false` | Automount API credentials for the Service Account into the pod. |
 | argocd.redis.containerPorts.metrics | int | `9121` | Metrics container port |
 | argocd.redis.containerPorts.redis | int | `6379` | Redis container port |
 | argocd.redis.containerSecurityContext | object | See [values.yaml] | Redis container-level security context |
@@ -714,7 +717,7 @@ A Helm chart for Kubernetes
 | argocd.redis.exporter.env | list | `[]` | Environment variables to pass to the Redis exporter |
 | argocd.redis.exporter.image.imagePullPolicy | string | `""` (defaults to global.image.imagePullPolicy) | Image pull policy for the redis-exporter |
 | argocd.redis.exporter.image.repository | string | `"ghcr.io/oliver006/redis_exporter"` | Repository to use for the redis-exporter |
-| argocd.redis.exporter.image.tag | string | `"v1.97.0"` | Tag to use for the redis-exporter |
+| argocd.redis.exporter.image.tag | string | `"v1.99.0"` | Tag to use for the redis-exporter |
 | argocd.redis.exporter.livenessProbe.enabled | bool | `false` | Enable Kubernetes liveness probe for Redis exporter |
 | argocd.redis.exporter.livenessProbe.failureThreshold | int | `5` | Minimum consecutive failures for the [probe] to be considered failed after having succeeded |
 | argocd.redis.exporter.livenessProbe.initialDelaySeconds | int | `30` | Number of seconds after the container has started before [probe] is initiated |
@@ -831,7 +834,7 @@ A Helm chart for Kubernetes
 | argocd.redisSecretInit.serviceAccount.name | string | `""` | Service account name for redis pod |
 | argocd.redisSecretInit.tolerations | list | `[]` (defaults to global.tolerations) | Tolerations to be added to the Redis secret-init Job |
 | argocd.repoServer.affinity | object | `{}` (defaults to global.affinity preset) | Assign custom [affinity] rules to the deployment |
-| argocd.repoServer.automountServiceAccountToken | bool | `true` | Automount API credentials for the Service Account into the pod. |
+| argocd.repoServer.automountServiceAccountToken | bool | `false` | Automount API credentials for the Service Account into the pod. Always mounted when `repoServer.rbac` is not empty or `repoServer.clusterRoleRules.enabled` is true. |
 | argocd.repoServer.autoscaling.behavior | object | `{}` | Configures the scaling behavior of the target in both Up and Down directions. |
 | argocd.repoServer.autoscaling.enabled | bool | `false` | Enable Horizontal Pod Autoscaler ([HPA]) for the repo server |
 | argocd.repoServer.autoscaling.maxReplicas | int | `5` | Maximum number of replicas for the repo server [HPA] |
@@ -925,7 +928,7 @@ A Helm chart for Kubernetes
 | argocd.repoServer.service.portName | string | `"tcp-repo-server"` | Repo server service port name |
 | argocd.repoServer.service.trafficDistribution | string | `""` | Traffic distribution preference for the repo server service. If the field is not set, the implementation will apply its default routing strategy. |
 | argocd.repoServer.serviceAccount.annotations | object | `{}` | Annotations applied to created service account |
-| argocd.repoServer.serviceAccount.automountServiceAccountToken | bool | `true` | Automount API credentials for the Service Account |
+| argocd.repoServer.serviceAccount.automountServiceAccountToken | bool | `false` | Automount API credentials for the Service Account |
 | argocd.repoServer.serviceAccount.create | bool | `true` | Create repo server service account |
 | argocd.repoServer.serviceAccount.labels | object | `{}` | Labels applied to created service account |
 | argocd.repoServer.serviceAccount.name | string | `""` | Repo server service account name |
@@ -1200,7 +1203,7 @@ spec:
 
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.19"
+    targetRevision: "0.1.20"
     chart: argocd
     path: ''
     helm:

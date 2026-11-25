@@ -82,15 +82,15 @@ vmstack:
     # renovate-tracked tags/appVersion below.
     versions:
       # renovate: image=victoriametrics/victoria-metrics
-      metrics: v1.156.0
+      metrics: v1.157.0
       # renovate: image=victoriametrics/victoria-logs
-      logs: v1.53.0
+      logs: v1.54.0
       # renovate: image=victoriametrics/victoria-traces
       traces: v0.13.0
       # renovate: image=victoriametrics/vmanomaly
       anomaly: v1.32.0
       # renovate: image=prom/alertmanager
-      alertmanager: v0.34.2
+      alertmanager: v0.35.0
   # -- Override chart name
   nameOverride: ""
   # -- Resource full name override
@@ -1863,6 +1863,14 @@ vmstack:
     enabled: true
     # -- Controls whether VMAlert should use VMAgent or VMInsert as a target for remotewrite
     remoteWriteVMAgent: false
+    # -- (object) Settings added to every notifier generated for the chart's alertmanager, e.g. `tlsConfig` or `basicAuth`.
+    # Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vmalertnotifierspec). Not supported with `additionalNotifierConfigs`
+    notifierConfig: {}
+    # tlsConfig:
+    #   ca:
+    #     secret:
+    #       name: alertmanager-ca
+    #       key: ca.crt
     # -- (object) Full spec for VMAlert CRD. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vmalertspec)
     spec:
       port: "8080"

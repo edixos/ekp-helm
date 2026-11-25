@@ -320,6 +320,7 @@ kubePrometheusStack:
     node:
       fsSelector: 'fstype!=""'
       # fsSelector: 'fstype=~"ext[234]|btrfs|xfs|zfs"'
+      diskDeviceSelector: 'device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"'
 
     ## Disabled PrometheusRule alerts
     disabled: {}
@@ -895,6 +896,12 @@ kubePrometheusStack:
         clientIP:
           timeoutSeconds: 10800
 
+      ## Preference for routing traffic to the Service's endpoints, e.g. PreferClose to keep traffic in the client's zone
+      ## Requires Kubernetes >= 1.31; newer versions also accept PreferSameZone and PreferSameNode. Not rendered when empty
+      ## Ref: https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution
+      ##
+      trafficDistribution: ""
+
       ## Service type
       ##
       type: ClusterIP
@@ -1038,7 +1045,7 @@ kubePrometheusStack:
       image:
         registry: quay.io
         repository: prometheus/alertmanager
-        tag: v0.35.0
+        tag: v0.35.1
         sha: ""
         pullPolicy: IfNotPresent
 
@@ -1821,6 +1828,13 @@ kubePrometheusStack:
         # Drop excessively noisy apiserver buckets.
         - action: drop
           regex: (etcd_request|apiserver_request_slo|apiserver_request_sli|apiserver_request)_duration_seconds_bucket;(0\.15|0\.2|0\.3|0\.35|0\.4|0\.45|0\.6|0\.7|0\.8|0\.9|1\.25|1\.5|1\.75|2|3|3\.5|4|4\.5|6|7|8|9|15|20|40|45|50)(\.0)?
+          sourceLabels:
+            - __name__
+            - le
+        # Drop every other bucket of the watch event dispatch histogram (Kubernetes 1.37+),
+        # keeping 0.0001, 0.001, 0.01, 0.1, 1, 5 and +Inf.
+        - action: drop
+          regex: apiserver_watch_events_dispatch_duration_seconds_bucket;(0\.0005|0\.005|0\.025|0\.05|0\.25|0\.5|2\.5)
           sourceLabels:
             - __name__
             - le
@@ -3060,9 +3074,20 @@ kubePrometheusStack:
     strategy: {}
 
     ## Prometheus-Operator v0.39.0 and later support TLS natively.
+    ## The certificate comes from the Secret created either by the admission webhook patch job
+    ## (admissionWebhooks.enabled and admissionWebhooks.patch.enabled) or by cert-manager
+    ## (admissionWebhooks.certManager.enabled). With neither of those, the chart fails the render
+    ## rather than leave the operator pod in ContainerCreating waiting for a Secret nothing creates.
     ##
     tls:
       enabled: true
+      ## Name of a secret you manage yourself holding the operator's TLS material. It is always read
+      ## as a kubernetes.io/tls secret, so the keys must be tls.crt, tls.key and ca.crt, whatever the
+      ## admission webhook settings are. Leave empty to use the secret created by the admission
+      ## webhook patch job or by cert-manager, which is read under whichever keys created it.
+      ## Required when neither of those creates it, since the chart cannot otherwise know the
+      ## certificate exists.
+      secretName: ""
       # Value must match version names from https://pkg.go.dev/crypto/tls#pkg-constants
       tlsMinVersion: VersionTLS13
       # The default webhook port is 10250 in order to work out-of-the-box in GKE private clusters and avoid adding firewall rules.
@@ -3961,6 +3986,12 @@ kubePrometheusStack:
       ##
       externalTrafficPolicy: Cluster
 
+      ## Preference for routing traffic to the Service's endpoints, e.g. PreferClose to keep traffic in the client's zone
+      ## Requires Kubernetes >= 1.31; newer versions also accept PreferSameZone and PreferSameNode. Not rendered when empty
+      ## Ref: https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution
+      ##
+      trafficDistribution: ""
+
       ## Service type
       ##
       type: ClusterIP
@@ -4038,6 +4069,12 @@ kubePrometheusStack:
       ## Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoints
       ##
       externalTrafficPolicy: Cluster
+
+      ## Preference for routing traffic to the Service's endpoints, e.g. PreferClose to keep traffic in the client's zone
+      ## Requires Kubernetes >= 1.31; newer versions also accept PreferSameZone and PreferSameNode. Not rendered when empty
+      ## Ref: https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution
+      ##
+      trafficDistribution: ""
 
       ## Service type
       ##
@@ -4125,6 +4162,12 @@ kubePrometheusStack:
       sessionAffinityConfig:
         clientIP:
           timeoutSeconds: 10800
+
+      ## Preference for routing traffic to the Service's endpoints, e.g. PreferClose to keep traffic in the client's zone
+      ## Requires Kubernetes >= 1.31; newer versions also accept PreferSameZone and PreferSameNode. Not rendered when empty
+      ## Ref: https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution
+      ##
+      trafficDistribution: ""
 
     ## Configuration for creating a separate Service for each statefulset Prometheus replica
     ##

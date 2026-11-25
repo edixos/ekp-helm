@@ -1,6 +1,6 @@
 # victoria-metrics-k8s-stack
 
-![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.156.0](https://img.shields.io/badge/AppVersion-v1.156.0-informational?style=flat-square)
+![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.157.0](https://img.shields.io/badge/AppVersion-v1.157.0-informational?style=flat-square)
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://victoriametrics.github.io/helm-charts/ | vmstack(victoria-metrics-k8s-stack) | 0.98.1 |
+| https://victoriametrics.github.io/helm-charts/ | vmstack(victoria-metrics-k8s-stack) | 0.99.0 |
 
 ## Maintainers
 
@@ -225,7 +225,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.global.extraAnnotations | object | `{}` | Annotations passed to the operator (`VM_COMMON_ANNOTATIONS`), which adds them to every resource it creates from VM CRs. Also added to dashboards and rules created by the sync-job. Not applied to bundled subcharts |
 | vmstack.global.extraLabels | object | `{}` | Labels added to resources templated by this chart and the embedded operator chart, and to dashboards and rules created by the sync-job. Also passed to the operator (`VM_COMMON_LABELS`), which adds them to every resource it creates from VM CRs. Not applied to CRDs, `extraObjects` and bundled subcharts, use `grafana.extraLabels`, `kube-state-metrics.customLabels` and `prometheus-node-exporter.commonLabels` for the latter |
 | vmstack.global.license | object | `{"key":"","keyRef":{}}` | Global license configuration |
-| vmstack.global.versions | object | `{"alertmanager":"v0.34.2","anomaly":"v1.32.0","logs":"v1.53.0","metrics":"v1.156.0","traces":"v0.13.0"}` | Default component versions. Propagated automatically (as a global value) to the embedded operator chart's own `global.versions`, which it uses to populate its default-version env vars, so that CRs created outside this chart (no explicit spec.image.tag) get the same version this chart deploys. Keep in sync with the corresponding renovate-tracked tags/appVersion below. |
+| vmstack.global.versions | object | `{"alertmanager":"v0.35.0","anomaly":"v1.32.0","logs":"v1.54.0","metrics":"v1.157.0","traces":"v0.13.0"}` | Default component versions. Propagated automatically (as a global value) to the embedded operator chart's own `global.versions`, which it uses to populate its default-version env vars, so that CRs created outside this chart (no explicit spec.image.tag) get the same version this chart deploys. Keep in sync with the corresponding renovate-tracked tags/appVersion below. |
 | vmstack.grafana | object | `{"enabled":true,"forceDeployDatasource":false,"ingress":{"annotations":{},"enabled":false,"extraPaths":[],"hosts":["grafana.domain.com"],"labels":{},"path":"/","pathType":"Prefix","tls":[]},"sidecar":{"dashboards":{"defaultFolderName":"default","enabled":true,"folder":"/var/lib/grafana/dashboards","label":"grafana_dashboard","labelValue":"1","multicluster":false,"provider":{"name":"default","orgid":1}},"datasources":{"enabled":true,"label":"grafana_datasource","labelValue":"1"}},"vmScrape":{"enabled":true,"spec":{"endpoints":[{"port":"{{ .Values.grafana.service.portName }}"}],"selector":{"matchLabels":{"app.kubernetes.io/name":"{{ include \"grafana.name\" .Subcharts.grafana }}"}}}}}` | Grafana dependency chart configuration. For possible values refer [here](https://github.com/grafana-community/helm-charts/tree/main/charts/grafana#configuration) |
 | vmstack.grafana.forceDeployDatasource | bool | `false` | Create datasource configmap even if grafana deployment has been disabled |
 | vmstack.grafana.ingress.extraPaths | list | `[]` | Extra paths to prepend to every host configuration. This is useful when working with annotation based services. |
@@ -451,6 +451,7 @@ If you're migrating existing config, please make sure that `.Values.alertmanager
 | vmstack.vmalert.ingress.extraPaths | list | `[]` | Extra paths to prepend to every host configuration. This is useful when working with annotation based services. |
 | vmstack.vmalert.labels | object | `{}` | VMAlert labels |
 | vmstack.vmalert.namespaceOverride | string | `""` | Override the namespace for this component. When set, deploys the CR to a different namespace than the release namespace. |
+| vmstack.vmalert.notifierConfig | object | `{}` | Settings added to every notifier generated for the chart's alertmanager, e.g. `tlsConfig` or `basicAuth`. Allowed values described [here](https://docs.victoriametrics.com/operator/api/#vmalertnotifierspec). Not supported with `additionalNotifierConfigs` |
 | vmstack.vmalert.remoteWriteVMAgent | bool | `false` | Controls whether VMAlert should use VMAgent or VMInsert as a target for remotewrite |
 | vmstack.vmalert.route | object | `{"annotations":{},"enabled":false,"extraRules":[],"filters":[],"hostnames":[],"labels":{},"matches":[{"path":{"type":"PathPrefix","value":"{{ dig \"spec\" \"extraArgs\" \"http.pathPrefix\" \"/\" .Values.vmalert }}"}}],"parentRefs":[],"port":"{{ .Values.vmalert.spec.port }}"}` | VMAlert route configuration |
 | vmstack.vmalert.route.annotations | object | `{}` | HTTPRoute annotations |
@@ -672,7 +673,7 @@ spec:
   project: infra
   source:
     repoURL: "https://edixos.github.io/ekp-helm"
-    targetRevision: "0.1.6"
+    targetRevision: "0.1.7"
     chart: victoria-metrics-k8s-stack
     helm:
       releaseName: vmks
