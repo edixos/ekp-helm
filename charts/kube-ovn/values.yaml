@@ -69,7 +69,7 @@ kube-ovn:
     images:
       kubeovn:
         repository: kube-ovn
-        tag: v1.17.0
+        tag: v1.17.1
 
   # -- Image configuration.
   # @section -- Global parameters
@@ -329,7 +329,7 @@ kube-ovn:
 
     ENABLE_BIND_LOCAL_IP: true
     LS_DNAT_MOD_DL_DST: true
-    LS_CT_SKIP_DST_LPORT_IPS: true
+    LS_CT_SKIP_DST_LPORT_IPS: false
     ENABLE_ANP: false
     ENABLE_DNS_NAME_RESOLVER: false
     SET_GENEVE_TX_OFF: false
@@ -517,7 +517,7 @@ kube-ovn:
       repository: docker.io/kubeovn/vpc-nat-gateway
       # -- Image tag.
       # @section -- NAT gateways configuration
-      tag: v1.17.0
+      tag: v1.17.1
       # -- Image pull policy.
       # @section -- NAT gateways configuration
       pullPolicy: IfNotPresent
@@ -534,7 +534,7 @@ kube-ovn:
         repository: docker.io/kubeovn/kube-ovn
         # -- Image tag.
         # @section -- NAT gateways configuration
-        tag: v1.17.0
+        tag: v1.17.1
         # -- Image pull policy.
         # @section -- NAT gateways configuration
         pullPolicy: IfNotPresent
@@ -733,7 +733,7 @@ kube-ovn:
         pullPolicy: ""
       # -- DPDK image tag.
       # @section -- OVS/OVN daemons configuration
-      tag: v1.17.0
+      tag: v1.17.1-dpdk
       # -- Affinity for the ovs-ovn-dpdk DaemonSet.
       # @section -- OVS/OVN daemons configuration
       affinity: {}
